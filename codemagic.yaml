@@ -1,0 +1,22 @@
+workflows:
+  android-workflow:
+    name: Android Capacitor Build
+    instance_type: mac_mini_m1
+    environment:
+      node: latest
+      java: 21
+    scripts:
+      - name: Install Dependencies
+        script: npm install --legacy-peer-deps
+      - name: Sync Capacitor
+        script: |
+          mkdir -p out
+          echo "<html><body>App</body></html>" > out/index.html
+          npx cap sync android
+      - name: Build Android APK
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+    artifacts:
+      - android/app/build/outputs/apk/**/*.apk

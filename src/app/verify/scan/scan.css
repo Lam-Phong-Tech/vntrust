@@ -1,0 +1,268 @@
+.s-scan-wrapper {
+  --cream: #F6F1E8;
+  --gold: #C8A557;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.s-scan {
+  background: #050B14;
+  color: var(--cream);
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.s-scan-camera {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 45%, rgba(40, 60, 80, 0.7) 0%, rgba(15, 25, 40, 0.95) 100%),
+    linear-gradient(135deg, #142235 0%, #050B14 100%);
+  z-index: 1;
+}
+
+/* We will place the #qr-reader video inside the finder */
+#qr-reader {
+  z-index: 1;
+}
+#qr-reader video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* hide html5-qrcode ui if any appears */
+#qr-reader__dashboard_section_csr span, 
+#qr-reader__dashboard_section_csr button,
+#qr-reader__dashboard_section_swaplink {
+  display: none !important;
+}
+
+.s-scan-camera::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(200, 165, 87, 0.02) 30px, rgba(200, 165, 87, 0.02) 31px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Product silhouette suggestion */
+.s-scan-product {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 200px;
+  background: linear-gradient(180deg, rgba(200, 165, 87, 0.18) 0%, rgba(200, 165, 87, 0.05) 60%, transparent 100%);
+  border-radius: 12px;
+  opacity: 0.4;
+  filter: blur(1px);
+  z-index: 2;
+}
+
+.s-scan-product::after {
+  content: '';
+  position: absolute;
+  inset: 30% 25% 30% 25%;
+  background: rgba(200, 165, 87, 0.1);
+  border-radius: 4px;
+}
+
+.s-scan-top {
+  position: absolute;
+  top: 50px; /* will adjust for web */
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 3;
+}
+
+.s-scan-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(246, 241, 232, 0.12);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(246, 241, 232, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--cream);
+  padding: 0;
+  margin: 0;
+}
+
+.s-scan-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.s-scan-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--cream);
+}
+
+/* Viewfinder */
+.s-scan-finder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  width: 240px;
+  height: 240px;
+  z-index: 2;
+}
+
+.s-scan-corner {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--gold);
+}
+
+.s-scan-corner.tl {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: 12px;
+}
+
+.s-scan-corner.tr {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: 12px;
+}
+
+.s-scan-corner.bl {
+  bottom: 0;
+  left: 0;
+  border-right: none;
+  border-top: none;
+  border-bottom-left-radius: 12px;
+}
+
+.s-scan-corner.br {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: 12px;
+}
+
+.s-scan-line {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  box-shadow: 0 0 16px var(--gold);
+  animation: scanLine 2.4s ease-in-out infinite;
+}
+
+@keyframes scanLine {
+  0%, 100% { top: 8px; }
+  50% { top: calc(100% - 10px); }
+}
+
+.s-scan-hint {
+  position: absolute;
+  top: calc(50% + 80px);
+  left: 50%;
+  transform: translate(-50%, 50%);
+  text-align: center;
+  z-index: 3;
+  width: 280px;
+}
+
+.s-scan-hint-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(200, 165, 87, 0.15);
+  border: 1px solid rgba(200, 165, 87, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  color: var(--gold);
+}
+
+.s-scan-hint-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.s-scan-hint-text {
+  font-size: 13px;
+  color: var(--cream);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.s-scan-hint-sub {
+  font-size: 11px;
+  color: rgba(246, 241, 232, 0.5);
+}
+
+.s-scan-bottom {
+  position: absolute;
+  bottom: 30px;
+  left: 20px;
+  right: 20px;
+  z-index: 3;
+}
+
+.s-scan-options {
+  background: rgba(15, 25, 40, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(200, 165, 87, 0.15);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  gap: 8px;
+}
+
+.s-scan-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  color: rgba(246, 241, 232, 0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 10px;
+}
+
+.s-scan-option:hover {
+  background: rgba(200, 165, 87, 0.1);
+  color: var(--gold);
+}
+
+.s-scan-option.active {
+  background: rgba(200, 165, 87, 0.15);
+  color: var(--gold);
+}
+
+.s-scan-option svg {
+  width: 18px;
+  height: 18px;
+}

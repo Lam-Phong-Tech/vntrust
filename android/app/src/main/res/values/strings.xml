@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VNTRUST</string>
+    <string name="title_activity_main">VNTRUST</string>
+    <string name="package_name">com.vntrust.app</string>
+    <string name="custom_url_scheme">com.vntrust.app</string>
+</resources>

@@ -1,0 +1,16 @@
+[Unit]
+Description=VNTrust Anti-Counterfeit App
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/vntrust
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=10
+Environment=NODE_ENV=production
+Environment=PORT=3001
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,3542 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VNTrust Mobile — Anti-Counterfeit App Design</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0B1623;
+      --ink-2: #142235;
+      --ink-3: #1E3148;
+      --cream: #F6F1E8;
+      --cream-2: #EDE6D6;
+      --paper: #FDFBF6;
+      --gold: #C8A557;
+      --gold-dark: #A6873E;
+      --gold-light: #E4D2A1;
+      --verified: #4A7C5C;
+      --verified-light: #DCE9DF;
+      --verified-bright: #6FB585;
+      --amber: #C8893A;
+      --amber-light: #F4E4CB;
+      --crimson: #9F2D3E;
+      --crimson-bright: #D14C5F;
+      --crimson-light: #F0D5DA;
+      --line: rgba(11, 22, 35, 0.10);
+      --line-strong: rgba(11, 22, 35, 0.18);
+      --muted: rgba(11, 22, 35, 0.55);
+      --muted-2: rgba(11, 22, 35, 0.75);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      background: var(--ink);
+      color: var(--cream);
+      min-height: 100vh;
+      line-height: 1.5;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(200, 165, 87, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 90%, rgba(200, 165, 87, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(200, 165, 87, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200, 165, 87, 0.025) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 80%);
+    }
+
+    .display {
+      font-family: 'Fraunces', serif;
+      font-optical-sizing: auto;
+      letter-spacing: -0.02em;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: 'tnum';
+    }
+
+    /* ============== PRESENTATION SHELL ============== */
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1640px;
+      margin: 0 auto;
+      padding: 56px 32px 80px;
+    }
+
+    .pres-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 80px;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .pres-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .pres-brand-mark {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .pres-brand-mark::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border: 1px solid rgba(200, 165, 87, 0.25);
+      border-radius: 16px;
+    }
+
+    .pres-brand-mark svg {
+      width: 24px;
+      height: 24px;
+      color: var(--gold);
+    }
+
+    .pres-brand-text .name {
+      font-family: 'Fraunces', serif;
+      font-weight: 500;
+      font-size: 26px;
+      letter-spacing: -0.015em;
+    }
+
+    .pres-brand-text .sub {
+      font-size: 11px;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .pres-meta {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(246, 241, 232, 0.5);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .pres-meta-tag {
+      padding: 6px 12px;
+      border: 1px solid rgba(200, 165, 87, 0.3);
+      border-radius: 100px;
+      color: var(--gold);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pres-meta-tag .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .pres-title-block {
+      margin-bottom: 72px;
+      max-width: 880px;
+    }
+
+    .pres-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px 6px 10px;
+      border: 1px solid rgba(200, 165, 87, 0.3);
+      border-radius: 100px;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 32px;
+    }
+
+    .pres-label-pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 4px rgba(200, 165, 87, 0.2);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 4px rgba(200, 165, 87, 0.2);
+      }
+
+      50% {
+        box-shadow: 0 0 0 8px rgba(200, 165, 87, 0);
+      }
+    }
+
+    .pres-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 400;
+      font-size: clamp(48px, 6vw, 80px);
+      line-height: 0.98;
+      letter-spacing: -0.035em;
+      margin-bottom: 28px;
+    }
+
+    .pres-title em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--gold);
+    }
+
+    .pres-sub {
+      font-size: 17px;
+      line-height: 1.6;
+      color: rgba(246, 241, 232, 0.65);
+      max-width: 620px;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 96px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 48px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(200, 165, 87, 0.15);
+    }
+
+    .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+    }
+
+    .section-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 500;
+      font-size: 32px;
+      letter-spacing: -0.025em;
+      flex: 1;
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .section-desc {
+      font-size: 13px;
+      color: rgba(246, 241, 232, 0.5);
+      max-width: 280px;
+      text-align: right;
+      line-height: 1.6;
+    }
+
+    .phone-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 32px;
+      justify-items: center;
+      align-items: start;
+    }
+
+    .phone-row.three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .phone-row.two {
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .phone-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* ============== PHONE FRAME ============== */
+    .phone {
+      width: 340px;
+      height: 720px;
+      background: #050B14;
+      border-radius: 48px;
+      padding: 12px;
+      position: relative;
+      box-shadow:
+        0 0 0 1px rgba(200, 165, 87, 0.08),
+        0 24px 60px -12px rgba(0, 0, 0, 0.6),
+        0 0 80px -20px rgba(200, 165, 87, 0.1);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s;
+    }
+
+    .phone:hover {
+      transform: translateY(-8px);
+      box-shadow:
+        0 0 0 1px rgba(200, 165, 87, 0.15),
+        0 36px 80px -12px rgba(0, 0, 0, 0.7),
+        0 0 100px -20px rgba(200, 165, 87, 0.18);
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: var(--paper);
+      border-radius: 38px;
+      overflow: hidden;
+      position: relative;
+      color: var(--ink);
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 28px;
+      background: #050B14;
+      border-radius: 100px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Status bar */
+    .status {
+      position: relative;
+      z-index: 5;
+      height: 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 28px 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .status-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-right svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Bottom nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(253, 251, 246, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--line);
+      padding: 10px 0 18px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      color: var(--muted);
+      flex: 1;
+      cursor: pointer;
+      transition: color 0.2s;
+      letter-spacing: 0.02em;
+      font-weight: 500;
+    }
+
+    .bottom-nav-item svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .bottom-nav-item.active {
+      color: var(--ink);
+    }
+
+    .bottom-nav-item.active .bn-icon-wrap {
+      background: var(--ink);
+      color: var(--gold);
+    }
+
+    .bn-icon-wrap {
+      width: 36px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      color: var(--muted);
+    }
+
+    .home-indicator {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 4px;
+      background: rgba(11, 22, 35, 0.25);
+      border-radius: 100px;
+      z-index: 6;
+    }
+
+    .home-indicator.light {
+      background: rgba(246, 241, 232, 0.4);
+    }
+
+    /* Phone label */
+    .phone-label {
+      text-align: center;
+      max-width: 280px;
+    }
+
+    .phone-label-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--gold);
+      letter-spacing: 0.16em;
+      margin-bottom: 6px;
+    }
+
+    .phone-label-name {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: var(--cream);
+      margin-bottom: 6px;
+    }
+
+    .phone-label-desc {
+      font-size: 12px;
+      color: rgba(246, 241, 232, 0.5);
+      line-height: 1.5;
+    }
+
+    /* =================================================== */
+    /* ============== SCREEN 1: ROLE SELECT ============== */
+    /* =================================================== */
+    .s-role {
+      background: var(--ink);
+      color: var(--cream);
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      padding-bottom: 0;
+    }
+
+    .s-role::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(200, 165, 87, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(200, 165, 87, 0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .s-role-content {
+      padding: 4px 24px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .s-role-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding-top: 24px;
+      padding-bottom: 28px;
+    }
+
+    .s-role-brand-mark {
+      width: 56px;
+      height: 56px;
+      border: 1px solid var(--gold);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      color: var(--gold);
+    }
+
+    .s-role-brand-mark::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border: 1px solid rgba(200, 165, 87, 0.2);
+      border-radius: 19px;
+    }
+
+    .s-role-brand-mark svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .s-role-brand-name {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 24px;
+      letter-spacing: -0.015em;
+    }
+
+    .s-role-brand-name span {
+      color: var(--gold);
+    }
+
+    .s-role-brand-tag {
+      font-size: 10px;
+      color: rgba(246, 241, 232, 0.5);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .s-role-hero {
+      text-align: center;
+      padding: 0 4px 28px;
+    }
+
+    .s-role-hero-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 400;
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .s-role-hero-title em {
+      font-style: italic;
+      color: var(--gold);
+      font-weight: 300;
+    }
+
+    .s-role-hero-sub {
+      font-size: 12px;
+      color: rgba(246, 241, 232, 0.55);
+      line-height: 1.5;
+      max-width: 240px;
+      margin: 0 auto;
+    }
+
+    .s-role-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .s-role-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border: 1px solid rgba(200, 165, 87, 0.15);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(246, 241, 232, 0.03), rgba(246, 241, 232, 0.01));
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .s-role-card:hover {
+      border-color: var(--gold);
+      transform: translateX(2px);
+    }
+
+    .s-role-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(200, 165, 87, 0.1);
+      border: 1px solid rgba(200, 165, 87, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .s-role-card-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .s-role-card-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .s-role-card-name {
+      font-family: 'Fraunces', serif;
+      font-weight: 500;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+      margin-bottom: 2px;
+    }
+
+    .s-role-card-desc {
+      font-size: 10px;
+      color: rgba(246, 241, 232, 0.5);
+      line-height: 1.4;
+    }
+
+    .s-role-card-arrow {
+      color: var(--gold);
+      opacity: 0.6;
+    }
+
+    .s-role-card-arrow svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* =================================================== */
+    /* ============== SCREEN 2: QR SCANNER ============== */
+    /* =================================================== */
+    .s-scan {
+      background: #050B14;
+      color: var(--cream);
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .s-scan-camera {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 45%, rgba(40, 60, 80, 0.7) 0%, rgba(15, 25, 40, 0.95) 100%),
+        linear-gradient(135deg, #142235 0%, #050B14 100%);
+    }
+
+    .s-scan-camera::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(200, 165, 87, 0.02) 30px, rgba(200, 165, 87, 0.02) 31px);
+      pointer-events: none;
+    }
+
+    /* Product silhouette suggestion */
+    .s-scan-product {
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 200px;
+      background: linear-gradient(180deg, rgba(200, 165, 87, 0.18) 0%, rgba(200, 165, 87, 0.05) 60%, transparent 100%);
+      border-radius: 12px;
+      opacity: 0.4;
+      filter: blur(1px);
+    }
+
+    .s-scan-product::after {
+      content: '';
+      position: absolute;
+      inset: 30% 25% 30% 25%;
+      background: rgba(200, 165, 87, 0.1);
+      border-radius: 4px;
+    }
+
+    .s-scan-top {
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 3;
+    }
+
+    .s-scan-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(246, 241, 232, 0.12);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(246, 241, 232, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--cream);
+    }
+
+    .s-scan-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .s-scan-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 500;
+      font-size: 15px;
+      color: var(--cream);
+    }
+
+    /* Viewfinder */
+    .s-scan-finder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -55%);
+      width: 240px;
+      height: 240px;
+      z-index: 2;
+    }
+
+    .s-scan-corner {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--gold);
+    }
+
+    .s-scan-corner.tl {
+      top: 0;
+      left: 0;
+      border-right: none;
+      border-bottom: none;
+      border-top-left-radius: 12px;
+    }
+
+    .s-scan-corner.tr {
+      top: 0;
+      right: 0;
+      border-left: none;
+      border-bottom: none;
+      border-top-right-radius: 12px;
+    }
+
+    .s-scan-corner.bl {
+      bottom: 0;
+      left: 0;
+      border-right: none;
+      border-top: none;
+      border-bottom-left-radius: 12px;
+    }
+
+    .s-scan-corner.br {
+      bottom: 0;
+      right: 0;
+      border-left: none;
+      border-top: none;
+      border-bottom-right-radius: 12px;
+    }
+
+    .s-scan-line {
+      position: absolute;
+      top: 0;
+      left: 8px;
+      right: 8px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      box-shadow: 0 0 16px var(--gold);
+      animation: scanLine 2.4s ease-in-out infinite;
+    }
+
+    @keyframes scanLine {
+
+      0%,
+      100% {
+        top: 8px;
+      }
+
+      50% {
+        top: calc(100% - 10px);
+      }
+    }
+
+    .s-scan-hint {
+      position: absolute;
+      top: calc(50% + 80px);
+      left: 50%;
+      transform: translate(-50%, 50%);
+      text-align: center;
+      z-index: 3;
+      width: 280px;
+    }
+
+    .s-scan-hint-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(200, 165, 87, 0.15);
+      border: 1px solid rgba(200, 165, 87, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      color: var(--gold);
+    }
+
+    .s-scan-hint-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .s-scan-hint-text {
+      font-size: 13px;
+      color: var(--cream);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .s-scan-hint-sub {
+      font-size: 11px;
+      color: rgba(246, 241, 232, 0.5);
+    }
+
+    .s-scan-bottom {
+      position: absolute;
+      bottom: 30px;
+      left: 20px;
+      right: 20px;
+      z-index: 3;
+    }
+
+    .s-scan-options {
+      background: rgba(15, 25, 40, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(200, 165, 87, 0.15);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .s-scan-option {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 4px;
+      border-radius: 10px;
+      color: rgba(246, 241, 232, 0.7);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 10px;
+    }
+
+    .s-scan-option:hover {
+      background: rgba(200, 165, 87, 0.1);
+      color: var(--gold);
+    }
+
+    .s-scan-option.active {
+      background: rgba(200, 165, 87, 0.15);
+      color: var(--gold);
+    }
+
+    .s-scan-option svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* =================================================== */
+    /* ============== SCREEN 3: AUTHENTIC ============== */
+    /* =================================================== */
+    .s-auth {
+      height: 100%;
+      background: var(--cream);
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .s-auth-status {
+      background: var(--ink);
+      color: var(--cream);
+    }
+
+    .s-auth-top {
+      background: var(--ink);
+      padding: 0 16px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .s-auth-top-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(246, 241, 232, 0.1);
+      border: 1px solid rgba(246, 241, 232, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cream);
+    }
+
+    .s-auth-top-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .s-auth-top-brand {
+      font-family: 'Fraunces', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+
+    .s-auth-top-brand span {
+      color: var(--gold);
+    }
+
+    .s-auth-hero {
+      background: linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%);
+      color: var(--cream);
+      padding: 16px 22px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .s-auth-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(74, 124, 92, 0.18) 0%, transparent 60%);
+    }
+
+    .s-auth-hero-stamp {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 64px;
+      height: 64px;
+      border: 1px solid rgba(200, 165, 87, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      z-index: 2;
+      animation: spin 60s linear infinite;
+    }
+
+    .s-auth-hero-stamp::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border: 1px dashed rgba(200, 165, 87, 0.2);
+      border-radius: 50%;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .s-auth-hero-stamp svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .s-auth-hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .s-auth-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 11px 5px 8px;
+      background: rgba(74, 124, 92, 0.2);
+      border: 1px solid rgba(111, 181, 133, 0.35);
+      border-radius: 100px;
+      margin-bottom: 16px;
+    }
+
+    .s-auth-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--verified-bright);
+      box-shadow: 0 0 0 3px rgba(111, 181, 133, 0.3);
+      animation: pulse-g 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-g {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 3px rgba(111, 181, 133, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 0 6px rgba(111, 181, 133, 0);
+      }
+    }
+
+    .s-auth-badge-text {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #94CFA8;
+      text-transform: uppercase;
+    }
+
+    .s-auth-product-name {
+      font-family: 'Fraunces', serif;
+      font-weight: 500;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 4px;
+      padding-right: 60px;
+    }
+
+    .s-auth-product-brand {
+      font-size: 11px;
+      color: rgba(246, 241, 232, 0.55);
+      margin-bottom: 20px;
+    }
+
+    .s-auth-conf {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(246, 241, 232, 0.04);
+      border: 1px solid rgba(200, 165, 87, 0.18);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .s-auth-conf-ring {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    .s-auth-conf-text {
+      flex: 1;
+    }
+
+    .s-auth-conf-label {
+      font-size: 9px;
+      color: rgba(246, 241, 232, 0.45);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .s-auth-conf-val {
+      font-family: 'Fraunces', serif;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.1;
+    }
+
+    .s-auth-conf-desc {
+      font-size: 10px;
+      color: rgba(246, 241, 232, 0.55);
+      margin-top: 2px;
+    }
+
+    .s-auth-uid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(11, 22, 35, 0.4);
+      border-radius: 10px;
+    }
+
+    .s-auth-uid-label {
+      font-size: 9px;
+      color: rgba(246, 241, 232, 0.45);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .s-auth-uid-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+    }
+
+    .s-auth-uid-copy {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: rgba(200, 165, 87, 0.12);
+      border: 1px solid rgba(200, 165, 87, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+    }
+
+    .s-auth-uid-copy svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .s-auth-body {
+      padding: 14px 18px 100px;
+    }
+
+    .s-auth-section {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+
+    .s-auth-section-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .s-auth-section-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      background: var(--cream-2);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .s-auth-section-icon svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .s-auth-section-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+    }
+
+    .s-auth-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      gap: 12px;
+    }
+
+    .s-auth-row-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .s-auth-row-val {
+      font-size: 11px;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .s-auth-certs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .s-auth-cert {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: var(--verified-light);
+      border: 1px solid rgba(74, 124, 92, 0.25);
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--verified);
+    }
+
+    .s-auth-cert svg {
+      width: 9px;
+      height: 9px;
+    }
+
+    .s-auth-cta {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 14px 16px 24px;
+      background: linear-gradient(180deg, transparent, var(--cream) 30%);
+      display: flex;
+      gap: 8px;
+    }
+
+    .s-auth-cta-btn {
+      flex: 1;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 11px;
+      font-weight: 500;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .s-auth-cta-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .s-auth-cta-btn.primary {
+      background: var(--ink);
+      color: var(--cream);
+    }
+
+    .s-auth-cta-btn.secondary {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line-strong);
+    }
+
+    /* =================================================== */
+    /* ============== SCREEN 4: COUNTERFEIT ============== */
+    /* =================================================== */
+    .s-fake {
+      height: 100%;
+      background: var(--paper);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .s-fake-status {
+      background: var(--crimson);
+      color: var(--cream);
+    }
+
+    .s-fake-top {
+      background: var(--crimson);
+      padding: 0 16px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .s-fake-top-brand {
+      font-family: 'Fraunces', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+
+    .s-fake-hero {
+      background: linear-gradient(180deg, var(--crimson) 0%, #7A1F2E 100%);
+      color: var(--cream);
+      padding: 16px 22px 36px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .s-fake-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(0, 0, 0, 0.4) 0%, transparent 70%);
+    }
+
+    .s-fake-warning {
+      position: relative;
+      z-index: 1;
+      margin: 8px auto 18px;
+      width: 84px;
+      height: 84px;
+      border: 2px solid rgba(246, 241, 232, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cream);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .s-fake-warning::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border: 1px dashed rgba(246, 241, 232, 0.25);
+      border-radius: 50%;
+      animation: spin 30s linear infinite;
+    }
+
+    .s-fake-warning svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .s-fake-status-label {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(246, 241, 232, 0.2);
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .s-fake-status-label-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--cream);
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .s-fake-hero-title {
+      position: relative;
+      z-index: 1;
+      font-family: 'Fraunces', serif;
+      font-weight: 500;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .s-fake-hero-sub {
+      position: relative;
+      z-index: 1;
+      font-size: 12px;
+      color: rgba(246, 241, 232, 0.75);
+      line-height: 1.5;
+      max-width: 240px;
+      margin: 0 auto;
+    }
+
+    .s-fake-body {
+      padding: 16px 18px 100px;
+    }
+
+    .s-fake-uid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background: white;
+      border: 1px solid var(--crimson-light);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .s-fake-uid-l {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .s-fake-uid-v {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--crimson);
+      font-weight: 600;
+    }
+
+    .s-fake-issues {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+
+    .s-fake-issues-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .s-fake-issues-title svg {
+      width: 14px;
+      height: 14px;
+      color: var(--crimson);
+    }
+
+    .s-fake-issue {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .s-fake-issue:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .s-fake-issue-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--crimson-light);
+      color: var(--crimson);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .s-fake-issue-icon svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    .s-fake-issue-text {
+      flex: 1;
+    }
+
+    .s-fake-issue-label {
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .s-fake-issue-desc {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    .s-fake-tip {
+      background: var(--ink);
+      color: var(--cream);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .s-fake-tip-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(200, 165, 87, 0.15);
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .s-fake-tip-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .s-fake-tip-text {
+      font-size: 11px;
+      line-height: 1.5;
+      color: rgba(246, 241, 232, 0.8);
+    }
+
+    .s-fake-tip-text strong {
+      color: var(--cream);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .s-fake-cta {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 14px 16px 24px;
+      background: linear-gradient(180deg, transparent, var(--paper) 30%);
+    }
+
+    .s-fake-cta-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--crimson);
+      color: var(--cream);
+      border: none;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .s-fake-cta-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .s-fake-cta-link {
+      width: 100%;
+      padding: 11px;
+      background: transparent;
+      color: var(--muted-2);
+      border: none;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    /* =================================================== */
+    /* ============== SCREEN 5: REPORT ============== */
+    /* =================================================== */
+    .s-report {
+      height: 100%;
+      background: var(--paper);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .s-report-status {
+      background: white;
+      color: var(--ink);
+    }
+
+    .s-report-top {
+      padding: 0 16px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .s-report-back {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--cream-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+    }
+
+    .s-report-back svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .s-report-title {
+      font-family: 'Fraunces', serif;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .s-report-skip {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .s-report-progress {
+      padding: 12px 18px 16px;
+      background: white;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .s-report-progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .s-report-progress-step {
+      font-size: 10px;
+      color: var(--gold-dark);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .s-report-progress-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .s-report-progress-bar {
+      display: flex;
+      gap: 4px;
+      height: 3px;
+    }
+
+    .s-report-progress-bar>div {
+      flex: 1;
+      background: var(--line);
+      border-radius: 100px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .s-report-progress-bar>div.done {
+      background: var(--gold);
+    }
+
+    .s-report-progress-bar>div.active {
+      background: var(--gold);
+    }
+
+    .s-report-body {
+      padding: 20px 18px 100px;
+    }
+
+    .s-report-heading {
+      font-family: 'Fraunces', serif;
+      font-weight: 500;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .s-report-heading em {
+      font-style: italic;
+      color: var(--gold-dark);
+    }
+
+    .s-report-sub {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .s-report-field {
+      margin-bottom: 16px;
+    }
+
+    .s-report-field-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .s-report-field-label .req {
+      color: var(--crimson);
+    }
+
+    .s-report-upload {
+      display: flex;
+      gap: 8px;
+    }
+
+    .s-report-upload-slot {
+      flex: 1;
+      aspect-ratio: 1;
+      border: 1.5px dashed var(--line-strong);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      background: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .s-report-upload-slot.has-image {
+      border: 2px solid var(--gold);
+      border-style: solid;
+      background: linear-gradient(135deg, var(--cream-2), var(--cream));
+    }
+
+    .s-report-upload-slot.has-image::after {
+      content: '✓';
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 18px;
+      height: 18px;
+      background: var(--gold);
+      color: var(--ink);
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .s-report-upload-slot svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .s-report-upload-slot-mini {
+      font-size: 9px;
+      margin-top: 4px;
+    }
+
+    .s-report-upload-slot-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    /* Product silhouette inside upload */
+    .product-silhouette {
+      width: 40%;
+      height: 60%;
+      background: linear-gradient(180deg, var(--gold-dark) 0%, var(--gold) 100%);
+      border-radius: 4px;
+      opacity: 0.4;
+      position: relative;
+    }
+
+    .product-silhouette::after {
+      content: '';
+      position: absolute;
+      inset: 30% 20% 30% 20%;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+    }
+
+    .s-report-input {
+      width: 100%;
+      padding: 11px 14px;
+      background: white;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 12px;
+      color: var(--ink);
+    }
+
+    .s-report-input::placeholder {
+      color: rgba(11, 22, 35, 0.35);
+    }
+
+    .s-report-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .s-report-chip {
+      padding: 7px 12px;
+      background: white;
+      border: 1px solid var(--line-strong);
+      border-radius: 100px;
+      font-size: 11px;
+      font-family: inherit;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .s-report-chip svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    .s-report-chip.active {
+      background: var(--ink);
+      color: var(--cream);
+      border-color: var(--ink);
+    }
+
+    .s-report-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      background: white;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 12px;
+      min-height: 70px;
+      resize: none;
+      color: var(--ink);
+    }
+
+    .s-report-cta {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 14px 16px 24px;
+      background: linear-gradient(180deg, transparent, var(--paper) 30%);
+      display: flex;
+      gap: 8px;
+    }
+
+    .s-report-cta-btn {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: none;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .s-report-cta-btn.back {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line-strong);
+    }
+
+    .s-report-cta-btn.next {
+      flex: 1;
+      background: var(--ink);
+      color: var(--cream);
+    }
+
+    .s-report-cta-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* =================================================== */
+    /* ============== SCREEN 6: MFR DASHBOARD ============== */
+    /* =================================================== */
+    .s-dash {
+      height: 100%;
+      background: var(--paper);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .s-dash-status {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .s-dash-top {
+      padding: 4px 18px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .s-dash-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .s-dash-user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--ink), var(--ink-2));
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 13px;
+      position: relative;
+    }
+
+    .s-dash-user-avatar::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      background: var(--verified-bright);
+      border: 2px solid var(--paper);
+      border-radius: 50%;
+    }
+
+    .s-dash-user-info-greeting {
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 1px;
+    }
+
+    .s-dash-user-info-name {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .s-dash-bell {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: white;
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      position: relative;
+    }
+
+    .s-dash-bell svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .s-dash-bell-dot {
+      position: absolute;
+      top: 7px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      background: var(--crimson);
+      border: 2px solid white;
+      border-radius: 50%;
+    }
+
+    .s-dash-body {
+      padding: 0 18px 80px;
+      height: calc(100% - 60px - 70px);
+      overflow-y: auto;
+    }
+
+    .s-dash-hero-card {
+      background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 60%, var(--ink-3) 100%);
+      color: var(--cream);
+      border-radius: 20px;
+      padding: 18px 18px 16px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .s-dash-hero-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(200, 165, 87, 0.18) 0%, transparent 60%);
+    }
+
+    .s-dash-hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 14px;
+    }
+
+    .s-dash-hero-label {
+      font-size: 10px;
+      color: rgba(246, 241, 232, 0.55);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .s-dash-hero-val {
+      font-family: 'Fraunces', serif;
+      font-weight: 500;
+      font-size: 32px;
+      letter-spacing: -0.025em;
+      line-height: 1;
+    }
+
+    .s-dash-hero-val-sub {
+      font-size: 12px;
+      color: rgba(246, 241, 232, 0.5);
+      margin-left: 4px;
+      font-weight: 400;
+    }
+
+    .s-dash-hero-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 8px;
+      background: rgba(111, 181, 133, 0.18);
+      border-radius: 100px;
+      font-size: 10px;
+      color: var(--verified-bright);
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .s-dash-hero-trend svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    .s-dash-hero-chart {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 50px;
+    }
+
+    /* Stats grid */
+    .s-dash-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .s-dash-stat {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .s-dash-stat-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .s-dash-stat-icon svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .s-dash-stat-icon.gold {
+      background: rgba(200, 165, 87, 0.12);
+      color: var(--gold-dark);
+    }
+
+    .s-dash-stat-icon.green {
+      background: rgba(74, 124, 92, 0.12);
+      color: var(--verified);
+    }
+
+    .s-dash-stat-icon.amber {
+      background: rgba(200, 137, 58, 0.12);
+      color: var(--amber);
+    }
+
+    .s-dash-stat-icon.red {
+      background: rgba(159, 45, 62, 0.12);
+      color: var(--crimson);
+    }
+
+    .s-dash-stat-label {
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .s-dash-stat-val {
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .s-dash-stat-foot {
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .s-dash-section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 4px 2px 10px;
+    }
+
+    .s-dash-section-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .s-dash-section-link {
+      font-size: 11px;
+      color: var(--gold-dark);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .s-dash-section-link svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    .s-dash-alert {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .s-dash-alert-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+    }
+
+    .s-dash-alert-bar.red {
+      background: var(--crimson);
+    }
+
+    .s-dash-alert-bar.amber {
+      background: var(--amber);
+    }
+
+    .s-dash-alert-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--cream-2);
+      color: var(--muted-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .s-dash-alert-icon svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .s-dash-alert-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .s-dash-alert-name {
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .s-dash-alert-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+    }
+
+    .s-dash-alert-sev {
+      font-size: 9px;
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .s-dash-alert-sev.red {
+      background: var(--crimson-light);
+      color: var(--crimson);
+    }
+
+    .s-dash-alert-sev.amber {
+      background: var(--amber-light);
+      color: var(--amber);
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .phone-row.three {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+
+      .phone-row.three,
+      .phone-row.two {
+        grid-template-columns: 1fr;
+      }
+
+      .page {
+        padding: 32px 16px;
+      }
+
+      .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .section-desc {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <!-- ============== HEADER ============== -->
+    <header class="pres-head">
+      <div class="pres-brand">
+        <div class="pres-brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z" />
+            <path d="M9 12l2 2 4-4" />
+          </svg>
+        </div>
+        <div class="pres-brand-text">
+          <div class="name">VNTrust Mobile</div>
+          <div class="sub">Anti-Counterfeit · iOS &amp; Android</div>
+        </div>
+      </div>
+      <div class="pres-meta">
+        <span class="pres-meta-tag"><span class="dot"></span> Design v2.0</span>
+        <span>375 × 812 · iOS</span>
+      </div>
+    </header>
+
+    <!-- Title -->
+    <div class="pres-title-block">
+      <div class="pres-label">
+        <span class="pres-label-pulse"></span>
+        Mobile App Design
+      </div>
+      <h1 class="pres-title">
+        Vân tay <em>cầm</em><br>trong lòng bàn tay
+      </h1>
+      <p class="pres-sub">
+        Thiết kế ứng dụng di động cho hệ thống chống hàng giả quốc gia. Một thao tác quét — toàn bộ hành trình sản phẩm.
+        Tối ưu cho mọi vai trò: Người tiêu dùng, Nhà sản xuất, Nhà phân phối, Quản trị viên.
+      </p>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- SECTION 1: ONBOARDING -->
+    <!-- ============================================== -->
+    <section class="section">
+      <div class="section-head">
+        <span class="section-num">01 / 03</span>
+        <h2 class="section-title">Khởi đầu · <em>Onboarding</em></h2>
+        <p class="section-desc">Chọn vai trò và bắt đầu trải nghiệm với cổng riêng cho từng nhóm người dùng</p>
+      </div>
+
+      <div class="phone-row two">
+
+        <!-- PHONE 1: Role Selection -->
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <section class="s-role">
+                <!-- status -->
+                <div class="status" style="color: var(--cream);">
+                  <span>9:41</span>
+                  <div class="status-right">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M2 22h2v-9H2v9zm5 0h2V8H7v14zm5 0h2V3h-2v19zm5 0h2v-5h-2v5z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M12 3C7.95 3 4.21 4.34 1.2 6.6c-.41.3-.49.87-.18 1.27l9.6 12.81a2 2 0 003.18 0L23.39 7.86c.31-.4.22-.97-.18-1.27C20.21 4.34 16.46 3 12.42 3H12z"
+                        opacity=".4" />
+                      <path
+                        d="M3.53 10.95l7.67 10.23a1 1 0 001.6 0l7.67-10.23C18 8.91 15.18 8 12 8s-6 .91-8.47 2.95z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17 4h-3V2h-4v2H7v18h10V4zM9 20V8h6v12H9z" opacity=".4" />
+                      <rect x="9" y="8" width="6" height="9" fill="currentColor" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="s-role-content">
+                  <div class="s-role-brand">
+                    <div class="s-role-brand-mark">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z" />
+                        <path d="M9 12l2 2 4-4" />
+                      </svg>
+                    </div>
+                    <div style="text-align:center;">
+                      <div class="s-role-brand-name">VN<span>Trust</span></div>
+                      <div class="s-role-brand-tag" style="margin-top:4px;">Anti-Counterfeit · Vietnam</div>
+                    </div>
+                  </div>
+                  <div class="s-role-hero">
+                    <div class="s-role-hero-title">Bảo vệ <em>di sản</em><br>thương hiệu Việt</div>
+                    <div class="s-role-hero-sub">Chọn vai trò để bắt đầu</div>
+                  </div>
+                  <div class="s-role-cards">
+                    <div class="s-role-card">
+                      <div class="s-role-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <rect x="3" y="3" width="7" height="7" rx="1" />
+                          <rect x="14" y="3" width="7" height="7" rx="1" />
+                          <rect x="3" y="14" width="7" height="7" rx="1" />
+                          <rect x="14" y="14" width="7" height="7" rx="1" />
+                        </svg>
+                      </div>
+                      <div class="s-role-card-info">
+                        <div class="s-role-card-name">Người tiêu dùng</div>
+                        <div class="s-role-card-desc">Quét mã, xác thực, báo cáo</div>
+                      </div>
+                      <div class="s-role-card-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M9 18l6-6-6-6" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="s-role-card">
+                      <div class="s-role-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <path d="M3 21h18M5 21V7l8-4 8 4v14" />
+                        </svg>
+                      </div>
+                      <div class="s-role-card-info">
+                        <div class="s-role-card-name">Nhà sản xuất</div>
+                        <div class="s-role-card-desc">Quản lý sản phẩm &amp; mã QR</div>
+                      </div>
+                      <div class="s-role-card-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M9 18l6-6-6-6" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="s-role-card">
+                      <div class="s-role-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <path d="M1 3h15v13H1z" />
+                          <path d="M16 8h4l3 3v5h-7" />
+                          <circle cx="5.5" cy="18.5" r="2.5" />
+                          <circle cx="18.5" cy="18.5" r="2.5" />
+                        </svg>
+                      </div>
+                      <div class="s-role-card-info">
+                        <div class="s-role-card-name">Nhà phân phối</div>
+                        <div class="s-role-card-desc">Chuỗi cung ứng &amp; nhập khẩu</div>
+                      </div>
+                      <div class="s-role-card-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M9 18l6-6-6-6" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="s-role-card">
+                      <div class="s-role-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                          <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" />
+                        </svg>
+                      </div>
+                      <div class="s-role-card-info">
+                        <div class="s-role-card-name">Quản trị viên</div>
+                        <div class="s-role-card-desc">Duyệt KYC &amp; giám sát</div>
+                      </div>
+                      <div class="s-role-card-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M9 18l6-6-6-6" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="phone-label">
+            <div class="phone-label-num">01 — ROLE SELECT</div>
+            <div class="phone-label-name">Chọn vai trò</div>
+            <div class="phone-label-desc">Tách biệt 4 luồng KYC theo Phân hệ 1 — luồng riêng cho mỗi đối tượng</div>
+          </div>
+        </div>
+
+        <!-- PHONE 2: QR Scanner -->
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <section class="s-scan">
+                <div class="s-scan-camera"></div>
+                <div class="s-scan-product"></div>
+                <div class="status" style="color: var(--cream); position:relative; z-index:5;">
+                  <span>9:41</span>
+                  <div class="status-right">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M2 22h2v-9H2v9zm5 0h2V8H7v14zm5 0h2V3h-2v19zm5 0h2v-5h-2v5z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M12 3C7.95 3 4.21 4.34 1.2 6.6c-.41.3-.49.87-.18 1.27l9.6 12.81a2 2 0 003.18 0L23.39 7.86c.31-.4.22-.97-.18-1.27C20.21 4.34 16.46 3 12.42 3H12z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="9" y="8" width="6" height="9" fill="currentColor" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="s-scan-top">
+                  <button class="s-scan-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                  <div class="s-scan-title">Quét xác thực</div>
+                  <button class="s-scan-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8h1a4 4 0 110 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4z" />
+                      <line x1="6" y1="1" x2="6" y2="4" />
+                      <line x1="10" y1="1" x2="10" y2="4" />
+                      <line x1="14" y1="1" x2="14" y2="4" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="s-scan-finder">
+                  <span class="s-scan-corner tl"></span>
+                  <span class="s-scan-corner tr"></span>
+                  <span class="s-scan-corner bl"></span>
+                  <span class="s-scan-corner br"></span>
+                  <div class="s-scan-line"></div>
+                </div>
+
+                <div class="s-scan-hint">
+                  <div class="s-scan-hint-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7" rx="1" />
+                      <rect x="14" y="3" width="7" height="7" rx="1" />
+                      <rect x="3" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                  </div>
+                  <div class="s-scan-hint-text">Đưa mã QR vào khung</div>
+                  <div class="s-scan-hint-sub">Hệ thống sẽ tự động nhận dạng</div>
+                </div>
+
+                <div class="s-scan-bottom">
+                  <div class="s-scan-options">
+                    <div class="s-scan-option active">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                      </svg>
+                      Quét QR
+                    </div>
+                    <div class="s-scan-option">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                      Chụp ảnh
+                    </div>
+                    <div class="s-scan-option">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 11.5a8.38 8.38 0 01-9 8.4 8.5 8.5 0 01-7.6-4.6L3 21l1.9-1.4a8.5 8.5 0 016.1-13" />
+                        <path d="M21 3h-6v6" />
+                      </svg>
+                      Nhập mã
+                    </div>
+                    <div class="s-scan-option">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                        <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                      </svg>
+                      Giọng nói
+                    </div>
+                  </div>
+                </div>
+
+                <div class="home-indicator light"></div>
+              </section>
+            </div>
+          </div>
+          <div class="phone-label">
+            <div class="phone-label-num">02 — QR SCAN</div>
+            <div class="phone-label-name">Camera quét QR</div>
+            <div class="phone-label-desc">4 phương thức theo Phân hệ 1 TrustCheck: QR, ảnh AI, nhập tay, giọng nói</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- SECTION 2: VERIFICATION RESULT -->
+    <!-- ============================================== -->
+    <section class="section">
+      <div class="section-head">
+        <span class="section-num">02 / 03</span>
+        <h2 class="section-title">Kết quả · <em>The moment of truth</em></h2>
+        <p class="section-desc">Phản hồi tức thì với 4 trạng thái màu — Xanh, Vàng, Cam, Đỏ theo confidence score</p>
+      </div>
+
+      <div class="phone-row three">
+
+        <!-- PHONE 3: Authentic -->
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <section class="s-auth">
+                <div class="status s-auth-status">
+                  <span>9:42</span>
+                  <div class="status-right">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M2 22h2v-9H2v9zm5 0h2V8H7v14zm5 0h2V3h-2v19zm5 0h2v-5h-2v5z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M12 3C7.95 3 4.21 4.34 1.2 6.6c-.41.3-.49.87-.18 1.27l9.6 12.81a2 2 0 003.18 0L23.39 7.86c.31-.4.22-.97-.18-1.27C20.21 4.34 16.46 3 12.42 3H12z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="9" y="8" width="6" height="9" fill="currentColor" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="s-auth-top">
+                  <button class="s-auth-top-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <div class="s-auth-top-brand">VN<span>Trust</span></div>
+                  <button class="s-auth-top-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="s-auth-hero">
+                  <div class="s-auth-hero-stamp">
+                    <svg viewBox="0 0 44 44" fill="none">
+                      <text x="22" y="25" text-anchor="middle" font-family="Fraunces" font-size="8" fill="currentColor"
+                        font-weight="600" letter-spacing="0.05em">VERIFIED</text>
+                      <path d="M16 24 L20 28 L28 18" stroke="currentColor" stroke-width="1.5" fill="none" />
+                    </svg>
+                  </div>
+                  <div class="s-auth-hero-inner">
+                    <div class="s-auth-badge">
+                      <span class="s-auth-badge-dot"></span>
+                      <span class="s-auth-badge-text">Chính hãng</span>
+                    </div>
+                    <div class="s-auth-product-name">Trà ô long Minh Long 200g</div>
+                    <div class="s-auth-product-brand">Minh Long F&amp;B · Lô #LOT-2026-04-128</div>
+                    <div class="s-auth-conf">
+                      <div class="s-auth-conf-ring">
+                        <svg width="44" height="44" viewBox="0 0 44 44">
+                          <circle cx="22" cy="22" r="18" stroke="rgba(200,165,87,0.15)" stroke-width="3" fill="none" />
+                          <circle cx="22" cy="22" r="18" stroke="#C8A557" stroke-width="3" fill="none"
+                            stroke-dasharray="111 113" stroke-linecap="round" transform="rotate(-90 22 22)" />
+                          <text x="22" y="26" text-anchor="middle" font-family="Fraunces" font-size="11"
+                            font-weight="600" fill="#C8A557">98</text>
+                        </svg>
+                      </div>
+                      <div class="s-auth-conf-text">
+                        <div class="s-auth-conf-label">Confidence</div>
+                        <div class="s-auth-conf-val">0.98 / 1.00</div>
+                        <div class="s-auth-conf-desc">Tin cậy rất cao</div>
+                      </div>
+                    </div>
+                    <div class="s-auth-uid">
+                      <div>
+                        <div class="s-auth-uid-label">UID</div>
+                        <div class="s-auth-uid-val">A8F3-92B1-D744-0C5E</div>
+                      </div>
+                      <button class="s-auth-uid-copy">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="9" y="9" width="13" height="13" rx="2" />
+                          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="s-auth-body">
+                  <div class="s-auth-section">
+                    <div class="s-auth-section-head">
+                      <div class="s-auth-section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path
+                            d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                        </svg>
+                      </div>
+                      <div class="s-auth-section-title">Sản xuất</div>
+                    </div>
+                    <div class="s-auth-row">
+                      <div class="s-auth-row-label">Ngày SX</div>
+                      <div class="s-auth-row-val">15/03/2026</div>
+                    </div>
+                    <div class="s-auth-row">
+                      <div class="s-auth-row-label">Hạn dùng</div>
+                      <div class="s-auth-row-val">15/03/2028</div>
+                    </div>
+                    <div class="s-auth-row">
+                      <div class="s-auth-row-label">Xuất xứ</div>
+                      <div class="s-auth-row-val">🇻🇳 Bảo Lộc, Lâm Đồng</div>
+                    </div>
+                  </div>
+
+                  <div class="s-auth-section">
+                    <div class="s-auth-section-head">
+                      <div class="s-auth-section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="8" r="7" />
+                          <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                        </svg>
+                      </div>
+                      <div class="s-auth-section-title">Chứng nhận</div>
+                    </div>
+                    <div class="s-auth-certs">
+                      <span class="s-auth-cert">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        ISO 22000
+                      </span>
+                      <span class="s-auth-cert">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        HACCP
+                      </span>
+                      <span class="s-auth-cert">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        VietGAP
+                      </span>
+                      <span class="s-auth-cert">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Organic
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="s-auth-cta">
+                  <button class="s-auth-cta-btn secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    Báo cáo
+                  </button>
+                  <button class="s-auth-cta-btn primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7" rx="1" />
+                      <rect x="14" y="3" width="7" height="7" rx="1" />
+                      <rect x="3" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                    Quét tiếp
+                  </button>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="phone-label">
+            <div class="phone-label-num">03 — RESULT: AUTHENTIC</div>
+            <div class="phone-label-name">Sản phẩm chính hãng</div>
+            <div class="phone-label-desc">Confidence 0.9-1.0 · Hero card navy với con dấu vàng xoay nhẹ</div>
+          </div>
+        </div>
+
+        <!-- PHONE 4: Counterfeit -->
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <section class="s-fake">
+                <div class="status s-fake-status">
+                  <span>9:43</span>
+                  <div class="status-right">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M2 22h2v-9H2v9zm5 0h2V8H7v14zm5 0h2V3h-2v19zm5 0h2v-5h-2v5z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M12 3C7.95 3 4.21 4.34 1.2 6.6c-.41.3-.49.87-.18 1.27l9.6 12.81a2 2 0 003.18 0L23.39 7.86c.31-.4.22-.97-.18-1.27C20.21 4.34 16.46 3 12.42 3H12z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="9" y="8" width="6" height="9" fill="currentColor" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="s-fake-top">
+                  <button class="s-auth-top-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <div class="s-fake-top-brand">VN<span style="color:rgba(246,241,232,0.7);">Trust</span></div>
+                  <button class="s-auth-top-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="19" cy="12" r="1" />
+                      <circle cx="5" cy="12" r="1" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="s-fake-hero">
+                  <div class="s-fake-warning">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                  </div>
+                  <div class="s-fake-status-label">
+                    <span class="s-fake-status-label-dot"></span>
+                    Có dấu hiệu giả mạo
+                  </div>
+                  <div class="s-fake-hero-title">Sản phẩm không<br>được xác thực</div>
+                  <div class="s-fake-hero-sub">Mã UID không khớp với bất kỳ sản phẩm chính hãng nào trong cơ sở dữ liệu
+                  </div>
+                </div>
+
+                <div class="s-fake-body">
+                  <div class="s-fake-uid">
+                    <div>
+                      <div class="s-fake-uid-l">UID đã quét</div>
+                      <div class="s-fake-uid-v">D712-AC44-9B0E-FF12</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div class="s-fake-uid-l">Confidence</div>
+                      <div class="s-fake-uid-v">0.12</div>
+                    </div>
+                  </div>
+
+                  <div class="s-fake-issues">
+                    <div class="s-fake-issues-title">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                      </svg>
+                      Phát hiện 4 dấu hiệu
+                    </div>
+                    <div class="s-fake-issue">
+                      <div class="s-fake-issue-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      </div>
+                      <div class="s-fake-issue-text">
+                        <div class="s-fake-issue-label">UID không tồn tại trong CSDL</div>
+                        <div class="s-fake-issue-desc">Mã định danh chưa từng được phát hành</div>
+                      </div>
+                    </div>
+                    <div class="s-fake-issue">
+                      <div class="s-fake-issue-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      </div>
+                      <div class="s-fake-issue-text">
+                        <div class="s-fake-issue-label">AI Vision: logo không khớp</div>
+                        <div class="s-fake-issue-desc">Độ tương đồng 0.31/1.00 · ngưỡng tối thiểu 0.85</div>
+                      </div>
+                    </div>
+                    <div class="s-fake-issue">
+                      <div class="s-fake-issue-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      </div>
+                      <div class="s-fake-issue-text">
+                        <div class="s-fake-issue-label">8 báo cáo từ người dùng khác</div>
+                        <div class="s-fake-issue-desc">Đã được cộng đồng đánh dấu</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="s-fake-tip">
+                    <div class="s-fake-tip-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                      </svg>
+                    </div>
+                    <div class="s-fake-tip-text">
+                      <strong>Khuyến cáo</strong>
+                      Không sử dụng sản phẩm. Lưu lại bao bì làm bằng chứng và báo cáo ngay
+                    </div>
+                  </div>
+                </div>
+
+                <div class="s-fake-cta">
+                  <button class="s-fake-cta-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    Báo cáo vi phạm ngay
+                  </button>
+                  <button class="s-fake-cta-link">Quét sản phẩm khác</button>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="phone-label">
+            <div class="phone-label-num">04 — RESULT: COUNTERFEIT</div>
+            <div class="phone-label-name">Phát hiện hàng giả</div>
+            <div class="phone-label-desc">Confidence 0-0.29 · CTA rõ ràng để báo cáo theo UC11</div>
+          </div>
+        </div>
+
+        <!-- PHONE 5: Report Flow -->
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <section class="s-report">
+                <div class="status s-report-status">
+                  <span>9:44</span>
+                  <div class="status-right">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M2 22h2v-9H2v9zm5 0h2V8H7v14zm5 0h2V3h-2v19zm5 0h2v-5h-2v5z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M12 3C7.95 3 4.21 4.34 1.2 6.6c-.41.3-.49.87-.18 1.27l9.6 12.81a2 2 0 003.18 0L23.39 7.86c.31-.4.22-.97-.18-1.27C20.21 4.34 16.46 3 12.42 3H12z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="9" y="8" width="6" height="9" fill="currentColor" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="s-report-top">
+                  <button class="s-report-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <div class="s-report-title">Báo cáo vi phạm</div>
+                  <button class="s-report-skip">Lưu nháp</button>
+                </div>
+
+                <div class="s-report-progress">
+                  <div class="s-report-progress-info">
+                    <div class="s-report-progress-step">Bước 2 — Thông tin sản phẩm</div>
+                    <div class="s-report-progress-num">2 / 4</div>
+                  </div>
+                  <div class="s-report-progress-bar">
+                    <div class="done"></div>
+                    <div class="active"></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                </div>
+
+                <div class="s-report-body">
+                  <h2 class="s-report-heading">Bằng chứng <em>hình ảnh</em></h2>
+                  <p class="s-report-sub">Chụp ảnh sản phẩm và bao bì rõ nét. AI sẽ phân tích logo, font chữ, chất liệu
+                  </p>
+
+                  <div class="s-report-field">
+                    <label class="s-report-field-label">Ảnh sản phẩm <span class="req">*</span></label>
+                    <div class="s-report-upload">
+                      <div class="s-report-upload-slot has-image">
+                        <div class="product-silhouette"></div>
+                      </div>
+                      <div class="s-report-upload-slot has-image">
+                        <div class="product-silhouette" style="transform:rotate(15deg);"></div>
+                      </div>
+                      <div class="s-report-upload-slot">
+                        <div class="s-report-upload-slot-inner">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                          </svg>
+                          <span class="s-report-upload-slot-mini">Thêm</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="s-report-field">
+                    <label class="s-report-field-label">Nơi mua <span class="req">*</span></label>
+                    <div class="s-report-chips">
+                      <span class="s-report-chip active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Shopee
+                      </span>
+                      <span class="s-report-chip">TikTok Shop</span>
+                      <span class="s-report-chip">Chợ truyền thống</span>
+                      <span class="s-report-chip">Lazada</span>
+                      <span class="s-report-chip">Facebook</span>
+                    </div>
+                  </div>
+
+                  <div class="s-report-field">
+                    <label class="s-report-field-label">Giá đã mua</label>
+                    <input class="s-report-input" type="text" placeholder="VD: 120.000 VNĐ" value="85.000 VNĐ">
+                  </div>
+
+                  <div class="s-report-field">
+                    <label class="s-report-field-label">Lý do nghi ngờ</label>
+                    <textarea class="s-report-textarea"
+                      placeholder="Mô tả ngắn gọn...">Bao bì có chữ in mờ, không có tem chống giả của nhà sản xuất</textarea>
+                  </div>
+                </div>
+
+                <div class="s-report-cta">
+                  <button class="s-report-cta-btn back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button class="s-report-cta-btn next">
+                    Tiếp tục
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="phone-label">
+            <div class="phone-label-num">05 — REPORT FLOW</div>
+            <div class="phone-label-name">Báo cáo nghi ngờ</div>
+            <div class="phone-label-desc">4 bước theo TrustCheck PH2 · Hỗ trợ AI nhận diện qua ảnh</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- SECTION 3: MANUFACTURER -->
+    <!-- ============================================== -->
+    <section class="section">
+      <div class="section-head">
+        <span class="section-num">03 / 03</span>
+        <h2 class="section-title">Doanh nghiệp · <em>On-the-go</em></h2>
+        <p class="section-desc">Trải nghiệm di động cho Nhà sản xuất — giám sát chỉ số và cảnh báo ngay trên điện thoại
+        </p>
+      </div>
+
+      <div class="phone-row two">
+
+        <!-- PHONE 6: Manufacturer Dashboard -->
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <section class="s-dash">
+                <div class="status s-dash-status">
+                  <span>9:45</span>
+                  <div class="status-right">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M2 22h2v-9H2v9zm5 0h2V8H7v14zm5 0h2V3h-2v19zm5 0h2v-5h-2v5z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M12 3C7.95 3 4.21 4.34 1.2 6.6c-.41.3-.49.87-.18 1.27l9.6 12.81a2 2 0 003.18 0L23.39 7.86c.31-.4.22-.97-.18-1.27C20.21 4.34 16.46 3 12.42 3H12z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="9" y="8" width="6" height="9" fill="currentColor" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="s-dash-top">
+                  <div class="s-dash-user">
+                    <div class="s-dash-user-avatar">ML</div>
+                    <div>
+                      <div class="s-dash-user-info-greeting">Chào buổi sáng,</div>
+                      <div class="s-dash-user-info-name">An Minh</div>
+                    </div>
+                  </div>
+                  <button class="s-dash-bell">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
+                    </svg>
+                    <span class="s-dash-bell-dot"></span>
+                  </button>
+                </div>
+
+                <div class="s-dash-body">
+                  <!-- Hero card -->
+                  <div class="s-dash-hero-card">
+                    <div class="s-dash-hero-top">
+                      <div>
+                        <div class="s-dash-hero-label">Lượt quét hôm nay</div>
+                        <div class="s-dash-hero-val">7,842<span class="s-dash-hero-val-sub">lần</span></div>
+                      </div>
+                      <div class="s-dash-hero-trend">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M7 17l10-10M7 7h10v10" />
+                        </svg>
+                        +24%
+                      </div>
+                    </div>
+                    <svg class="s-dash-hero-chart" viewBox="0 0 280 50" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stop-color="#C8A557" stop-opacity="0.4" />
+                          <stop offset="100%" stop-color="#C8A557" stop-opacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        d="M0 40 L20 35 L40 38 L60 28 L80 32 L100 22 L120 26 L140 18 L160 24 L180 14 L200 18 L220 10 L240 14 L260 6 L280 12 L280 50 L0 50 Z"
+                        fill="url(#goldGrad)" />
+                      <path
+                        d="M0 40 L20 35 L40 38 L60 28 L80 32 L100 22 L120 26 L140 18 L160 24 L180 14 L200 18 L220 10 L240 14 L260 6 L280 12"
+                        stroke="#C8A557" stroke-width="1.8" fill="none" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                      <circle cx="280" cy="12" r="3" fill="#C8A557" />
+                      <circle cx="280" cy="12" r="6" fill="#C8A557" fill-opacity="0.2" />
+                    </svg>
+                  </div>
+
+                  <!-- Stats grid -->
+                  <div class="s-dash-stats">
+                    <div class="s-dash-stat">
+                      <div class="s-dash-stat-icon green">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </div>
+                      <div class="s-dash-stat-label">Chính hãng</div>
+                      <div class="s-dash-stat-val">98.2%</div>
+                      <div class="s-dash-stat-foot">↑ 0.4%</div>
+                    </div>
+                    <div class="s-dash-stat">
+                      <div class="s-dash-stat-icon red">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="15" y1="9" x2="9" y2="15" />
+                          <line x1="9" y1="9" x2="15" y2="15" />
+                        </svg>
+                      </div>
+                      <div class="s-dash-stat-label">UID nghi giả</div>
+                      <div class="s-dash-stat-val">412</div>
+                      <div class="s-dash-stat-foot">↑ 18% · 7d</div>
+                    </div>
+                    <div class="s-dash-stat">
+                      <div class="s-dash-stat-icon amber">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path
+                            d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                        </svg>
+                      </div>
+                      <div class="s-dash-stat-label">Cảnh báo mở</div>
+                      <div class="s-dash-stat-val">8</div>
+                      <div class="s-dash-stat-foot">2 cao · 6 TB</div>
+                    </div>
+                    <div class="s-dash-stat">
+                      <div class="s-dash-stat-icon gold">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="3" y="3" width="7" height="7" rx="1" />
+                          <rect x="14" y="3" width="7" height="7" rx="1" />
+                          <rect x="3" y="14" width="7" height="7" rx="1" />
+                        </svg>
+                      </div>
+                      <div class="s-dash-stat-label">UID đã phát hành</div>
+                      <div class="s-dash-stat-val">42K</div>
+                      <div class="s-dash-stat-foot">128 lô</div>
+                    </div>
+                  </div>
+
+                  <!-- Recent alerts -->
+                  <div class="s-dash-section-head">
+                    <div class="s-dash-section-title">Cảnh báo gần đây</div>
+                    <a class="s-dash-section-link">Xem tất cả
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6" />
+                      </svg>
+                    </a>
+                  </div>
+                  <div class="s-dash-alert">
+                    <div class="s-dash-alert-bar red"></div>
+                    <div class="s-dash-alert-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                          d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                      </svg>
+                    </div>
+                    <div class="s-dash-alert-body">
+                      <div class="s-dash-alert-name">Trà ô long 200g · TP.HCM</div>
+                      <div class="s-dash-alert-meta">UID...8F3A · 12 lần / 2h</div>
+                    </div>
+                    <span class="s-dash-alert-sev red">Cao</span>
+                  </div>
+                  <div class="s-dash-alert">
+                    <div class="s-dash-alert-bar red"></div>
+                    <div class="s-dash-alert-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 8h1a4 4 0 010 8h-1M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4z" />
+                      </svg>
+                    </div>
+                    <div class="s-dash-alert-body">
+                      <div class="s-dash-alert-name">Cà phê Robusta · Tân Bình</div>
+                      <div class="s-dash-alert-meta">UID...D712 · Vị trí bất thường</div>
+                    </div>
+                    <span class="s-dash-alert-sev red">Cao</span>
+                  </div>
+                  <div class="s-dash-alert">
+                    <div class="s-dash-alert-bar amber"></div>
+                    <div class="s-dash-alert-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z" />
+                      </svg>
+                    </div>
+                    <div class="s-dash-alert-body">
+                      <div class="s-dash-alert-name">Mật ong Hoa Nhãn · Q.7</div>
+                      <div class="s-dash-alert-meta">UID...A2B1 · 3 NTD báo cáo</div>
+                    </div>
+                    <span class="s-dash-alert-sev amber">TB</span>
+                  </div>
+                </div>
+
+                <!-- Bottom nav -->
+                <div class="bottom-nav">
+                  <div class="bottom-nav-item active">
+                    <div class="bn-icon-wrap">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9" rx="1" />
+                        <rect x="14" y="3" width="7" height="5" rx="1" />
+                        <rect x="14" y="12" width="7" height="9" rx="1" />
+                        <rect x="3" y="16" width="7" height="5" rx="1" />
+                      </svg>
+                    </div>
+                    Tổng quan
+                  </div>
+                  <div class="bottom-nav-item">
+                    <div class="bn-icon-wrap">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                          d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                      </svg>
+                    </div>
+                    Sản phẩm
+                  </div>
+                  <div class="bottom-nav-item">
+                    <div class="bn-icon-wrap" style="background:var(--gold);color:var(--ink);">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                    </div>
+                    Tạo mã
+                  </div>
+                  <div class="bottom-nav-item">
+                    <div class="bn-icon-wrap">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      </svg>
+                    </div>
+                    Cảnh báo
+                  </div>
+                  <div class="bottom-nav-item">
+                    <div class="bn-icon-wrap">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                    </div>
+                    Cá nhân
+                  </div>
+                </div>
+                <div class="home-indicator"></div>
+              </section>
+            </div>
+          </div>
+          <div class="phone-label">
+            <div class="phone-label-num">06 — DASHBOARD</div>
+            <div class="phone-label-name">Dashboard nhà sản xuất</div>
+            <div class="phone-label-desc">Hero card lượt quét + 4 KPI · Cảnh báo real-time · UC12 trên di động</div>
+          </div>
+        </div>
+
+        <!-- PHONE 7: Login -->
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen" style="background: var(--ink); color: var(--cream);">
+              <section
+                style="height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden;">
+                <!-- Background atmosphere -->
+                <div
+                  style="position:absolute; inset:0; background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(200, 165, 87, 0.15) 0%, transparent 60%); pointer-events: none;">
+                </div>
+
+                <div class="status" style="color: var(--cream); position:relative; z-index:1;">
+                  <span>9:46</span>
+                  <div class="status-right">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M2 22h2v-9H2v9zm5 0h2V8H7v14zm5 0h2V3h-2v19zm5 0h2v-5h-2v5z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M12 3C7.95 3 4.21 4.34 1.2 6.6c-.41.3-.49.87-.18 1.27l9.6 12.81a2 2 0 003.18 0L23.39 7.86c.31-.4.22-.97-.18-1.27C20.21 4.34 16.46 3 12.42 3H12z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="9" y="8" width="6" height="9" fill="currentColor" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div
+                  style="padding: 8px 24px 0; display: flex; justify-content: space-between; align-items: center; position:relative; z-index:1;">
+                  <button
+                    style="width:36px; height:36px; border-radius:50%; background: rgba(246, 241, 232, 0.08); border: 1px solid rgba(246, 241, 232, 0.12); display:flex; align-items:center; justify-content:center; color: var(--cream);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <span
+                    style="font-size: 11px; color: rgba(246, 241, 232, 0.45); letter-spacing: 0.16em; text-transform: uppercase;">Bước
+                    2 / 2</span>
+                </div>
+
+                <div style="padding: 32px 24px 0; position:relative; z-index:1; flex: 1;">
+                  <div
+                    style="display: inline-flex; align-items: center; gap: 8px; padding: 5px 11px; background: rgba(200, 165, 87, 0.1); border: 1px solid rgba(200, 165, 87, 0.25); border-radius: 100px; margin-bottom: 22px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      style="color: var(--gold);">
+                      <path d="M3 21h18M5 21V7l8-4 8 4v14" />
+                    </svg>
+                    <span style="font-size: 10px; color: var(--gold); font-weight: 600; letter-spacing: 0.06em;">Nhà sản
+                      xuất</span>
+                  </div>
+
+                  <h1
+                    style="font-family: 'Fraunces', serif; font-weight: 400; font-size: 30px; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 8px;">
+                    Chào mừng <em style="font-style: italic; color: var(--gold); font-weight: 300;">trở lại</em>
+                  </h1>
+                  <p style="font-size: 12px; color: rgba(246, 241, 232, 0.55); margin-bottom: 28px; line-height: 1.5;">
+                    Đăng nhập để quản lý sản phẩm và mã định danh của doanh nghiệp
+                  </p>
+
+                  <div style="margin-bottom: 14px;">
+                    <label
+                      style="font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(246, 241, 232, 0.5); margin-bottom: 7px; display: block; font-weight: 600;">Email
+                      doanh nghiệp</label>
+                    <div style="position: relative;">
+                      <svg
+                        style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: rgba(246, 241, 232, 0.4);"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                          d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6" />
+                      </svg>
+                      <input
+                        style="width: 100%; padding: 11px 14px 11px 36px; background: rgba(246, 241, 232, 0.05); border: 1px solid rgba(246, 241, 232, 0.12); border-radius: 10px; font-family: inherit; font-size: 12px; color: var(--cream);"
+                        value="ceo@minhlong.vn">
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom: 18px;">
+                    <label
+                      style="font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(246, 241, 232, 0.5); margin-bottom: 7px; display: block; font-weight: 600;">Mật
+                      khẩu</label>
+                    <div style="position: relative;">
+                      <svg
+                        style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: rgba(246, 241, 232, 0.4);"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" />
+                        <path d="M7 11V7a5 5 0 0110 0v4" />
+                      </svg>
+                      <input type="password"
+                        style="width: 100%; padding: 11px 38px 11px 36px; background: rgba(246, 241, 232, 0.05); border: 1px solid rgba(246, 241, 232, 0.12); border-radius: 10px; font-family: inherit; font-size: 12px; color: var(--cream);"
+                        value="••••••••••••">
+                      <svg
+                        style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: rgba(246, 241, 232, 0.4);"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <label
+                      style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(246, 241, 232, 0.65);">
+                      <input type="checkbox" checked style="accent-color: var(--gold);"> Ghi nhớ thiết bị
+                    </label>
+                    <a style="font-size: 11px; color: var(--gold); font-weight: 500;">Quên mật khẩu?</a>
+                  </div>
+
+                  <button
+                    style="width: 100%; padding: 13px; background: var(--gold); color: var(--ink); border: none; border-radius: 12px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; letter-spacing: 0.02em;">
+                    <span>Đăng nhập an toàn</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  <div
+                    style="text-align: center; margin: 14px 0; font-size: 10px; color: rgba(246, 241, 232, 0.35); letter-spacing: 0.16em; text-transform: uppercase; position: relative;">
+                    <span style="background: var(--ink); padding: 0 12px; position: relative; z-index: 1;">Hoặc</span>
+                    <span
+                      style="position:absolute; top:50%; left:0; right:0; height:1px; background: rgba(246,241,232,0.1);"></span>
+                  </div>
+
+                  <button
+                    style="width: 100%; padding: 11px; background: transparent; color: var(--cream); border: 1px solid rgba(246, 241, 232, 0.18); border-radius: 12px; font-family: inherit; font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" />
+                      <path d="M7 11V7a5 5 0 0110 0v4" />
+                    </svg>
+                    Đăng nhập bằng VNeID
+                  </button>
+
+                  <div style="text-align: center; margin-top: 24px; font-size: 11px; color: rgba(246, 241, 232, 0.45);">
+                    Chưa có tài khoản? <a style="color: var(--gold); font-weight: 500;">Đăng ký KYC</a>
+                  </div>
+                </div>
+
+                <div
+                  style="padding: 20px 24px; display: flex; gap: 14px; justify-content: center; font-size: 9px; color: rgba(246, 241, 232, 0.3); letter-spacing: 0.12em; text-transform: uppercase; position:relative; z-index:1;">
+                  <span style="display:flex; align-items:center; gap:5px;"><span
+                      style="width:4px; height:4px; border-radius:50%; background:var(--gold);"></span>ISO 27001</span>
+                  <span style="display:flex; align-items:center; gap:5px;"><span
+                      style="width:4px; height:4px; border-radius:50%; background:var(--gold);"></span>SOC 2</span>
+                  <span style="display:flex; align-items:center; gap:5px;"><span
+                      style="width:4px; height:4px; border-radius:50%; background:var(--gold);"></span>NĐ 37/2026</span>
+                </div>
+
+                <div class="home-indicator light"></div>
+              </section>
+            </div>
+          </div>
+          <div class="phone-label">
+            <div class="phone-label-num">07 — LOGIN</div>
+            <div class="phone-label-name">Đăng nhập DN</div>
+            <div class="phone-label-desc">Cổng riêng cho nhà sản xuất · Hỗ trợ VNeID · Tuân thủ Luật BVDLCN 2025</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============== DESIGN SYSTEM FOOTER ============== -->
+    <section style="margin-top: 120px; padding-top: 48px; border-top: 1px solid rgba(200, 165, 87, 0.15);">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 32px;">
+        <div>
+          <div
+            style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold); letter-spacing: 0.16em; margin-bottom: 14px;">
+            PALETTE</div>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <div
+              style="width: 40px; height: 40px; background: var(--ink); border-radius: 10px; border: 1px solid rgba(200, 165, 87, 0.2);">
+            </div>
+            <div style="width: 40px; height: 40px; background: var(--gold); border-radius: 10px;"></div>
+            <div style="width: 40px; height: 40px; background: var(--cream); border-radius: 10px;"></div>
+            <div style="width: 40px; height: 40px; background: var(--verified-bright); border-radius: 10px;"></div>
+            <div style="width: 40px; height: 40px; background: var(--crimson); border-radius: 10px;"></div>
+          </div>
+          <p style="font-size: 11px; color: rgba(246, 241, 232, 0.45); line-height: 1.6;">Navy uy tín · Vàng champagne
+            sang trọng · Cream ấm áp · Verified green · Crimson cảnh báo</p>
+        </div>
+        <div>
+          <div
+            style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold); letter-spacing: 0.16em; margin-bottom: 14px;">
+            TYPOGRAPHY</div>
+          <div style="font-family: 'Fraunces', serif; font-size: 26px; line-height: 1; margin-bottom: 4px;">Fraunces <em
+              style="font-style:italic;">italic</em></div>
+          <div
+            style="font-family: 'Outfit', sans-serif; font-size: 13px; color: rgba(246, 241, 232, 0.55); margin-bottom: 12px;">
+            Outfit · Body 13px</div>
+          <p style="font-size: 11px; color: rgba(246, 241, 232, 0.45); line-height: 1.6;">Display: Fraunces (variable
+            serif) · Body: Outfit · Mono: JetBrains Mono cho UID/số liệu</p>
+        </div>
+        <div>
+          <div
+            style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold); letter-spacing: 0.16em; margin-bottom: 14px;">
+            STATES</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display:flex; align-items:center; gap:8px; font-size: 11px;"><span
+                style="width:8px; height:8px; border-radius:50%; background:var(--verified-bright);"></span>0.9 – 1.0 ·
+              Chính hãng</div>
+            <div style="display:flex; align-items:center; gap:8px; font-size: 11px;"><span
+                style="width:8px; height:8px; border-radius:50%; background:#E4B85E;"></span>0.6 – 0.89 · Nghi ngờ</div>
+            <div style="display:flex; align-items:center; gap:8px; font-size: 11px;"><span
+                style="width:8px; height:8px; border-radius:50%; background:var(--amber);"></span>0.3 – 0.59 · Cảnh báo
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; font-size: 11px;"><span
+                style="width:8px; height:8px; border-radius:50%; background:var(--crimson);"></span>0 – 0.29 · Hàng giả
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold); letter-spacing: 0.16em; margin-bottom: 14px;">
+            DEVICE</div>
+          <p style="font-size: 13px; color: var(--cream); margin-bottom: 4px; font-family: 'Fraunces', serif;">iOS · 375
+            × 812</p>
+          <p style="font-size: 11px; color: rgba(246, 241, 232, 0.45); line-height: 1.6;">Tap targets ≥ 44pt · Safe
+            areas · Dynamic Type · Dark mode ready · Adaptive cho Android</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+
+</html>
