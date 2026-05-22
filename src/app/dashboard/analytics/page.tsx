@@ -41,6 +41,21 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState<string | null>(null);
 
+  const formatScanCount = (count: number): string => {
+    if (count <= 0) return "0";
+    if (count < 1000) return `${count}`;
+    if (count < 1000000) {
+      return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}K`;
+    }
+    if (count < 1000000000) {
+      return `${(count / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
+    }
+    if (count < 1000000000000) {
+      return `${(count / 1000000000).toFixed(1).replace(/\.0$/, '')}B`;
+    }
+    return `${count.toExponential(1).replace(/\.0(?=e)/, '').replace('+', '')}`;
+  };
+
   const PERIOD_LABEL = () => ({
     week: t("ana_period_week"),
     month: t("ana_period_month"),
@@ -304,7 +319,12 @@ export default function AnalyticsPage() {
                       <p className="text-sm font-medium text-white">{p.loHang.sanPham.ten}</p>
                       <p className="text-xs text-slate-400 font-mono">{p.uid.substring(0, 8)}...</p>
                     </div>
-                    <span className="text-sm font-bold text-cyan-300">{p.soLanQuet} {t("cmn_times")}</span>
+                    <span 
+                      className="text-sm font-bold text-cyan-300 whitespace-nowrap"
+                      title={`${p.soLanQuet.toLocaleString()} ${t("cmn_times")}`}
+                    >
+                      {formatScanCount(p.soLanQuet)} {t("cmn_times")}
+                    </span>
                   </div>
                 ))}
               </div>

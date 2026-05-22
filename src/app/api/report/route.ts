@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+
+export const dynamic = 'force-dynamic';
+
 import { randomUUID, createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 // Cấu hình mã hóa AES-256-GCM (Zero Trust - Identity Vault giả lập)
@@ -21,9 +24,9 @@ export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1';
     const body = await req.json();
-    const { serial, moTa, viTri, loaiSanPham, mucDo, thongTinLienHe, loaiBaoCao } = body;
+    const { serial, moTa, viTri, loaiSanPham, mucDo, thongTinLienHe, loaiBaoCao, metadata } = body;
 
-    if (!moTa) {
+    if (!moTa && !metadata) {
       return NextResponse.json({ error: 'Vui lòng mô tả vấn đề' }, { status: 400 });
     }
 
@@ -38,9 +41,18 @@ export async function POST(req: NextRequest) {
       contactInfo = thongTinLienHe; // Người dùng đồng ý công khai
     }
 
-    // Gắn SECURE_CONTACT vào cuối moTa để lưu trữ (không đổi schema DB)
-    const baseMoTa = `[${loaiSanPham || 'Sản phẩm'}] Serial: ${serial || 'N/A'} | Vị trí: ${viTri || 'N/A'}\nNgười báo cáo: ${contactInfo}\nMô tả: ${moTa}`;
-    const finalMoTa = encryptedContact ? `${baseMoTa}\n[SECURE_CONTACT:${encryptedContact}]` : baseMoTa;
+    let finalMoTa = moTa;
+    if (metadata) {
+      // Lưu toàn bộ vào JSON string để bóc tách ở dashboard
+      metadata.loaiSanPham = loaiSanPham;
+      metadata.contactInfo = contactInfo;
+      metadata.encryptedContact = encryptedContact;
+      finalMoTa = JSON.stringify(metadata);
+    } else {
+      // Backward compatible cho các báo cáo cũ / text thường
+      const baseMoTa = `[${loaiSanPham || 'Sản phẩm'}] Serial: ${serial || 'N/A'} | Vị trí: ${viTri || 'N/A'}\nNgười báo cáo: ${contactInfo}\nMô tả: ${moTa}`;
+      finalMoTa = encryptedContact ? `${baseMoTa}\n[SECURE_CONTACT:${encryptedContact}]` : baseMoTa;
+    }
 
     // Log the report as a CanhBao
     await prisma.canhBao.create({

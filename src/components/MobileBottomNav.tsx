@@ -15,10 +15,8 @@ const ALL_NAV_ITEMS: NavItem[] = [
   { label: "Trang chủ", href: "/dashboard", icon: "home" },
   { label: "Xác thực", href: "/verify", icon: "qr_code_scanner" },
   { label: "Chuỗi CC", href: "/supply-chain", icon: "route" },
-  { label: "Kho hàng", href: "/dashboard/warehouse", icon: "warehouse", roles: ["manufacturer", "admin"] },
-  { label: "Phân phối", href: "/dashboard/distribution", icon: "local_shipping", roles: ["manufacturer", "importer", "admin"] },
-  { label: "Doanh nghiệp", href: "/enterprise", icon: "business" },
-  { label: "KYC", href: "/dashboard/kyc", icon: "verified_user", roles: ["admin"] },
+  { label: "Kho hàng", href: "/dashboard/warehouse", icon: "warehouse" },
+  { label: "Phân phối", href: "/dashboard/distribution", icon: "local_shipping" },
 ];
 
 export default function MobileBottomNav() {

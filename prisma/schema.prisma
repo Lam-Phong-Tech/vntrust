@@ -213,3 +213,15 @@ model DonChuyenHang {
   thoiGian      DateTime @default(now())
   capNhat       DateTime @updatedAt
 }
+
+// Báo cáo vi phạm từ người dùng
+model BaoCaoNguoiDung {
+  id          String   @id @default(uuid())
+  uid         String
+  noiMua      String?
+  giaMua      String?
+  lyDo        String?
+  hinhAnhUrls String?  // JSON array chứa danh sách URL ảnh
+  trangThai   String   @default("pending") // pending | resolved | rejected
+  thoiGian    DateTime @default(now())
+}

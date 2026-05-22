@@ -3,8 +3,18 @@ const fs = require('fs');
 const path = require('path');
 
 const UPLOADS = [
+  { local: 'src/app/dashboard/page.tsx', remote: '/var/www/vntrust/src/app/dashboard/page.tsx' },
+  { local: 'src/app/verify/[uid]/page.tsx', remote: '/var/www/vntrust/src/app/verify/[uid]/page.tsx' },
+  { local: 'src/app/verify/[uid]/result.css', remote: '/var/www/vntrust/src/app/verify/[uid]/result.css' },
   { local: 'src/app/verify/scan/page.tsx', remote: '/var/www/vntrust/src/app/verify/scan/page.tsx' },
   { local: 'src/app/verify/scan/scan.css', remote: '/var/www/vntrust/src/app/verify/scan/scan.css' },
+  { local: 'src/components/ClientShell.tsx', remote: '/var/www/vntrust/src/components/ClientShell.tsx' },
+  { local: 'src/components/MobileBottomNav.tsx', remote: '/var/www/vntrust/src/components/MobileBottomNav.tsx' },
+  { local: 'src/app/dashboard/inventory/[id]/qr/page.tsx', remote: '/var/www/vntrust/src/app/dashboard/inventory/[id]/qr/page.tsx' },
+  { local: 'src/app/dashboard/analytics/page.tsx', remote: '/var/www/vntrust/src/app/dashboard/analytics/page.tsx' },
+  { local: 'src/app/dashboard/report/page.tsx', remote: '/var/www/vntrust/src/app/dashboard/report/page.tsx' },
+  { local: 'src/app/api/report/route.ts', remote: '/var/www/vntrust/src/app/api/report/route.ts' },
+  { local: 'prisma/schema.prisma', remote: '/var/www/vntrust/prisma/schema.prisma' }
 ];
 
 const conn = new Client();
@@ -18,6 +28,8 @@ conn.on('ready', () => {
         console.log('All uploads done! Rebuilding...');
         const cmds = [
           'cd /var/www/vntrust',
+          'npx prisma db push --accept-data-loss',
+          'npx prisma generate',
           'npm run build 2>&1',
           'pm2 restart vntrust',
           'echo "=== DONE ==="'

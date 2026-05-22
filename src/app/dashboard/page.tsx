@@ -467,7 +467,7 @@ export default function Dashboard() {
   const [ipInfo, setIpInfo] = useState<{ ip: string; city: string; country: string; lat?: number; lon?: number; source?: string } | null>(null);
   const [gpsStatus, setGpsStatus] = useState<'idle'|'loading'|'ok'|'denied'|'unavailable'>('idle');
   const { msgs: chatMsgs, addMsg: addChatMsg } = useChat();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const router = useRouter();
   const { logs } = useLogs();
   const { toasts, show: showToast, dismiss: dismissToast } = useToast();
@@ -680,7 +680,7 @@ export default function Dashboard() {
                     <span className="material-symbols-outlined text-3xl text-purple-300">local_shipping</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30">{t("app_export_tag")}</span>
                   </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{userRole === 'admin' ? 'Duyệt Đơn chuyển hàng' : t("app_dist_sub")}</p><h3 className="text-sm font-bold text-white">Phân phối & Giao hàng</h3></div>
+                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{userRole === 'admin' ? 'Duyệt Đơn chuyển hàng' : t("app_dist_sub")}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Distribution & Delivery' : 'Phân phối & Giao hàng'}</h3></div>
                 </Link>
               )}
 
@@ -703,7 +703,7 @@ export default function Dashboard() {
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="material-symbols-outlined text-3xl text-emerald-400">fact_check</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">RULE ENGINE</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">{lang === 'en' ? 'RULE ENGINE' : 'QUY TẮC TỰ ĐỘNG'}</span>
                   </div>
                   <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{t("app_comp_sub")}</p><h3 className="text-sm font-bold text-white">{t("app_comp")}</h3></div>
                 </Link>
@@ -739,7 +739,7 @@ export default function Dashboard() {
                     <span className="material-symbols-outlined text-3xl text-cyan-400">hub</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 rounded-full border border-cyan-500/30">BR-07</span>
                   </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{t("app_hub_sub")}</p><h3 className="text-sm font-bold text-white">{t("app_hub")}</h3></div>
+                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{t("app_hub_sub")}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Integration Hub' : 'Trung tâm Tích hợp'}</h3></div>
                 </Link>
               )}
 
@@ -751,7 +751,7 @@ export default function Dashboard() {
                     <span className="material-symbols-outlined text-3xl text-green-400">workspace_premium</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-green-500/20 text-green-300 rounded-full border border-green-500/30">ISO/HACCP</span>
                   </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">ISO, HACCP, GMP, CFS, FDA</p><h3 className="text-sm font-bold text-white">Chứng nhận SP</h3></div>
+                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">ISO, HACCP, GMP, CFS, FDA</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Certificates' : 'Chứng nhận SP'}</h3></div>
                 </Link>
               )}
               {(userRole === 'admin' || userRole === 'consumer' || userRole === 'importer' || userRole === 'manufacturer') && (
@@ -796,7 +796,7 @@ export default function Dashboard() {
                 <Link href="/dashboard/warehouse" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-32 group relative overflow-hidden border border-emerald-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span className="material-symbols-outlined text-4xl text-emerald-400">warehouse</span>
-                  <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">Kho hàng</h3>
+                  <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_inv")}</h3>
                 </Link>
               )}
 
@@ -805,7 +805,7 @@ export default function Dashboard() {
                 <Link href="/dashboard/analytics" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-32 group relative overflow-hidden border border-indigo-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span className="material-symbols-outlined text-4xl text-indigo-400">analytics</span>
-                  <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">Báo cáo & Phân tích</h3>
+                  <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{lang === 'en' ? 'Reports & Analytics' : 'Báo cáo & Phân tích'}</h3>
                 </Link>
               )}
 
@@ -817,8 +817,8 @@ export default function Dashboard() {
 
                 <div className="glass-card rounded-3xl p-4 flex flex-col justify-between h-32 bg-red-900/20 border-red-500/30">
                   <div className="flex gap-2">
-                    <a href="tel:113" className="flex-1 bg-red-500/20 rounded-xl p-2 text-center border border-red-500/30 hover:bg-red-500/40 transition"><p className="text-[9px] font-bold text-red-200">CẢNH BÁO</p><p className="text-lg font-black text-white">113</p></a>
-                    <a href="tel:1900" className="flex-1 bg-orange-500/20 rounded-xl p-2 text-center border border-orange-500/30 hover:bg-orange-500/40 transition"><p className="text-[9px] font-bold text-orange-200">HỖ TRỢ</p><p className="text-lg font-black text-white">1900</p></a>
+                    <a href="tel:113" className="flex-1 bg-red-500/20 rounded-xl p-2 text-center border border-red-500/30 hover:bg-red-500/40 transition"><p className="text-[9px] font-bold text-red-200">{lang === 'en' ? 'ALERTS' : 'CẢNH BÁO'}</p><p className="text-lg font-black text-white">113</p></a>
+                    <a href="tel:1900" className="flex-1 bg-orange-500/20 rounded-xl p-2 text-center border border-orange-500/30 hover:bg-orange-500/40 transition"><p className="text-[9px] font-bold text-orange-200">{lang === 'en' ? 'SUPPORT' : 'HỖ TRỢ'}</p><p className="text-lg font-black text-white">1900</p></a>
                   </div>
                   <h3 className="text-sm font-bold text-white uppercase text-center border-t border-red-500/20 pt-2">{t("app_emg")}</h3>
                 </div>
@@ -893,7 +893,7 @@ export default function Dashboard() {
                   window.location.href = "/login";
                 }}
                 className="glass-panel px-3 py-2 rounded-xl text-[10px] font-bold text-rose-400 hover:bg-rose-500/20 border-rose-500/20 transition flex items-center justify-center gap-1 cursor-pointer active:scale-95 mt-2">
-                <span className="material-symbols-outlined text-[14px]">logout</span> Đăng xuất
+                <span className="material-symbols-outlined text-[14px]">logout</span> {lang === 'en' ? 'Logout' : 'Đăng xuất'}
               </button>
             </div>
 
@@ -913,7 +913,7 @@ export default function Dashboard() {
                 {gpsStatus === 'loading' && !ipInfo && (
                   <div className="glass-panel rounded-2xl border border-white/10 p-4 flex items-center gap-3">
                     <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-cyan-400 shrink-0" />
-                    <span className="text-[11px] text-slate-300">Đang lấy vị trí GPS...</span>
+                    <span className="text-[11px] text-slate-300">{lang === 'en' ? 'Getting GPS location...' : 'Đang lấy vị trí GPS...'}</span>
                   </div>
                 )}
 
@@ -922,15 +922,15 @@ export default function Dashboard() {
                   <div className="glass-panel rounded-2xl border border-red-500/30 bg-red-500/10 p-3 space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-red-400 text-[18px]">location_disabled</span>
-                      <span className="text-[11px] font-bold text-red-300">GPS bị chặn trong trình duyệt</span>
+                      <span className="text-[11px] font-bold text-red-300">{lang === 'en' ? 'GPS blocked in browser' : 'GPS bị chặn trong trình duyệt'}</span>
                     </div>
                     <p className="text-[10px] text-slate-400 leading-relaxed">
-                      Nhấn vào <strong className="text-white">🔒 biểu tượng ổ khoá</strong> trên thanh địa chỉ → chọn <strong className="text-white">Vị trí</strong> → <strong className="text-emerald-400">Cho phép</strong> → Tải lại trang.
+                      {lang === 'en' ? <>Click the <strong className="text-white">🔒 lock icon</strong> in the address bar → select <strong className="text-white">Location</strong> → <strong className="text-emerald-400">Allow</strong> → Reload.</> : <>Nhấn vào <strong className="text-white">🔒 biểu tượng ổ khoá</strong> trên thanh địa chỉ → chọn <strong className="text-white">Vị trí</strong> → <strong className="text-emerald-400">Cho phép</strong> → Tải lại trang.</>}
                     </p>
                     <button
                       onClick={() => { sessionStorage.removeItem("vntrust_geo"); setGpsStatus("idle"); window.location.reload(); }}
                       className="w-full py-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-[10px] font-bold hover:bg-emerald-500/30 transition flex items-center justify-center gap-1">
-                      <span className="material-symbols-outlined text-[12px]">refresh</span> Đã cấp quyền — Tải lại
+                      <span className="material-symbols-outlined text-[12px]">refresh</span> {lang === 'en' ? 'Permission granted — Reload' : 'Đã cấp quyền — Tải lại'}
                     </button>
                   </div>
                 )}
@@ -939,7 +939,7 @@ export default function Dashboard() {
                   <div className="glass-panel rounded-2xl border border-white/10 overflow-hidden w-72">
                     {/* Header */}
                     <div className="px-3 py-1.5 flex items-center justify-between border-b border-white/10">
-                      <span className="text-[9px] font-black tracking-widest text-slate-400 uppercase">Vị trí xác thực lần cuối</span>
+                      <span className="text-[9px] font-black tracking-widest text-slate-400 uppercase">{lang === 'en' ? 'Last Auth Location' : 'Vị trí xác thực lần cuối'}</span>
                       <div className="flex gap-1 items-center">
                         <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full border ${ipInfo.source === 'gps' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border-amber-500/30'}`}>
                           {gpsStatus === 'loading' ? '...' : ipInfo.source === 'gps' ? 'GPS ✓' : 'IP'}
@@ -970,10 +970,10 @@ export default function Dashboard() {
                       <div className="px-3 py-2 bg-amber-500/10 border-b border-amber-500/20 space-y-1.5">
                         <div className="flex items-center gap-1">
                           <span className="material-symbols-outlined text-amber-400 text-[11px]">warning</span>
-                          <span className="text-[9px] text-amber-300 font-bold">Vị trí IP — không chính xác</span>
+                          <span className="text-[9px] text-amber-300 font-bold">{lang === 'en' ? 'IP Location — inaccurate' : 'Vị trí IP — không chính xác'}</span>
                         </div>
                         {gpsStatus === 'denied' ? (
-                          <p className="text-[9px] text-slate-400">Nhấn 🔒 trên URL bar → Vị trí → Cho phép → F5</p>
+                          <p className="text-[9px] text-slate-400">{lang === 'en' ? 'Click 🔒 on URL bar → Location → Allow → F5' : 'Nhấn 🔒 trên URL bar → Vị trí → Cho phép → F5'}</p>
                         ) : (
                           <button
                             onClick={() => {
@@ -1000,7 +1000,7 @@ export default function Dashboard() {
                               );
                             }}
                             className="w-full py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-[9px] font-bold hover:bg-emerald-500/30 transition flex items-center justify-center gap-1">
-                            <span className="material-symbols-outlined text-[11px]">gps_fixed</span> Lấy vị trí GPS chính xác
+                            <span className="material-symbols-outlined text-[11px]">gps_fixed</span> {lang === 'en' ? 'Get accurate GPS location' : 'Lấy vị trí GPS chính xác'}
                           </button>
                         )}
                       </div>

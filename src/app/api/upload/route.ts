@@ -18,13 +18,13 @@ export async function POST(req: NextRequest) {
     const userRole = cookieStore.get('userRole')?.value;
     const doanhNghiepId = cookieStore.get('doanhNghiepId')?.value;
 
-    if (!userRole || (userRole !== 'admin' && userRole !== 'manufacturer')) {
-      return NextResponse.json({ error: 'Forbidden: Chỉ Nhà sản xuất hoặc Admin mới có thể upload ảnh' }, { status: 403 });
-    }
-
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
-    const uploadType = formData.get('type') as string; // 'product' | 'certificate'
+    const uploadType = formData.get('type') as string; // 'product' | 'certificate' | 'report'
+
+    if (uploadType !== 'report' && (!userRole || (userRole !== 'admin' && userRole !== 'manufacturer'))) {
+      return NextResponse.json({ error: 'Forbidden: Chỉ Nhà sản xuất hoặc Admin mới có thể upload ảnh' }, { status: 403 });
+    }
 
     if (!file) {
       return NextResponse.json({ error: 'Không tìm thấy file trong request' }, { status: 400 });
@@ -43,7 +43,9 @@ export async function POST(req: NextRequest) {
     // Tạo tên file an toàn (không dùng tên gốc để tránh path traversal)
     const ext = file.type.split('/')[1].replace('jpeg', 'jpg');
     const safeName = `${randomUUID()}.${ext}`;
-    const folder = uploadType === 'certificate' ? 'certificates' : 'products';
+    let folder = 'products';
+    if (uploadType === 'certificate') folder = 'certificates';
+    if (uploadType === 'report') folder = 'reports';
 
     // Lưu vào thư mục public/uploads
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', folder);

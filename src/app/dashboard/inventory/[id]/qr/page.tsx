@@ -35,6 +35,22 @@ export default function QRPrintPage() {
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const [confirmModal, setConfirmModal] = useState<{ type: 'regenerate' | 'delete', uid: string | string[] } | null>(null);
   const [selectedUids, setSelectedUids] = useState<Set<string>>(new Set());
+  const [sortBy, setSortBy] = useState<'default' | 'scans-desc' | 'scans-asc'>('default');
+
+  const formatScanCount = (count: number): string => {
+    if (count <= 0) return "Mới";
+    if (count < 1000) return `${count} quét`;
+    if (count < 1000000) {
+      return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}K quét`;
+    }
+    if (count < 1000000000) {
+      return `${(count / 1000000).toFixed(1).replace(/\.0$/, '')}M quét`;
+    }
+    if (count < 1000000000000) {
+      return `${(count / 1000000000).toFixed(1).replace(/\.0$/, '')}B quét`;
+    }
+    return `${count.toExponential(1).replace(/\.0(?=e)/, '').replace('+', '')} quét`;
+  };
 
   const showToast = (msg: string, ok: boolean) => {
     setToast({ msg, ok });
@@ -159,6 +175,17 @@ export default function QRPrintPage() {
   const hanDung = new Date(batch.hanDung).toLocaleDateString("vi-VN");
   const ngaySX = new Date(batch.ngaySanXuat).toLocaleDateString("vi-VN");
 
+  const uidsWithIndex = batch ? batch.uids.map((item, index) => ({ ...item, originalIdx: index })) : [];
+  const sortedUids = [...uidsWithIndex].sort((a, b) => {
+    if (sortBy === 'scans-desc') {
+      return b.soLanQuet - a.soLanQuet;
+    }
+    if (sortBy === 'scans-asc') {
+      return a.soLanQuet - b.soLanQuet;
+    }
+    return 0;
+  });
+
   return (
     <div className="bg-slate-100 min-h-screen">
       {/* Toolbar — ẩn khi print */}
@@ -193,6 +220,18 @@ export default function QRPrintPage() {
                 }}
                 className="w-20 px-2 py-1 border border-slate-300 rounded text-sm text-center text-slate-800 font-bold focus:outline-none focus:border-primary"
               />
+            </div>
+            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+              <label className="text-sm font-bold text-slate-600">Sắp xếp:</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="bg-transparent text-sm text-slate-800 font-bold focus:outline-none cursor-pointer"
+              >
+                <option value="default">Mặc định</option>
+                <option value="scans-desc">Quét nhiều nhất</option>
+                <option value="scans-asc">Quét ít nhất</option>
+              </select>
             </div>
             <Link href="/dashboard/inventory"
               className="px-4 py-2 text-sm font-bold text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
@@ -255,7 +294,7 @@ export default function QRPrintPage() {
       {/* Grid QR codes */}
       <div className="p-8 max-w-7xl mx-auto print:p-0 print:max-w-none pb-24">
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 print:grid-cols-5 print:gap-3">
-          {batch.uids.slice(0, printCount).map((item, idx) => (
+          {sortedUids.slice(0, printCount).map((item, idx) => (
             <div key={item.uid}
               className={`bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center gap-2 relative print:rounded-md print:border print:break-inside-avoid ${printSingleId && printSingleId !== item.uid ? 'print:hidden' : ''} ${selectedUids.has(item.uid) ? 'ring-2 ring-primary border-primary' : ''}`}>
               
@@ -278,24 +317,31 @@ export default function QRPrintPage() {
 
               {/* QR Code */}
               <div className="bg-white p-1.5 rounded-lg border border-slate-100 mt-2">
-                <QRCodeSVG
-                  value={`${baseUrl}/verify/${item.uid}`}
-                  size={100}
-                  bgColor="#ffffff"
-                  fgColor="#004c4c"
-                  level="M"
-                />
+                <a href={`/verify/${item.uid}`} target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition cursor-pointer" title="Click để mở trang xác thực (test)">
+                  <QRCodeSVG
+                    value={`${baseUrl}/verify/${item.uid}`}
+                    size={100}
+                    bgColor="#ffffff"
+                    fgColor="#004c4c"
+                    level="M"
+                  />
+                </a>
               </div>
               {/* Thông tin */}
               <div className="text-center w-full">
                 <p className="text-[9px] font-bold text-primary uppercase tracking-wider">VNTRUST</p>
-                <p className="text-[8px] text-slate-500 w-full text-center font-mono overflow-hidden" title={item.uid}>{item.uid.substring(0, 8)}…</p>
+                <a href={`/verify/${item.uid}`} target="_blank" rel="noopener noreferrer" className="hover:underline text-[8px] text-slate-500 w-full text-center font-mono overflow-hidden block" title={item.uid}>
+                  {item.uid.substring(0, 8)}…
+                </a>
                 <p className="text-[9px] text-slate-400">{(batch.sanPham?.ten || "Sản phẩm không rõ").substring(0, 18)}</p>
                 <p className="text-[9px] font-bold text-slate-600">HSD: {hanDung}</p>
-                <div className={`mt-1 inline-block px-2 py-0.5 rounded-full text-[8px] font-bold ${
-                  item.trangThai === "active" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
-                }`}>
-                  #{idx + 1} · {item.soLanQuet > 0 ? `${item.soLanQuet} quét` : "Mới"}
+                <div 
+                  className={`mt-1 inline-block px-2 py-0.5 rounded-full text-[8px] font-bold max-w-[120px] truncate ${
+                    item.trangThai === "active" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+                  }`}
+                  title={item.soLanQuet > 0 ? `Số lần quét chính xác: ${item.soLanQuet.toLocaleString("vi-VN")} lần` : undefined}
+                >
+                  #{item.originalIdx + 1} · {formatScanCount(item.soLanQuet)}
                 </div>
                 
                 {/* Actions (Hidden on Print) */}
@@ -344,7 +390,7 @@ export default function QRPrintPage() {
           <div className="flex items-center gap-3">
             <button 
               onClick={() => {
-                const currentViewUids = batch.uids.slice(0, printCount).map(u => u.uid);
+                const currentViewUids = sortedUids.slice(0, printCount).map(u => u.uid);
                 if (selectedUids.size === currentViewUids.length) {
                   setSelectedUids(new Set()); // deselect all
                 } else {
@@ -353,7 +399,7 @@ export default function QRPrintPage() {
               }}
               className="text-sm font-bold text-primary hover:text-primary/80 transition whitespace-nowrap"
             >
-              {selectedUids.size === batch.uids.slice(0, printCount).length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+              {selectedUids.size === sortedUids.slice(0, printCount).length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
             </button>
             <button 
               onClick={() => setConfirmModal({ type: 'delete', uid: Array.from(selectedUids) })}

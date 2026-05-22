@@ -58,7 +58,7 @@ export default function ReportFakePage() {
   const fetchReports = async () => {
     setLoadingReports(true);
     try {
-      const res = await fetch(`/api/report?status=${statusFilter}`);
+      const res = await fetch(`/api/report?status=${statusFilter}&t=${Date.now()}`, { cache: "no-store" });
       if (!res.ok) throw new Error("Lỗi tải danh sách");
       const data = await res.json();
       setReports(data.reports || []);
@@ -401,7 +401,17 @@ export default function ReportFakePage() {
                             )}
                             <span className="text-xs text-slate-500">{new Date(r.thoiGian).toLocaleString("vi-VN")}</span>
                           </div>
-                          <p className="text-sm text-slate-200 leading-relaxed break-all whitespace-pre-wrap">{r.moTa}</p>
+                          <p className="text-sm text-slate-200 leading-relaxed break-words whitespace-pre-wrap line-clamp-3">
+                            {(() => {
+                              try {
+                                if (r.moTa.startsWith('{')) {
+                                  const meta = JSON.parse(r.moTa);
+                                  return `Báo cáo từ người dùng: ${meta.lyDo || 'N/A'} (Giá mua: ${meta.giaMua || 'N/A'}, Nơi mua: ${meta.viTri || 'N/A'})`;
+                                }
+                              } catch(e) {}
+                              return r.moTa;
+                            })()}
+                          </p>
                         </div>
                         {userRole === "admin" && (
                           <div className="flex gap-2 shrink-0">
@@ -428,51 +438,142 @@ export default function ReportFakePage() {
           </div>
         )}
 
-      {/* Investigation Modal */}
+      {/* Investigation Modal (2-Column Layout) */}
       {investigateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setInvestigateModal(null)}>
-          <div className="bg-[#0f1e33] border border-amber-500/30 rounded-3xl p-7 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                <span className="material-symbols-outlined text-amber-400">manage_search</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Điều tra Báo cáo</h3>
-                <p className="text-xs text-slate-400">Cập nhật trạng thái và lưu ghi chú</p>
-              </div>
-            </div>
+          <div className="bg-[#0f1e33] border border-amber-500/30 rounded-3xl p-0 w-full max-w-4xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row" onClick={e => e.stopPropagation()}>
             
-            <div className="mb-5 p-4 bg-white/5 border border-white/10 rounded-xl space-y-2 text-sm break-all whitespace-pre-wrap">
-                <p className="text-slate-300"><strong>UID/Serial:</strong> {investigateModal.uid || 'N/A'}</p>
-                <p className="text-slate-300"><strong>Mô tả:</strong> {investigateModal.moTa}</p>
-                <p className="text-slate-300 text-xs"><strong>Thời gian:</strong> {new Date(investigateModal.thoiGian).toLocaleString('vi-VN')}</p>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                  Ghi chú điều tra / Kết quả xử lý
-                </label>
-                <textarea
-                  value={investigateNote}
-                  onChange={e => setInvestigateNote(e.target.value)}
-                  rows={4}
-                  placeholder="VD: Đã liên hệ đại lý, xác nhận lỗi in ấn tem nhãn... hoặc phát hiện hàng giả, yêu cầu cơ quan chức năng can thiệp."
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 resize-y custom-scrollbar"
-                />
-              </div>
-
-              <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-3 rounded-xl cursor-pointer" onClick={() => setSendEmail(!sendEmail)}>
-                <input type="checkbox" checked={sendEmail} onChange={() => {}} className="rounded bg-white/10 border-white/20 text-amber-500 focus:ring-amber-500 w-4 h-4 cursor-pointer" />
+            {/* Left Column: Evidence Details */}
+            <div className="flex-1 min-w-0 p-7 bg-white/5 overflow-y-auto custom-scrollbar border-r border-white/10 flex flex-col">
+              <div className="flex items-center gap-3 mb-6 shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-blue-400">plagiarism</span>
+                </div>
                 <div>
-                    <span className="text-sm text-slate-300 font-bold block">Gửi Email thông báo</span>
-                    <span className="text-xs text-slate-500 block">Gửi kết quả điều tra ẩn danh (nếu người dùng có cung cấp liên hệ)</span>
+                  <h3 className="text-lg font-bold text-white">Chi tiết Bằng chứng</h3>
+                  <p className="text-xs text-slate-400">Dữ liệu từ người dùng báo cáo</p>
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="space-y-4 shrink-0">
+                <div className="grid grid-cols-2 gap-4">
+                   <div className="p-4 bg-black/20 rounded-xl border border-white/5 min-w-0">
+                     <span className="text-[10px] text-slate-400 uppercase font-bold block mb-1">UID / Serial</span>
+                     <span className="text-sm text-cyan-300 font-mono break-all">{investigateModal.uid || 'N/A'}</span>
+                   </div>
+                   <div className="p-4 bg-black/20 rounded-xl border border-white/5 min-w-0">
+                     <span className="text-[10px] text-slate-400 uppercase font-bold block mb-1">Thời gian</span>
+                     <span className="text-sm text-white break-words">{new Date(investigateModal.thoiGian).toLocaleString('vi-VN')}</span>
+                   </div>
+                </div>
+                
+                <div className="p-4 bg-black/20 rounded-xl border border-white/5 flex flex-col min-h-0">
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block mb-2 shrink-0">Nội dung báo cáo</span>
+                  {(() => {
+                    try {
+                      if (investigateModal.moTa.startsWith('{')) {
+                         const metadata = JSON.parse(investigateModal.moTa);
+                         return (
+                           <div className="space-y-3 text-sm text-slate-200 flex flex-col min-h-0">
+                             {metadata.loaiSanPham && <p className="break-words"><strong className="text-amber-400 font-medium">Loại SP:</strong> {metadata.loaiSanPham}</p>}
+                             {(metadata.giaMua !== undefined) && <p className="break-words"><strong className="text-amber-400 font-medium">Giá mua:</strong> {Number(metadata.giaMua).toLocaleString('vi-VN')} {metadata.donViTien || 'VND'}</p>}
+                             {metadata.viTri && <p className="break-words"><strong className="text-amber-400 font-medium">Nơi mua:</strong> {metadata.viTri}</p>}
+                             {metadata.contactInfo && <p className="break-words"><strong className="text-amber-400 font-medium">Người báo cáo:</strong> {metadata.contactInfo}</p>}
+                             {metadata.lyDo && (
+                               <div className="mt-2 p-3 bg-white/5 border border-white/10 rounded-lg flex flex-col min-h-0 shrink-0">
+                                 <strong className="block text-amber-400 font-medium mb-2 shrink-0">Lý do nghi ngờ:</strong>
+                                 <div className="whitespace-pre-wrap break-words max-h-[120px] overflow-y-auto custom-scrollbar pr-2 leading-relaxed">
+                                   {metadata.lyDo}
+                                 </div>
+                               </div>
+                             )}
+                           </div>
+                         );
+                      }
+                    } catch (e) {}
+                    return (
+                      <div className="text-sm text-slate-200 whitespace-pre-wrap break-words leading-relaxed max-h-[150px] overflow-y-auto custom-scrollbar pr-2">
+                        {investigateModal.moTa}
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                <div className="p-4 bg-black/20 rounded-xl border border-white/5 shrink-0">
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block mb-3">Hình ảnh đính kèm</span>
+                  {(() => {
+                     let images = [];
+                     try {
+                        if (investigateModal.moTa.startsWith('{')) {
+                           const metadata = JSON.parse(investigateModal.moTa);
+                           if (metadata.anhBangChung && Array.isArray(metadata.anhBangChung)) {
+                              images = metadata.anhBangChung;
+                           }
+                        }
+                     } catch(e) {}
+                     
+                     if (images.length > 0) {
+                        return (
+                          <>
+                            <div className="grid grid-cols-3 gap-2">
+                               {images.map((img: string, i: number) => (
+                                 <a key={i} href={img} target="_blank" rel="noreferrer" className="aspect-square bg-black/30 rounded-lg flex items-center justify-center border border-white/10 cursor-pointer hover:border-amber-400 hover:shadow-lg transition overflow-hidden">
+                                   {/* eslint-disable-next-line @next/next/no-img-element */}
+                                   <img src={img} alt="Bằng chứng" className="w-full h-full object-cover" />
+                                 </a>
+                               ))}
+                            </div>
+                            <p className="text-[10px] text-slate-500 mt-2 text-center">Click vào ảnh để xem bản gốc</p>
+                          </>
+                        );
+                     }
+
+                     return (
+                        <p className="text-xs text-slate-500 italic">Không có hình ảnh đính kèm</p>
+                     );
+                  })()}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Investigation Form */}
+            <div className="w-full md:w-[400px] p-7 bg-[#0f1e33] overflow-y-auto custom-scrollbar flex flex-col">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-amber-400">manage_search</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Xử lý Điều tra</h3>
+                  <p className="text-xs text-slate-400">Cập nhật trạng thái và ghi chú</p>
+                </div>
+              </div>
+
+              <div className="flex-1 space-y-5">
+                <div>
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                    Ghi chú điều tra / Kết quả xử lý
+                  </label>
+                  <textarea
+                    value={investigateNote}
+                    onChange={e => setInvestigateNote(e.target.value)}
+                    rows={6}
+                    placeholder="VD: Đã liên hệ đại lý, xác nhận lỗi in ấn tem nhãn... hoặc phát hiện hàng giả, yêu cầu cơ quan chức năng can thiệp."
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 resize-none custom-scrollbar"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3 bg-black/20 border border-white/10 p-4 rounded-xl cursor-pointer hover:bg-white/5 transition" onClick={() => setSendEmail(!sendEmail)}>
+                  <input type="checkbox" checked={sendEmail} onChange={() => {}} className="rounded bg-white/10 border-white/20 text-amber-500 focus:ring-amber-500 w-4 h-4 cursor-pointer" />
+                  <div>
+                      <span className="text-sm text-slate-200 font-bold block mb-0.5">Gửi Email thông báo</span>
+                      <span className="text-[10px] text-slate-400 block leading-tight">Gửi kết quả điều tra ẩn danh (nếu người dùng có cung cấp liên hệ)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-6 mt-auto">
                 <button type="button" onClick={() => { setInvestigateModal(null); setInvestigateNote(""); setSendEmail(false); }}
-                  className="flex-1 py-3 border border-white/20 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/5 transition">Huỷ</button>
+                  className="px-5 py-3 border border-white/20 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/5 transition">Huỷ</button>
                 <button type="button" disabled={updatingId === investigateModal.id || !investigateNote.trim()}
                   onClick={async () => {
                      let finalNote = investigateNote;
