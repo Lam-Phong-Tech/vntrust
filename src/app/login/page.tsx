@@ -282,6 +282,24 @@ export default function LoginPortal() {
             ))}
           </div>
 
+          {/* VNeID Divider */}
+          <div style={{ position:'relative', margin:'20px 0 16px', textAlign:'center' }}>
+            <span style={{ position:'absolute', top:'50%', left:0, right:0, height:1, background:'rgba(246,241,232,0.1)' }} />
+            <span style={{ position:'relative', zIndex:1, background:'transparent', padding:'0 12px', fontSize:10, color:'rgba(246,241,232,0.4)', letterSpacing:'0.14em', textTransform:'uppercase' }}>Hoặc đăng nhập bằng</span>
+          </div>
+
+          <button
+            onClick={() => alert('Tính năng VNeID đang được tích hợp')}
+            style={{ width:'100%', padding:'14px 18px', background:'transparent', color:'#F6F1E8', border:'1px solid rgba(246,241,232,0.2)', borderRadius:16, fontFamily:'Outfit,sans-serif', fontSize:14, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:12, transition:'background 0.2s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(246,241,232,0.05)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="48" height="48" rx="10" fill="#DA251D"/>
+              <polygon points="24,8 27.5,18.5 38.5,18.5 29.5,25 33,35.5 24,29 15,35.5 18.5,25 9.5,18.5 20.5,18.5" fill="#FFCD00"/>
+            </svg>
+            Đăng nhập bằng VNeID
+          </button>
 
         </div>
       </div>

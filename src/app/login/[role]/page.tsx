@@ -426,6 +426,29 @@ export default function LoginPage() {
                 </button>
               </form>
 
+              {/* ── VNeID Divider & Button ── */}
+              <div style={{ position:'relative', margin:'20px 0 16px', textAlign:'center' }}>
+                <span style={{ position:'absolute', top:'50%', left:0, right:0, height:1, background:'rgba(246,241,232,0.1)' }} />
+                <span style={{ position:'relative', zIndex:1, background:'linear-gradient(180deg,rgba(246,241,232,0.05) 0%,rgba(246,241,232,0.02) 100%)', padding:'0 12px', fontSize:10, color:'rgba(246,241,232,0.4)', letterSpacing:'0.14em', textTransform:'uppercase' }}>Hoặc</span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => alert('Tính năng VNeID đang được tích hợp')}
+                style={{ width:'100%', padding:'13px 16px', background:'transparent', color:'#F6F1E8', border:'1px solid rgba(246,241,232,0.2)', borderRadius:14, fontFamily:'Outfit,sans-serif', fontSize:13, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:10, transition:'all 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(246,241,232,0.06)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                {/* VNeID Logo SVG */}
+                <svg width="22" height="22" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Red background shield/card */}
+                  <rect width="48" height="48" rx="10" fill="#DA251D"/>
+                  {/* Yellow star */}
+                  <polygon points="24,8 27.5,18.5 38.5,18.5 29.5,25 33,35.5 24,29 15,35.5 18.5,25 9.5,18.5 20.5,18.5" fill="#FFCD00"/>
+                </svg>
+                <span>Đăng nhập bằng VNeID</span>
+              </button>
+
               <div style={{ marginTop:16, display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
                 <button onClick={() => router.push('/forgot-password')} style={{ fontSize:12, color:'rgba(246,241,232,0.45)', background:'none', border:'none', cursor:'pointer', fontFamily:'Outfit,sans-serif' }}>
                   {t('login_forgot')}
@@ -438,6 +461,7 @@ export default function LoginPage() {
               </div>
             </div>
           )}
+
 
           {view === "register" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -846,14 +870,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        {pageRole !== 'admin' && (
-          <div style={{ marginTop:24, textAlign:'center' }}>
-            <Link href="/login" style={{ fontSize:12, color:'rgba(246,241,232,0.35)', display:'inline-flex', alignItems:'center', gap:5, textDecoration:'none' }}>
-              <span className="material-symbols-outlined" style={{ fontSize:14 }}>arrow_back</span>
-              Chọn vai trò khác
-            </Link>
-          </div>
-        )}
+
       </div>
     </div>
   );

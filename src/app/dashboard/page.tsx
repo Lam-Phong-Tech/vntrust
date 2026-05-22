@@ -460,6 +460,7 @@ type ModalType = "ai" | "report" | "security" | "hotline" | null;
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>("");
   const [modal, setModal] = useState<ModalType>(null);
   const [globeMarker, setGlobeMarker] = useState<MapMarker | null>(null);
   const [searchVal, setSearchVal] = useState("");
@@ -474,10 +475,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
+    const name = localStorage.getItem("userName");
     if (!role) {
       router.replace("/login");
     } else {
       setUserRole(role);
+      if (name) setUserName(name);
       setMounted(true);
     }
   }, [router]);
@@ -621,8 +624,134 @@ export default function Dashboard() {
 
           {/* ── LEFT ── */}
           <div className="xl:col-span-6 flex flex-col gap-6">
-            {/* Search */}
-            <form onSubmit={handleSearch}
+            {/* ── MANUFACTURER MOBILE OVERRIDE ── */}
+            {userRole === 'manufacturer' && (
+              <div className="xl:hidden flex flex-col gap-5 mt-2 mb-4 animate-fade-in">
+                 {/* Top user bar */}
+                 <div className="flex justify-between items-center bg-[#0b1623]/80 rounded-3xl p-4 border border-white/5 backdrop-blur-sm">
+                    <div className="flex items-center gap-3">
+                       <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xl border border-emerald-500/30">
+                          {userName ? userName.charAt(0).toUpperCase() : 'M'}
+                       </div>
+                       <div>
+                          <div className="text-xs text-slate-400">Chào buổi sáng,</div>
+                          <div className="text-base font-bold text-white tracking-wide">{userName || 'Nhà sản xuất'}</div>
+                       </div>
+                    </div>
+                    <button className="relative w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
+                       <span className="material-symbols-outlined text-slate-300">notifications</span>
+                       <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-amber-500 rounded-full border border-[#0b1623]"></span>
+                    </button>
+                 </div>
+
+                 {/* Hero Card */}
+                 <div className="relative rounded-[2rem] p-6 border border-amber-500/30 overflow-hidden shadow-xl" style={{ background: 'linear-gradient(145deg, rgba(200,165,87,0.15) 0%, rgba(200,165,87,0.02) 100%)' }}>
+                   <div className="relative z-10 flex justify-between items-start mb-8">
+                     <div>
+                       <div className="text-[11px] text-amber-200/80 mb-2 font-bold tracking-widest uppercase">Lượt quét hôm nay</div>
+                       <div className="text-5xl font-black text-white font-headline">7,842<span className="text-base text-slate-400 font-normal ml-1 tracking-normal">lần</span></div>
+                     </div>
+                     <div className="flex items-center gap-1 text-emerald-400 bg-emerald-500/20 px-2.5 py-1.5 rounded-full text-xs font-bold border border-emerald-500/30">
+                       <span className="material-symbols-outlined text-[14px]">trending_up</span>
+                       +24%
+                     </div>
+                   </div>
+                   {/* Decorative Chart SVG */}
+                   <svg className="absolute bottom-0 left-0 w-full h-20 opacity-70" viewBox="0 0 280 50" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#C8A557" stopOpacity="0.4" />
+                          <stop offset="100%" stopColor="#C8A557" stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <path d="M0 40 L20 35 L40 38 L60 28 L80 32 L100 22 L120 26 L140 18 L160 24 L180 14 L200 18 L220 10 L240 14 L260 6 L280 12 L280 50 L0 50 Z" fill="url(#goldGrad)" />
+                      <path d="M0 40 L20 35 L40 38 L60 28 L80 32 L100 22 L120 26 L140 18 L160 24 L180 14 L200 18 L220 10 L240 14 L260 6 L280 12" stroke="#C8A557" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="280" cy="12" r="3" fill="#C8A557" />
+                   </svg>
+                 </div>
+
+                 {/* Stats Grid */}
+                 <div className="grid grid-cols-2 gap-4">
+                   <div className="glass-card rounded-3xl p-5 border border-emerald-500/20 flex flex-col justify-between">
+                     <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
+                       <span className="material-symbols-outlined text-[20px]">verified</span>
+                     </div>
+                     <div>
+                       <div className="text-[11px] text-slate-400 uppercase tracking-wider mb-1">Chính hãng</div>
+                       <div className="text-2xl font-bold text-white mb-1">98.2%</div>
+                       <div className="text-[10px] text-emerald-400 font-bold">↑ 0.4%</div>
+                     </div>
+                   </div>
+                   <div className="glass-card rounded-3xl p-5 border border-red-500/20 flex flex-col justify-between">
+                     <div className="w-10 h-10 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center mb-4">
+                       <span className="material-symbols-outlined text-[20px]">gpp_bad</span>
+                     </div>
+                     <div>
+                       <div className="text-[11px] text-slate-400 uppercase tracking-wider mb-1">UID nghi giả</div>
+                       <div className="text-2xl font-bold text-white mb-1">412</div>
+                       <div className="text-[10px] text-red-400 font-bold">↑ 18% · 7d</div>
+                     </div>
+                   </div>
+                   <div className="glass-card rounded-3xl p-5 border border-amber-500/20 flex flex-col justify-between">
+                     <div className="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4">
+                       <span className="material-symbols-outlined text-[20px]">warning</span>
+                     </div>
+                     <div>
+                       <div className="text-[11px] text-slate-400 uppercase tracking-wider mb-1">Cảnh báo mở</div>
+                       <div className="text-2xl font-bold text-white mb-1">8</div>
+                       <div className="text-[10px] text-amber-400 font-bold">2 cao · 6 TB</div>
+                     </div>
+                   </div>
+                   <div className="glass-card rounded-3xl p-5 border border-cyan-500/20 flex flex-col justify-between">
+                     <div className="w-10 h-10 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center mb-4">
+                       <span className="material-symbols-outlined text-[20px]">qr_code</span>
+                     </div>
+                     <div>
+                       <div className="text-[11px] text-slate-400 uppercase tracking-wider mb-1">Đã phát hành</div>
+                       <div className="text-2xl font-bold text-white mb-1">42K</div>
+                       <div className="text-[10px] text-slate-400 font-bold">128 lô</div>
+                     </div>
+                   </div>
+                 </div>
+
+                 {/* Recent Alerts */}
+                 <div className="mt-4">
+                    <div className="flex justify-between items-center mb-4 px-1">
+                       <h3 className="text-base font-bold text-white uppercase tracking-widest">Cảnh báo gần đây</h3>
+                       <Link href="/dashboard/history" className="text-[11px] font-bold text-amber-400 flex items-center hover:underline">
+                         Xem tất cả <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                       </Link>
+                    </div>
+                    <div className="space-y-3">
+                       <div className="glass-panel p-4 rounded-[1.25rem] flex items-center gap-4 border-l-4 border-l-red-500 bg-white/5">
+                         <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                           <span className="material-symbols-outlined text-red-400 text-[20px]">report</span>
+                         </div>
+                         <div className="flex-1 min-w-0">
+                           <div className="text-sm font-bold text-white truncate mb-0.5">Phát hiện quét vượt mức</div>
+                           <div className="text-xs text-slate-400 truncate">Sản phẩm 35N Phú Quốc</div>
+                         </div>
+                         <div className="text-[10px] text-slate-500 shrink-0 font-medium">Vừa xong</div>
+                       </div>
+                       
+                       <div className="glass-panel p-4 rounded-[1.25rem] flex items-center gap-4 border-l-4 border-l-amber-500 bg-white/5">
+                         <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+                           <span className="material-symbols-outlined text-amber-400 text-[20px]">location_off</span>
+                         </div>
+                         <div className="flex-1 min-w-0">
+                           <div className="text-sm font-bold text-white truncate mb-0.5">Vị trí bất thường</div>
+                           <div className="text-xs text-slate-400 truncate">Lô HN-2026-03</div>
+                         </div>
+                         <div className="text-[10px] text-slate-500 shrink-0 font-medium">15p trước</div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-6 mt-6 xl:mt-0">
+              {/* Search */}
+              <form onSubmit={handleSearch}
               className={`glass-panel rounded-full p-2 pl-6 flex items-center justify-between border shadow-lg bg-white/5 transition-all ${searchActive ? "border-cyan-400/60" : "border-white/20"}`}>
               <div className="flex items-center gap-4 flex-1">
                 <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center pulse-ai shrink-0">
@@ -846,6 +975,7 @@ export default function Dashboard() {
                   <span className="material-symbols-outlined text-white">chevron_right</span>
                 </Link>
               </div>
+            </div>
             </div>
           </div>
 

@@ -14,7 +14,13 @@ const UPLOADS = [
   { local: 'src/app/dashboard/analytics/page.tsx', remote: '/var/www/vntrust/src/app/dashboard/analytics/page.tsx' },
   { local: 'src/app/dashboard/report/page.tsx', remote: '/var/www/vntrust/src/app/dashboard/report/page.tsx' },
   { local: 'src/app/api/report/route.ts', remote: '/var/www/vntrust/src/app/api/report/route.ts' },
-  { local: 'prisma/schema.prisma', remote: '/var/www/vntrust/prisma/schema.prisma' }
+  { local: 'prisma/schema.prisma', remote: '/var/www/vntrust/prisma/schema.prisma' },
+  { local: 'src/app/login/page.tsx', remote: '/var/www/vntrust/src/app/login/page.tsx' },
+  { local: 'src/app/login/[role]/page.tsx', remote: '/var/www/vntrust/src/app/login/[role]/page.tsx' },
+  { local: 'src/app/dashboard/create/page.tsx', remote: '/var/www/vntrust/src/app/dashboard/create/page.tsx' },
+  { local: 'src/app/dashboard/profile/page.tsx', remote: '/var/www/vntrust/src/app/dashboard/profile/page.tsx' },
+  { local: 'src/contexts/LanguageContext.tsx', remote: '/var/www/vntrust/src/contexts/LanguageContext.tsx' },
+  { local: 'src/app/api/auth/me/route.ts', remote: '/var/www/vntrust/src/app/api/auth/me/route.ts' },
 ];
 
 const conn = new Client();
@@ -47,7 +53,7 @@ conn.on('ready', () => {
       const { local, remote } = UPLOADS[i];
       console.log(`Uploading [${i+1}/${UPLOADS.length}] ${local}...`);
       sftp.fastPut(path.join(__dirname, local), remote, (err) => {
-        if (err) { console.error('Upload failed:', err); return; }
+        if (err) { console.error('Upload failed (skip):', local, err.message); }
         uploadNext(i + 1);
       });
     };

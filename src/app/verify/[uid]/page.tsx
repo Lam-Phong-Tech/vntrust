@@ -95,6 +95,7 @@ export default function VerificationResult() {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showReportFlow, setShowReportFlow] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // States for report flow
   const [reportPhotos, setReportPhotos] = useState<File[]>([]);
@@ -494,8 +495,10 @@ export default function VerificationResult() {
 
                     if (!res.ok) throw new Error("API failed");
 
-                    alert(lang === 'en' ? 'Report submitted successfully!' : 'Gửi báo cáo thành công!');
-                    router.push('/dashboard');
+                    setShowSuccessModal(true);
+                    setTimeout(() => {
+                      router.push('/verify');
+                    }, 3000);
                   } catch (e) {
                     console.error("Submit error:", e);
                     alert(lang === 'en' ? 'Failed to submit report. Try again.' : 'Lỗi gửi báo cáo. Vui lòng thử lại.');
@@ -517,6 +520,32 @@ export default function VerificationResult() {
               </button>
             </div>
 
+            {/* Success Modal */}
+            {showSuccessModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fade-in" onClick={(e) => e.stopPropagation()}>
+                <div className="bg-[#0f1e33] border border-emerald-500/30 w-full max-w-sm rounded-3xl p-8 text-center shadow-[0_0_40px_rgba(16,185,129,0.15)] transform transition-all">
+                  <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-5 border border-emerald-500/20">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.5" className="w-10 h-10">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {lang === 'en' ? 'Successfully Submitted' : 'Gửi thành công'}
+                  </h3>
+                  <p className="text-sm text-slate-300 mb-8 leading-relaxed">
+                    {lang === 'en' 
+                      ? 'Your report has been received. Thank you for protecting the community!' 
+                      : 'Báo cáo của bạn đã được ghi nhận. Cảm ơn bạn đã góp phần bảo vệ cộng đồng!'}
+                  </p>
+                  <button 
+                    onClick={() => router.push('/verify')}
+                    className="w-full py-3.5 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                  >
+                    {lang === 'en' ? 'Return to Home' : 'Quay lại trang chủ'}
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         </div>
       </div>

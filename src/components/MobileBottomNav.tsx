@@ -32,11 +32,23 @@ export default function MobileBottomNav() {
   }, []);
 
   // Filter nav items based on role
-  const navItems = ALL_NAV_ITEMS.filter(item => {
-    if (!item.roles) return true; // visible to all
-    if (!userRole) return false;
-    return item.roles.includes(userRole);
-  }).slice(0, 5); // max 5 tabs
+  let navItems: NavItem[] = [];
+
+  if (userRole === "manufacturer") {
+    navItems = [
+      { label: "Trang chủ", href: "/dashboard", icon: "home" },
+      { label: "Sản phẩm", href: "/dashboard/inventory", icon: "inventory_2" },
+      { label: "Tạo mới", href: "/dashboard/create", icon: "add_circle" },
+      { label: "Kho hàng", href: "/dashboard/warehouse", icon: "warehouse" },
+      { label: "Cá nhân", href: "/dashboard/profile", icon: "person" },
+    ];
+  } else {
+    navItems = ALL_NAV_ITEMS.filter(item => {
+      if (!item.roles) return true; // visible to all
+      if (!userRole) return false;
+      return item.roles.includes(userRole);
+    }).slice(0, 5); // max 5 tabs
+  }
 
   const isActive = (href: string) =>
     href === "/dashboard"
