@@ -11,6 +11,68 @@ import { useLogs } from "@/hooks/useLogs";
 // Shared marker type (synced with VietnamMap)
 type MapMarker = { id: number; name: string; country: string; lat: number; lon: number; scans: number; fake: number; type: string; color?: string; };
 
+// ─── Live Clock (locale-aware, device local time) ──────────────────────────
+const LANG_LOCALE: Record<string, string> = {
+  vi: "vi-VN", en: "en-US", zh: "zh-CN", ja: "ja-JP", ko: "ko-KR", fr: "fr-FR",
+};
+function LiveClock({ lang }: { lang: string }) {
+  const [time, setTime] = useState("");
+  const locale = LANG_LOCALE[lang] || "en-US";
+  useEffect(() => {
+    const fmt = () => new Date().toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", hour12: false });
+    setTime(fmt());
+    const id = setInterval(() => setTime(fmt()), 1000);
+    return () => clearInterval(id);
+  }, [locale]);
+  return (
+    <div style={{
+      fontFamily: "'Outfit', monospace",
+      fontWeight: 700,
+      fontSize: 20,
+      letterSpacing: "0.05em",
+      color: "rgba(246,241,232,0.7)",
+      minWidth: 54,
+      textAlign: "right",
+    }}>
+      {time}
+    </div>
+  );
+}
+
+// ─── Smart Greeting (time-aware + i18n) ───────────────────────────────────────
+function smartGreeting(lang: string): string {
+  const h = new Date().getHours();
+  if (lang === "en") {
+    if (h < 12) return "Good morning,";
+    if (h < 18) return "Good afternoon,";
+    return "Good evening,";
+  }
+  if (lang === "zh") {
+    if (h < 12) return "早上好，";
+    if (h < 18) return "下午好，";
+    return "晚上好，";
+  }
+  if (lang === "ja") {
+    if (h < 12) return "おはようございます，";
+    if (h < 18) return "こんにちは，";
+    return "こんばんは，";
+  }
+  if (lang === "ko") {
+    if (h < 12) return "안녕하세요 (아침)，";
+    if (h < 18) return "안녕하세요 (오후)，";
+    return "안녕하세요 (저녁)，";
+  }
+  if (lang === "fr") {
+    if (h < 12) return "Bonjour,";
+    if (h < 18) return "Bon après-midi,";
+    return "Bonsoir,";
+  }
+  // vi (default)
+  if (h < 12) return "Chào buổi sáng,";
+  if (h < 18) return "Chào buổi chiều,";
+  return "Chào buổi tối,";
+}
+
 // ─── Toast Notification ───────────────────────────────────────────────────────
 type ToastType = "error" | "warning" | "success" | "info";
 interface ToastItem { id: number; msg: string; type: ToastType; }
@@ -634,14 +696,11 @@ export default function Dashboard() {
                           {userName ? userName.charAt(0).toUpperCase() : 'M'}
                        </div>
                        <div>
-                          <div className="text-xs text-slate-400">Chào buổi sáng,</div>
+                           <div className="text-xs text-slate-400">{smartGreeting(lang)}</div>
                           <div className="text-base font-bold text-white tracking-wide">{userName || 'Nhà sản xuất'}</div>
                        </div>
                     </div>
-                    <button className="relative w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
-                       <span className="material-symbols-outlined text-slate-300">notifications</span>
-                       <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-amber-500 rounded-full border border-[#0b1623]"></span>
-                    </button>
+                     <LiveClock lang={lang} />
                  </div>
 
                  {/* Hero Card */}

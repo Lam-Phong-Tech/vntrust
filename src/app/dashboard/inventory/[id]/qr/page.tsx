@@ -1,5 +1,6 @@
 "use client";
 
+import { Toast } from "@/components/Toast";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -420,12 +421,7 @@ export default function QRPrintPage() {
         }
       `}</style>
 
-      {/* Toast */}
-      {toast && (
-        <div className={`fixed bottom-4 right-4 px-6 py-3 rounded-xl font-bold text-white shadow-lg z-50 animate-fade-in ${toast.ok ? 'bg-emerald-500' : 'bg-red-500'}`}>
-          {toast.msg}
-        </div>
-      )}
+      {toast && <Toast msg={toast.msg} ok={toast.ok} onClose={() => setToast(null)} />}
 
       {/* Confirm Modal */}
       {confirmModal && (

@@ -642,6 +642,10 @@ const dict: Record<string, Record<string, string>> = {
   inv_err_qty_max: { vi: "Số lượng không được vượt quá 10,000", en: "Quantity cannot exceed 10,000", zh: "数量不能超过10,000", ja: "数量は10,000を超えることができません", ko: "수량은 10,000을 초과할 수 없습니다", fr: "La quantité ne peut pas dépasser 10 000" },
   inv_err_fill_dates: { vi: "Vui lòng điền đầy đủ ngày SX và hạn dùng", en: "Please fill in mfg date and expiry", zh: "请填写生产日期和到期日", ja: "製造日と有効期限を入力してください", ko: "제조일과 만료일을 입력해 주세요", fr: "Veuillez remplir la date de fab et l'expiration" },
   inv_err_sync: { vi: "Lỗi kết nối khi đồng bộ", en: "Connection error during sync", zh: "同步时连接错误", ja: "同期中に接続エラー", ko: "동기화 중 연결 오류", fr: "Erreur de connexion lors de la synchronisation" },
+  toast_success: { vi: "Thành công", en: "Success", zh: "成功", ja: "成功", ko: "성공", fr: "Succès" },
+  toast_error: { vi: "Có lỗi xảy ra", en: "An error occurred", zh: "发生错误", ja: "エラーが発生しました", ko: "오류가 발생했습니다", fr: "Une erreur est survenue" },
+  inv_sync_success_all: { vi: "Tất cả lô hàng đã đồng bộ", en: "All batches synced", zh: "所有批次已同步", ja: "すべてのバッチが同期されました", ko: "모든 배치가 동기화되었습니다", fr: "Tous les lots sont synchronisés" },
+  inv_sync_success_count: { vi: "Đã đồng bộ {0} lô hàng", en: "Synced {0} batches", zh: "已同步 {0} 个批次", ja: "{0} バッチが同期されました", ko: "{0} 배치 동기화됨", fr: "{0} lots synchronisés" },
   inv_seed_done: { vi: "Database đã khởi tạo dữ liệu mẫu", en: "Database initialized with sample data", zh: "数据库已初始化示例数据", ja: "データベースにサンプルデータを初期化しました", ko: "데이터베이스에 샘플 데이터 초기화됨", fr: "Base de données initialisée avec des données exemple" },
   inv_edit_batch: { vi: "Chỉnh sửa Lô hàng", en: "Edit Batch", zh: "编辑批次", ja: "バッチを編集", ko: "배치 편집", fr: "Modifier le lot" },
   inv_qty_readonly: { vi: "Số lượng tem (không thể sửa)", en: "Stamp quantity (read-only)", zh: "标签数量（只读）", ja: "スタンプ数量（読み取り専用）", ko: "스탬프 수량(읽기 전용)", fr: "Quantité de tampons (lecture seule)" },
@@ -709,11 +713,16 @@ const dict: Record<string, Record<string, string>> = {
   demo_imp: { vi: "Nhà phân phối", en: "Distributor", zh: "分销商", ja: "流通業者", ko: "유통업체", fr: "Distributeur" },
   demo_con: { vi: "Người tiêu dùng", en: "Consumer", zh: "消费者", ja: "消費者", ko: "소비자", fr: "Consommateur" },
   demo_admin: { vi: "Quản trị viên", en: "Administrator", zh: "管理员", ja: "管理者", ko: "관리자", fr: "Administrateur" },
+  // ── Mobile Bottom Nav labels ─────────────────────────────────────────────
+  mob_nav_home:     { vi: "Trang chủ",  en: "Home",      zh: "首页",   ja: "ホーム",     ko: "홈",     fr: "Accueil"    },
+  mob_nav_product:  { vi: "Sản phẩm",   en: "Products",  zh: "产品",   ja: "製品",       ko: "제품",   fr: "Produits"   },
+  mob_nav_create:   { vi: "Tạo mới",    en: "Create",    zh: "创建",   ja: "作成",       ko: "만들기", fr: "Créer"      },
+  mob_nav_verify:   { vi: "Xác thực",   en: "Verify",    zh: "验证",   ja: "認証",       ko: "확인",   fr: "Vérifier"   },
+  mob_nav_me:       { vi: "Tôi",        en: "Me",        zh: "我的",   ja: "マイページ", ko: "나",     fr: "Moi"        },
+  mob_nav_warehouse:{ vi: "Kho hàng",   en: "Warehouse", zh: "仓库",   ja: "倉庫",       ko: "창고",   fr: "Entrepôt"   },
+  mob_nav_distrib:  { vi: "Phân phối",  en: "Logistics", zh: "物流",   ja: "物流",       ko: "물류",   fr: "Logistique" },
+  mob_nav_supply:   { vi: "Chuỗi CC",   en: "Supply",    zh: "供应链", ja: "サプライ",   ko: "공급망", fr: "Chaîne"     },
 };
-
-
-
-
 
 export function t(key: string, lang: string = "vi"): string {
   return (dict[key] as any)?.[lang] ?? dict[key]?.vi ?? key;

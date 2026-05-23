@@ -1,4 +1,5 @@
-"use client";
+﻿"use client";
+import { Toast } from "@/components/Toast";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -266,9 +267,7 @@ export default function DistributionPage() {
   return (
     <div className="min-h-[calc(100vh-80px)] p-6 md:p-10 max-w-7xl mx-auto">
       {toast && (
-        <div className={`fixed bottom-8 right-8 z-50 px-5 py-3 rounded-2xl font-bold text-sm shadow-2xl ${toast.ok ? "bg-emerald-600" : "bg-red-600"} text-white`}>
-          {toast.msg}
-        </div>
+        <Toast msg={toast.msg} ok={toast.ok} onClose={() => setToast(null)} />
       )}
 
       {/* Header */}

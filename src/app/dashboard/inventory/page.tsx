@@ -1,5 +1,6 @@
 "use client";
 
+import { Toast } from "@/components/Toast";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLogs } from "@/hooks/useLogs";
@@ -54,10 +55,10 @@ export default function InventoryPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!['image/jpeg','image/png','image/webp'].includes(file.type)) {
-      showToast('Chỉ chấp nhận JPG, PNG hoặc WebP', false); return;
+      showToast('Chá»‰ cháº¥p nháº­n JPG, PNG hoáº·c WebP', false); return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      showToast('Ảnh quá lớn. Tối đa 5MB', false); return;
+      showToast('áº¢nh quÃ¡ lá»›n. Tá»‘i Ä‘a 5MB', false); return;
     }
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
@@ -72,10 +73,10 @@ export default function InventoryPage() {
       fd.append('type', form.soChungNhan ? 'certificate' : 'product');
       const res = await fetch('/api/upload', { method: 'POST', body: fd });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Upload thất bại');
+      if (!res.ok) throw new Error(json.error || 'Upload tháº¥t báº¡i');
       return json.url;
     } catch (e: any) {
-      showToast('✗ Upload ảnh: ' + e.message, false);
+      showToast('âœ— Upload áº£nh: ' + e.message, false);
       return null;
     } finally {
       setUploadingImg(false);
@@ -119,17 +120,17 @@ export default function InventoryPage() {
         return;
       }
       if (!imageFile) {
-        showToast("Vui lòng tải lên ảnh sản phẩm", false);
+        showToast("Vui lÃ²ng táº£i lÃªn áº£nh sáº£n pháº©m", false);
         return;
       }
     }
 
     
     if (type === "cert") {
-      if (!selectedProduct) { showToast('Vui lòng chọn sản phẩm', false); return; }
+      if (!selectedProduct) { showToast('Vui lÃ²ng chá»n sáº£n pháº©m', false); return; }
       const { loai, soChungNhan, ngayCap, ngayHetHan, toChucCap } = form;
-      if (!loai || !soChungNhan || !ngayCap || !ngayHetHan || !toChucCap) { showToast('Vui lòng điền đủ thông tin', false); return; }
-      if (!imageFile) { showToast('Vui lòng upload ảnh chứng nhận', false); return; }
+      if (!loai || !soChungNhan || !ngayCap || !ngayHetHan || !toChucCap) { showToast('Vui lÃ²ng Ä‘iá»n Ä‘á»§ thÃ´ng tin', false); return; }
+      if (!imageFile) { showToast('Vui lÃ²ng upload áº£nh chá»©ng nháº­n', false); return; }
       
       setSubmitting(true);
       const url = await uploadImage();
@@ -142,12 +143,12 @@ export default function InventoryPage() {
           body: JSON.stringify({ sanPhamId: selectedProduct, loai, soChungNhan, ngayCap, ngayHetHan, toChucCap, hinhAnhUrl: url }),
         });
         const json = await res.json();
-        if (!res.ok) throw new Error(json.error || "Lỗi lưu chứng nhận");
-        showToast('✓ Đã tải lên chứng nhận thành công, đang chờ Admin duyệt', true);
+        if (!res.ok) throw new Error(json.error || "Lá»—i lÆ°u chá»©ng nháº­n");
+        showToast('âœ“ ÄÃ£ táº£i lÃªn chá»©ng nháº­n thÃ nh cÃ´ng, Ä‘ang chá» Admin duyá»‡t', true);
         closeModal();
         fetchData();
       } catch (e: any) {
-        showToast("✗ " + e.message, false);
+        showToast("âœ— " + e.message, false);
       } finally {
         setSubmitting(false);
       }
@@ -161,7 +162,7 @@ export default function InventoryPage() {
       }
       const { ngaySanXuat, hanDung, soLuong } = form;
       if (!ngaySanXuat || !hanDung || !soLuong) {
-        showToast("✗ Vui lòng điền đầy đủ thông tin", false);
+        showToast("âœ— Vui lÃ²ng Ä‘iá»n Ä‘áº§y Ä‘á»§ thÃ´ng tin", false);
         return;
       }
       const sxDate = new Date(ngaySanXuat);
@@ -180,9 +181,9 @@ export default function InventoryPage() {
         showToast(t("inv_err_mfg_after_exp"), false);
         return;
       }
-      // Hạn dùng không được là ngày đã qua
+      // Háº¡n dÃ¹ng khÃ´ng Ä‘Æ°á»£c lÃ  ngÃ y Ä‘Ã£ qua
       if (hanDung < localTodayStr) {
-        showToast("✗ Hạn dùng không được là ngày đã qua trong quá khứ", false);
+        showToast("âœ— Háº¡n dÃ¹ng khÃ´ng Ä‘Æ°á»£c lÃ  ngÃ y Ä‘Ã£ qua trong quÃ¡ khá»©", false);
         return;
       }
       const qty = Number(soLuong);
@@ -200,7 +201,7 @@ export default function InventoryPage() {
     const body: Record<string, string> = { type, ...form };
     if (type === "batch") body.sanPhamId = selectedProduct;
 
-    // Upload ảnh nếu có (chỉ cho sản phẩm)
+    // Upload áº£nh náº¿u cÃ³ (chá»‰ cho sáº£n pháº©m)
     if (type === 'product' && imageFile) {
       const url = await uploadImage();
       if (url) body.hinhAnhUrl = url;
@@ -214,17 +215,17 @@ export default function InventoryPage() {
         body: JSON.stringify(body),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Lỗi không xác định");
-      showToast(type === "product" ? `✓ Lưu thành công: Đã thêm sản phẩm ${json.sanPham.ten}` : `✓ Lưu thành công: Đã tạo lô ${json.loHang.maLo} với ${json.totalUids} tem QR`, true);
+      if (!res.ok) throw new Error(json.error || "Lá»—i khÃ´ng xÃ¡c Ä‘á»‹nh");
+      showToast(type === "product" ? `âœ“ LÆ°u thÃ nh cÃ´ng: ÄÃ£ thÃªm sáº£n pháº©m ${json.sanPham.ten}` : `âœ“ LÆ°u thÃ nh cÃ´ng: ÄÃ£ táº¡o lÃ´ ${json.loHang.maLo} vá»›i ${json.totalUids} tem QR`, true);
       addLog({
-        action: type === 'product' ? `Tạo sản phẩm: ${json.sanPham.ten}` : `Tạo lô hàng ${json.loHang.maLo}`,
-        user: localStorage.getItem('userName') || 'Người dùng',
+        action: type === 'product' ? `Táº¡o sáº£n pháº©m: ${json.sanPham.ten}` : `Táº¡o lÃ´ hÃ ng ${json.loHang.maLo}`,
+        user: localStorage.getItem('userName') || 'NgÆ°á»i dÃ¹ng',
         status: "success"
       });
       closeModal();
       fetchData();
     } catch (e: any) {
-      showToast("✗ " + e.message, false);
+      showToast("âœ— " + e.message, false);
     } finally {
       setSubmitting(false);
     }
@@ -240,17 +241,17 @@ export default function InventoryPage() {
     // Validate: NSX not in future
     const todayStr = new Date().toISOString().split('T')[0];
     if (ngaySanXuat > todayStr) {
-      showToast('✗ Ngày sản xuất không được là ngày trong tương lai', false);
+      showToast('âœ— NgÃ y sáº£n xuáº¥t khÃ´ng Ä‘Æ°á»£c lÃ  ngÃ y trong tÆ°Æ¡ng lai', false);
       return;
     }
     // Validate: HSD must be after NSX
     if (hanDung <= ngaySanXuat) {
-      showToast('✗ Hạn dùng phải sau ngày sản xuất', false);
+      showToast('âœ— Háº¡n dÃ¹ng pháº£i sau ngÃ y sáº£n xuáº¥t', false);
       return;
     }
     // Validate: HSD must not be in the past
     if (hanDung < todayStr) {
-      showToast('✗ Hạn dùng không được là ngày đã qua trong quá khứ', false);
+      showToast('âœ— Háº¡n dÃ¹ng khÃ´ng Ä‘Æ°á»£c lÃ  ngÃ y Ä‘Ã£ qua trong quÃ¡ khá»©', false);
       return;
     }
     setSubmitting(true);
@@ -261,13 +262,13 @@ export default function InventoryPage() {
         body: JSON.stringify({ ngaySanXuat, hanDung }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Lỗi cập nhật");
-      showToast(`✓ Đã cập nhật lô ${selectedBatch.maLo}`, true);
-      addLog({ action: `Cập nhật lô hàng: ${selectedBatch.maLo}`, user: localStorage.getItem('userName') || 'Người dùng', status: "success" });
+      if (!res.ok) throw new Error(json.error || "Lá»—i cáº­p nháº­t");
+      showToast(`âœ“ ÄÃ£ cáº­p nháº­t lÃ´ ${selectedBatch.maLo}`, true);
+      addLog({ action: `Cáº­p nháº­t lÃ´ hÃ ng: ${selectedBatch.maLo}`, user: localStorage.getItem('userName') || 'NgÆ°á»i dÃ¹ng', status: "success" });
       closeModal();
       fetchData();
     } catch (e: any) {
-      showToast("✗ " + e.message, false);
+      showToast("âœ— " + e.message, false);
     } finally {
       setSubmitting(false);
     }
@@ -279,13 +280,13 @@ export default function InventoryPage() {
     try {
       const res = await fetch(`/api/inventory/${selectedBatch.id}`, { method: "DELETE" });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Lỗi xóa lô hàng");
-      showToast(`✓ ${json.message}`, true);
-      addLog({ action: `Xóa lô hàng: ${selectedBatch.maLo}`, user: localStorage.getItem('userName') || 'Người dùng', status: "success" });
+      if (!res.ok) throw new Error(json.error || "Lá»—i xÃ³a lÃ´ hÃ ng");
+      showToast(`âœ“ ${json.message}`, true);
+      addLog({ action: `XÃ³a lÃ´ hÃ ng: ${selectedBatch.maLo}`, user: localStorage.getItem('userName') || 'NgÆ°á»i dÃ¹ng', status: "success" });
       closeModal();
       fetchData();
     } catch (e: any) {
-      showToast("✗ " + e.message, false);
+      showToast("âœ— " + e.message, false);
     } finally {
       setSubmitting(false);
     }
@@ -300,9 +301,7 @@ export default function InventoryPage() {
         body: JSON.stringify(loHangId ? { loHangId } : {}),
       });
       const json = await res.json();
-      showToast(json.synced > 0
-        ? `✓ ${json.message} (${json.results.map((r: any) => `${r.maLo}: ${r.before}→${r.after}`).join(", ")})`
-        : `ℹ ${json.message}`, json.synced >= 0);
+      showToast(json.synced === 0 ? t("inv_sync_success_all") : t("inv_sync_success_count").replace("{0}", json.synced.toString()), json.synced >= 0);
       fetchData();
     } catch {
       showToast(t("inv_err_sync"), false);
@@ -383,7 +382,7 @@ export default function InventoryPage() {
                       </div>
                       <div className="min-w-0">
                         <h3 className="font-bold text-base sm:text-lg text-white font-headline leading-snug">{sp.ten}</h3>
-                        <p className="text-xs sm:text-sm text-slate-300 mt-0.5">SKU: <span className="font-mono">{sp.maSKU}</span> · {sp.nuocSanXuat || "N/A"}</p>
+                        <p className="text-xs sm:text-sm text-slate-300 mt-0.5">SKU: <span className="font-mono">{sp.maSKU}</span> Â· {sp.nuocSanXuat || "N/A"}</p>
                         {sp.moTa && <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{sp.moTa}</p>}
                       </div>
                     </div>
@@ -395,7 +394,7 @@ export default function InventoryPage() {
                         <button 
                           onClick={() => { 
                             if (!sp.chungNhans || sp.chungNhans.length === 0 || sp.chungNhans[0].trangThaiDuyet !== 'approved') {
-                              showToast("Sản phẩm chưa có chứng nhận hoặc chứng nhận chưa được phê duyệt. Không thể tạo lô hàng.", false);
+                              showToast("Sáº£n pháº©m chÆ°a cÃ³ chá»©ng nháº­n hoáº·c chá»©ng nháº­n chÆ°a Ä‘Æ°á»£c phÃª duyá»‡t. KhÃ´ng thá»ƒ táº¡o lÃ´ hÃ ng.", false);
                               return;
                             }
                             setSelectedProduct(sp.id); 
@@ -419,14 +418,14 @@ export default function InventoryPage() {
                           <span className="material-symbols-outlined text-sm">
                             {sp.chungNhans[0].trangThaiDuyet === 'pending' ? 'hourglass_empty' : sp.chungNhans[0].trangThaiDuyet === 'approved' ? 'verified' : 'cancel'}
                           </span>
-                          {sp.chungNhans[0].trangThaiDuyet === 'pending' ? 'Đang chờ duyệt' : sp.chungNhans[0].trangThaiDuyet === 'approved' ? 'Đã duyệt' : 'Bị từ chối'}
+                          {sp.chungNhans[0].trangThaiDuyet === 'pending' ? 'Äang chá» duyá»‡t' : sp.chungNhans[0].trangThaiDuyet === 'approved' ? 'ÄÃ£ duyá»‡t' : 'Bá»‹ tá»« chá»‘i'}
                         </div>
                       ) : (
                         userRole !== 'admin' && (
                           <button onClick={() => { setSelectedProduct(sp.id); setModal("cert"); setForm({loai: 'ISO'}); }}
                             className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500/30 rounded-lg text-xs font-bold text-emerald-400 transition flex items-center gap-1.5">
                             <span className="material-symbols-outlined text-sm">workspace_premium</span>
-                            Upload Chứng nhận
+                            Upload Chá»©ng nháº­n
                           </button>
                         )
                       )}
@@ -435,7 +434,7 @@ export default function InventoryPage() {
                 </div>
                 {/* Batch list */}
                 {sp.loHangs.length === 0 ? (
-                  <div className="p-8 text-center text-slate-400 text-sm">{t("inv_empty")}. Thêm lô hàng để tạo tem QR.</div>
+                  <div className="p-8 text-center text-slate-400 text-sm">{t("inv_empty")}. ThÃªm lÃ´ hÃ ng Ä‘á»ƒ táº¡o tem QR.</div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
@@ -471,7 +470,7 @@ export default function InventoryPage() {
                                     <button
                                       onClick={() => syncStamps(lo.id)}
                                       disabled={syncing}
-                                      title={`Lệch: khai báo ${lo.soLuong} nhưng thực tế ${lo._count.uids} tem. Nhấn để đồng bộ.`}
+                                      title={`Lá»‡ch: khai bÃ¡o ${lo.soLuong} nhÆ°ng thá»±c táº¿ ${lo._count.uids} tem. Nháº¥n Ä‘á»ƒ Ä‘á»“ng bá»™.`}
                                       className="w-6 h-6 flex items-center justify-center rounded-full bg-amber-500/20 text-amber-400 hover:bg-amber-500/40 transition disabled:opacity-40"
                                     >
                                       <span className="material-symbols-outlined text-[13px]">sync</span>
@@ -552,10 +551,10 @@ export default function InventoryPage() {
         )}
       </main>
 
-      {/* ── Modal: Sửa lô hàng ── */}
+      {/* â”€â”€ Modal: Sá»­a lÃ´ hÃ ng â”€â”€ */}
       {modal === "edit" && selectedBatch && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={closeModal}>
-          <div className="bg-[#1a2235] border border-white/10 rounded-3xl shadow-2xl w-full max-w-md p-8" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end md:items-center justify-center md:p-4" onClick={closeModal}>
+          <div className="bg-[#1a2235] border border-white/10 rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-md max-h-[88dvh] flex flex-col overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h2 className="text-xl font-bold text-white font-headline">{t("inv_edit_batch")}</h2>
@@ -604,18 +603,18 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {/* ── Modal: Xác nhận xóa lô hàng ── */}
+      {/* â”€â”€ Modal: XÃ¡c nháº­n xÃ³a lÃ´ hÃ ng â”€â”€ */}
       {modal === "delete" && selectedBatch && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={closeModal}>
-          <div className="bg-[#1a2235] border border-red-500/30 rounded-3xl shadow-2xl w-full max-w-sm p-8" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center justify-center md:p-4" onClick={closeModal}>
+          <div className="bg-[#1a2235] border border-red-500/30 rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-sm max-h-[88dvh] flex flex-col overflow-y-auto p-8" onClick={e => e.stopPropagation()}>
             <div className="flex flex-col items-center text-center mb-6">
               <div className="w-16 h-16 rounded-full bg-red-500/15 flex items-center justify-center mb-4">
                 <span className="material-symbols-outlined text-red-400 text-3xl">warning</span>
               </div>
               <h2 className="text-xl font-bold text-white">{t("inv_confirm_delete")}</h2>
               <p className="text-slate-400 text-sm mt-2">
-                Lô <span className="font-mono font-bold text-white">{selectedBatch.maLo}</span> và
-                toàn bộ <span className="text-red-400 font-bold">{selectedBatch.soLuong.toLocaleString()} tem QR</span> sẽ bị xóa vĩnh viễn.
+                LÃ´ <span className="font-mono font-bold text-white">{selectedBatch.maLo}</span> vÃ 
+                toÃ n bá»™ <span className="text-red-400 font-bold">{selectedBatch.soLuong.toLocaleString()} tem QR</span> sáº½ bá»‹ xÃ³a vÄ©nh viá»…n.
               </p>
               <p className="text-xs text-red-400 mt-2 font-bold">{t("inv_irreversible")}</p>
             </div>
@@ -633,20 +632,20 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {/* ── Modal: Thêm Chứng nhận ── */}
+      {/* â”€â”€ Modal: ThÃªm Chá»©ng nháº­n â”€â”€ */}
       {modal === "cert" && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={closeModal}>
-          <div className="bg-[#1a2235] glass-panel text-white border border-emerald-500/30 rounded-3xl shadow-2xl w-full max-w-lg p-8" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end md:items-center justify-center md:p-4" onClick={closeModal}>
+          <div className="bg-[#1a2235] glass-panel text-white border border-emerald-500/30 rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-lg max-h-[88dvh] flex flex-col overflow-y-auto p-8" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold font-headline flex items-center gap-2 text-emerald-400">
-                <span className="material-symbols-outlined">workspace_premium</span> Tải lên Chứng nhận
+                <span className="material-symbols-outlined">workspace_premium</span> Táº£i lÃªn Chá»©ng nháº­n
               </h2>
-              <button onClick={closeModal} className="text-slate-400 hover:text-slate-200">✕</button>
+              <button onClick={closeModal} className="text-slate-400 hover:text-slate-200">âœ•</button>
             </div>
             <div className="space-y-4 max-h-[60vh] overflow-y-auto px-1">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">Loại Chứng nhận</label>
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">Loáº¡i Chá»©ng nháº­n</label>
                   <select value={form.loai || 'ISO'} onChange={e => setForm(f => ({ ...f, loai: e.target.value }))} className="w-full border border-white/20 rounded-xl px-4 py-3 text-sm bg-white/5 text-white">
                     <option value="ISO">ISO</option>
                     <option value="FDA">FDA</option>
@@ -654,48 +653,48 @@ export default function InventoryPage() {
                     <option value="GLOBALGAP">GlobalGAP</option>
                     <option value="HALAL">Halal</option>
                     <option value="HACCP">HACCP</option>
-                    <option value="OTHER">Khác</option>
+                    <option value="OTHER">KhÃ¡c</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">Số Chứng nhận</label>
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">Sá»‘ Chá»©ng nháº­n</label>
                   <input value={form.soChungNhan || ""} onChange={e => setForm(f => ({ ...f, soChungNhan: e.target.value }))} className="w-full bg-white/5 border border-white/20 text-white rounded-xl px-4 py-3 text-sm" placeholder="VD: ISO9001:2015" />
                 </div>
               </div>
               <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">Tổ chức cấp</label>
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">Tá»• chá»©c cáº¥p</label>
                   <input value={form.toChucCap || ""} onChange={e => setForm(f => ({ ...f, toChucCap: e.target.value }))} className="w-full bg-white/5 border border-white/20 text-white rounded-xl px-4 py-3 text-sm" placeholder="VD: BSI Group" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">Ngày cấp</label>
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">NgÃ y cáº¥p</label>
                   <input type="date" value={form.ngayCap || ""} max={new Date().toISOString().split('T')[0]} onChange={e => setForm(f => ({ ...f, ngayCap: e.target.value }))} className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-sm text-white" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">Ngày hết hạn</label>
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">NgÃ y háº¿t háº¡n</label>
                   <input type="date" value={form.ngayHetHan || ""} max="9999-12-31" onChange={e => setForm(f => ({ ...f, ngayHetHan: e.target.value }))} className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-sm text-white" />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Ảnh Bản scan Chứng nhận</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">áº¢nh Báº£n scan Chá»©ng nháº­n</label>
                 <div className="border-2 border-dashed border-emerald-500/30 rounded-xl p-3 text-center hover:border-emerald-500/60 transition cursor-pointer relative">
                   <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {imagePreview ? (
                     <div className="relative">
                       <img src={imagePreview} alt="preview" className="w-full h-40 object-contain rounded-lg bg-black/20" />
-                      <button type="button" onClick={(e) => { e.stopPropagation(); setImageFile(null); setImagePreview(null); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs">✕</button>
+                      <button type="button" onClick={(e) => { e.stopPropagation(); setImageFile(null); setImagePreview(null); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs">âœ•</button>
                     </div>
                   ) : (
                     <div className="py-6">
                       <span className="material-symbols-outlined text-3xl text-emerald-400/50 block mb-1">document_scanner</span>
-                      <p className="text-xs text-slate-400">Nhấn để tải lên ảnh scan/chụp</p>
+                      <p className="text-xs text-slate-400">Nháº¥n Ä‘á»ƒ táº£i lÃªn áº£nh scan/chá»¥p</p>
                     </div>
                   )}
                 </div>
               </div>
             </div>
             <div className="flex gap-3 mt-8">
-              <button onClick={closeModal} className="flex-1 py-3 border border-white/20 rounded-xl text-sm font-bold text-slate-200 hover:bg-white/5 transition">Hủy</button>
+              <button onClick={closeModal} className="flex-1 py-3 border border-white/20 rounded-xl text-sm font-bold text-slate-200 hover:bg-white/5 transition">Há»§y</button>
               <button onClick={() => handleSubmit("cert")} disabled={submitting} className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold transition flex justify-center gap-2">
                 {submitting && <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>} Upload
               </button>
@@ -704,10 +703,10 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {/* ── Modal: Thêm Sản phẩm / Lô hàng ── */}
+      {/* â”€â”€ Modal: ThÃªm Sáº£n pháº©m / LÃ´ hÃ ng â”€â”€ */}
       {(modal === "product" || modal === "batch") && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={closeModal}>
-          <div className="bg-white/5 glass-panel text-white rounded-3xl shadow-2xl w-full max-w-md p-8" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end md:items-center justify-center md:p-4" onClick={closeModal}>
+          <div className="bg-white/5 glass-panel text-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-md max-h-[88dvh] flex flex-col overflow-y-auto p-8" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold font-headline">
                 {modal === "product" ? t("inv_modal_add_product") : t("inv_modal_add_batch")}
@@ -724,13 +723,13 @@ export default function InventoryPage() {
                     <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">{t("inv_field_name")}</label>
                     <input value={form.ten || ""} onChange={e => setForm(f => ({ ...f, ten: e.target.value }))}
                       className="w-full border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
-                      placeholder="VD: Nước mắm Phú Quốc 35N" />
+                      placeholder="VD: NÆ°á»›c máº¯m PhÃº Quá»‘c 35N" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">{t("inv_field_desc")}</label>
                     <textarea value={form.moTa || ""} onChange={e => setForm(f => ({ ...f, moTa: e.target.value }))}
                       className="w-full border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition resize-none"
-                      rows={3} placeholder="Mô tả ngắn về sản phẩm..." />
+                      rows={3} placeholder="MÃ´ táº£ ngáº¯n vá» sáº£n pháº©m..." />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -740,25 +739,25 @@ export default function InventoryPage() {
                         placeholder="893xxxxxx" />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Nước SX</label>
+                      <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">NÆ°á»›c SX</label>
                       <input value={form.nuocSanXuat || ""} onChange={e => setForm(f => ({ ...f, nuocSanXuat: e.target.value }))}
                         className="w-full border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
-                        placeholder="Việt Nam" />
+                        placeholder="Viá»‡t Nam" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Ảnh Sản phẩm <span className="text-red-400 font-normal">(Bắt buộc)</span></label>
+                    <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">áº¢nh Sáº£n pháº©m <span className="text-red-400 font-normal">(Báº¯t buá»™c)</span></label>
                     <div className="border-2 border-dashed border-white/20 rounded-xl p-3 text-center hover:border-primary/50 transition cursor-pointer relative">
                       <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                       {imagePreview ? (
                         <div className="relative">
                           <img src={imagePreview} alt="preview" className="w-full h-32 object-cover rounded-lg" />
-                          <button type="button" onClick={(e) => { e.stopPropagation(); setImageFile(null); setImagePreview(null); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs">✕</button>
+                          <button type="button" onClick={(e) => { e.stopPropagation(); setImageFile(null); setImagePreview(null); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs">âœ•</button>
                         </div>
                       ) : (
                         <div className="py-3">
                           <span className="material-symbols-outlined text-3xl text-slate-400 block mb-1">add_photo_alternate</span>
-                          <p className="text-xs text-slate-400">Nhấn để chọn ảnh · JPG/PNG/WebP · Max 5MB</p>
+                          <p className="text-xs text-slate-400">Nháº¥n Ä‘á»ƒ chá»n áº£nh Â· JPG/PNG/WebP Â· Max 5MB</p>
                         </div>
                       )}
                     </div>
@@ -825,9 +824,7 @@ export default function InventoryPage() {
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-8 right-8 z-50 px-6 py-4 rounded-2xl shadow-2xl font-bold text-sm max-w-sm transition-all ${toast.ok ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
-          {toast.msg}
-        </div>
+        <Toast msg={toast.msg} ok={toast.ok} onClose={() => setToast(null)} />
       )}
     </div>
   );

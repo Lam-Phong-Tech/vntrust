@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1';
     const body = await req.json();
-    const { serial, moTa, viTri, loaiSanPham, mucDo, thongTinLienHe, loaiBaoCao, metadata } = body;
+    const { serial, moTa, viTri, loaiSanPham, mucDo, thongTinLienHe, loaiBaoCao, metadata, anhBangChung } = body;
 
     if (!moTa && !metadata) {
       return NextResponse.json({ error: 'Vui lòng mô tả vấn đề' }, { status: 400 });
@@ -47,12 +48,25 @@ export async function POST(req: NextRequest) {
       metadata.loaiSanPham = loaiSanPham;
       metadata.contactInfo = contactInfo;
       metadata.encryptedContact = encryptedContact;
+      if (anhBangChung) metadata.anhBangChung = anhBangChung;
       finalMoTa = JSON.stringify(metadata);
     } else {
-      // Backward compatible cho các báo cáo cũ / text thường
-      const baseMoTa = `[${loaiSanPham || 'Sản phẩm'}] Serial: ${serial || 'N/A'} | Vị trí: ${viTri || 'N/A'}\nNgười báo cáo: ${contactInfo}\nMô tả: ${moTa}`;
-      finalMoTa = encryptedContact ? `${baseMoTa}\n[SECURE_CONTACT:${encryptedContact}]` : baseMoTa;
+      // Báo cáo mới qua form có thể chứa ảnh -> lưu dạng JSON để parse dễ dàng
+      const reportData = {
+        serial,
+        viTri,
+        loaiSanPham,
+        lyDo: moTa,
+        contactInfo,
+        encryptedContact,
+        anhBangChung: anhBangChung || [],
+      };
+      finalMoTa = JSON.stringify(reportData);
     }
+
+    // Lấy userName từ cookie nếu người dùng đã đăng nhập
+    const cookieStore = await cookies();
+    const userName = cookieStore.get('userName')?.value || null;
 
     // Log the report as a CanhBao
     await prisma.canhBao.create({
@@ -62,6 +76,7 @@ export async function POST(req: NextRequest) {
         moTa: finalMoTa,
         uid: serial || null,
         trangThai: 'open',
+        nguoiBaoCao: userName,
       }
     });
 
@@ -85,11 +100,23 @@ export async function POST(req: NextRequest) {
 // GET: Admin list reports
 export async function GET(req: NextRequest) {
   try {
+    const cookieStore = await cookies();
+    const userRole = cookieStore.get('userRole')?.value;
+    const userName = cookieStore.get('userName')?.value;
+    if (!userRole || !userName) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status') || 'open';
     
+    const where: any = status === 'all' ? {} : { trangThai: status };
+    if (userRole !== 'admin') {
+      where.nguoiBaoCao = userName;
+    }
+
     const reports = await prisma.canhBao.findMany({
-      where: status === 'all' ? {} : { trangThai: status },
+      where,
       orderBy: { thoiGian: 'desc' },
       take: 50,
     });
@@ -115,6 +142,12 @@ export async function GET(req: NextRequest) {
 // PATCH: Admin update report status
 export async function PATCH(req: NextRequest) {
   try {
+    const cookieStore = await cookies();
+    const userRole = cookieStore.get('userRole')?.value;
+    if (userRole !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const { id, trangThai, ghiChu } = await req.json();
     if (!id || !trangThai) return NextResponse.json({ error: 'Thiếu id hoặc trạng thái' }, { status: 400 });
 

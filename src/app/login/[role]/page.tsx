@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 // ─── Toast component ──────────────────────────────────────────────────────────
@@ -47,7 +47,10 @@ export default function LoginPage() {
   const { t } = useLanguage();
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const pageRole = (params?.role as string) || "consumer";
+
+  const kickReason = searchParams?.get("reason"); // 'suspended' | null
 
   const [loading, setLoading] = useState(false);
   const [view, setView] = useState<"login" | "register" | "forgot">("login");
@@ -81,7 +84,17 @@ export default function LoginPage() {
   const [regHotline, setRegHotline] = useState("");
   
   const isBusiness = pageRole === "manufacturer" || pageRole === "importer";
-  const resetRegForm = () => { setRegName(""); setRegEmail(""); setRegPhone(""); setRegPhoneError(""); setRegPassword(""); setRegCompany(""); setRegTaxCode(""); setRegAddress(""); setRegHotline(""); };
+  // KYC document states
+  const [regGiayphep, setRegGiayphep] = useState<File | null>(null);
+  const [regCmnd, setRegCmnd] = useState<File | null>(null);
+  const [uploadingKyc, setUploadingKyc] = useState<Record<string, boolean>>({});
+  const [uploadedKycUrls, setUploadedKycUrls] = useState<Record<string, string>>({});
+
+  const resetRegForm = () => {
+    setRegName(""); setRegEmail(""); setRegPhone(""); setRegPhoneError(""); setRegPassword("");
+    setRegCompany(""); setRegTaxCode(""); setRegAddress(""); setRegHotline("");
+    setRegGiayphep(null); setRegCmnd(null); setUploadingKyc({}); setUploadedKycUrls({});
+  };
 
   const handleTestRegister = () => {
     setUsername("test_user_" + Math.floor(Math.random()*1000));
@@ -171,6 +184,9 @@ export default function LoginPage() {
             taxCode: regTaxCode,
             address: regAddress,
             hotline: regHotline,
+            // KYC documents (optional, uploaded before registration)
+            giayphep_url: uploadedKycUrls['giayphep'] || undefined,
+            cmnd_url: uploadedKycUrls['cmnd'] || undefined,
           })
         });
         const data = await res.json();
@@ -395,6 +411,19 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {/* ── Suspended Banner ── */}
+        {kickReason === 'suspended' && (
+          <div style={{ display:'flex', alignItems:'flex-start', gap:10, padding:'12px 16px', background:'rgba(239,68,68,0.12)', border:'1px solid rgba(239,68,68,0.35)', borderRadius:14, marginBottom:16 }}>
+            <span className="material-symbols-outlined" style={{ fontSize:20, color:'#f87171', flexShrink:0, marginTop:1 }}>lock</span>
+            <div>
+              <p style={{ fontWeight:700, fontSize:13, color:'#f87171', marginBottom:2 }}>Tài khoản đã bị khóa</p>
+              <p style={{ fontSize:11, color:'rgba(248,113,113,0.8)', lineHeight:1.5 }}>
+                Quản trị viên đã thu hồi quyền truy cập. Vui lòng liên hệ hỗ trợ để biết thêm chi tiết.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Main Card */}
         <div style={{ background:'linear-gradient(180deg,rgba(246,241,232,0.05) 0%,rgba(246,241,232,0.02) 100%)', border:'1px solid rgba(200,165,87,0.15)', borderRadius:20, padding:'24px 20px', marginBottom:16 }}>
           {view === "login" && (
@@ -591,7 +620,83 @@ export default function LoginPage() {
                           placeholder="VD: 1800 xxxx" />
                       </div>
                     </div>
+                    {/* ── KYC Document Upload Section ── */}
+                    <div className="pt-2">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-xl mb-3">
+                        <span className="material-symbols-outlined text-cyan-400 text-[16px] shrink-0">folder_open</span>
+                        <p className="text-xs text-cyan-300 font-medium">Tải lên tài liệu pháp lý (BR-01) để Admin xét duyệt nhanh hơn</p>
+                      </div>
 
+                      {/* Giấy phép Kinh doanh */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                          Giấy phép Kinh doanh <span className="text-slate-500 text-[10px] font-normal normal-case">(PDF, JPG, PNG · max 10MB)</span>
+                        </label>
+                        <label className={`flex items-center gap-3 w-full bg-[#131b2c] border rounded-xl py-3 px-4 cursor-pointer transition-all
+                          ${uploadedKycUrls['giayphep'] ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-slate-700/50 hover:border-cyan-500/40'}`}>
+                          <span className={`material-symbols-outlined text-xl ${uploadedKycUrls['giayphep'] ? 'text-emerald-400' : 'text-amber-400'}`}>description</span>
+                          <span className="text-sm flex-1 truncate text-slate-300">
+                            {uploadingKyc['giayphep'] ? 'Đang tải lên...' : uploadedKycUrls['giayphep'] ? `✓ ${regGiayphep?.name}` : 'Chọn hoặc kéo thả file vào đây'}
+                          </span>
+                          {uploadingKyc['giayphep'] && <span className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin shrink-0" />}
+                          <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden"
+                            onChange={async (e) => {
+                              const f = e.target.files?.[0];
+                              if (!f) return;
+                              e.target.value = '';
+                              setRegGiayphep(f);
+                              setUploadingKyc(p => ({ ...p, giayphep: true }));
+                              const fd = new FormData();
+                              fd.append('file', f);
+                              fd.append('type', 'kyc');
+                              fd.append('kycField', '__pending__'); // will be linked after registration
+                              try {
+                                const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                                const d = await res.json();
+                                if (res.ok) setUploadedKycUrls(p => ({ ...p, giayphep: d.url }));
+                                else showToast('❌ ' + d.error, 'error');
+                              } catch { showToast('❌ Lỗi upload', 'error'); }
+                              setUploadingKyc(p => ({ ...p, giayphep: false }));
+                            }}
+                          />
+                        </label>
+                      </div>
+
+                      {/* CMND / CCCD */}
+                      <div>
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                          CMND / CCCD Người đại diện <span className="text-slate-500 text-[10px] font-normal normal-case">(PDF, JPG, PNG · max 10MB)</span>
+                        </label>
+                        <label className={`flex items-center gap-3 w-full bg-[#131b2c] border rounded-xl py-3 px-4 cursor-pointer transition-all
+                          ${uploadedKycUrls['cmnd'] ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-slate-700/50 hover:border-cyan-500/40'}`}>
+                          <span className={`material-symbols-outlined text-xl ${uploadedKycUrls['cmnd'] ? 'text-emerald-400' : 'text-amber-400'}`}>badge</span>
+                          <span className="text-sm flex-1 truncate text-slate-300">
+                            {uploadingKyc['cmnd'] ? 'Đang tải lên...' : uploadedKycUrls['cmnd'] ? `✓ ${regCmnd?.name}` : 'Chọn hoặc kéo thả file vào đây'}
+                          </span>
+                          {uploadingKyc['cmnd'] && <span className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin shrink-0" />}
+                          <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden"
+                            onChange={async (e) => {
+                              const f = e.target.files?.[0];
+                              if (!f) return;
+                              e.target.value = '';
+                              setRegCmnd(f);
+                              setUploadingKyc(p => ({ ...p, cmnd: true }));
+                              const fd = new FormData();
+                              fd.append('file', f);
+                              fd.append('type', 'kyc');
+                              fd.append('kycField', '__pending__');
+                              try {
+                                const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                                const d = await res.json();
+                                if (res.ok) setUploadedKycUrls(p => ({ ...p, cmnd: d.url }));
+                                else showToast('❌ ' + d.error, 'error');
+                              } catch { showToast('❌ Lỗi upload', 'error'); }
+                              setUploadingKyc(p => ({ ...p, cmnd: false }));
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </div>
 
                   </div>
                 )}

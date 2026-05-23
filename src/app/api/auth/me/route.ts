@@ -45,6 +45,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Không tìm thấy người dùng' }, { status: 404 });
     }
 
+    // ── Session guard: kick out if account or company is locked ──────────────
+    const BLOCKED_STATUSES = ['suspended', 'revoked'];
+    if (BLOCKED_STATUSES.includes(user.trangThai)) {
+      return NextResponse.json({ error: 'Tài khoản đã bị khóa', reason: 'suspended' }, { status: 403 });
+    }
+    if (user.doanhNghiep && BLOCKED_STATUSES.includes(user.doanhNghiep.trangThai)) {
+      return NextResponse.json({ error: 'Doanh nghiệp đã bị thu hồi hoặc từ chối', reason: 'suspended' }, { status: 403 });
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     return NextResponse.json({
       id: user.id,
       ten: user.ten || '',

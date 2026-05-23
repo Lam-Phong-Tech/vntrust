@@ -46,11 +46,16 @@ export async function POST(req: NextRequest) {
           : user.matKhau === password;
 
         if (passwordMatch) {
-          if (user.trangThai === 'pending' || user.trangThai === 'suspended') {
+          // Block login for locked accounts
+          const BLOCKED = ['pending', 'suspended', 'revoked'];
+          if (BLOCKED.includes(user.trangThai)) {
             return NextResponse.json({ error: 'Tài khoản của bạn chưa được phê duyệt hoặc đã bị khóa.' }, { status: 403 });
           }
-          if (user.doanhNghiep && (user.doanhNghiep.trangThai === 'pending' || user.doanhNghiep.trangThai === 'suspended')) {
-            return NextResponse.json({ error: 'Hồ sơ đang chờ phê duyệt. Vui lòng quay lại sau.' }, { status: 403 });
+          if (user.doanhNghiep && BLOCKED.includes(user.doanhNghiep.trangThai)) {
+            const msg = user.doanhNghiep.trangThai === 'pending'
+              ? 'Hồ sơ đang chờ phê duyệt. Vui lòng quay lại sau.'
+              : 'Tài khoản doanh nghiệp đã bị thu hồi hoặc từ chối. Vui lòng liên hệ hỗ trợ.';
+            return NextResponse.json({ error: msg }, { status: 403 });
           }
 
           foundRole = user.vaiTro;

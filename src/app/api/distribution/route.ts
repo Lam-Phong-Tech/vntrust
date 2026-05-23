@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import { randomUUID } from 'crypto';
+import { requireActiveSession } from '@/lib/authGuard';
 
 // Fake "CanhBao" table entries for distribution — we'll use NhatKy as placeholder
 // and a simple JSON-based approach for demo
@@ -50,11 +51,14 @@ export async function GET(req: NextRequest) {
 // PATCH: Activate/deactivate batch (kích hoạt xuất kho)
 export async function PATCH(req: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const userRole = cookieStore.get('userRole')?.value;
-    const doanhNghiepId = cookieStore.get('doanhNghiepId')?.value;
+    const guard = await requireActiveSession();
+    if (guard.error) return guard.error;
 
-    if (!userRole || (userRole !== 'admin' && userRole !== 'manufacturer' && userRole !== 'importer')) {
+    const cookieStore = await cookies();
+    const userRole = guard.userRole;
+    const doanhNghiepId = guard.doanhNghiepId;
+
+    if (userRole !== 'admin' && userRole !== 'manufacturer' && userRole !== 'importer') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

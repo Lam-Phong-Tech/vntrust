@@ -2,16 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { requireActiveSession } from "@/lib/authGuard";
 
 export async function GET() {
   try {
-    const cookieStore = await cookies();
-    const userRole = cookieStore.get('userRole')?.value;
-    const userDoanhNghiepId = cookieStore.get('doanhNghiepId')?.value;
+    const guard = await requireActiveSession();
+    if (guard.error) return guard.error;
 
-    if (!userRole) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const cookieStore = await cookies();
+    const userRole = guard.userRole;
+    const userDoanhNghiepId = guard.doanhNghiepId;
 
     let doanhNghiep;
     if (userRole === 'admin') {
@@ -48,11 +48,14 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const userRole = cookieStore.get('userRole')?.value;
-    const userDoanhNghiepId = cookieStore.get('doanhNghiepId')?.value;
+    const guard = await requireActiveSession();
+    if (guard.error) return guard.error;
 
-    if (!userRole || (userRole !== 'admin' && userRole !== 'manufacturer')) {
+    const cookieStore = await cookies();
+    const userRole = guard.userRole;
+    const userDoanhNghiepId = guard.doanhNghiepId;
+
+    if (userRole !== 'admin' && userRole !== 'manufacturer') {
       return NextResponse.json({ error: "Forbidden: Bạn không có quyền thêm dữ liệu" }, { status: 403 });
     }
 
@@ -177,9 +180,11 @@ export async function POST(req: NextRequest) {
 //   • Cập nhật soLuong = số UIDs thực tế
 export async function PATCH(req: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const userRole = cookieStore.get("userRole")?.value;
-    if (!userRole || (userRole !== "admin" && userRole !== "manufacturer")) {
+    const guard = await requireActiveSession();
+    if (guard.error) return guard.error;
+
+    const userRole = guard.userRole;
+    if (userRole !== "admin" && userRole !== "manufacturer") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -233,8 +238,8 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({
       message: synced === 0
-        ? "Tất cả lô hàng đã đồng bộ, không cần sửa chữa."
-        : `Đã đồng bộ ${synced} lô hàng.`,
+        ? "Tất cả lô hàng đã đồng bộ"
+        : `Đã đồng bộ ${synced} lô hàng`,
       synced,
       results,
     });

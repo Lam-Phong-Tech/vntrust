@@ -1,19 +1,18 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { requireActiveSession } from "@/lib/authGuard";
 
-const WRITE_ROLES = ['admin', 'manufacturer', 'importer']
+const WRITE_ROLES = ['admin', 'manufacturer', 'importer'];
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    const cookieStore = await cookies();
-    const userRole = cookieStore.get('userRole')?.value;
-    const userDoanhNghiepId = cookieStore.get('doanhNghiepId')?.value;
+    const guard = await requireActiveSession();
+    if (guard.error) return guard.error;
 
-    if (!userRole) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const userRole = guard.userRole;
+    const userDoanhNghiepId = guard.doanhNghiepId;
 
     const loHang = await prisma.loHang.findUnique({
       where: { id },
@@ -27,11 +26,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     });
 
     if (!loHang) {
-      return NextResponse.json({ error: "Kh?ng t?m th?y l? h?ng" }, { status: 404 });
+      return NextResponse.json({ error: "Không tìm thấy lô hàng" }, { status: 404 });
     }
 
     if (userRole !== 'admin' && loHang.sanPham.doanhNghiepId !== userDoanhNghiepId) {
-      return NextResponse.json({ error: "Forbidden: B?n kh?ng c? quy?n truy c?p d? li?u c?a doanh nghi?p kh?c" }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden: Bạn không có quyền truy cập dữ liệu của doanh nghiệp khác" }, { status: 403 });
     }
 
     return NextResponse.json(loHang);
@@ -40,16 +39,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-// ??? PUT: C?p nh?t th?ng tin l? h?ng ?????????????????????????????????????????
+// ── PUT: Cập nhật thông tin lô hàng ──────────────────────────────────────────
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    const cookieStore = await cookies();
-    const userRole = cookieStore.get('userRole')?.value;
-    const userDoanhNghiepId = cookieStore.get('doanhNghiepId')?.value;
+    const guard = await requireActiveSession();
+    if (guard.error) return guard.error;
 
-    if (!userRole || !WRITE_ROLES.includes(userRole)) {
-      return NextResponse.json({ error: "Forbidden: Kh?ng c? quy?n ch?nh s?a l? h?ng" }, { status: 403 });
+    const userRole = guard.userRole;
+    const userDoanhNghiepId = guard.doanhNghiepId;
+
+    if (!WRITE_ROLES.includes(userRole)) {
+      return NextResponse.json({ error: "Forbidden: Không có quyền chỉnh sửa lô hàng" }, { status: 403 });
     }
 
     const existing = await prisma.loHang.findUnique({
@@ -58,18 +59,18 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     });
 
     if (!existing) {
-      return NextResponse.json({ error: "Kh?ng t?m th?y l? h?ng" }, { status: 404 });
+      return NextResponse.json({ error: "Không tìm thấy lô hàng" }, { status: 404 });
     }
 
     if (userRole !== 'admin' && existing.sanPham.doanhNghiepId !== userDoanhNghiepId) {
-      return NextResponse.json({ error: "Forbidden: B?n kh?ng c? quy?n s?a l? h?ng c?a doanh nghi?p kh?c" }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden: Bạn không có quyền sửa lô hàng của doanh nghiệp khác" }, { status: 403 });
     }
 
     const body = await req.json();
     const { ngaySanXuat, hanDung } = body;
 
     if (!ngaySanXuat || !hanDung) {
-      return NextResponse.json({ error: "Vui l?ng cung c?p ng?y s?n xu?t v? h?n d?ng" }, { status: 400 });
+      return NextResponse.json({ error: "Vui lòng cung cấp ngày sản xuất và hạn dùng" }, { status: 400 });
     }
 
     const sxDate = new Date(ngaySanXuat + 'T00:00:00');
@@ -78,10 +79,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     today.setHours(23, 59, 59, 999);
 
     if (sxDate > today) {
-      return NextResponse.json({ error: "Ng?y s?n xu?t kh?ng ???c ? t??ng lai" }, { status: 400 });
+      return NextResponse.json({ error: "Ngày sản xuất không được ở tương lai" }, { status: 400 });
     }
     if (hdDate < sxDate) {
-      return NextResponse.json({ error: "H?n d?ng kh?ng ???c nh? h?n ng?y s?n xu?t" }, { status: 400 });
+      return NextResponse.json({ error: "Hạn dùng không được nhỏ hơn ngày sản xuất" }, { status: 400 });
     }
 
     const updated = await prisma.loHang.update({
@@ -89,22 +90,24 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       data: { ngaySanXuat: sxDate, hanDung: hdDate },
     });
 
-    return NextResponse.json({ loHang: updated, message: "C?p nh?t l? h?ng th?nh c?ng" });
+    return NextResponse.json({ loHang: updated, message: "Cập nhật lô hàng thành công" });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// ??? DELETE: X?a l? h?ng v? to?n b? tem QR c?a l? ???????????????????????????
+// ── DELETE: Xóa lô hàng và toàn bộ tem QR ────────────────────────────────────
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    const cookieStore = await cookies();
-    const userRole = cookieStore.get('userRole')?.value;
-    const userDoanhNghiepId = cookieStore.get('doanhNghiepId')?.value;
+    const guard = await requireActiveSession();
+    if (guard.error) return guard.error;
 
-    if (!userRole || !WRITE_ROLES.includes(userRole)) {
-      return NextResponse.json({ error: "Forbidden: Kh?ng c? quy?n x?a l? h?ng" }, { status: 403 });
+    const userRole = guard.userRole;
+    const userDoanhNghiepId = guard.doanhNghiepId;
+
+    if (!WRITE_ROLES.includes(userRole)) {
+      return NextResponse.json({ error: "Forbidden: Không có quyền xóa lô hàng" }, { status: 403 });
     }
 
     const existing = await prisma.loHang.findUnique({
@@ -116,11 +119,11 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     });
 
     if (!existing) {
-      return NextResponse.json({ error: "Kh?ng t?m th?y l? h?ng" }, { status: 404 });
+      return NextResponse.json({ error: "Không tìm thấy lô hàng" }, { status: 404 });
     }
 
     if (userRole !== 'admin' && existing.sanPham.doanhNghiepId !== userDoanhNghiepId) {
-      return NextResponse.json({ error: "Forbidden: B?n kh?ng c? quy?n x?a l? h?ng c?a doanh nghi?p kh?c" }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden: Bạn không có quyền xóa lô hàng của doanh nghiệp khác" }, { status: 403 });
     }
 
     const totalUids = existing._count.uids;
@@ -131,7 +134,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     ]);
 
     return NextResponse.json({
-      message: `?? x?a l? h?ng ${existing.maLo} v? ${totalUids} tem QR li?n quan`,
+      message: `Đã xóa lô hàng ${existing.maLo} và ${totalUids} tem QR liên quan`,
       deleted: { loHangId: id, maLo: existing.maLo, uidsDeleted: totalUids }
     });
   } catch (error: any) {

@@ -64,7 +64,7 @@ export default function HistoryPage() {
 
   return (
     <div className="flex transparent font-body">
-      <main className="mx-auto max-w-7xl w-full flex-1 p-8 lg:p-12 min-h-[calc(100vh-80px)] overflow-x-hidden">
+      <main className="mx-auto max-w-7xl w-full flex-1 p-4 sm:p-8 lg:p-12 min-h-[calc(100vh-80px)]">
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-10 gap-4">
           <div>
             <p className="font-label text-xs font-bold text-primary tracking-[0.2em] uppercase mb-2">
@@ -103,77 +103,46 @@ export default function HistoryPage() {
               <p className="text-sm">{t("hist_empty")}</p>
             </div>
           ) : (
-            /* Mobile: card list; Desktop: table */
-            <>
-              {/* Desktop table */}
-              <div className="hidden sm:block overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-white/10">
-                      <th className="pb-4 w-[35%]">{t("hist_col_action")}</th>
-                      <th className="pb-4 w-[20%]">{t("hist_col_user")}</th>
-                      {userRole === "admin" && <th className="pb-4 w-[15%]">{t("hist_col_role")}</th>}
-                      <th className="pb-4 w-[15%]">{t("hist_col_ip")}</th>
-                      <th className="pb-4 w-[15%]">{t("hist_col_time")}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {filtered.map(log => (
-                      <tr key={log.id} className="hover:bg-white/5 transition">
-                        <td className="py-4 font-medium align-middle pr-4">
-                          <div className="flex items-center gap-3">
-                            <span className={`w-8 h-8 rounded-full flex justify-center items-center shrink-0 ${log.status === "success" ? "bg-emerald-500/10 text-emerald-400" : log.status === "warning" ? "bg-amber-500/10 text-amber-400" : "bg-red-500/10 text-red-400"}`}>
-                              <span className="material-symbols-outlined text-sm">
-                                {log.status === "success" ? "check_circle" : log.status === "warning" ? "warning" : "cancel"}
-                              </span>
+            /* Single scrollable table for all screen sizes */
+            <div className="overflow-x-auto">
+              <table className="w-full text-left" style={{ minWidth: 580 }}>
+                <thead>
+                  <tr className="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-white/10">
+                    <th className="pb-4 pl-4 sm:pl-0 pr-4" style={{ minWidth: 180 }}>{t("hist_col_action")}</th>
+                    <th className="pb-4 pr-4 whitespace-nowrap" style={{ minWidth: 120 }}>{t("hist_col_user")}</th>
+                    {userRole === "admin" && <th className="pb-4 pr-4 whitespace-nowrap">{t("hist_col_role")}</th>}
+                    <th className="pb-4 pr-4 whitespace-nowrap">{t("hist_col_ip")}</th>
+                    <th className="pb-4 whitespace-nowrap">{t("hist_col_time")}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {filtered.map(log => (
+                    <tr key={log.id} className="hover:bg-white/5 transition">
+                      <td className="py-4 font-medium align-middle pl-4 sm:pl-0 pr-4" style={{ minWidth: 180 }}>
+                        <div className="flex items-center gap-3">
+                          <span className={`w-8 h-8 rounded-full flex justify-center items-center shrink-0 ${log.status === "success" ? "bg-emerald-500/10 text-emerald-400" : log.status === "warning" ? "bg-amber-500/10 text-amber-400" : "bg-red-500/10 text-red-400"}`}>
+                            <span className="material-symbols-outlined text-sm">
+                              {log.status === "success" ? "check_circle" : log.status === "warning" ? "warning" : "cancel"}
                             </span>
-                            <span className="text-sm text-slate-200 leading-snug break-words">{log.action}</span>
-                          </div>
-                        </td>
-                        <td className="py-4 text-sm text-white font-bold align-middle pr-4 break-all">{log.user}</td>
-                        {userRole === "admin" && (
-                          <td className="py-4 align-middle pr-4">
-                            <span className="text-[10px] px-2 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold whitespace-nowrap inline-block">
-                              {t(roleKeyMap[log.role] || "role_unknown")}
-                            </span>
-                          </td>
-                        )}
-                        <td className="py-4 text-sm font-mono text-slate-400 align-middle whitespace-nowrap pr-4">{log.ip}</td>
-                        <td className="py-4 text-xs font-semibold text-slate-400 align-middle whitespace-nowrap">{formatTime(log.time)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Mobile card list */}
-              <div className="sm:hidden space-y-3">
-                {filtered.map(log => (
-                  <div key={log.id} className="bg-white/5 rounded-2xl p-4 border border-white/10">
-                    <div className="flex items-start gap-3 mb-2">
-                      <span className={`w-8 h-8 rounded-full flex justify-center items-center shrink-0 mt-0.5 ${log.status === "success" ? "bg-emerald-500/10 text-emerald-400" : log.status === "warning" ? "bg-amber-500/10 text-amber-400" : "bg-red-500/10 text-red-400"}`}>
-                        <span className="material-symbols-outlined text-sm">
-                          {log.status === "success" ? "check_circle" : log.status === "warning" ? "warning" : "cancel"}
-                        </span>
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-slate-200 font-medium leading-snug break-words">{log.action}</p>
-                        <p className="text-xs text-white font-bold mt-1 break-all">{log.user}</p>
-                      </div>
-                      <span className="text-[10px] text-slate-500 shrink-0">{formatTime(log.time)}</span>
-                    </div>
-                    <div className="flex items-center gap-2 pl-11">
+                          </span>
+                          <span className="text-sm text-slate-200 leading-snug">{log.action}</span>
+                        </div>
+                      </td>
+                      <td className="py-4 text-sm text-white font-bold align-middle pr-4 whitespace-nowrap">{log.user}</td>
                       {userRole === "admin" && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold">
-                          {t(roleKeyMap[log.role] || "role_unknown")}
-                        </span>
+                        <td className="py-4 align-middle pr-4">
+                          <span className="text-[10px] px-2 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold whitespace-nowrap inline-block">
+                            {t(roleKeyMap[log.role] || "role_unknown")}
+                          </span>
+                        </td>
                       )}
-                      <span className="text-[10px] font-mono text-slate-500">{log.ip}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+                      <td className="py-4 text-sm font-mono text-slate-400 align-middle whitespace-nowrap pr-4">{log.ip}</td>
+                      <td className="py-4 text-xs font-semibold text-slate-400 align-middle whitespace-nowrap">{formatTime(log.time)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </main>

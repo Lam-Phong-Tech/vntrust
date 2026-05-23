@@ -1,4 +1,5 @@
 "use client";
+import { Toast } from "@/components/Toast";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -136,12 +137,7 @@ export default function CertificatesPage() {
 
   return (
     <div className="min-h-[calc(100vh-80px)] p-6 md:p-10 max-w-7xl mx-auto">
-      {toast && (
-        <div className={`fixed bottom-8 right-8 z-[200] px-5 py-4 rounded-2xl font-bold text-sm shadow-2xl flex items-center gap-2 border ${toast.ok ? "bg-emerald-500 border-emerald-400 text-white" : "bg-red-500 border-red-400 text-white"}`}>
-          <span className="material-symbols-outlined text-[18px]">{toast.ok ? "check_circle" : "error"}</span>
-          {toast.msg}
-        </div>
-      )}
+      {toast && <Toast msg={toast.msg} ok={toast.ok} onClose={() => setToast(null)} />}
 
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">

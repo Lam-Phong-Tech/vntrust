@@ -1,4 +1,6 @@
 "use client";
+import { Toast } from "@/components/Toast";
+import { BottomSheetModal } from "@/components/BottomSheetModal";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -152,9 +154,7 @@ export default function WarehousePage() {
   return (
     <div className="min-h-[calc(100vh-80px)] p-6 md:p-10 max-w-7xl mx-auto">
       {toast && (
-        <div className={`fixed bottom-8 right-8 z-50 px-5 py-3 rounded-2xl font-bold text-sm shadow-2xl ${toast.ok ? "bg-emerald-600" : "bg-red-600"} text-white`}>
-          {toast.msg}
-        </div>
+        <Toast msg={toast.msg} ok={toast.ok} onClose={() => setToast(null)} />
       )}
 
       {/* Header */}
@@ -273,141 +273,139 @@ export default function WarehousePage() {
                       <td className="px-5 py-3 text-xs text-slate-400">{new Date(tx.thoiGian).toLocaleString("vi-VN")}</td>
                     </tr>
                   );
-                })}
+                 })}
               </tbody>
             </table>
           </div>
         </div>
       )}
 
-      {/* Modal */}
-      {modal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setModal(false)}>
-          <div className="bg-[#0f1e33] border border-white/10 rounded-3xl p-7 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
-                <span className="material-symbols-outlined text-cyan-400">warehouse</span>
-              </div>
-              <h3 className="text-lg font-bold text-white">Ghi Giao dịch Kho</h3>
-            </div>
-
-            <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl mb-5 text-xs text-blue-300 flex gap-2">
+      <BottomSheetModal
+        open={modal}
+        onClose={() => { setModal(false); setForm({ loaiGD: "NHAP_KHO" }); }}
+        title="Ghi Giao dịch Kho"
+        icon="warehouse"
+        iconBg="bg-cyan-500/20"
+        iconColor="text-cyan-400"
+        size="md"
+      >
+        <form onSubmit={handleSubmit}>
+          <div className="px-6 py-5 space-y-4">
+            <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-300 flex gap-2">
               <span className="material-symbols-outlined text-[14px] shrink-0">info</span>
               Theo FR-BAT-05: Ghi nhận đầy đủ timestamp tự động, vị trí kho (tùy chọn), người thực hiện vào audit log.
             </div>
 
-            {/* XUAT_KHO warning */}
             {form.loaiGD === "XUAT_KHO" && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl mb-4 text-xs text-amber-300 flex gap-2">
+              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300 flex gap-2">
                 <span className="material-symbols-outlined text-[14px] shrink-0">local_shipping</span>
                 <span>Thao tác này đồng thời tạo Đơn chuyển hàng. Đơn sẽ được gửi cho <strong>Admin duyệt trước</strong>, sau đó mới tới Nhà phân phối.</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Batch selector */}
+            {/* Batch selector */}
+            <div>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
+                Lô hàng <span className="text-red-400">*</span>
+                <span className="ml-2 text-slate-500 font-normal normal-case">(chỉ hiện lô đang hoạt động)</span>
+              </label>
+              <select
+                value={form.loHangId || ""}
+                onChange={e => setForm(f => ({ ...f, loHangId: e.target.value }))}
+                required
+                className="w-full bg-white/5 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-400"
+              >
+                <option value="">— Chọn lô hàng —</option>
+                {batches.map(b => (
+                  <option key={b.id} value={b.id}>
+                    {b.maLo} — {b.sanPham.ten} {b.trangThai === "approved" ? "(Chưa nhập kho)" : "(Đang hoạt động)"}
+                  </option>
+                ))}
+              </select>
+              {batches.length === 0 && (
+                <p className="text-xs text-amber-400 mt-1 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[12px]">warning</span>
+                  Chưa có lô nào ở trạng thái hoạt động. Vui lòng kiểm tra mục Sản phẩm &amp; Lô hàng.
+                </p>
+              )}
+            </div>
+
+            {selectedBatch && (
+              <div>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Mã lô</label>
+                <div className="flex items-center gap-2 px-3 py-2.5 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
+                  <span className="material-symbols-outlined text-cyan-400 text-[18px]">qr_code</span>
+                  <span className="font-mono font-bold text-cyan-300 text-sm">{selectedBatch.maLo}</span>
+                  <span className="ml-auto text-[10px] text-slate-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">Tự động</span>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                  Lô hàng <span className="text-red-400">*</span>
-                  <span className="ml-2 text-slate-500 font-normal normal-case">(chỉ hiện lô đang hoạt động)</span>
+                  Loại giao dịch <span className="text-red-400">*</span>
                 </label>
                 <select
-                  value={form.loHangId || ""}
-                  onChange={e => setForm(f => ({ ...f, loHangId: e.target.value }))}
-                  required
+                  value={form.loaiGD}
+                  onChange={e => setForm(f => ({ ...f, loaiGD: e.target.value }))}
                   className="w-full bg-white/5 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-400"
                 >
-                  <option value="">— Chọn lô hàng —</option>
-                  {batches.map(b => (
-                    <option key={b.id} value={b.id}>
-                      {b.maLo} — {b.sanPham.ten} {b.trangThai === "approved" ? "(Chưa nhập kho)" : "(Đang hoạt động)"}
-                    </option>
-                  ))}
+                  <option value="NHAP_KHO">↓ Nhập kho</option>
+                  <option value="XUAT_KHO">↑ Xuất kho</option>
+                  <option value="CHUYEN_KHO">⇄ Chuyển kho</option>
                 </select>
-                {batches.length === 0 && (
-                  <p className="text-xs text-amber-400 mt-1 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[12px]">warning</span>
-                    Chưa có lô nào ở trạng thái hoạt động. Vui lòng kiểm tra mục Sản phẩm & Lô hàng.
-                  </p>
-                )}
               </div>
-
-              {/* Mã lô — auto-fill when batch selected */}
-              {selectedBatch && (
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                    Mã lô
-                  </label>
-                  <div className="flex items-center gap-2 px-3 py-2.5 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
-                    <span className="material-symbols-outlined text-cyan-400 text-[18px]">qr_code</span>
-                    <span className="font-mono font-bold text-cyan-300 text-sm">{selectedBatch.maLo}</span>
-                    <span className="ml-auto text-[10px] text-slate-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">Tự động</span>
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                    Loại giao dịch <span className="text-red-400">*</span>
-                  </label>
-                  <select
-                    value={form.loaiGD}
-                    onChange={e => setForm(f => ({ ...f, loaiGD: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-400"
-                  >
-                    <option value="NHAP_KHO">↓ Nhập kho</option>
-                    <option value="XUAT_KHO">↑ Xuất kho</option>
-                    <option value="CHUYEN_KHO">⇄ Chuyển kho</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                    Số lượng <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="number" min="1"
-                    value={form.soLuong || ""}
-                    onChange={e => setForm(f => ({ ...f, soLuong: e.target.value }))}
-                    required placeholder="VD: 1000"
-                    className="w-full bg-white/5 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-400"
-                  />
-                </div>
-              </div>
-
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Địa chỉ kho (FR-BAT-05)</label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
+                  Số lượng <span className="text-red-400">*</span>
+                </label>
                 <input
-                  value={form.viTri || ""}
-                  onChange={e => setForm(f => ({ ...f, viTri: e.target.value }))}
-                  placeholder="VD: Kho A, 12 Nguyễn Thị Minh Khai, Q.1, TP.HCM"
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400"
+                  type="number" min="1"
+                  value={form.soLuong || ""}
+                  onChange={e => setForm(f => ({ ...f, soLuong: e.target.value }))}
+                  required placeholder="VD: 1000"
+                  className="w-full bg-white/5 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-400"
                 />
               </div>
+            </div>
 
-              <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Ghi chú</label>
-                <textarea
-                  value={form.ghiChu || ""}
-                  onChange={e => setForm(f => ({ ...f, ghiChu: e.target.value }))}
-                  rows={2} placeholder="Lý do nhập/xuất, người giao nhận, xe số..."
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 resize-none"
-                />
-              </div>
+            <div>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Địa chỉ kho (FR-BAT-05)</label>
+              <input
+                value={form.viTri || ""}
+                onChange={e => setForm(f => ({ ...f, viTri: e.target.value }))}
+                placeholder="VD: Kho A, 12 Nguyễn Thị Minh Khai, Q.1, TP.HCM"
+                className="w-full bg-white/5 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400"
+              />
+            </div>
 
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setModal(false); setForm({ loaiGD: "NHAP_KHO" }); }}
-                  className="flex-1 py-3 border border-white/20 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/5 transition">Huỷ</button>
-                <button type="submit" disabled={submitting}
-                  className="flex-1 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 rounded-xl text-sm font-bold transition disabled:opacity-50 flex items-center justify-center gap-2">
-                  {submitting && <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-cyan-300" />}
-                  {t("wh_confirm")}
-                </button>
-              </div>
-            </form>
+            <div>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Ghi chú</label>
+              <textarea
+                value={form.ghiChu || ""}
+                onChange={e => setForm(f => ({ ...f, ghiChu: e.target.value }))}
+                rows={2} placeholder="Lý do nhập/xuất, người giao nhận, xe số..."
+                className="w-full bg-white/5 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 resize-none"
+              />
+            </div>
           </div>
-        </div>
-      )}
+
+          {/* Sticky footer */}
+          <div className="flex gap-3 px-6 py-4 border-t border-white/10 bg-[#0f1e33] sticky bottom-0">
+            <button type="button"
+              onClick={() => { setModal(false); setForm({ loaiGD: "NHAP_KHO" }); }}
+              className="flex-1 py-3 border border-white/20 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/5 transition"
+            >Huỷ</button>
+            <button type="submit" disabled={submitting}
+              className="flex-1 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 rounded-xl text-sm font-bold transition disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {submitting && <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-cyan-300" />}
+              {t("wh_confirm")}
+            </button>
+          </div>
+        </form>
+      </BottomSheetModal>
     </div>
   );
 }

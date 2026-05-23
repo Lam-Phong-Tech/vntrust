@@ -115,14 +115,15 @@ model LuotQuet {
 }
 
 model CanhBao {
-  id        String   @id @default(uuid())
-  loai      String
-  mucDo     String // low | medium | high
-  moTa      String
-  thoiGian  DateTime @default(now())
-  trangThai String   @default("open") // open | reviewing | closed
+  id          String   @id @default(uuid())
+  loai        String
+  mucDo       String // low | medium | high
+  moTa        String
+  thoiGian    DateTime @default(now())
+  trangThai   String   @default("open") // open | reviewing | closed
   // Tùy chọn liên kết đến MaDinhDanh hoặc SanPham
-  uid       String?
+  uid         String?
+  nguoiBaoCao String?
 }
 
 model ChungNhan {

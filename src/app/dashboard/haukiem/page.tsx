@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 
+import { Toast } from "@/components/Toast";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLogs } from "@/hooks/useLogs";
@@ -582,9 +583,7 @@ export default function HauKiemPage() {
       )}
 
       {toast && (
-        <div className={`fixed bottom-8 right-8 z-50 px-6 py-4 rounded-2xl shadow-2xl font-bold text-sm max-w-sm transition-all ${toast.ok ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
-          {toast.msg}
-        </div>
+        <Toast msg={toast.msg} ok={toast.ok} onClose={() => setToast(null)} />
       )}
     </div>
   );

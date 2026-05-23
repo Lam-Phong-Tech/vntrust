@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, phone, role, password, company, taxCode, address, hotline } = body;
+    const { name, email, phone, role, password, company, taxCode, address, hotline, giayphep_url, cmnd_url } = body;
 
     // ── NFR-SC-07: Password Policy Enforcement ────────────────────────────
     if (!password) {
@@ -114,6 +114,9 @@ export async function POST(req: Request) {
           email: safeEmail,
           nguoiDaiDien: safeName,
           trangThai: 'pending',
+          // KYC documents uploaded during registration
+          giayphep_url: giayphep_url || null,
+          cmnd_url: cmnd_url || null,
         },
       });
       // Gắn doanhNghiepId vào user

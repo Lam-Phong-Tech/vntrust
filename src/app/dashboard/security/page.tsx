@@ -1,4 +1,5 @@
 "use client";
+import { Toast } from "@/components/Toast";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -38,6 +39,15 @@ const ROLE_COLORS: Record<string, string> = {
   importer:     "text-cyan-300",
   consumer:     "text-emerald-300",
   unknown:      "text-slate-500",
+};
+
+const parseMoTa = (moTa: string) => {
+  try {
+    if (moTa && moTa.trim().startsWith('{')) {
+      return JSON.parse(moTa);
+    }
+  } catch (e) {}
+  return null;
 };
 
 export default function SecurityPage() {
@@ -133,9 +143,7 @@ export default function SecurityPage() {
   return (
     <div className="min-h-[calc(100vh-80px)] p-6 md:p-10 max-w-7xl mx-auto">
       {toast && (
-        <div className={`fixed bottom-8 right-8 z-50 px-5 py-3 rounded-2xl font-bold text-sm shadow-2xl ${toast.ok ? "bg-emerald-600" : "bg-red-600"} text-white`}>
-          {toast.msg}
-        </div>
+        <Toast msg={toast.msg} ok={toast.ok} onClose={() => setToast(null)} />
       )}
 
       {/* Header */}
@@ -300,7 +308,61 @@ export default function SecurityPage() {
                               </span>
                               <span className="text-xs font-bold text-slate-300 uppercase">{a.loai.replace('_', ' ')}</span>
                             </div>
-                            <p className="text-sm text-white font-medium leading-relaxed">{a.moTa}</p>
+                            {(() => {
+                              const meta = parseMoTa(a.moTa);
+                              if (meta) {
+                                return (
+                                  <div className="space-y-2 mt-1">
+                                    <p className="text-sm text-white font-bold leading-snug">{meta.lyDo || "Báo cáo từ người dùng"}</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-xs bg-white/5 p-3 rounded-xl border border-white/10 mt-1">
+                                      {meta.loaiSanPham && (
+                                        <p className="flex items-center gap-1.5">
+                                          <span className="text-slate-400">Loại SP:</span>
+                                          <span className="text-slate-200 font-medium">{meta.loaiSanPham}</span>
+                                        </p>
+                                      )}
+                                      {meta.viTri && (
+                                        <p className="flex items-center gap-1.5">
+                                          <span className="text-slate-400">Vị trí:</span>
+                                          <span className="text-slate-200 font-medium">{meta.viTri}</span>
+                                        </p>
+                                      )}
+                                      {meta.giaMua !== undefined && (
+                                        <p className="flex items-center gap-1.5">
+                                          <span className="text-slate-400">Giá mua:</span>
+                                          <span className="text-amber-400 font-bold">
+                                            {Number(meta.giaMua).toLocaleString("vi-VN")} {meta.donViTien || "VND"}
+                                          </span>
+                                        </p>
+                                      )}
+                                      {meta.contactInfo && (
+                                        <p className="flex items-center gap-1.5">
+                                          <span className="text-slate-400">Liên hệ:</span>
+                                          <span className="text-slate-300 font-medium">{meta.contactInfo}</span>
+                                        </p>
+                                      )}
+                                    </div>
+                                    {meta.anhBangChung && Array.isArray(meta.anhBangChung) && meta.anhBangChung.length > 0 && (
+                                      <div className="flex gap-2 mt-2">
+                                        {meta.anhBangChung.map((img: string, i: number) => (
+                                          <a
+                                            key={i}
+                                            href={img}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="w-12 h-12 bg-black/30 rounded-lg flex items-center justify-center border border-white/10 hover:border-amber-400 overflow-hidden shrink-0 transition"
+                                          >
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={img} alt="Bằng chứng" className="w-full h-full object-cover" />
+                                          </a>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              }
+                              return <p className="text-sm text-white font-medium leading-relaxed">{a.moTa}</p>;
+                            })()}
                             <p className="text-[11px] text-slate-500 mt-2 flex items-center gap-1">
                               <span className="material-symbols-outlined text-[12px]">schedule</span>
                               {new Date(a.thoiGian).toLocaleString("vi-VN")}

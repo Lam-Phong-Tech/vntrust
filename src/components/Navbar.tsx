@@ -293,13 +293,40 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [geoEnabled, setGeoEnabled] = useState(true);
+  const [userName, setUserName] = useState("");
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("userRole"));
+    const role = localStorage.getItem("userRole");
+    setIsLoggedIn(!!role);
+    setUserName(localStorage.getItem("userName") || "");
     // Restore geo preference
     const savedGeo = localStorage.getItem("geo_enabled");
     if (savedGeo === "0") setGeoEnabled(false);
+    // Listen for storage changes (e.g. profile save)
+    const onStorage = () => setUserName(localStorage.getItem("userName") || "");
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
+
+  // Close user menu on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const handleNavLogout = async () => {
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userName");
+    await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+    window.location.href = "/login";
+  };
 
   const toggleGeo = () => {
     const next = !geoEnabled;
@@ -427,6 +454,38 @@ export default function Navbar() {
 
             {/* Notification bell — only shown when logged in */}
             {isLoggedIn && <NotificationBell />}
+
+            {/* Avatar / User menu — only when logged in */}
+            {isLoggedIn && (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setShowUserMenu(o => !o)}
+                  className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-white flex items-center justify-center text-sm font-black shadow-lg hover:ring-2 hover:ring-cyan-400/50 transition border-2 border-[#0b1623]"
+                  title={userName || "Hồ sơ"}
+                >
+                  {userName ? userName.charAt(0).toUpperCase() : <span className="material-symbols-outlined text-[18px]">person</span>}
+                </button>
+                {showUserMenu && (
+                  <div className="absolute right-0 top-12 w-52 bg-[#0d1b2e] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
+                    <div className="px-4 py-3 border-b border-white/5">
+                      <p className="text-white text-sm font-bold truncate">{userName || "Tài khoản"}</p>
+                      <p className="text-slate-500 text-[11px]">{localStorage.getItem("userRole") || ""}</p>
+                    </div>
+                    <a href="/dashboard/profile"
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-white/5 hover:text-white transition"
+                      onClick={() => setShowUserMenu(false)}>
+                      <span className="material-symbols-outlined text-[17px] text-cyan-400">manage_accounts</span>
+                      Hồ sơ cá nhân
+                    </a>
+                    <button onClick={handleNavLogout}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-rose-400 hover:bg-rose-500/10 transition">
+                      <span className="material-symbols-outlined text-[17px]">logout</span>
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             <button onClick={() => setModal("ai")}
               className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-xs font-bold text-slate-200 hover:text-white hover:bg-white/15 transition border border-white/10 active:scale-95">

@@ -24,6 +24,45 @@ interface Report {
   uid?: string;
 }
 
+const parseReportDetails = (moTa: string) => {
+  if (!moTa) return null;
+  
+  // Try JSON first
+  try {
+    if (moTa.trim().startsWith('{')) {
+      const meta = JSON.parse(moTa);
+      return {
+        isJson: true,
+        lyDo: meta.lyDo || "Báo cáo từ người dùng",
+        loaiSanPham: meta.loaiSanPham,
+        viTri: meta.viTri,
+        giaMua: meta.giaMua,
+        donViTien: meta.donViTien || "VND",
+        contactInfo: meta.contactInfo,
+        anhBangChung: meta.anhBangChung || [],
+      };
+    }
+  } catch (e) {}
+
+  // Try parsing plain text format using regex
+  // Format: [loaiSanPham] Serial: serial | Vị trí: viTri\nNgười báo cáo: contactInfo\nMô tả: moTa
+  const regex = /^\[(.*?)\]\s*Serial:\s*(.*?)\s*\|\s*Vị trí:\s*(.*?)\nNgười báo cáo:\s*(.*?)\nMô tả:\s*([\s\S]*)$/;
+  const match = moTa.trim().match(regex);
+  if (match) {
+    return {
+      isJson: false,
+      loaiSanPham: match[1] === "1" ? "Từ quét mã QR" : match[1],
+      serial: match[2] === "N/A" ? null : match[2],
+      viTri: match[3] === "N/A" ? null : match[3],
+      contactInfo: match[4],
+      lyDo: match[5],
+      anhBangChung: [],
+    };
+  }
+
+  return null;
+};
+
 export default function ReportFakePage() {
   const [tab, setTab] = useState<"report" | "list">("report");
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -35,7 +74,9 @@ export default function ReportFakePage() {
     mucDo: "medium",
     thongTinLienHe: "",
     loaiBaoCao: "an_danh",
+    anhBangChung: [] as string[],
   });
+  const [uploadingImg, setUploadingImg] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +92,7 @@ export default function ReportFakePage() {
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
-    setUserRole(role || "consumer");
+    setUserRole(role);
     if (role === "admin") setTab("list");
   }, []);
 
@@ -87,12 +128,38 @@ export default function ReportFakePage() {
       if (!res.ok) { setError(data.error || "Lỗi gửi báo cáo"); }
       else {
         setSuccess(data.reportId);
-        setForm({ serial: "", loaiSanPham: "", viTri: "", moTa: "", mucDo: "medium", thongTinLienHe: "", loaiBaoCao: "an_danh" });
+        setForm({ serial: "", loaiSanPham: "", viTri: "", moTa: "", mucDo: "medium", thongTinLienHe: "", loaiBaoCao: "an_danh", anhBangChung: [] });
       }
     } catch {
       setError("Không thể kết nối máy chủ. Vui lòng thử lại.");
     }
     setSubmitting(false);
+  };
+
+  const handleImageUpload = async (file: File) => {
+    setUploadingImg(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("type", "report");
+      const r = await fetch("/api/upload", { method: "POST", body: fd });
+      const d = await r.json();
+      if (d.url) {
+        setForm(f => ({ ...f, anhBangChung: [...f.anhBangChung, d.url] }));
+      } else {
+        alert(d.error || "Upload thất bại");
+      }
+    } catch {
+      alert("Lỗi upload");
+    }
+    setUploadingImg(false);
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setForm(f => ({
+      ...f,
+      anhBangChung: f.anhBangChung.filter((_, i) => i !== index)
+    }));
   };
 
   const handleUpdateStatus = async (id: string, trangThai: string, ghiChu?: string) => {
@@ -126,28 +193,30 @@ export default function ReportFakePage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-8">
-          <button
-            onClick={() => setTab("report")}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition border flex items-center gap-2 ${
-              tab === "report" ? "bg-red-500 text-white border-red-400" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
-            }`}
-          >
-            <span className="material-symbols-outlined text-[16px]">add_circle</span>
-            Gửi báo cáo
-          </button>
-          <button
-            onClick={() => setTab("list")}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition border flex items-center gap-2 ${
-              tab === "list" ? "bg-cyan-500 text-white border-cyan-400" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
-            }`}
-          >
-            <span className="material-symbols-outlined text-[16px]">list</span>
-            Danh sách báo cáo
-          </button>
-        </div>
+        {userRole !== null && (
+          <div className="flex gap-2 mb-8">
+            <button
+              onClick={() => setTab("report")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition border flex items-center gap-2 ${
+                tab === "report" ? "bg-red-500 text-white border-red-400" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
+              }`}
+            >
+              <span className="material-symbols-outlined text-[16px]">add_circle</span>
+              Gửi báo cáo
+            </button>
+            <button
+              onClick={() => setTab("list")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition border flex items-center gap-2 ${
+                tab === "list" ? "bg-cyan-500 text-white border-cyan-400" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
+              }`}
+            >
+              <span className="material-symbols-outlined text-[16px]">list</span>
+              Danh sách báo cáo
+            </button>
+          </div>
+        )}
 
-        {tab === "report" ? (
+        {tab === "report" || userRole === null ? (
           /* ── Report Form ── */
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
             {/* Left: Form */}
@@ -226,6 +295,43 @@ export default function ReportFakePage() {
                       placeholder="Mô tả chi tiết: mẫu mã khác thường, giá bán thấp bất thường, tem nhãn bị bóc dán lại, bao bì sai chữ, màu sắc khác so với hàng chính hãng..."
                       className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 resize-none transition"
                     />
+                  </div>
+                  {/* Hình ảnh bằng chứng */}
+                  <div>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                      Hình ảnh bằng chứng <span className="text-slate-500 font-normal normal-case ml-1 text-[10px] opacity-70">(tải lên tối đa 4 ảnh)</span>
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {form.anhBangChung.map((img, index) => (
+                        <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 group bg-white/5">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={img} alt="Bằng chứng" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(index)}
+                            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center text-sm transition shadow-lg"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      {form.anhBangChung.length < 4 && (
+                        <label className="aspect-square rounded-xl border-2 border-dashed border-white/20 hover:border-cyan-400/50 flex flex-col items-center justify-center gap-1.5 cursor-pointer bg-white/5 hover:bg-white/10 transition">
+                          <span className="material-symbols-outlined text-2xl text-slate-400">cloud_upload</span>
+                          <span className="text-[10px] text-slate-400">{uploadingImg ? "Đang tải..." : "Tải ảnh lên"}</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            disabled={uploadingImg}
+                            className="hidden"
+                            onChange={e => {
+                              if (e.target.files?.[0]) handleImageUpload(e.target.files[0]);
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-slate-500 mt-1">Định dạng JPG, PNG, WebP dưới 5MB</p>
                   </div>
 
                   {/* Mức độ */}
@@ -401,17 +507,67 @@ export default function ReportFakePage() {
                             )}
                             <span className="text-xs text-slate-500">{new Date(r.thoiGian).toLocaleString("vi-VN")}</span>
                           </div>
-                          <p className="text-sm text-slate-200 leading-relaxed break-words whitespace-pre-wrap line-clamp-3">
-                            {(() => {
-                              try {
-                                if (r.moTa.startsWith('{')) {
-                                  const meta = JSON.parse(r.moTa);
-                                  return `Báo cáo từ người dùng: ${meta.lyDo || 'N/A'} (Giá mua: ${meta.giaMua || 'N/A'}, Nơi mua: ${meta.viTri || 'N/A'})`;
-                                }
-                              } catch(e) {}
-                              return r.moTa;
-                            })()}
-                          </p>
+                          {(() => {
+                            const data = parseReportDetails(r.moTa);
+                            if (data) {
+                              return (
+                                <div className="space-y-2 mt-1">
+                                  <p className="text-sm text-white font-bold leading-snug">{data.lyDo || "Báo cáo từ người dùng"}</p>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs bg-white/5 p-3 rounded-xl border border-white/10 mt-1 max-w-2xl">
+                                    {data.loaiSanPham && (
+                                      <p className="flex items-center gap-1.5">
+                                        <span className="text-slate-400">Loại SP:</span>
+                                        <span className="text-slate-200 font-medium">{data.loaiSanPham}</span>
+                                      </p>
+                                    )}
+                                    {data.viTri && (
+                                      <p className="flex items-center gap-1.5">
+                                        <span className="text-slate-400">Vị trí:</span>
+                                        <span className="text-slate-200 font-medium">{data.viTri}</span>
+                                      </p>
+                                    )}
+                                    {data.giaMua !== undefined && (
+                                      <p className="flex items-center gap-1.5">
+                                        <span className="text-slate-400">Giá mua:</span>
+                                        <span className="text-amber-400 font-bold">
+                                          {Number(data.giaMua).toLocaleString("vi-VN")} {data.donViTien || "VND"}
+                                        </span>
+                                      </p>
+                                    )}
+                                    {data.serial && (
+                                      <p className="flex items-center gap-1.5">
+                                        <span className="text-slate-400">Serial:</span>
+                                        <span className="text-cyan-300 font-mono">{data.serial}</span>
+                                      </p>
+                                    )}
+                                    {data.contactInfo && (
+                                      <p className="flex items-center gap-1.5">
+                                        <span className="text-slate-400">Liên hệ:</span>
+                                        <span className="text-slate-300 font-medium">{data.contactInfo}</span>
+                                      </p>
+                                    )}
+                                  </div>
+                                  {data.anhBangChung && data.anhBangChung.length > 0 && (
+                                    <div className="flex gap-2 mt-2">
+                                      {data.anhBangChung.map((img: string, i: number) => (
+                                        <a
+                                          key={i}
+                                          href={img}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="w-12 h-12 bg-black/30 rounded-lg flex items-center justify-center border border-white/10 hover:border-amber-400 overflow-hidden shrink-0 transition"
+                                        >
+                                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                                          <img src={img} alt="Bằng chứng" className="w-full h-full object-cover" />
+                                        </a>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            }
+                            return <p className="text-sm text-slate-200 leading-relaxed break-all whitespace-pre-wrap">{r.moTa}</p>;
+                          })()}
                         </div>
                         {userRole === "admin" && (
                           <div className="flex gap-2 shrink-0">
@@ -470,27 +626,26 @@ export default function ReportFakePage() {
                 <div className="p-4 bg-black/20 rounded-xl border border-white/5 flex flex-col min-h-0">
                   <span className="text-[10px] text-slate-400 uppercase font-bold block mb-2 shrink-0">Nội dung báo cáo</span>
                   {(() => {
-                    try {
-                      if (investigateModal.moTa.startsWith('{')) {
-                         const metadata = JSON.parse(investigateModal.moTa);
-                         return (
-                           <div className="space-y-3 text-sm text-slate-200 flex flex-col min-h-0">
-                             {metadata.loaiSanPham && <p className="break-words"><strong className="text-amber-400 font-medium">Loại SP:</strong> {metadata.loaiSanPham}</p>}
-                             {(metadata.giaMua !== undefined) && <p className="break-words"><strong className="text-amber-400 font-medium">Giá mua:</strong> {Number(metadata.giaMua).toLocaleString('vi-VN')} {metadata.donViTien || 'VND'}</p>}
-                             {metadata.viTri && <p className="break-words"><strong className="text-amber-400 font-medium">Nơi mua:</strong> {metadata.viTri}</p>}
-                             {metadata.contactInfo && <p className="break-words"><strong className="text-amber-400 font-medium">Người báo cáo:</strong> {metadata.contactInfo}</p>}
-                             {metadata.lyDo && (
-                               <div className="mt-2 p-3 bg-white/5 border border-white/10 rounded-lg flex flex-col min-h-0 shrink-0">
-                                 <strong className="block text-amber-400 font-medium mb-2 shrink-0">Lý do nghi ngờ:</strong>
-                                 <div className="whitespace-pre-wrap break-words max-h-[120px] overflow-y-auto custom-scrollbar pr-2 leading-relaxed">
-                                   {metadata.lyDo}
-                                 </div>
+                    const data = parseReportDetails(investigateModal.moTa);
+                    if (data) {
+                       return (
+                         <div className="space-y-3 text-sm text-slate-200 flex flex-col min-h-0">
+                           {data.loaiSanPham && <p className="break-words"><strong className="text-amber-400 font-medium">Loại SP:</strong> {data.loaiSanPham}</p>}
+                           {data.giaMua !== undefined && <p className="break-words"><strong className="text-amber-400 font-medium">Giá mua:</strong> {Number(data.giaMua).toLocaleString('vi-VN')} {data.donViTien || 'VND'}</p>}
+                           {data.viTri && <p className="break-words"><strong className="text-amber-400 font-medium">Nơi mua:</strong> {data.viTri}</p>}
+                           {data.serial && <p className="break-words"><strong className="text-cyan-300 font-mono">Serial:</strong> {data.serial}</p>}
+                           {data.contactInfo && <p className="break-words"><strong className="text-amber-400 font-medium">Người báo cáo:</strong> {data.contactInfo}</p>}
+                           {data.lyDo && (
+                             <div className="mt-2 p-3 bg-white/5 border border-white/10 rounded-lg flex flex-col min-h-0 shrink-0">
+                               <strong className="block text-amber-400 font-medium mb-2 shrink-0">Lý do nghi ngờ:</strong>
+                               <div className="whitespace-pre-wrap break-words max-h-[120px] overflow-y-auto custom-scrollbar pr-2 leading-relaxed">
+                                 {data.lyDo}
                                </div>
-                             )}
-                           </div>
-                         );
-                      }
-                    } catch (e) {}
+                             </div>
+                           )}
+                         </div>
+                       );
+                    }
                     return (
                       <div className="text-sm text-slate-200 whitespace-pre-wrap break-words leading-relaxed max-h-[150px] overflow-y-auto custom-scrollbar pr-2">
                         {investigateModal.moTa}
@@ -502,16 +657,8 @@ export default function ReportFakePage() {
                 <div className="p-4 bg-black/20 rounded-xl border border-white/5 shrink-0">
                   <span className="text-[10px] text-slate-400 uppercase font-bold block mb-3">Hình ảnh đính kèm</span>
                   {(() => {
-                     let images = [];
-                     try {
-                        if (investigateModal.moTa.startsWith('{')) {
-                           const metadata = JSON.parse(investigateModal.moTa);
-                           if (metadata.anhBangChung && Array.isArray(metadata.anhBangChung)) {
-                              images = metadata.anhBangChung;
-                           }
-                        }
-                     } catch(e) {}
-                     
+                     const data = parseReportDetails(investigateModal.moTa);
+                     const images = data?.anhBangChung || [];
                      if (images.length > 0) {
                         return (
                           <>
