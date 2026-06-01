@@ -1,0 +1,445 @@
+[P] TÀI LIỆU PHÂN TÍCH NGHIỆP VỤ
+[P] HỆ THỐNG CHỐNG HÀNG GIẢ & TRUY XUẤT NGUỒN GỐC SẢN PHẨM VIỆT NAM
+[P] BUSINESS ANALYSIS DOCUMENT
+[P] Phiên bản: V1.0
+[P] Ngày lập: 05/05/2026
+[P] Trạng thái: Chờ phê duyệt
+[P] Phân loại: Tài liệu nội bộ
+[P] 1. TỔNG QUAN DỰ ÁN (Project Overview)
+[TABLE]
+ | 
+Tên dự án | Hệ thống Xác thực và Truy xuất Nguồn gốc Sản phẩm Việt Nam (QSAC - Quality & Source Authentication Center)
+Mã dự án | QSAC-2026-001
+Phiên bản BRD | V1.0
+Ngày tạo | 05/05/2026
+Ngày cập nhật | 05/05/2026
+Thời gian thực hiện dự kiến | 6 tháng (T1-T2: MVP, T3-T4: AI & Scaling, T5-T6: Optimization)
+Đối tượng tham gia | Nhà sản xuất, Nhà nhập khẩu, Người tiêu dùng, Cơ quan quản lý nhà nước
+Cơ sở tham chiếu | Phân tích chi tiết hệ thống chống hàng giả, Quy định bảo vệ người tiêu dùng, Tiêu chuẩn ISO/VietGAP
+[/TABLE]
+[P] 2. BỐI CẢNH NGHIỆP VỤ (Business Context)
+[P] 2.1 Các vấn đề hiện tại và Tác động
+[TABLE]
+# | Vấn đề | Tác động
+1 | Hàng giả, hàng nhái, hàng kém chất lượng len lỏi tại chợ, cửa hàng nhỏ lẻ, kho trung chuyển, kênh phân phối không chính thức | Ảnh hưởng trực tiếp đến sức khỏe & an toàn người tiêu dùng; Làm hư hại uy tín thương hiệu; Mất doanh thu cho sản xuất chính hãng; Gây sự bất lợi cho các doanh nghiệp kinh doanh hợp pháp
+2 | Quá trình kiểm tra, phát hiện hàng giả dựa chủ yếu trên phương pháp thủ công, kiểm dịch tại cửa khẩu; Thiếu nhân sự chuyên trách; Không có hệ thống theo dõi realtime | Tăng đáng kể chi phí hành chính; Không thể giám sát toàn bộ điểm bán; Phát hiện hàng giả muộn; Thanh tra hoạt động không hiệu quả; Dữ liệu về hàng giả không được tập trung quản lý
+3 | Doanh nghiệp sản xuất không kiểm soát được chuỗi cung ứng; Không biết hàng của mình bán ở đâu; Không có dữ liệu về hành trình sản phẩm từ nhà máy đến tay người tiêu dùng | Hàng bị lấn tuyến, lấn vùng; Hàng trôi nổi ngoài hệ thống chính thức; Không thể phát hiện được hàng giả mạo sản phẩm của mình; Mất kiểm soát về chất lượng sản phẩm trên thị trường
+4 | Người tiêu dùng không có cách thức đơn giản, tin cậy để xác thực sản phẩm; QR code tĩnh dễ bị sao chép, làm giả; Không biết được thông tin về nguồn gốc, lô sản xuất, hạn sử dụng | Người tiêu dùng dễ mua phải hàng giả; Thiếu quyền lợi bảo vệ; Không có cách báo cáo hàng giả an toàn, hiệu quả; Mất lòng tin vào thương hiệu chính hãng
+5 | Cơ quan quản lý nhà nước (Bộ Y tế, Bộ Công Thương, Hải quan) không có dữ liệu tập trung, liên kết giữa các cơ quan; Không có nền tảng thống nhất để cộng tác trong công tác chống hàng giả | Giảm hiệu quả thực thi pháp luật; Lãng phí nguồn lực; Không có data-driven enforcement; Khó khăn trong việc xử lý các vụ hàng giả phức tạp đa doanh nghiệp
+[/TABLE]
+[P] 2.2 Cơ hội và Giá trị mang lại
+[P] Xây dựng nền tảng công nghệ hiện đại sử dụng AI, Computer Vision, Big Data để phát hiện hàng giả thụ động (passive monitoring - không cần quét thủ công)
+[P] Tích hợp dữ liệu chứng thực chính thức từ các cơ quan nhà nước (Bộ Y tế, Bộ Công Thương, Hải quan) để xác thực giấy tờ, chứng nhận sản phẩm
+[P] Cung cấp giải pháp truy xuất nguồn gốc end-to-end (nguyên liệu → sản xuất → phân phối → bán lẻ → tay người tiêu dùng)
+[P] Tạo ra dịch vụ gia tăng cho doanh nghiệp: Dashboard heatmap hàng giả, báo cáo chuỗi cung ứng, cảnh báo sớm về khu vực xuất hiện hàng giả
+[P] Xây dựng hệ sinh thái đối tác: Camera AI, Edge Gateway, Doanh nghiệp, Cơ quan nhà nước, Người tiêu dùng
+[P] Bảo vệ toàn diện người tiêu dùng: Giảm rủi ro sức khỏe, bảo vệ quyền lợi tiêu dùng, tăng niềm tin vào thương hiệu
+[P] Mở ra cơ hội kinh doanh mới trong lĩnh vực anti-counterfeiting & supply chain transparency
+[P] 3. CÁC BÊN LIÊN QUAN (Stakeholders)
+[TABLE]
+Stakeholder | Vai trò | Quyền lợi / Quan tâm chính | Mức độ ảnh hưởng
+Nhà sản xuất (Manufacturer) | Người dùng chính, Nhà cung cấp dữ liệu | Bảo vệ thương hiệu, kiểm soát chuỗi phân phối, nhận cảnh báo hàng giả, giảm tổn thất doanh thu | Rất cao
+Nhà nhập khẩu / Nhà phân phối (Distributor) | Người dùng chính, Quản lý phân phối | Quản lý kho hiệu quả, theo dõi đại lý, giám sát khu vực có hàng giả, chống hàng trôi nổi | Rất cao
+Người tiêu dùng (Consumer) | Người dùng cuối | Xác thực sản phẩm dễ dàng & nhanh chóng, không cần đăng nhập, bảo vệ quyền lợi, báo cáo ẩn danh | Cao
+Lâm Phong Tech | Nhà phát triển | Triển khai kịp thời, chất lượng cao | Rất cao
+Bộ Y tế / ATTP | Người tham gia, Giám sát, Thực thi pháp luật | Giám sát thực phẩm, dược phẩm; Phát hiện hàng không rõ nguồn gốc; Quản lý hệ thống chứng nhận | Cao
+Bộ Công Thương | Người tham gia, Giám sát | Chống hàng giả thương hiệu, giám sát chuỗi phân phối, hỗ trợ thực thi pháp luật về bảo vệ người tiêu dùng | Cao
+Hải quan Việt Nam | Người tham gia, Hỗ trợ dữ liệu | Tra cứu tờ khai nhập khẩu, xác thực xuất xứ, phát hiện hàng nhập khẩu lậu | Trung bình
+Khách hàng | Chủ đầu tư | ROI (lợi nhuận đầu tư), tăng trưởng người dùng, mở rộng thị trường, uy tín thương hiệu, khả năng scale hệ thống | Rất cao
+[/TABLE]
+[P] 4. MỤC TIÊU NGHIỆP VỤ (Business Objectives)
+[TABLE]
+Mã | Mục tiêu | Chỉ số đo lường | Mốc thời gian
+BG-01 | Phát hiện hàng giả thụ động tại điểm bán bằng AI Computer Vision | Triển khai ≥ 100 camera AI tại các điểm bán / chợ; Tỷ lệ phát hiện hàng giả ≥ 85%; Độ trễ phát hiện ≤ 3 giây | T+4 tháng
+BG-02 | Tích hợp dữ liệu chứng thực chính thức từ cơ quan nhà nước | API hỗ trợ liên kết với ≥ 3 cơ quan (Bộ Y tế, Công Thương, Hải quan); Kết quả xác thực ≥ 90% chính xác | T+3 tháng
+BG-03 | Tăng khả năng truy xuất nguồn gốc sản phẩm end-to-end | ≥ 500 doanh nghiệp sản xuất / nhập khẩu đăng ký; ≥ 1 triệu sản phẩm được gắn mã; Coverage ≥ 80% ngành thực phẩm, dược, mỹ phẩm | T+6 tháng
+BG-04 | Giảm thiểu rủi ro từ hàng hóa không đạt tiêu chuẩn | Phát hiện sớm các biến động bất thường (scan cùng lúc ở nhiều nơi cách xa); Tỷ lệ dương tính giả ≤ 5%; Cảnh báo gửi trong ≤ 5 phút | T+3 tháng
+BG-05 | Xây dựng nền tảng tạo giá trị gia tăng cho doanh nghiệp | Dashboard doanh nghiệp hiển thị heatmap hàng giả theo khu vực; Báo cáo phân tích chuỗi cung ứng; ≥ 90% doanh nghiệp sử dụng tính năng advanced | T+4 tháng
+BG-06 | Xây dựng hệ sinh thái đối tác & mở rộng phạm vi triển khai | Hợp tác với ≥ 10 nhà sản xuất camera AI; Hỗ trợ ≥ 5 tỉnh/thành phố; Xây dựng ≥ 3 partnership chiến lược | T+6 tháng
+BG-07 | Bảo vệ toàn diện quyền lợi người tiêu dùng | App người tiêu dùng có ≥ 100k lượt tải; NPS score ≥ 70; ≥ 50% người tiêu dùng quét mã ≥ 1 lần/tuần | T+5 tháng
+[/TABLE]
+[P] 5. PHẠM VI DỰ ÁN (Project Scope)
+[P] 5.1 Các chức năng trong phạm vi (In-Scope)
+[TABLE]
+# | Chức năng / Nhiệm vụ | Giai đoạn ưu tiên
+1 | Đăng ký & quản lý tài khoản cho Nhà sản xuất, Nhà nhập khẩu (2FA, KYC) | Giai đoạn 1
+2 | Tạo sản phẩm & sinh QR code động + Serial duy nhất cho từng sản phẩm | Giai đoạn 1
+3 | Quản lý lô hàng (ngày sản xuất, hạn sử dụng, số lượng, phạm vi phân phối) | Giai đoạn 1
+4 | API xác thực sản phẩm công khai cho người tiêu dùng (scan QR, tra mã serial) | Giai đoạn 1
+5 | Mobile app & Web app cho người tiêu dùng (zero-friction UX) | Giai đoạn 1
+6 | Hệ thống báo cáo ẩn danh cho người tiêu dùng (upload ảnh, video, GPS) | Giai đoạn 1
+7 | Phân quyền RBAC & Multi-tenant Data Isolation | Giai đoạn 1
+8 | Dashboard Admin (phê duyệt KYC, giám sát hệ thống, quản lý rules) | Giai đoạn 1
+9 | AI phân tích hình ảnh bao bì so với mẫu chuẩn (Computer Vision - YOLOv8) | Giai đoạn 2
+10 | Giám sát hàng giả bằng camera AI (Edge AI - Jetson, Hikvision, Dahua) | Giai đoạn 2
+11 | Tích hợp API Hải quan (tra cứu tờ khai nhập khẩu, số HS code) | Giai đoạn 2
+12 | Tích hợp API Bộ Y tế / Công Thương (xác thực chứng nhận, giấy phép) | Giai đoạn 2
+13 | Dashboard Doanh nghiệp (heatmap hàng giả, báo cáo phân tích, cảnh báo) | Giai đoạn 2
+14 | Dashboard Cơ quan quản lý (thống kê, phân tích, enforcement data) | Giai đoạn 2
+15 | Tích hợp thanh toán & license model SaaS (nếu áp dụng) | Giai đoạn 3
+[/TABLE]
+[P] 5.2 Các hạng mục ngoài phạm vi (Out-of-Scope)
+[TABLE]
+Hạng mục | Lý do
+Quản lý thanh tra thực tế (bắt giữ hàng giả trực tiếp) | Nằm trong trách nhiệm của cơ quan thực thi pháp luật; Hệ thống cung cấp dữ liệu hỗ trợ quyết định
+Hệ thống thanh toán trực tuyến hoàn toàn | Có thể tích hợp bên ngoài (Stripe, 2Checkout, VNPay); Không phát triển payment gateway từ đầu
+Ứng dụng cho loại hàng hóa chuyên biệt (Xây dựng, Máy móc nặng) | Giai đoạn 1 tập trung vào thực phẩm, dược phẩm, mỹ phẩm, đồ chăm sóc; Mở rộng sau
+Hỗ trợ đa ngôn ngữ quốc tế sâu (Tiếng Trung, Tiếng Anh chuyên sâu, Tiếng Nhật) | Giai đoạn 1 chỉ hỗ trợ Tiếng Việt; Mở rộng nếu có tài trợ thêm
+Blockchain toàn bộ chuỗi cung ứng | Có thể tích hợp blockchain hash cho lô hàng quan trọng; Không mandatory ở giai đoạn 1
+[/TABLE]
+[P] 6. YÊU CẦU NGHIỆP VỤ (Business Requirements - BR)
+[P] BR-01: Quản lý danh tính và xác thực pháp lý của Doanh nghiệp (KYC - Know Your Customer)
+[P] Hệ thống phải hỗ trợ đăng ký, xác thực KYC cho Nhà sản xuất và Nhà nhập khẩu bằng cách kiểm tra: Mã số thuế, Giấy phép kinh doanh, Email chính thức (miền riêng), Hotline xác thực, Người đại diện pháp luật (kèm chữ ký số), Địa chỉ nhà máy/kho...
+[P] Điều kiện chấp nhận (Acceptance Criteria):
+[P] Bắt buộc phải upload giấy tờ chứng thực (scan PDF hoặc ảnh chất lượng cao)
+[P] AI phân tích giấy tờ tự động để phát hiện sửa chữa, làm giả (thay đổi độ sâu, độ phức tạp)
+[P] Admin phê duyệt hoặc từ chối trong vòng 3 ngày làm việc
+[P] Email xác thực phải là miền riêng của công ty (không phải Gmail/Yahoo miễn phí)
+[P] Gửi email xác nhận / từ chối kèm lý do chi tiết
+[P] Cho phép doanh nghiệp bổ sung/update hồ sơ nếu bị từ chối
+[P] BR-02: Quản lý sản phẩm và Sinh mã QR động + Serial duy nhất
+[P] Nhà sản xuất có thể tạo sản phẩm với thông tin chi tiết (tên, SKU, thành phần, chứng nhận ISO, hình ảnh bao bì) và hệ thống tự động sinh QR code động + Serial duy nhất cho từng sản phẩm.
+[P] Điều kiện chấp nhận (Acceptance Criteria):
+[P] QR code phải là động (thay đổi theo lần quét hoặc theo thời gian), không tĩnh
+[P] Serial số phải duy nhất toàn cầu, không trùng lặp, format có thể custom (hash, random, sequential)
+[P] Hỗ trợ API để in QR + Serial trực tiếp trên bao bì (hỗ trợ định dạng API REST)
+[P] Cung cấp file mẫu QR code để nhà sản xuất tải về và in
+[P] Quản lý phiên bản sản phẩm (nếu có update thông tin)
+[P] Hỗ trợ nhập danh sách sản phẩm hàng loạt (bulk upload CSV)
+[P] BR-03: Truy xuất nguồn gốc sản phẩm end-to-end (Supply Chain Traceability)
+[P] Theo dõi hành trình sản phẩm từ nguyên liệu đầu vào → sản xuất → phân phối → bán lẻ → tay người tiêu dùng, lưu giữ dữ liệu chi tiết, minh bạch.
+[P] Điều kiện chấp nhận (Acceptance Criteria):
+[P] Ghi nhận lô sản xuất với đầy đủ thông tin: Mã lô, ngày sản xuất, hạn sử dụng, ngày sản xuất
+[P] Liên kết tờ khai Hải quan (nếu nhập khẩu): số tờ khai, ngày thông quan, cửa khẩu, HS code
+[P] Cập nhật vị trí kho & danh sách đại lý phân phối (authorized distributor list)
+[P] Người tiêu dùng khi quét mã sẽ thấy toàn bộ hành trình: Nhà sản xuất → Đại lý → Bán lẻ
+[P] Ghi nhận timestamp cho mỗi điểm chuyển giao (tracking history)
+[P] Phát hiện hàng trôi nổi ngoài kênh chính thức
+[P] BR-04: Xác thực sản phẩm & phát hiện hàng giả bằng AI (Multi-layer Authentication)
+[P] Hệ thống sử dụng Computer Vision & AI Analytics để phát hiện sai lệch giữa sản phẩm thực tế và mẫu chuẩn, cảnh báo hàng giả tự động.
+[P] Điều kiện chấp nhận (Acceptance Criteria):
+[P] AI phân tích hình ảnh bao bì tự động (so sánh logo, chữ in, màu sắc, bố cục với mẫu)
+[P] Detect anomaly trong chuỗi quét (ví dụ: scan cùng lúc ở 2 thành phố cách 1000km)
+[P] Phát hiện hàng có tần suất quét bất thường (>100 lần/ngày từ cùng 1 device)
+[P] Phát hiện hàng được scan từ vị trí lạ (ngoài khu vực phân phối chính thức)
+[P] Tỷ lệ chính xác phát hiện ≥ 85%, độ nhạy ≥ 80%, specificity ≥ 90%
+[P] False positive rate ≤ 5%
+[P] BR-05: Báo cáo ẩn danh từ người tiêu dùng (Anonymous Reporting)
+[P] Người tiêu dùng có thể gửi báo cáo nghi ngờ hàng giả mà không cần đăng nhập, giữ kín danh tính để đảm bảo an toàn cá nhân, khuyến khích báo cáo.
+[P] Điều kiện chấp nhận (Acceptance Criteria):
+[P] Cho phép upload ảnh/video không cần đăng nhập (zero-friction UX)
+[P] Ghi nhận Device ID (hashed), vị trí GPS (nếu được phép), thời gian, ngữ cảnh
+[P] Có rate limit để chống spam (tối đa 10 báo cáo/ngày/device)
+[P] CAPTCHA khi có dấu hiệu bất thường (liên tiếp báo cáo)
+[P] Không lưu trữ thông tin cá nhân định danh (GDPR compliant)
+[P] Gửi confirmation email (nếu người dùng cung cấp) để theo dõi
+[P] BR-06: Cảnh báo thời gian thực cho Doanh nghiệp (Real-time Alert System)
+[P] Khi AI phát hiện bất thường hoặc người tiêu dùng báo cáo, hệ thống gửi cảnh báo ngay cho Nhà sản xuất / Nhà phân phối để kịp thời xử lý.
+[P] Điều kiện chấp nhận (Acceptance Criteria):
+[P] Cảnh báo qua Email, SMS, Push notification (multi-channel)
+[P] Cảnh báo bao gồm: Mã sản phẩm, vị trí phát hiện, lý do (hàng giả?), Bức ảnh/video, khuyến nghị hành động
+[P] Độ trễ gửi cảnh báo ≤ 5 phút sau khi phát hiện
+[P] Cho phép doanh nghiệp cấu hình mức cảnh báo (critical, warning, info)
+[P] Ghi nhận lịch sử tất cả cảnh báo, phản hồi của doanh nghiệp
+[P] BR-07: Tích hợp với cơ quan quản lý nhà nước (Government Integration)
+[P] Cung cấp API để cơ quan nhà nước (Bộ Y tế, Công Thương, Hải quan) truy cập dữ liệu kiểm chứng, hỗ trợ thực thi pháp luật.
+[P] Điều kiện chấp nhận (Acceptance Criteria):
+[P] API hỗ trợ tra cứu sản phẩm, doanh nghiệp, lô hàng (query by code, by manufacturer, by batch)
+[P] Xác thực API bằng OAuth 2.0 hoặc mTLS (mutual TLS)
+[P] Hỗ trợ webhook để cơ quan nhà nước cập nhật dữ liệu chứng thực (giấy phép, chứng nhận)
+[P] API response time ≤ 500ms
+[P] Audit log toàn bộ truy cập API từ cơ quan nhà nước
+[P] Rate limiting: ≤ 1000 request/phút per API key
+[P] BR-08: Phân quyền & Quản lý người dùng đa tầng (RBAC + Multi-tenant)
+[P] Hệ thống áp dụng RBAC (Role-Based Access Control) để từng nhóm người dùng chỉ truy cập đúng phạm vi dữ liệu, đảm bảo data isolation giữa doanh nghiệp.
+[P] Điều kiện chấp nhận (Acceptance Criteria):
+[P] Nhà sản xuất: Quản lý sản phẩm, lô hàng, cảnh báo của công ty mình; Không thấy dữ liệu của công ty khác
+[P] Nhà phân phối: Quản lý lô nhận từ nhà sản xuất, ghi nhập/xuất kho, theo dõi đại lý; Không được tạo sản phẩm mới
+[P] Người tiêu dùng: Chỉ quét, xem thông tin công khai, báo cáo (không cần đăng nhập)
+[P] Admin: Quản lý toàn hệ thống, phê duyệt doanh nghiệp, giám sát AI, quản lý rules, audit log
+[P] Sub-admin cho từng doanh nghiệp (có thể phân công quyền lực)
+[P] Hỗ trợ SSO (Single Sign-On) nếu cơ quan nhà nước có yêu cầu
+[P] 7. YÊU CẦU CHỨC NĂNG (Functional Requirements - FR)
+[P] 7.1 Module: Quản lý Doanh nghiệp & Xác thực KYC
+[TABLE]
+Mã | Yêu cầu | Ưu tiên
+FR-KYC-01 | Cho phép Doanh nghiệp đăng ký tài khoản với email, password mạnh, OTP 2FA | Must Have
+FR-KYC-02 | Hỗ trợ upload giấy chứng nhận (MST, GPKD, CNĐT, địa chỉ nhà máy) PDF/ảnh | Must Have
+FR-KYC-03 | AI phân tích giấy tờ tự động phát hiện sửa chữa, làm giả (OCR + Anomaly Detection) | Should Have
+FR-KYC-04 | Admin có dashboard để phê duyệt/từ chối hồ sơ KYC với ghi chú | Must Have
+FR-KYC-05 | Gửi email xác nhận/từ chối cho doanh nghiệp trong vòng 3 ngày làm việc | Must Have
+FR-KYC-06 | Cho phép doanh nghiệp cập nhật hồ sơ nếu bị từ chối | Must Have
+FR-KYC-07 | Lưu audit log toàn bộ hành động KYC (ai xem, ai phê duyệt, khi nào, lý do) | Should Have
+FR-KYC-08 | Kiểm tra liên kết với cơ quan thuế (Bộ Tài chính) nếu có API | Nice To Have
+[/TABLE]
+[P] 7.2 Module: Quản lý Sản phẩm & Sinh mã QR/Serial
+[TABLE]
+Mã | Yêu cầu | Ưu tiên
+FR-PRD-01 | Tạo sản phẩm mới với: Tên sản phẩm, SKU, Mã vạch (EAN/UPC), ảnh bao bì (trước, sau, bên), thông số (khối lượng, thành phần, kích thước), nhập quy cách (số lượng/hộp, Số hộp/thùng), chứng nhận, Nhóm sản phẩm (phân loại cấp 1, 2, 3), Phẩm cấp... | Must Have
+FR-PRD-02 | Tự động sinh QR code động (đổi theo lần quét hoặc thời gian) | Must Have
+FR-PRD-03 | Tự động sinh Serial số duy nhất (hash-based hoặc random code) | Must Have
+FR-PRD-04 | API để nhà sản xuất tải xuống hình ảnh QR + Serial code | Should Have
+FR-PRD-05 | Cho phép nhà sản xuất chỉnh sửa / xóa sản phẩm (trước khi kích hoạt) | Must Have
+FR-PRD-06 | Ghi nhận lịch sử thay đổi sản phẩm (version control, audit trail) | Should Have
+FR-PRD-07 | Hỗ trợ nhập danh sách sản phẩm hàng loạt (bulk upload CSV/Excel) | Should Have
+FR-PRD-08 | Tích hợp giấy phép / chứng nhận (link cơ quan quản lý nhà nước) | Should Have
+[/TABLE]
+[P] 7.3 Module: Quản lý Lô sản xuất & Phân phối
+[TABLE]
+Mã | Yêu cầu | Ưu tiên
+FR-BAT-01 | Tạo lô với: Mã lô, Ngày sản xuất/nhập khẩu, hạn sử dụng, số lượng, phạm vi phân phối, tờ khai hải quan | Must Have
+FR-BAT-02 | Kích hoạt lô hàng → trạng thái chuyển sang 'Đang lưu thông' | Must Have
+FR-BAT-03 | Liên kết Serial code với Lô hàng (range: từ serial A → serial Z) | Must Have
+FR-BAT-04 | Nhà phân phối xác nhận nhận lô hàng từ nhà sản xuất | Must Have
+FR-BAT-05 | Ghi nhận nhập kho / xuất kho với timestamp, vị trí GPS | Must Have
+FR-BAT-06 | Cảnh báo nếu lô hàng sắp hết hạn (trong 30 ngày tới) | Should Have
+FR-BAT-07 | Hỗ trợ tờ khai hải quan (lô nhập khẩu) | Must Have
+[/TABLE]
+[P] 7.4 Module: Xác thực sản phẩm cho Người tiêu dùng
+[TABLE]
+Mã | Yêu cầu | Ưu tiên
+FR-CNS-01 | API endpoint công khai quét QR (GET /check?code=... hoặc POST) | Must Have
+FR-CNS-02 | Trả về thông tin sản phẩm: Tên, nhà sản xuất, lô, ngày sản xuất, hạn sử dụng | Must Have
+FR-CNS-03 | Trả về trạng thái xác thực: Hợp lệ / Nghi ngờ / Cảnh báo hàng giả | Must Have
+FR-CNS-04 | Ghi nhận lần quét (lần 1 phát hiện, lần 2 cảnh báo, lần 3+ nghi vấn) | Should Have
+FR-CNS-05 | Hiển thị hành trình sản phẩm (nếu có): Nhà sản xuất → Đại lý → Bán lẻ | Should Have
+FR-CNS-06 | Tối ưu hóa response time ≤ 200ms (P95) | Must Have
+FR-CNS-07 | Hỗ trợ tra cứu bằng Serial code hoặc QR code | Must Have
+FR-CNS-08 | Mobile app (iOS, Android) với giao diện tối giản, UX đơn giản | Must Have
+[/TABLE]
+[P] 7.5 Module: Báo cáo & Phân tích
+[TABLE]
+Mã | Yêu cầu | Ưu tiên
+FR-RPT-01 | Người tiêu dùng submit báo cáo hàng giả không cần đăng nhập | Must Have
+FR-RPT-02 | Báo cáo bao gồm: Ảnh/video, vị trí GPS, mô tả, mã sản phẩm | Must Have
+FR-RPT-03 | Admin dashboard xem tất cả báo cáo, phê duyệt / từ chối | Should Have
+FR-RPT-04 | Gửi cảnh báo cho nhà sản xuất nếu báo cáo được xác nhận là hàng giả | Should Have
+FR-RPT-05 | Hiển thị heatmap hàng giả trên bản đồ theo khu vực, thời gian | Should Have
+FR-RPT-06 | Cung cấp báo cáo phân tích cho doanh nghiệp (tuần/tháng/quý) | Should Have
+FR-RPT-07 | Export dữ liệu báo cáo sang Excel, PDF | Nice To Have
+[/TABLE]
+[P] 8. YÊU CẦU PHI CHỨC NĂNG (Non-Functional Requirements - NFR)
+[P] 8.1 Hiệu năng (Performance)
+[TABLE]
+Mã | Yêu cầu | Ngưỡng mục tiêu
+NFR-PF-01 | Response time API xác thực sản phẩm | ≤ 200ms (P95), ≤ 100ms (P50)
+NFR-PF-02 | Thông lượng API | ≥ 10.000 req/giây (sustained)
+NFR-PF-03 | Độ trễ ghi nhận quét mã | ≤ 100ms từ khi quét đến khi ghi vào DB
+NFR-PF-04 | Thời gian phân tích AI hình ảnh | ≤ 3 giây/ảnh (1-5 MB)
+NFR-PF-05 | Uptime hệ thống | ≥ 99.5% (chỉ 3.6 giờ downtime/tháng, hoặc 21.6 giờ/năm)
+NFR-PF-06 | Load time App di động | ≤ 2 giây lần đầu, ≤ 500ms lần sau
+NFR-PF-07 | Time to First Byte (TTFB) | ≤ 500ms
+[/TABLE]
+[P] 8.2 Bảo mật (Security)
+[TABLE]
+Mã | Yêu cầu | Ngưỡng mục tiêu
+NFR-SC-01 | Mã hóa dữ liệu in transit (TLS) | TLS 1.3 hoặc TLS 1.2 (minimum)
+NFR-SC-02 | Mã hóa dữ liệu at rest | AES-256 cho tất cả sensitive data
+NFR-SC-03 | Xác thực đa yếu tố (2FA) | Bắt buộc cho Doanh nghiệp & Admin (SMS hoặc Google Authenticator)
+NFR-SC-04 | Phòng chống tấn công | SQL Injection, XSS, CSRF - 100% kiểm tra OWASP Top 10
+NFR-SC-05 | Audit log | Ghi nhận mọi thay đổi dữ liệu quan trọng, lưu giữ ≥ 1 năm
+NFR-SC-06 | Quyền truy cập tối thiểu | Principle of Least Privilege - mỗi role chỉ có quyền cần thiết
+NFR-SC-07 | Password policy | Min 12 ký tự, gồm: chữ hoa, chữ thường, số, ký tự đặc biệt
+NFR-SC-08 | VPN for Admin | Khuyến nghị Admin phải truy cập qua VPN nội bộ
+[/TABLE]
+[P] 8.3 Độ chính xác AI (Accuracy)
+[TABLE]
+Module | Chỉ số | Ngưỡng
+Computer Vision - Packaging Detection | Phát hiện sai lệch bao bì (lỗi logo, chữ in, màu sắc) | Precision ≥ 85%, Recall ≥ 80%, F1-score ≥ 82%
+OCR - Text Recognition | Nhận diện text trên bao bì | Character Error Rate (CER) ≤ 10%, Word Error Rate (WER) ≤ 15%
+Anomaly Detection - Behavior | Phát hiện hành vi quét bất thường | Precision ≥ 80%, Recall ≥ 75%, False Positive rate ≤ 5%
+Serial Validation | Xác thực Serial code không giả | Accuracy ≥ 99%
+[/TABLE]
+[P] 8.4 Khả năng mở rộng (Scalability) & Độ tin cậy
+[P] NFR-SCA-01: Kiến trúc Microservices — Cho phép scale từng service độc lập, auto-scaling khi load cao
+[P] NFR-SCA-02: Database Replication — Multi-region replication (ít nhất 2 regions), failover tự động ≤ 30 giây
+[P] NFR-SCA-03: Caching — Redis/Memcached cho hot data (QR code phổ biến, sản phẩm được quét nhiều)
+[P] NFR-SCA-04: Load Balancing — Phân tải request qua ≥ 3 instance (health check mỗi 10 giây)
+[P] NFR-SCA-05: CDN — Phân phối nội dung tĩnh qua CDN (giảm latency, ≥ 30% giảm response time)
+[P] NFR-SCA-06: Database Connection Pooling — HikariCP hoặc tương đương, max connections ≥ 100
+[P] NFR-SCA-07: Message Queue — Kafka/RabbitMQ cho async processing (báo cáo, cảnh báo, AI analysis)
+[P] 9. QUY TRÌNH NGHIỆP VỤ (Business Process Flows)
+[P] 9.1 As-Is (Hiện tại - Trước khi có hệ thống)
+[P] Quy trình xác thực sản phẩm hiện nay diễn ra như sau:
+[P] Bước 1: Nhà sản xuất in bao bì, tem nhãn, QR code tĩnh (không quản lý được mã trùng, dễ bị copy)
+[P] Bước 2: Phân phối qua đại lý, không ghi nhận rõ ràng vị trí, không có tracking
+[P] Bước 3: Người tiêu dùng quét QR tĩnh → dẫn đến website của doanh nghiệp (dễ bị copy, làm giả trang web)
+[P] Bước 4: Nếu nghi ngờ hàng giả, phải liên hệ hotline → chờ xác minh thủ công (chậm, không hiệu quả)
+[P] Bước 5: Thanh tra/cơ quan chức năng phải kiểm tra trực tiếp tại các điểm bán (mất thời gian, chi phí lớn, không toàn diện)
+[P] Vấn đề: Không có giám sát realtime, hàng giả dễ len lỏi, người tiêu dùng không được bảo vệ toàn diện, doanh nghiệp không biết hàng bán ở đâu
+[P] 9.2 To-Be (Tương lai - Sau khi có hệ thống)
+[P] Quy trình xác thực sản phẩm với hệ thống QSAC:
+[P] Bước 1: Nhà sản xuất đăng ký trên hệ thống QSAC (xác thực KYC, upload giấy tờ)
+[P] Bước 2: Hệ thống sinh QR động + Serial duy nhất cho mỗi sản phẩm
+[P] Bước 3: Nhà sản xuất in mã trên bao bì, kích hoạt lô khi xuất kho
+[P] Bước 4: Lô hàng được ghi nhận trên hệ thống (ngày sản xuất, hạn sử dụng, vị trí phân phối)
+[P] Bước 5: Người tiêu dùng quét QR → xem thông tin sản phẩm + hành trình (Nhà sản xuất → Đại lý → Bán lẻ)
+[P] Bước 6: Nếu nghi ngờ → báo cáo ẩn danh (upload ảnh), AI phân tích tự động ≤ 3 giây
+[P] Bước 7: Nếu phát hiện hàng giả → cảnh báo tức thời (≤ 5 phút) cho nhà sản xuất + thanh tra
+[P] Bước 8: Camera AI tại điểm bán giám sát thụ động (không cần quét thủ công, phát hiện sai lệch bao bì)
+[P] Bước 9: Hệ thống tích hợp với cơ quan quản lý nhà nước (Bộ Y tế, Công Thương, Hải quan)
+[P] Bước 10: Thanh tra có dữ liệu realtime (heatmap hàng giả, điểm nóng) → kiểm tra có mục tiêu, hiệu quả
+[P] Lợi ích: Giám sát realtime, phát hiện sớm hàng giả, dữ liệu data-driven cho thanh tra, bảo vệ người tiêu dùng toàn diện
+[P] 10. YÊU CẦU DỮ LIỆU & TÍCH HỢP (Data & Integration Requirements)
+[P] 10.1 Nguồn dữ liệu (Data Sources)
+[TABLE]
+Nguồn | Loại | Vai trò | Yêu cầu xử lý
+Nhà sản xuất | Primary Source (Tự cung cấp) | Thông tin sản phẩm, lô sản xuất, chứng nhận, logo, hình ảnh bao bì | Xác thực KYC, lưu trữ, quản lý phiên bản, backup
+Nhà phân phối | Primary Source (Tự cung cấp) | Thông tin nhận lô, nhập/xuất kho, vị trí kho, danh sách đại lý | Xác thực, ghi nhận timestamp, tracking
+Hải quan VN | External API | Dữ liệu tờ khai nhập khẩu, HS code, số lượng, ngày thông quan | ETL, liên kết với lô hàng nhập khẩu, refresh hàng ngày
+Bộ Y tế / ATTP | External API / Manual Upload | Chứng nhận tiêu chuẩn, giấy phép kinh doanh, chứng nhận hợp quy | Kiểm tra định kỳ, cập nhật real-time nếu có thay đổi
+Bộ Công Thương | External API | Chứng nhận tiêu chuẩn, thương hiệu đã đăng ký, giấy phép phân phối | Kiểm tra định kỳ, liên kết qua OAuth 2.0
+Người tiêu dùng | User-Generated Content | Báo cáo hàng giả, ảnh/video, vị trí GPS, mô tả, phản hồi | Validate, phân loại, ghi nhận với anonymization
+Camera AI / Sensor | IoT Stream (Real-time) | Hình ảnh sản phẩm tại điểm bán, metadata (timestamp, GPS, model) | Stream processing qua Kafka, phân tích AI, cảnh báo
+[/TABLE]
+[P] 10.2 Tích hợp với các hệ thống (System Integration)
+[TABLE]
+Hệ thống | Giao thức / Công nghệ | Dữ liệu trao đổi
+Hải quan Việt Nam | REST API (HTTPS) + Webhook (khi có cập nhật) | Tra cứu tờ khai: Số tờ khai, ngày thông quan, cửa khẩu, HS code, số lượng, địa chỉ shipper
+Bộ Y tế / Cục ATTP | REST API (OAuth 2.0 + mTLS) + Webhook | Kiểm tra chứng nhận thực phẩm, dược phẩm, mỹ phẩm (số hiệu, ngày cấp, ngày hết hạn)
+Bộ Công Thương | SOAP Web Service (legacy) + REST API (modern) | Kiểm tra giấy phép kinh doanh, chứng nhận tiêu chuẩn, thương hiệu đã đăng ký
+Email / SMS Gateway | SMTP (Email) + Twilio/SNS API (SMS) | Gửi cảnh báo, OTP, thông báo cho doanh nghiệp (latency ≤ 1 phút)
+Camera AI / Edge Gateway | MQTT (lightweight IoT protocol) + HTTPS + RTSP (video streaming) | Metadata hình ảnh (base64 encoded hoặc path), logs, kết quả phân tích AI
+Google Maps / Mapbox | REST API (Geocoding, Maps Display) | Hiển thị vị trí GPS trên bản đồ, heatmap hàng giả theo khu vực
+[/TABLE]
+[P] 11. GIẢ ĐỊNH, RÀNG BUỘC & RỦI RO (Assumptions, Constraints & Risks)
+[P] 11.1 Giả định (Assumptions)
+[P] Cơ quan nhà nước sẽ hợp tác tích cực, cung cấp API dữ liệu chứng thực, hỗ trợ quá trình triển khai
+[P] Doanh nghiệp sẽ tích cực cập nhật thông tin sản phẩm, lô hàng lên hệ thống (định kỳ hàng tuần)
+[P] Người tiêu dùng sẽ sử dụng hệ thống để quét QR, xem thông tin sản phẩm, báo cáo hàng giả
+[P] Internet connectivity ở các điểm bán là ổn định (hoặc hỗ trợ offline caching cho camera AI)
+[P] Hệ thống có đủ tài chính (budget dự kiến), nhân sự để phát triển, vận hành 24/7, hỗ trợ 365 ngày/năm
+[P] Các doanh nghiệp sẽ sẵn sàng in QR code động trên bao bì (không tăng chi phí sản xuất quá nhiều)
+[P] Thị trường có nhu cầu thực sự về giải pháp chống hàng giả (market demand)
+[P] 11.2 Ràng buộc (Constraints)
+[TABLE]
+# | Ràng buộc | Nguồn gốc
+1 | Luật bảo vệ dữ liệu cá nhân (QĐ-54/2019/NĐ-CP) - không được lưu dữ liệu người dùng không cần thiết | Pháp luật Việt Nam
+2 | Người dùng báo cáo ẩn danh → không được yêu cầu đăng nhập, nhưng vẫn phải validate CAPTCHA/Device ID | Yêu cầu BR-05
+3 | Budget & Timeline: MVP phải hoàn thành trong 8-10 tuần, Chi phí ≤ Budget được phê duyệt (VND) | Quyết định quản lý
+4 | Chỉ hỗ trợ Tiếng Việt ở giai đoạn 1; mở rộng ngôn ngữ (Anh, Trung) khi có tài chính thêm | Scope & Resource Planning
+5 | Hỗ trợ chính cho Android & iOS; Web app là optional | Chiến lược phát triển
+6 | Tích hợp Camera AI bắt đầu từ giai đoạn 2 (sau MVP); giai đoạn 1 chỉ xác thực via API | Roadmap
+[/TABLE]
+[P] 11.3 Rủi ro (Risks)
+[TABLE]
+Mã | Rủi ro | XS | Tác động | Biện pháp giảm thiểu
+RK-01 | Doanh nghiệp chậm cập nhật thông tin sản phẩm → hệ thống có dữ liệu cũ, kém chính xác | Cao | Cao | Gửi thông báo nhắc nhở hàng tuần, tính phí nếu dữ liệu quá cũ (>6 tháng)
+RK-02 | AI phát hiện hàng giả False Positive (>10%) → mất lòng tin người dùng, khiếu nại | Trung bình | Cao | Kiểm thử AI kỹ lưỡng, cho phép Admin override, thu thập feedback, fine-tuning liên tục
+RK-03 | API Hải quan / Bộ Y tế không ổn định hoặc chậm → hệ thống bị ảnh hưởng | Trung bình | Trung bình | Xây dựng hệ thống cache, retry logic, fallback, monitoring 24/7
+RK-04 | Vấn đề bảo mật: Data breach, dữ liệu bị lộ, hack | Thấp | Rất cao | Audit bảo mật định kỳ (quarterly), mã hóa dữ liệu, giám sát 24/7, pentest, SOC team
+RK-05 | Cộng đồng doanh nghiệp không hợp tác / chậm chạp tham gia hệ thống | Trung bình | Cao | Marketing campaign, partnership với hiệp hội ngành, incentive (free trial 3 tháng)
+RK-06 | Thanh tra / cơ quan quản lý không tích cực sử dụng hệ thống | Trung bình | Trung bình | Demo intensive, training, provide actionable insights (heatmap, enforcement data), SLA 99.5%
+RK-07 | Vấn đề hiệu năng: Hệ thống chậm khi load cao (khách hàng quét nhiều) | Thấp | Cao | Load testing, auto-scaling, database optimization, CDN, monitoring alert nếu P95 > 200ms
+[/TABLE]
+[P] 12. LỘ TRÌNH & MỐC TRIỂN KHAI (Roadmap)
+[P] 12.1 Lộ trình triển khai theo giai đoạn
+[TABLE]
+Giai đoạn | Thời gian | Hoạt động chính | Milestone / Decision Gate
+Giai đoạn 1: MVP
+(Tháng 1-2) | T+0 → T+8 tuần | Xây dựng: Backend API (Laravel/Node.js), Mobile app (Flutter), KYC module, Quản lý sản phẩm, Quản lý lô hàng, Xác thực người tiêu dùng, Phân quyền RBAC, Hệ thống báo cáo ẩn danh | Gate 1: API ≥ 90% hoạt động, Mobile app tải >10k, UAT pass với 5 doanh nghiệp
+Giai đoạn 2: AI & Scaling
+(Tháng 3-4) | T+8 → T+16 tuần | Tích hợp: Computer Vision (YOLOv8), Camera AI, Dashboard admin, Tích hợp API Hải quan & Bộ Y tế, Dashboard doanh nghiệp (heatmap, báo cáo) | Gate 2: AI accuracy ≥ 85%, 100+ camera triển khai, Hải quan integration 80%+ tờ khai
+Giai đoạn 3: Optimization & Go-Live
+(Tháng 5-6) | T+16 → T+24 tuần | Tối ưu: Performance tuning, Caching (Redis), CDN, Database replication, Payment integration, Multi-language (Eng, Chinese), Production hardening, Training & Documentation | Gate 3: Uptime ≥ 99.5%, Response time ≤ 200ms P95, Ready for large-scale deployment
+Giai đoạn 4: Mở rộng & Duy trì
+(Tháng 7+) | T+24 → | Mở rộng: Thêm ngành hàng, region mới, partnership, Advanced analytics, Blockchain integration (optional), Support 24/7 | Steady state: 1000+ doanh nghiệp, 10M+ sản phẩm, ≥ 100M lượt quét/tháng
+[/TABLE]
+[P] 12.2 Decision Gates
+[TABLE]
+Gate | Điều kiện để tiếp tục | Vị trí trong roadmap
+Gate 1
+(Giữa T2 - T+8 tuần) | - API backend ≥ 90% chức năng hoạt động
+- UAT với ≥ 5 doanh nghiệp pass
+- Mobile app tải xuống >10,000
+- 0 critical bug còn tồn đọng
+- Security audit sơ bộ pass
+- Performance test: P95 ≤ 300ms | Giữa giai đoạn 1 → quyết định có tiếp tục giai đoạn 2 (AI & Scaling) hay cần fix thêm 2 tuần
+Gate 2
+(Giữa T4 - T+16 tuần) | - AI accuracy ≥ 85% trên ≥ 1000 ảnh test
+- ≥ 100 camera AI triển khai thành công
+- Tích hợp Hải quan ≥ 80% tờ khai
+- Tích hợp Bộ Y tế ≥ 70%
+- Dashboard doanh nghiệp live
+- Performance: P95 ≤ 200ms | Giữa giai đoạn 2 → quyết định go-live (giai đoạn 3) hay tiếp tục optimize 4 tuần nữa
+Gate 3
+(Cuối T6 - T+24 tuần) | - Uptime ≥ 99.5% (stress test 48 giờ)
+- Response time P95 ≤ 200ms, P99 ≤ 500ms
+- Security audit toàn diện pass
+- Penetration test pass
+- Scalability test: ≥ 10,000 req/giây
+- SLA 99.5% signed với khách hàng | Cuối giai đoạn 3 → quyết định public launch hay phân phối closed beta thêm 1 tháng
+[/TABLE]
+[P] 13. TIÊU CHÍ CHẤP NHẬN & CHÚ GIẢI (Acceptance Criteria & Glossary)
+[P] 13.1 Tiêu chí chấp nhận (Acceptance Criteria)
+[TABLE]
+Tiêu chí | Ngưỡng bắt buộc / Mục tiêu
+Chức năng & Use Cases | Tất cả 27+ Use Case phải hoạt động theo spec, không có missing requirement, cover ≥ 95% user journey
+Hiệu năng | Response time API ≤ 200ms (P95), Uptime ≥ 99.5%, Load ≥ 10,000 req/giây
+Bảo mật | Không lỗ hổng bảo mật OWASP Top 10, mã hóa data at-rest (AES-256) & in-transit (TLS 1.3)
+Độ chính xác AI | Computer Vision accuracy ≥ 85%, Anomaly detection precision ≥ 80%, False positive ≤ 5%
+Tài liệu & Training | API Documentation hoàn chỉnh (Swagger/OpenAPI), Hướng dẫn cho doanh nghiệp (user manual), Training cho 50+ quản trị viên
+Mobile App | iOS + Android app live trên App Store & Google Play, Rating ≥ 4.0 stars, Download ≥ 100,000
+Integration | Tích hợp ≥ 3 hệ thống chính (Hải quan, Bộ Y tế, Email gateway), API test pass 100%
+Data Privacy | GDPR compliant, không lưu PII không cần thiết, audit log ≥ 1 năm
+Scalability | Database replicated ≥ 2 regions, auto-scaling khi load cao, CDN active
+SLA | 99.5% uptime guarantee, support response ≤ 4 giờ, critical fix ≤ 24 giờ
+[/TABLE]
+[P] 13.2 Chú giải (Glossary)
+[TABLE]
+Thuật ngữ | Định nghĩa
+QR Code (Quick Response) | Mã 2D có chứa thông tin, quét bằng camera điện thoại để lấy dữ liệu
+QR Code Động | QR code thay đổi theo lần quét hoặc theo thời gian (khác với QR tĩnh)
+Serial Number (Mã Sê-ri) | Số duy nhất gắn trên từng sản phẩm để xác thực, không trùng lặp
+KYC (Know Your Customer) | Quá trình xác thực danh tính, kiểm tra giấy tờ của khách hàng/doanh nghiệp
+Lô hàng (Batch / Lot) | Tập hợp sản phẩm được sản xuất cùng lúc, có cùng mã lô, ngày sản xuất
+Hành trình (Traceability) | Quá trình theo dõi sản phẩm từ nguyên liệu → sản xuất → phân phối → bán lẻ → tay người tiêu dùng
+Computer Vision | Công nghệ AI giúp máy tính nhìn và phân tích hình ảnh (phát hiện sai lệch, anomaly)
+Anomaly Detection | Phát hiện sự bất thường so với hành vi bình thường (ví dụ: scan cùng lúc ở 2 nơi cách xa)
+API (Application Programming Interface) | Giao diện cho phép các ứng dụng giao tiếp với nhau qua HTTP/REST
+Microservices | Kiến trúc phần mềm chia ứng dụng thành các dịch vụ nhỏ độc lập, deploy riêng
+RBAC (Role-Based Access Control) | Hệ thống phân quyền dựa trên vai trò của người dùng
+Multi-tenant | Hệ thống phục vụ nhiều doanh nghiệp, dữ liệu tách biệt hoàn toàn giữa các tenant
+Edge Computing | Xử lý dữ liệu gần nơi phát sinh (tại camera, gateway) thay vì chỉ trên cloud
+Heatmap | Bản đồ hiển thị mức độ tập trung của hàng giả theo khu vực (phần màu nóng = hàng giả nhiều)
+OAuth 2.0 | Giao thức xác thực modern cho API, cho phép truy cập an toàn không cần share password
+[/TABLE]
+[P] PHỤ LỤC: THAM CHIẾU VÀ TÀI LIỆU HỖ TRỢ
+[P] A. Các file tham khảo chính
+[P] 1. PHÂN TÍCH CHI TIẾT HỆ THỐNG CHỐNG HÀNG GIẢ & TRUY XUẤT NGUỒN GỐC
+[P] - Kiến trúc hệ thống (Backend, AI Module, Big Data)
+[P] - Cơ chế chống hàng giả đa lớp (3 tầng xác thực: Physical ID, Official Validation, AI Analytics)
+[P] - Phân quyền & quản lý người dùng (RBAC, Multi-tenant)
+[P] - So sánh với hệ thống truyền thống
+[P] 2. Việc phát hiện hàng giả, hàng nhái
+[P] - Dấu hiệu nhận diện (lỗi ghi nhãn, khiếm khuyết vật lý, thiếu chứng thực)
+[P] - Phương pháp phát hiện kỹ thuật số (OCR, Computer Vision, AI/ML)
+[P] - Xác minh mua hàng định kỳ & pháp lý
+[P] 3. Xây dựng CSDL chính thức để đối chiếu
+[P] - Thông tin bắt buộc cho nhà sản xuất/nhập khẩu (31 trường dữ liệu)
+[P] - Cấu trúc dữ liệu sản phẩm (tên, SKU, hình ảnh, thông số)
+[P] - Thông tin lô hàng & truy xuất (mã lô, ngày sản xuất, hạn sử dụng)
+[P] 4. CÁC TRƯỜNG DỮ LIỆU THUỘC CHECKLIST
+[P] - Danh sách chi tiết các trường dữ liệu cần thu thập
+[P] - Hệ thống số hóa & tích hợp (Blockchain hash, API, Audit log)
+[P] 5. USE CASE
+[P] - 27+ Use Case cho 4 actor chính (Nhà sản xuất, Nhà phân phối, Người tiêu dùng, Admin)
+[P] - Luồng xử lý chính & ngoại lệ
+[P] B. Công nghệ & Tools dự kiến sử dụng
+[P] Backend: Laravel (PHP 8+) hoặc Node.js (Express) + FastAPI (Python cho AI module)
+Frontend: React/NextJS (Web), Flutter (Mobile - iOS/Android)
+Database: PostgreSQL (relational data), ElasticSearch (logging & search)
+AI/ML: YOLOv8 (Computer Vision), PaddleOCR (OCR), Python (anomaly detection)
+DevOps: Docker, Kubernetes, GitHub Actions (CI/CD), AWS/GCP (Cloud Infrastructure)
+Monitoring: Prometheus, Grafana, DataDog (logging & APM)
+Payment: Stripe, VNPay, 2Checkout (nếu có)
+Messaging: Kafka (event streaming), RabbitMQ (message queue)
+[P] C. Thống kê & Metrices Chính
+[P] Số actor chính: 4 (Nhà sản xuất, Nhà phân phối, Người tiêu dùng, Admin)
+[P] Số Use Case: 27+
+[P] Số Business Requirement: 8 (BR-01 → BR-08)
+[P] Số Functional Requirement: 40+ (FR)
+[P] Số Non-Functional Requirement: 25+ (NFR)
+[P] Thời gian triển khai: 6 tháng (3 giai đoạn)
+[P] Budget dự kiến: VND (cần định lượng chi tiết trong giai đoạn planning)
+[P] Team dự kiến: 15-20 người (Backend 4, Frontend 3, QA 3, DevOps 2, PM 1, AI Engineer 2-3)

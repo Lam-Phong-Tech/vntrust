@@ -1,0 +1,80 @@
+const fs = require('fs');
+const CTX = 'D:/Web hang gia/vntrust/src/contexts/LanguageContext.tsx';
+let ctx = fs.readFileSync(CTX, 'utf8');
+
+const NEW_KEYS = `
+  // ── HauKiem Page ──
+  hk_label:              { vi: "Giám sát Chất lượng", en: "Quality Surveillance", zh: "质量监督", ja: "品質監視", ko: "품질 감시", fr: "Surveillance qualité" },
+  hk_upload_btn:         { vi: "Tải lên Kết quả Phân tích", en: "Upload Analysis Result", zh: "上传分析结果", ja: "分析結果をアップロード", ko: "분석 결과 업로드", fr: "Télécharger le résultat" },
+  hk_no_data:            { vi: "Chưa có kết quả giám định nào", en: "No inspection results yet", zh: "暂无检验结果", ja: "検査結果がまだありません", ko: "검사 결과 없음", fr: "Aucun résultat d'inspection" },
+  hk_no_data_sub:        { vi: "Tải lên kết quả test để cập nhật hồ sơ chất lượng công khai.", en: "Upload test results to update the public quality profile.", zh: "上传测试结果以更新公开质量档案。", ja: "公開品質プロファイルを更新するためにテスト結果をアップロード。", ko: "공개 품질 프로필을 업데이트하려면 테스트 결과를 업로드하세요.", fr: "Téléchargez les résultats de test pour mettre à jour le profil qualité." },
+  hk_col_product:        { vi: "Sản phẩm", en: "Product", zh: "产品", ja: "製品", ko: "제품", fr: "Produit" },
+  hk_col_lab:            { vi: "Cơ sở / Ngày Test", en: "Lab / Test Date", zh: "实验室/测试日期", ja: "ラボ/テスト日", ko: "실험실/테스트 날짜", fr: "Labo / Date de test" },
+  hk_col_entity:         { vi: "Đối tượng", en: "Entity", zh: "对象", ja: "対象", ko: "대상", fr: "Entité" },
+  hk_col_result:         { vi: "Kết quả", en: "Result", zh: "结果", ja: "結果", ko: "결과", fr: "Résultat" },
+  hk_col_verify:         { vi: "Xác minh", en: "Verified", zh: "验证", ja: "検証", ko: "검증", fr: "Vérification" },
+  hk_verified:           { vi: "Đã xác minh", en: "Verified", zh: "已验证", ja: "検証済み", ko: "검증됨", fr: "Vérifié" },
+  hk_pending:            { vi: "Chờ duyệt", en: "Pending", zh: "待审核", ja: "承認待ち", ko: "대기 중", fr: "En attente" },
+  hk_rejected:           { vi: "Từ chối", en: "Rejected", zh: "已拒绝", ja: "却下", ko: "거부됨", fr: "Rejeté" },
+  hk_unknown:            { vi: "Không xác định", en: "Unknown", zh: "未知", ja: "不明", ko: "알 수 없음", fr: "Inconnu" },
+  hk_pass:               { vi: "Đạt chuẩn", en: "Pass", zh: "合格", ja: "合格", ko: "합격", fr: "Conforme" },
+  hk_fail:               { vi: "Vượt ngưỡng", en: "Exceeded", zh: "超标", ja: "超過", ko: "초과", fr: "Dépassé" },
+  hk_entity_biz:         { vi: "Doanh nghiệp", en: "Enterprise", zh: "企业", ja: "企業", ko: "기업", fr: "Entreprise" },
+  hk_entity_consumer:    { vi: "Người tiêu dùng", en: "Consumer", zh: "消费者", ja: "消費者", ko: "소비자", fr: "Consommateur" },
+  hk_entity_3rd:         { vi: "Đối tác thứ 3 / QLTT", en: "3rd Party / Market Authority", zh: "第三方/市场监管", ja: "第三者/市場管理", ko: "제3자/시장관리", fr: "Tiers / Autorité marché" },
+  hk_field_product:      { vi: "Sản phẩm lấy mẫu", en: "Sampled Product", zh: "采样产品", ja: "サンプル製品", ko: "샘플 제품", fr: "Produit échantillonné" },
+  hk_select_product:     { vi: "-- Chọn sản phẩm --", en: "-- Select product --", zh: "-- 选择产品 --", ja: "-- 製品を選択 --", ko: "-- 제품 선택 --", fr: "-- Sélectionner un produit --" },
+  hk_field_lab:          { vi: "Cơ sở phân tích", en: "Analysis Lab", zh: "分析实验室", ja: "分析ラボ", ko: "분석 실험실", fr: "Laboratoire d'analyse" },
+  hk_field_sender:       { vi: "Người gửi mẫu", en: "Sample Sender", zh: "送样人", ja: "サンプル送付者", ko: "샘플 발송자", fr: "Expéditeur d'échantillon" },
+  hk_field_sample_date:  { vi: "Ngày lấy mẫu", en: "Sample Date", zh: "采样日期", ja: "サンプル日", ko: "채취일", fr: "Date d'échantillonnage" },
+  hk_field_result_date:  { vi: "Ngày ra kết quả", en: "Result Date", zh: "结果日期", ja: "結果日", ko: "결과일", fr: "Date du résultat" },
+  hk_field_result_summary:{ vi: "Tổng quan kết quả", en: "Result Summary", zh: "结果概述", ja: "結果概要", ko: "결과 요약", fr: "Résumé du résultat" },
+  hk_result_pass:        { vi: "Đạt chỉ tiêu (Đảm bảo)", en: "Pass (Compliant)", zh: "达标（符合）", ja: "合格（適合）", ko: "합격(적합)", fr: "Conforme (Réussi)" },
+  hk_result_fail:        { vi: "Vượt ngưỡng quy định", en: "Exceeded threshold", zh: "超出规定阈值", ja: "規定閾値超過", ko: "기준 초과", fr: "Seuil dépassé" },
+  hk_field_exceed:       { vi: "Chỉ tiêu vượt ngưỡng", en: "Exceeded indicators", zh: "超标指标", ja: "超過指標", ko: "초과 지표", fr: "Indicateurs dépassés" },
+  hk_err_future_sample:  { vi: "Ngày lấy mẫu không thể ở tương lai", en: "Sample date cannot be in the future", zh: "采样日期不能是未来", ja: "採取日は未来に設定できません", ko: "채취일은 미래일 수 없습니다", fr: "La date d'échantillonnage ne peut pas être dans le futur" },
+  hk_err_result_before_sample:{ vi: "Ngày ra kết quả không thể trước ngày lấy mẫu", en: "Result date cannot be before sample date", zh: "结果日期不能早于采样日期", ja: "結果日はサンプル日より前にできません", ko: "결과일은 채취일 이전일 수 없습니다", fr: "La date de résultat ne peut pas être avant l'échantillonnage" },
+  hk_err_unknown:        { vi: "Lỗi không xác định", en: "Unknown error", zh: "未知错误", ja: "不明なエラー", ko: "알 수 없는 오류", fr: "Erreur inconnue" },
+  hk_success_add:        { vi: "Đã thêm kết quả phân tích thành công", en: "Analysis result added successfully", zh: "分析结果添加成功", ja: "分析結果が正常に追加されました", ko: "분석 결과가 성공적으로 추가되었습니다", fr: "Résultat d'analyse ajouté avec succès" },
+
+  // ── Inventory Extra ──
+  inv_err_fill_all:      { vi: "Vui lòng điền đầy đủ thông tin", en: "Please fill in all information", zh: "请填写所有信息", ja: "すべての情報を入力してください", ko: "모든 정보를 입력해 주세요", fr: "Veuillez remplir toutes les informations" },
+  inv_err_select_product:{ vi: "Vui lòng chọn sản phẩm", en: "Please select a product", zh: "请选择产品", ja: "製品を選択してください", ko: "제품을 선택해 주세요", fr: "Veuillez sélectionner un produit" },
+  inv_err_mfg_invalid:   { vi: "Ngày sản xuất không hợp lệ", en: "Invalid manufacturing date", zh: "无效的生产日期", ja: "無効な製造日", ko: "유효하지 않은 제조일", fr: "Date de fabrication invalide" },
+  inv_err_mfg_after_exp: { vi: "Ngày sản xuất không được lớn hơn hạn sử dụng", en: "Mfg date cannot be after expiry", zh: "生产日期不能晚于到期日", ja: "製造日は有効期限より後にできません", ko: "제조일은 만료일 이후일 수 없습니다", fr: "La date de fab ne peut pas dépasser l'expiration" },
+  inv_err_mfg_future:    { vi: "Ngày sản xuất không thể ở tương lai", en: "Mfg date cannot be in the future", zh: "生产日期不能是未来", ja: "製造日は未来に設定できません", ko: "제조일은 미래일 수 없습니다", fr: "La date de fabrication ne peut pas être dans le futur" },
+  inv_err_qty_positive:  { vi: "Số lượng phải là số nguyên dương", en: "Quantity must be a positive integer", zh: "数量必须为正整数", ja: "数量は正の整数でなければなりません", ko: "수량은 양의 정수여야 합니다", fr: "La quantité doit être un entier positif" },
+  inv_err_qty_max:       { vi: "Số lượng không được vượt quá 10,000", en: "Quantity cannot exceed 10,000", zh: "数量不能超过10,000", ja: "数量は10,000を超えることができません", ko: "수량은 10,000을 초과할 수 없습니다", fr: "La quantité ne peut pas dépasser 10 000" },
+  inv_err_fill_dates:    { vi: "Vui lòng điền đầy đủ ngày SX và hạn dùng", en: "Please fill in mfg date and expiry", zh: "请填写生产日期和到期日", ja: "製造日と有効期限を入力してください", ko: "제조일과 만료일을 입력해 주세요", fr: "Veuillez remplir la date de fab et l'expiration" },
+  inv_err_sync:          { vi: "Lỗi kết nối khi đồng bộ", en: "Connection error during sync", zh: "同步时连接错误", ja: "同期中に接続エラー", ko: "동기화 중 연결 오류", fr: "Erreur de connexion lors de la synchronisation" },
+  inv_seed_done:         { vi: "Database đã khởi tạo dữ liệu mẫu", en: "Database initialized with sample data", zh: "数据库已初始化示例数据", ja: "データベースにサンプルデータを初期化しました", ko: "데이터베이스에 샘플 데이터 초기화됨", fr: "Base de données initialisée avec des données exemple" },
+  inv_add_batch:         { vi: "Thêm lô hàng", en: "Add Batch", zh: "添加批次", ja: "バッチを追加", ko: "배치 추가", fr: "Ajouter un lot" },
+  inv_edit_batch:        { vi: "Chỉnh sửa Lô hàng", en: "Edit Batch", zh: "编辑批次", ja: "バッチを編集", ko: "배치 편집", fr: "Modifier le lot" },
+  inv_qty_readonly:      { vi: "Số lượng tem (không thể sửa)", en: "Stamp quantity (read-only)", zh: "标签数量（只读）", ja: "スタンプ数量（読み取り専用）", ko: "스탬프 수량(읽기 전용)", fr: "Quantité de tampons (lecture seule)" },
+  inv_save_changes:      { vi: "Lưu thay đổi", en: "Save Changes", zh: "保存更改", ja: "変更を保存", ko: "변경 사항 저장", fr: "Enregistrer les modifications" },
+  inv_confirm_delete:    { vi: "Xác nhận xóa lô hàng?", en: "Confirm batch deletion?", zh: "确认删除批次？", ja: "バッチの削除を確認しますか？", ko: "배치 삭제를 확인하시겠습니까?", fr: "Confirmer la suppression du lot?" },
+  inv_irreversible:      { vi: "Không thể hoàn tác thao tác này!", en: "This action cannot be undone!", zh: "此操作无法撤销！", ja: "この操作は元に戻せません！", ko: "이 작업은 되돌릴 수 없습니다!", fr: "Cette action est irréversible!" },
+  inv_delete_forever:    { vi: "Xóa vĩnh viễn", en: "Delete Permanently", zh: "永久删除", ja: "完全に削除", ko: "영구 삭제", fr: "Supprimer définitivement" },
+  inv_modal_add_product: { vi: "Thêm Sản phẩm mới", en: "Add New Product", zh: "添加新产品", ja: "新製品を追加", ko: "새 제품 추가", fr: "Ajouter un nouveau produit" },
+  inv_modal_add_batch:   { vi: "Thêm Lô hàng mới", en: "Add New Batch", zh: "添加新批次", ja: "新しいバッチを追加", ko: "새 배치 추가", fr: "Ajouter un nouveau lot" },
+  inv_create_product:    { vi: "Tạo Sản phẩm", en: "Create Product", zh: "创建产品", ja: "製品を作成", ko: "제품 만들기", fr: "Créer le produit" },
+  inv_create_batch_print:{ vi: "Tạo Lô hàng & In tem", en: "Create Batch & Print", zh: "创建批次并打印", ja: "バッチを作成して印刷", ko: "배치 생성 및 인쇄", fr: "Créer lot et imprimer" },
+  inv_field_name:        { vi: "Tên sản phẩm", en: "Product Name", zh: "产品名称", ja: "製品名", ko: "제품명", fr: "Nom du produit" },
+  inv_field_desc:        { vi: "Mô tả", en: "Description", zh: "描述", ja: "説明", ko: "설명", fr: "Description" },
+  inv_field_qty:         { vi: "Số lượng sản phẩm", en: "Quantity", zh: "数量", ja: "数量", ko: "수량", fr: "Quantité" },
+  inv_auto_qr:           { vi: "Hệ thống sẽ tự động tạo tem QR tương ứng", en: "System will auto-generate QR stamps", zh: "系统将自动生成对应的QR标签", ja: "システムが自動的にQRスタンプを生成します", ko: "시스템이 자동으로 QR 스탬프를 생성합니다", fr: "Le système génère automatiquement les tampons QR" },
+  inv_field_product:     { vi: "Sản phẩm", en: "Product", zh: "产品", ja: "製品", ko: "제품", fr: "Produit" },
+  inv_field_mfg_date:    { vi: "Ngày SX", en: "Mfg Date", zh: "生产日期", ja: "製造日", ko: "제조일", fr: "Date de fab." },
+  inv_field_exp_date:    { vi: "Hạn dùng", en: "Expiry Date", zh: "到期日", ja: "有効期限", ko: "만료일", fr: "Date d'expiration" },
+  inv_batch_count:       { vi: "lô hàng", en: "batches", zh: "批次", ja: "バッチ", ko: "배치", fr: "lots" },
+
+  // ── Common ──
+  common_cancel:         { vi: "Huỷ", en: "Cancel", zh: "取消", ja: "キャンセル", ko: "취소", fr: "Annuler" },
+  common_save:           { vi: "Lưu Hệ thống", en: "Save", zh: "保存", ja: "保存", ko: "저장", fr: "Enregistrer" },
+  common_edit:           { vi: "Sửa", en: "Edit", zh: "编辑", ja: "編集", ko: "편집", fr: "Modifier" },
+  common_delete:         { vi: "Xóa", en: "Delete", zh: "删除", ja: "削除", ko: "삭제", fr: "Supprimer" },
+`;
+
+ctx = ctx.replace('\n};\n\nexport function t', '\n' + NEW_KEYS + '\n};\n\nexport function t');
+fs.writeFileSync(CTX, ctx, 'utf8');
+console.log('✅ LanguageContext updated with hk/inv/common keys');

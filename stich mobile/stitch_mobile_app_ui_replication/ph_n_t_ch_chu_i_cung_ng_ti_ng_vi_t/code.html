@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VNTrust - Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#402d00",
+                      "outline-variant": "#3c494b",
+                      "on-primary": "#00363d",
+                      "on-background": "#d3e4fa",
+                      "on-error": "#690005",
+                      "surface-dim": "#041424",
+                      "inverse-surface": "#d3e4fa",
+                      "on-primary-container": "#004e57",
+                      "on-surface": "#d3e4fa",
+                      "primary-container": "#26c6da",
+                      "on-surface-variant": "#bbc9cc",
+                      "on-primary-fixed": "#001f24",
+                      "surface-bright": "#2b3a4c",
+                      "surface-container-high": "#1b2b3c",
+                      "secondary": "#aacae5",
+                      "on-tertiary-container": "#5b4200",
+                      "primary-fixed": "#98f0ff",
+                      "inverse-on-surface": "#223243",
+                      "secondary-fixed-dim": "#aacae5",
+                      "on-secondary-fixed": "#001e2f",
+                      "on-secondary-container": "#99b9d3",
+                      "tertiary": "#ffc84b",
+                      "tertiary-fixed": "#ffdfa0",
+                      "on-error-container": "#ffdad6",
+                      "secondary-fixed": "#c9e6ff",
+                      "on-primary-fixed-variant": "#004f58",
+                      "surface-container-lowest": "#000f1f",
+                      "tertiary-container": "#e4ac12",
+                      "on-tertiary-fixed-variant": "#5c4300",
+                      "inverse-primary": "#006874",
+                      "on-tertiary-fixed": "#261a00",
+                      "surface-container": "#102131",
+                      "surface": "#041424",
+                      "on-secondary-fixed-variant": "#2a4a60",
+                      "tertiary-fixed-dim": "#f8bd2a",
+                      "on-secondary": "#113348",
+                      "surface-container-low": "#0c1d2d",
+                      "error": "#ffb4ab",
+                      "primary-fixed-dim": "#45d8ed",
+                      "surface-container-highest": "#263647",
+                      "background": "#041424",
+                      "surface-tint": "#45d8ed",
+                      "error-container": "#93000a",
+                      "secondary-container": "#2a4a60",
+                      "primary": "#53e2f7",
+                      "outline": "#869396",
+                      "surface-variant": "#263647"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Space Grotesk"
+                      ],
+                      "body": [
+                              "Manrope"
+                      ],
+                      "label": [
+                              "Manrope"
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .glass-card {
+            background-color: rgba(38, 54, 71, 0.4); /* surface_variant at 40% */
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(60, 73, 75, 0.2); /* outline_variant at 20% */
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #53e2f7, #26c6da);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 z-50 bg-[#041424] shadow-[0_10px_30px_-15px_rgba(4,20,36,0.5)]">
+<div class="flex justify-between items-center px-4 h-16 w-full">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">enterprise</span>
+</div>
+<h1 class="font-['Space_Grotesk'] tracking-tight text-white text-xl font-bold tracking-tighter text-[#53e2f7]">VNTrust</h1>
+</div>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-[#53e2f7] hover:bg-[#263647]/50 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">smart_toy</span>
+</button>
+</div>
+</header>
+<main class="px-4 py-6 md:max-w-md md:mx-auto md:border-x md:border-surface-container-low min-h-screen space-y-6 bg-surface">
+<!-- Header Section -->
+<div class="space-y-2">
+<h2 class="font-headline text-2xl font-semibold tracking-tight text-on-surface">Phân tích Chuỗi Cung ứng</h2>
+<div class="flex items-center gap-2 text-sm text-on-surface-variant font-label uppercase tracking-widest">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#53e2f7]"></div>
+<span>Đồng Bộ Thời Gian Thực</span>
+</div>
+</div>
+<!-- AI Status Bar -->
+<div class="glass-card rounded-xl p-3 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div class="flex-1">
+<p class="font-headline text-sm font-medium text-on-surface">Hệ thống AI Đang Phân Tích</p>
+<p class="text-xs text-on-surface-variant">Đã xử lý 45,210 điểm dữ liệu trong 1h qua</p>
+</div>
+<span class="material-symbols-outlined text-primary animate-spin" style="font-variation-settings: 'FILL' 0;">sync</span>
+</div>
+<!-- Key Stats Grid -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Total Verifications (Hero Stat) -->
+<div class="glass-card rounded-xl p-4 col-span-2 relative overflow-hidden">
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
+<p class="text-xs font-label uppercase tracking-[0.1em] text-on-surface-variant mb-1">Tổng Xác Thực</p>
+<p class="font-headline text-4xl font-bold tracking-tight text-on-surface">1,284,106</p>
+<div class="mt-2 flex items-center gap-1 text-xs text-tertiary">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+<span>+12.4% so với tháng trước</span>
+</div>
+</div>
+<!-- Anti-counterfeit -->
+<div class="glass-card rounded-xl p-4 flex flex-col justify-between h-28">
+<p class="text-xs font-label uppercase tracking-[0.1em] text-on-surface-variant">Ngăn Chặn Giả Mạo</p>
+<div>
+<p class="font-headline text-2xl font-bold text-error">342</p>
+<p class="text-[10px] text-on-surface-variant mt-1">Sự cố đã được chặn</p>
+</div>
+</div>
+<!-- Efficiency -->
+<div class="glass-card rounded-xl p-4 flex flex-col justify-between h-28 relative overflow-hidden">
+<div class="absolute bottom-0 left-0 w-full h-1 bg-surface-container-highest">
+<div class="h-full bg-primary" style="width: 98.2%"></div>
+</div>
+<p class="text-xs font-label uppercase tracking-[0.1em] text-on-surface-variant">Hiệu Suất</p>
+<div>
+<p class="font-headline text-2xl font-bold text-primary">98.2%</p>
+<p class="text-[10px] text-on-surface-variant mt-1">Thời gian phản hồi &lt; 200ms</p>
+</div>
+</div>
+</div>
+<!-- Line Chart: Verification Speed -->
+<div class="glass-card rounded-xl p-4 space-y-4">
+<div class="flex justify-between items-center">
+<h3 class="font-headline text-base font-medium text-on-surface">Tốc độ Xác thực</h3>
+<div class="flex bg-surface-container-low rounded-lg p-1">
+<button class="px-3 py-1 text-[10px] font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors">Ngày</button>
+<button class="px-3 py-1 text-[10px] font-label uppercase tracking-widest bg-surface-container-highest text-primary rounded-md shadow-sm">Tuần</button>
+<button class="px-3 py-1 text-[10px] font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors">Tháng</button>
+</div>
+</div>
+<div class="h-40 w-full relative">
+<!-- SVG Chart Placeholder mimicking the requested style -->
+<svg class="w-full h-full preserve-aspect-ratio=" none""="" viewbox="0 0 400 150">
+<defs>
+<lineargradient id="lineGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#53e2f7" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#53e2f7" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid Lines -->
+<line stroke="#3c494b" stroke-opacity="0.2" stroke-width="1" x1="0" x2="400" y1="25" y2="25"></line>
+<line stroke="#3c494b" stroke-opacity="0.2" stroke-width="1" x1="0" x2="400" y1="75" y2="75"></line>
+<line stroke="#3c494b" stroke-opacity="0.2" stroke-width="1" x1="0" x2="400" y1="125" y2="125"></line>
+<!-- Chart Area Fill -->
+<path d="M0 100 Q 50 120, 100 80 T 200 60 T 300 90 T 400 40 L 400 150 L 0 150 Z" fill="url(#lineGrad)"></path>
+<!-- Chart Line -->
+<path d="M0 100 Q 50 120, 100 80 T 200 60 T 300 90 T 400 40" fill="none" stroke="#53e2f7" stroke-width="2"></path>
+<!-- Data Points -->
+<circle cx="100" cy="80" fill="#041424" r="4" stroke="#53e2f7" stroke-width="2"></circle>
+<circle cx="200" cy="60" fill="#041424" r="4" stroke="#53e2f7" stroke-width="2"></circle>
+<circle cx="300" cy="90" fill="#041424" r="4" stroke="#53e2f7" stroke-width="2"></circle>
+<!-- Active Data Point with Glow -->
+<g transform="translate(400, 40)">
+<circle cx="0" cy="0" fill="#53e2f7" fill-opacity="0.2" r="12"></circle>
+<circle cx="0" cy="0" fill="#53e2f7" r="4"></circle>
+<text fill="#53e2f7" font-family="Manrope" font-size="10" font-weight="bold" text-anchor="end" x="-10" y="-15">128ms</text>
+</g>
+</svg>
+</div>
+<div class="flex justify-between text-[10px] font-label text-on-surface-variant uppercase tracking-widest">
+<span>T2</span>
+<span>T3</span>
+<span>T4</span>
+<span>T5</span>
+<span>T6</span>
+<span>T7</span>
+<span>CN</span>
+</div>
+</div>
+<!-- Donut Chart: Trust Distribution -->
+<div class="glass-card rounded-xl p-5 flex items-center justify-between">
+<div class="space-y-4">
+<h3 class="font-headline text-base font-medium text-on-surface">Phân bổ Mức độ Tin cậy</h3>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-xs text-on-surface-variant">An Toàn Tuyệt Đối (88%)</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-xs text-on-surface-variant">Cần Xác Minh Thêm (10%)</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<span class="text-xs text-on-surface-variant">Nguy Cơ Giả Mạo (2%)</span>
+</div>
+</div>
+</div>
+<!-- Circular Gauge -->
+<div class="relative w-24 h-24 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<!-- Background Circle -->
+<circle cx="50" cy="50" fill="none" r="45" stroke="#263647" stroke-width="8"></circle>
+<!-- Primary Arc (88%) -->
+<circle cx="50" cy="50" fill="none" r="45" stroke="#53e2f7" stroke-dasharray="282.7" stroke-dashoffset="33.9" stroke-linecap="round" stroke-width="8"></circle>
+<!-- Tertiary Arc (10%) starting after 88% -->
+<circle cx="50" cy="50" fill="none" r="45" stroke="#ffc84b" stroke-dasharray="282.7" stroke-dashoffset="254.4" stroke-linecap="round" stroke-width="8" transform="rotate(316.8 50 50)"></circle>
+<!-- Error Arc (2%) starting after 98% -->
+<circle cx="50" cy="50" fill="none" r="45" stroke="#ffb4ab" stroke-dasharray="282.7" stroke-dashoffset="277" stroke-linecap="round" stroke-width="8" transform="rotate(352.8 50 50)"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline text-lg font-bold text-on-surface">88%</span>
+<span class="text-[8px] font-label uppercase text-on-surface-variant">Điểm An Toàn</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-3xl border-t border-[#53e2f7]/20 bg-[#041424]/80 backdrop-blur-xl shadow-[0_-8px_24px_-4px_rgba(83,226,247,0.1)] md:hidden">
+<div class="fixed bottom-0 left-0 w-full flex justify-around items-center px-6 pb-6 pt-3">
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-[#53e2f7] transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined mb-1 text-[24px]" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-['Manrope'] uppercase text-[10px] tracking-[0.1em] font-bold">Tổng Quan</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-[#53e2f7] transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined mb-1 text-[24px]" style="font-variation-settings: 'FILL' 0;">qr_code_scanner</span>
+<span class="font-['Manrope'] uppercase text-[10px] tracking-[0.1em] font-bold">Xác Thực</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#53e2f7] bg-[#53e2f7]/10 rounded-2xl py-1 px-3 hover:text-[#53e2f7] transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined mb-1 text-[24px]" style="font-variation-settings: 'FILL' 1;">query_stats</span>
+<span class="font-['Manrope'] uppercase text-[10px] tracking-[0.1em] font-bold">Phân Tích</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-[#53e2f7] transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined mb-1 text-[24px]" style="font-variation-settings: 'FILL' 0;">business_center</span>
+<span class="font-['Manrope'] uppercase text-[10px] tracking-[0.1em] font-bold">Doanh Nghiệp</span>
+</button>
+</div>
+</nav>
+</body></html>

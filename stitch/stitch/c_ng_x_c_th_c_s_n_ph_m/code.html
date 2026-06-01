@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VeriGuard AI | Secure Verification Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#434654",
+                    "tertiary-fixed-dim": "#66df75",
+                    "on-primary-container": "#00eaea",
+                    "surface-variant": "#e1e3e4",
+                    "outline": "#737685",
+                    "inverse-primary": "#00dddd",
+                    "on-secondary-container": "#5f6368",
+                    "surface-tint": "#006a6a",
+                    "background": "#f8f9fa",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2e3132",
+                    "surface": "#f8f9fa",
+                    "surface-container-low": "#f3f4f5",
+                    "secondary-fixed-dim": "#c3c7cc",
+                    "primary-fixed": "#00fbfb",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#dde0e5",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#002020",
+                    "on-tertiary-fixed-variant": "#00531a",
+                    "inverse-on-surface": "#f0f1f2",
+                    "on-secondary-fixed": "#181c20",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#d9dadb",
+                    "surface-bright": "#f8f9fa",
+                    "on-surface": "#191c1d",
+                    "on-background": "#191c1d",
+                    "tertiary-fixed": "#83fc8e",
+                    "secondary": "#5b5f63",
+                    "primary-container": "#006666",
+                    "primary-fixed-dim": "#00dddd",
+                    "secondary-fixed": "#e0e3e8",
+                    "outline-variant": "#c3c6d6",
+                    "on-primary-fixed-variant": "#004f4f",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#002106",
+                    "primary": "#004c4c",
+                    "tertiary": "#004f18",
+                    "on-secondary-fixed-variant": "#43474c",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container": "#edeeef",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#006a23",
+                    "on-tertiary-container": "#73ec80",
+                    "surface-container-high": "#e7e8e9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanner-line {
+            height: 2px;
+            background: #004c4c;
+            box-shadow: 0 0 15px #00eaea;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            animation: scan 3s ease-in-out infinite;
+        }
+        @keyframes scan {
+            0%, 100% { top: 0%; }
+            50% { top: 100%; }
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary/20">
+<!-- Top Navigation Shell -->
+<nav class="fixed top-0 w-full z-50 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm">
+<div class="flex justify-between items-center max-w-full px-8 py-4">
+<div class="text-2xl font-black tracking-tighter text-blue-700 dark:text-blue-400 uppercase font-headline">VeriGuard AI</div>
+<div class="hidden md:flex items-center space-gap-8 gap-x-8 font-headline antialiased tracking-tight">
+<a class="text-blue-700 dark:text-blue-400 font-bold border-b-2 border-blue-700 dark:border-blue-400 pb-1" href="#">Verification</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors" href="#">Supply Chain</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors" href="#">Enterprise</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-slate-100/50 p-2 rounded-full transition-all">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-slate-100/50 p-2 rounded-full transition-all">account_circle</button>
+<button class="bg-primary hover:opacity-90 text-on-primary px-6 py-2 rounded-xl font-bold transition-transform active:scale-95">Secure Login</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="min-h-screen pt-24 pb-12 flex items-center justify-center px-4">
+<!-- Structural Background Elements -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden">
+<div class="absolute -top-[10%] -left-[5%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px]"></div>
+<div class="absolute -bottom-[10%] -right-[5%] w-[40%] h-[40%] rounded-full bg-tertiary/5 blur-[120px]"></div>
+</div>
+<div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-12 gap-8 relative z-10">
+<!-- Header Section -->
+<header class="md:col-span-12 text-center mb-8">
+<span class="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary font-bold text-xs uppercase tracking-widest mb-4">Blockchain Ledger Verified</span>
+<h1 class="text-4xl md:text-6xl font-black font-headline text-on-surface tracking-tighter mb-4">Product Verification</h1>
+<p class="text-on-surface-variant max-w-xl mx-auto font-medium">Verify the authenticity of your high-value assets using our secure, AI-powered immutable ledger system.</p>
+</header>
+<!-- Verification Card -->
+<div class="md:col-span-12 glass-panel border border-outline-variant/15 rounded-3xl overflow-hidden shadow-2xl p-1 md:p-8">
+<div class="bg-surface-container-lowest rounded-2xl p-8 md:p-12">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+<!-- Left Option: Visual Scanner -->
+<div class="flex flex-col items-center text-center group cursor-pointer">
+<div class="relative w-full max-w-[280px] aspect-square mb-8 rounded-2xl bg-surface-container overflow-hidden border border-outline-variant/30 flex items-center justify-center p-8 transition-all hover:border-primary/50">
+<div class="scanner-line"></div>
+<div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity bg-[radial-gradient(#004c4c_1px,transparent_1px)] [background-size:20px_20px]"></div>
+<span class="material-symbols-outlined text-8xl text-primary transition-transform group-hover:scale-110" style="font-variation-settings: 'wght' 200;">qr_code_scanner</span>
+<!-- Corner Decorators -->
+<div class="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-primary/40 rounded-tl-lg"></div>
+<div class="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-primary/40 rounded-tr-lg"></div>
+<div class="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-primary/40 rounded-bl-lg"></div>
+<div class="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-primary/40 rounded-br-lg"></div>
+</div>
+<h3 class="text-2xl font-bold font-headline mb-2">Scan QR Code</h3>
+<p class="text-on-surface-variant text-sm mb-6">Instantly verify using your device's camera to scan the secure VeriGuard hologram.</p>
+<button class="w-full max-w-[200px] py-3 rounded-xl border border-primary text-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Launch Scanner</button>
+</div>
+<!-- Right Option: Serial Input -->
+<div class="flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-outline-variant/30 pt-12 lg:pt-0 lg:pl-12">
+<h3 class="text-2xl font-bold font-headline mb-2">Enter Serial Number</h3>
+<p class="text-on-surface-variant text-sm mb-8">Manually input the unique identification hash found on your product's security label.</p>
+<div class="space-y-6">
+<div class="relative">
+<label class="block text-[10px] font-bold text-outline uppercase tracking-widest mb-2 ml-1">Asset Hash Identifier</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-6 py-4 font-headline font-semibold text-on-surface focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant" placeholder="e.g. VG-882-X92-2024" type="text"/>
+<div class="absolute inset-0 rounded-xl border-2 border-primary opacity-0 group-focus-within:opacity-20 transition-opacity pointer-events-none"></div>
+</div>
+</div>
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-4 rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform active:scale-98">Verify Authenticity</button>
+</div>
+<div class="mt-8 flex items-start gap-3 p-4 rounded-xl bg-surface-container-low">
+<span class="material-symbols-outlined text-primary text-xl">shield</span>
+<div class="text-[11px] leading-relaxed text-on-surface-variant">
+<strong>Privacy Protocol:</strong> No personal data is collected during verification. Your IP address is masked through our secure onion-routing gateway.
+                                </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Trust Badges / Footer Links -->
+<div class="md:col-span-12 flex flex-wrap justify-center gap-x-12 gap-y-6 mt-8">
+<div class="flex items-center gap-2 opacity-60">
+<span class="material-symbols-outlined text-xl">verified</span>
+<span class="font-headline text-sm font-bold uppercase tracking-tight">ISO 27001 Certified</span>
+</div>
+<div class="flex items-center gap-2 opacity-60">
+<span class="material-symbols-outlined text-xl">hub</span>
+<span class="font-headline text-sm font-bold uppercase tracking-tight">Ethereum Mainnet Sync</span>
+</div>
+<div class="flex items-center gap-2 opacity-60">
+<span class="material-symbols-outlined text-xl">lock</span>
+<span class="font-headline text-sm font-bold uppercase tracking-tight">256-bit Encryption</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Global Footer -->
+<footer class="w-full border-t border-slate-200/30 dark:border-slate-800/30 bg-slate-50 dark:bg-slate-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-8 gap-4">
+<div class="font-manrope font-bold text-slate-900 dark:text-white">VeriGuard AI</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="font-inter text-xs uppercase tracking-widest text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Trust Center</a>
+<a class="font-inter text-xs uppercase tracking-widest text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Blockchain Transparency</a>
+<a class="font-inter text-xs uppercase tracking-widest text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Privacy Protocol</a>
+<a class="font-inter text-xs uppercase tracking-widest text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Terms of Service</a>
+</div>
+<div class="font-inter text-xs uppercase tracking-widest text-slate-500">© 2024 VeriGuard AI. Immutable Ledger Security.</div>
+</div>
+</footer>
+</body></html>

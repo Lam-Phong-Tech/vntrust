@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VNTrust Enterprise</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;family=Space+Grotesk:wght@500;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#402d00",
+                        "outline-variant": "#3c494b",
+                        "on-primary": "#00363d",
+                        "on-background": "#d3e4fa",
+                        "on-error": "#690005",
+                        "surface-dim": "#041424",
+                        "inverse-surface": "#d3e4fa",
+                        "on-primary-container": "#004e57",
+                        "on-surface": "#d3e4fa",
+                        "primary-container": "#26c6da",
+                        "on-surface-variant": "#bbc9cc",
+                        "on-primary-fixed": "#001f24",
+                        "surface-bright": "#2b3a4c",
+                        "surface-container-high": "#1b2b3c",
+                        "secondary": "#aacae5",
+                        "on-tertiary-container": "#5b4200",
+                        "primary-fixed": "#98f0ff",
+                        "inverse-on-surface": "#223243",
+                        "secondary-fixed-dim": "#aacae5",
+                        "on-secondary-fixed": "#001e2f",
+                        "on-secondary-container": "#99b9d3",
+                        "tertiary": "#ffc84b",
+                        "tertiary-fixed": "#ffdfa0",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#c9e6ff",
+                        "on-primary-fixed-variant": "#004f58",
+                        "surface-container-lowest": "#000f1f",
+                        "tertiary-container": "#e4ac12",
+                        "on-tertiary-fixed-variant": "#5c4300",
+                        "inverse-primary": "#006874",
+                        "on-tertiary-fixed": "#261a00",
+                        "surface-container": "#102131",
+                        "surface": "#041424",
+                        "on-secondary-fixed-variant": "#2a4a60",
+                        "tertiary-fixed-dim": "#f8bd2a",
+                        "on-secondary": "#113348",
+                        "surface-container-low": "#0c1d2d",
+                        "error": "#ffb4ab",
+                        "primary-fixed-dim": "#45d8ed",
+                        "surface-container-highest": "#263647",
+                        "background": "#041424",
+                        "surface-tint": "#45d8ed",
+                        "error-container": "#93000a",
+                        "secondary-container": "#2a4a60",
+                        "primary": "#53e2f7",
+                        "outline": "#869396",
+                        "surface-variant": "#263647"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": [
+                            "Space Grotesk", "sans-serif"
+                        ],
+                        "body": [
+                            "Manrope", "sans-serif"
+                        ],
+                        "label": [
+                            "Manrope", "sans-serif"
+                        ]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-[#041424] text-on-background font-body min-h-screen antialiased flex flex-col pt-16 pb-24">
+<!-- TopAppBar -->
+<header class="fixed bg-[#041424] text-[#53e2f7] font-['Space_Grotesk'] tracking-tight text-white shadow-[0_10px_30px_-15px_rgba(4,20,36,0.5)] docked full-width top-0 z-50 flex justify-between items-center px-4 h-16 w-full">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant/20">
+<img alt="Enterprise Logo" class="w-full h-full object-cover" data-alt="close up of a generic abstract corporate geometric logo in deep blue and cyan tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCneoUCjhqb4zYzL_y5FRBOJpBdk_niNWI9ms0V16MuR-rAAGHwgWbbLCKWn3ObOAdl0L-loha_RcVuyiofaaEP2BMBXD7ngf02B1Yq4kBIek7V9ZH1lmFOHHcweGEqBl2uhFO0GjgZqJY3tvwa9qH5BYJqSmq8P7EPyziKpXS9NzdoxdiGEYujHSuFS5YjwO8FnRD08kfMDhFhon6M8DLu7AOXS94o10A903lWvEamfb4yCuDT-KEAN-TusYQqiIfBhC-0air1SGc"/>
+</div>
+<span class="text-xl font-bold tracking-tighter text-[#53e2f7]">VNTrust</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#263647]/50 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[#53e2f7]">smart_toy</span>
+</button>
+</header>
+<main class="flex-1 flex flex-col">
+<!-- Hero Section -->
+<section class="relative px-6 pt-12 pb-16 overflow-hidden">
+<!-- Decorative Background Element -->
+<div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+<div class="absolute top-[-20%] right-[-20%] w-[140%] h-[140%] bg-gradient-radial from-primary/20 to-transparent blur-3xl"></div>
+</div>
+<div class="relative z-10 flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<span class="text-tertiary font-label text-xs uppercase tracking-[0.1em] font-bold">Giải pháp Doanh nghiệp</span>
+<h1 class="font-headline text-[2.5rem] leading-[1.1] tracking-tight font-bold text-on-background">
+                        Nền tảng Quản trị <br/> <span class="text-transparent bg-clip-text bg-gradient-to-br from-primary to-primary-container">VNTrust Enterprise</span>
+</h1>
+</div>
+<p class="text-on-surface-variant font-body text-base leading-relaxed">
+                    Hệ sinh thái số hóa toàn diện giúp doanh nghiệp bảo vệ thương hiệu, minh bạch hóa chuỗi cung ứng và chống hàng giả bằng công nghệ định danh tiên tiến.
+                </p>
+<div class="flex flex-col gap-4 mt-4">
+<button class="w-full h-14 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-label text-sm uppercase tracking-wider font-bold shadow-[0_0_20px_rgba(83,226,247,0.3)] active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+                        Bắt đầu ngay
+                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+<button class="w-full h-14 rounded-xl bg-surface-bright/10 backdrop-blur-[15px] border border-outline-variant/20 text-primary font-label text-sm uppercase tracking-wider font-bold active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">play_circle</span>
+                        Xem Demo
+                    </button>
+</div>
+</div>
+</section>
+<!-- Features Section (Bento Grid Style) -->
+<section class="px-4 py-8 bg-[#041424]">
+<div class="px-2 mb-6">
+<h2 class="font-headline text-2xl font-bold tracking-tight text-on-background flex items-center gap-2">
+<span class="w-1 h-6 bg-primary rounded-full block"></span>
+                    Tính năng Cốt lõi
+                </h2>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Feature Card 1: Supply Chain -->
+<div class="bg-surface-variant/40 backdrop-blur-[20px] rounded-[1.5rem] p-6 border border-outline-variant/20 flex flex-col gap-4 relative overflow-hidden group">
+<!-- Accent Gradient -->
+<div class="absolute -right-8 -top-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl transition-all group-hover:bg-primary/20"></div>
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/20 z-10">
+<span class="material-symbols-outlined text-primary fill-icon">account_tree</span>
+</div>
+<div class="flex flex-col gap-2 z-10">
+<h3 class="font-headline text-lg font-bold text-on-background">Số hoá Chuỗi Cung ứng</h3>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed">
+                            Truy xuất nguồn gốc sản phẩm từ khâu sản xuất đến tay người tiêu dùng cuối cùng trên một nền tảng duy nhất.
+                        </p>
+</div>
+</div>
+<!-- Feature Card 2: Anti-Counterfeit -->
+<div class="bg-surface-variant/40 backdrop-blur-[20px] rounded-[1.5rem] p-6 border border-outline-variant/20 flex flex-col gap-4 relative overflow-hidden group">
+<div class="absolute -right-8 -top-8 w-32 h-32 bg-tertiary/10 rounded-full blur-2xl transition-all group-hover:bg-tertiary/20"></div>
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/20 z-10">
+<span class="material-symbols-outlined text-tertiary fill-icon">verified_user</span>
+</div>
+<div class="flex flex-col gap-2 z-10">
+<h3 class="font-headline text-lg font-bold text-on-background">Xác thực Chống giả Tức thời</h3>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed">
+                            Bảo vệ người tiêu dùng và uy tín thương hiệu bằng hệ thống quét tem mã hoá bảo mật cao, kết quả theo thời gian thực.
+                        </p>
+</div>
+</div>
+<!-- Metric Highlight Card -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-variant/40 backdrop-blur-[20px] rounded-[1.5rem] p-5 border border-outline-variant/20 flex flex-col items-center justify-center text-center gap-1">
+<span class="font-headline text-3xl font-bold text-primary tracking-tight">99.9%</span>
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Độ Chính Xác</span>
+</div>
+<div class="bg-surface-variant/40 backdrop-blur-[20px] rounded-[1.5rem] p-5 border border-outline-variant/20 flex flex-col items-center justify-center text-center gap-1">
+<span class="font-headline text-3xl font-bold text-tertiary tracking-tight">&lt;1s</span>
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Tốc Độ Quét</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-[#041424]/80 backdrop-blur-xl font-['Manrope'] uppercase text-[10px] tracking-[0.1em] font-bold fixed bottom-0 w-full z-50 rounded-t-3xl border-t border-[#53e2f7]/20 shadow-[0_-8px_24px_-4px_rgba(83,226,247,0.1)] fixed bottom-0 left-0 w-full flex justify-around items-center px-6 pb-6 pt-3 md:hidden">
+<!-- Dashboard -->
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-[#53e2f7] transition-all active:scale-90 duration-150 gap-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Tổng quan</span>
+</a>
+<!-- Verify -->
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-[#53e2f7] transition-all active:scale-90 duration-150 gap-1" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span>Xác thực</span>
+</a>
+<!-- Analytics -->
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-[#53e2f7] transition-all active:scale-90 duration-150 gap-1" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span>Thống kê</span>
+</a>
+<!-- Business (Active) -->
+<a class="flex flex-col items-center justify-center text-[#53e2f7] bg-[#53e2f7]/10 rounded-2xl py-1 px-3 hover:text-[#53e2f7] transition-all active:scale-90 duration-150 gap-1" href="#">
+<span class="material-symbols-outlined fill-icon">business_center</span>
+<span>Doanh nghiệp</span>
+</a>
+</nav>
+</body></html>

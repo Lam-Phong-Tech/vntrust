@@ -1,0 +1,5 @@
+
+# Large files - excluded from GitHub
+*.rar
+*.tar.gz
+*.zip

@@ -1,0 +1,20 @@
+Mã TCTên Test CaseCác bước thực hiện Kết quả mong đợiKết quả thực tế Trạng tháiHình ảnh minh họa
+Module Quản lý Sản phẩm & Lô hàng
+TC01Quản lý Lô hàng1. Vào form "Thêm lô hàng".2. Nhập "Ngày SX" lớn hơn "Hạn dùng" hoặc năm quá khứ (VD: 1000).Báo lỗi validation dưới ô nhập liệu (VD: "Ngày hết hạn không hợp lệ"). Không cho phép lưu.Vẫn cho nhập hàng đấy về và để trạng thái là hết hàng FALSE
+TC02Quản lý Lô hàng1. Tại ô số lượng lô hàng, nhập số âm (-5), số 0, hoặc chữ cái.Chỉ cho phép nhập số nguyên dương. Báo lỗi nếu nhập sai định dạng.Không cho phép nhập chữ cái ký tự nhưng vẫn nhập được số nguyênâm FALSE
+TC03Quản lý Lô hàng1.Vào form " Thêm lô hàng"2. Nhập số lương nhiều ví dụ "99999999999"Chỉ cho phép nhập hàng bé hơn 1 số nhất định <10.000 sản phẩmvà hiện đúng số tem tương ứng với tổng sản phẩmHệ thống vẫn lưu lô hàng đó và nhưng số tem không đồng nhất với sốsản phẩm nhập FALSE
+TC04Quản lý Lô hàng1.Vào form "Thêm lô hàng"2. nhập Ngày SX cách xa ngày hiện tại Trạng thái phải để là "Chưa hoạt động" hoặc không cho phép tạo sản phẩm chưa sản xuất ở thời điểm hiện tạiVẫn cho nhập sản phẩm chưa sản xuất , trạng thái tự để là đang hoạt động FALSE
+TC05AI Xác thực Giấy tờ1. Đổi đuôi file .pdf hoặc .exe thành .png.2. Upload vào vùng kiểm tra AI.Hệ thống báo lỗi "Định dạng file không hỗ trợ" và từ chối xử lý, không bị crash API.Vẫn duyệt và chứng nhận hợp lệ FALSE
+TC06Bảng điều khiển1. Click liên tục đổi lại giữa "7 Ngày", "30 Ngày", "90 Ngày".Biểu đồ hủy các request cũ, chỉ hiển thị data của lần click cuối cùng, không render chồng chéo line.Sử dụng được nhưng không thay dổi thông số FALSE
+TC07Bảng điều khiển1.Quét 1 đơn mã qr không phải sản phẩm chính hãng 2.Vào phần phân tích để kiểm traNỗ lực làm giả tăng thêm 1 Phần nỗ lực làm giả không tăng FALSE
+TC08Trợ lý AI 1. Nhập <script>alert('1')</script> hoặc text dài 10,000 ký tự vào ô chat.2. Bấm gửi. Box chat không bị vỡ. Hệ thống encode thẻ HTML dưới dạng text bình thường. Cảnh báo độ dài nếu vượt quá limit.Box chat không bị vỡ. Hệ thống encode thẻ HTML dưới dạng text bình thường. Vẫn cho gửi và hiện ra sản phẩm không có mã như thế không cảnh báo độ dài limitFALSE
+TC09Trợ lý AI 1. Nhắn 1 tin cho bot.2. Đóng modal bot (X), sau đó mở lại.Khung chat vẫn giữ nguyên đoạn hội thoại vừa chat.Không lưu lại đoạn chatFALSE
+TC10Chọn Ngôn ngữ1. Đổi sang Tiếng Anh , Tiếng Pháp.2. Tắt popup và kiểm tra toàn trang.100% text tĩnh chuyển sang Tiếng Anh, không bị sót tiếng Việt.Chỉ đổi những menu chuyển sang ngôn ngữ tương ứng nhưng nội dung không chuyển FALSE
+TC11Giám sát Chất lượng
+1.Truy cập Hậu kiểm & Thu hồi 2.Upload Kết quả phân tích3.Nhập ngày lấy mẫu  ở tương lai còn ngày ra kết quả để ngày quá khứ Lỗi hoặc không cho vào chờ duyệt Vẫn cho gửi và báo kết quả là đạt chuẩn và trạng thái chờ duyệtFALSE
+ 
+ 
+ 
+
+ 
+ 

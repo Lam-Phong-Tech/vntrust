@@ -1,0 +1,766 @@
+[
+  {
+    "page": "inventory/_id_/qr/page.tsx",
+    "lines": 461,
+    "darkScore": 8,
+    "darkTags": [
+      [
+        "text-white",
+        4
+      ],
+      [
+        "amber-accent",
+        3
+      ],
+      [
+        "bg-slate-dark",
+        1
+      ]
+    ],
+    "lightScore": 21,
+    "lightTags": [
+      [
+        "bg-slate-light",
+        8
+      ],
+      [
+        "bg-white-solid",
+        7
+      ],
+      [
+        "text-slate-dark",
+        6
+      ]
+    ],
+    "verdict": "LIGHT-OFF"
+  },
+  {
+    "page": "roadmap/page.tsx",
+    "lines": 279,
+    "darkScore": 18,
+    "darkTags": [
+      [
+        "text-white",
+        7
+      ],
+      [
+        "bg-white-overlay",
+        4
+      ],
+      [
+        "border-white-overlay",
+        4
+      ],
+      [
+        "amber-accent",
+        2
+      ],
+      [
+        "amber-bg",
+        1
+      ]
+    ],
+    "lightScore": 1,
+    "lightTags": [
+      [
+        "bg-white-solid",
+        1
+      ]
+    ],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "alerts/page.tsx",
+    "lines": 606,
+    "darkScore": 109,
+    "darkTags": [
+      [
+        "text-white",
+        25
+      ],
+      [
+        "border-white-overlay",
+        22
+      ],
+      [
+        "bg-white-overlay",
+        16
+      ],
+      [
+        "text-slate-light",
+        14
+      ],
+      [
+        "bg-slate-dark",
+        11
+      ],
+      [
+        "amber-accent",
+        10
+      ],
+      [
+        "amber-bg",
+        7
+      ],
+      [
+        "bg-black",
+        4
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "analytics/page.tsx",
+    "lines": 397,
+    "darkScore": 42,
+    "darkTags": [
+      [
+        "text-white",
+        16
+      ],
+      [
+        "border-white-overlay",
+        9
+      ],
+      [
+        "bg-white-overlay",
+        6
+      ],
+      [
+        "text-slate-light",
+        5
+      ],
+      [
+        "amber-accent",
+        5
+      ],
+      [
+        "amber-bg",
+        1
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "certificates/page.tsx",
+    "lines": 364,
+    "darkScore": 45,
+    "darkTags": [
+      [
+        "text-white",
+        15
+      ],
+      [
+        "border-white-overlay",
+        13
+      ],
+      [
+        "bg-white-overlay",
+        8
+      ],
+      [
+        "text-slate-light",
+        4
+      ],
+      [
+        "amber-accent",
+        3
+      ],
+      [
+        "bg-black",
+        1
+      ],
+      [
+        "amber-bg",
+        1
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "compliance/page.tsx",
+    "lines": 383,
+    "darkScore": 30,
+    "darkTags": [
+      [
+        "text-white",
+        10
+      ],
+      [
+        "bg-white-overlay",
+        6
+      ],
+      [
+        "border-white-overlay",
+        6
+      ],
+      [
+        "text-slate-light",
+        3
+      ],
+      [
+        "amber-accent",
+        3
+      ],
+      [
+        "amber-bg",
+        2
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "create/page.tsx",
+    "lines": 55,
+    "darkScore": 13,
+    "darkTags": [
+      [
+        "bg-white-overlay",
+        5
+      ],
+      [
+        "text-white",
+        5
+      ],
+      [
+        "border-white-overlay",
+        1
+      ],
+      [
+        "amber-accent",
+        1
+      ],
+      [
+        "amber-bg",
+        1
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "distribution/page.tsx",
+    "lines": 890,
+    "darkScore": 126,
+    "darkTags": [
+      [
+        "text-white",
+        43
+      ],
+      [
+        "border-white-overlay",
+        32
+      ],
+      [
+        "bg-white-overlay",
+        24
+      ],
+      [
+        "text-slate-light",
+        10
+      ],
+      [
+        "bg-black",
+        6
+      ],
+      [
+        "amber-accent",
+        6
+      ],
+      [
+        "amber-bg",
+        5
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "glossary/page.tsx",
+    "lines": 217,
+    "darkScore": 24,
+    "darkTags": [
+      [
+        "border-white-overlay",
+        8
+      ],
+      [
+        "bg-white-overlay",
+        6
+      ],
+      [
+        "text-white",
+        5
+      ],
+      [
+        "text-slate-light",
+        3
+      ],
+      [
+        "amber-accent",
+        1
+      ],
+      [
+        "amber-bg",
+        1
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "haukiem/page.tsx",
+    "lines": 591,
+    "darkScore": 71,
+    "darkTags": [
+      [
+        "text-white",
+        20
+      ],
+      [
+        "text-slate-light",
+        18
+      ],
+      [
+        "border-white-overlay",
+        16
+      ],
+      [
+        "bg-white-overlay",
+        12
+      ],
+      [
+        "bg-black",
+        3
+      ],
+      [
+        "amber-accent",
+        2
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "history/page.tsx",
+    "lines": 183,
+    "darkScore": 31,
+    "darkTags": [
+      [
+        "bg-white-overlay",
+        9
+      ],
+      [
+        "text-white",
+        7
+      ],
+      [
+        "border-white-overlay",
+        6
+      ],
+      [
+        "text-slate-light",
+        5
+      ],
+      [
+        "amber-accent",
+        2
+      ],
+      [
+        "amber-bg",
+        2
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "integration/page.tsx",
+    "lines": 312,
+    "darkScore": 32,
+    "darkTags": [
+      [
+        "text-white",
+        8
+      ],
+      [
+        "amber-accent",
+        7
+      ],
+      [
+        "bg-white-overlay",
+        5
+      ],
+      [
+        "border-white-overlay",
+        4
+      ],
+      [
+        "text-slate-light",
+        4
+      ],
+      [
+        "amber-bg",
+        4
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "inventory/page.tsx",
+    "lines": 832,
+    "darkScore": 119,
+    "darkTags": [
+      [
+        "text-white",
+        32
+      ],
+      [
+        "text-slate-light",
+        27
+      ],
+      [
+        "border-white-overlay",
+        26
+      ],
+      [
+        "bg-white-overlay",
+        19
+      ],
+      [
+        "amber-bg",
+        6
+      ],
+      [
+        "bg-black",
+        5
+      ],
+      [
+        "amber-accent",
+        4
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "kyc/page.tsx",
+    "lines": 752,
+    "darkScore": 87,
+    "darkTags": [
+      [
+        "border-white-overlay",
+        24
+      ],
+      [
+        "bg-white-overlay",
+        22
+      ],
+      [
+        "text-white",
+        21
+      ],
+      [
+        "amber-accent",
+        7
+      ],
+      [
+        "bg-black",
+        5
+      ],
+      [
+        "text-slate-light",
+        3
+      ],
+      [
+        "amber-bg",
+        3
+      ],
+      [
+        "dark-bg-hex",
+        2
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "page.tsx",
+    "lines": 1242,
+    "darkScore": 175,
+    "darkTags": [
+      [
+        "text-white",
+        68
+      ],
+      [
+        "border-white-overlay",
+        31
+      ],
+      [
+        "bg-white-overlay",
+        29
+      ],
+      [
+        "text-slate-light",
+        17
+      ],
+      [
+        "amber-accent",
+        16
+      ],
+      [
+        "amber-bg",
+        8
+      ],
+      [
+        "gold-hex",
+        4
+      ],
+      [
+        "dark-bg-hex",
+        1
+      ],
+      [
+        "bg-black",
+        1
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "profile/page.tsx",
+    "lines": 454,
+    "darkScore": 71,
+    "darkTags": [
+      [
+        "bg-white-overlay",
+        23
+      ],
+      [
+        "border-white-overlay",
+        18
+      ],
+      [
+        "text-white",
+        18
+      ],
+      [
+        "amber-bg",
+        5
+      ],
+      [
+        "dark-bg-hex",
+        3
+      ],
+      [
+        "amber-accent",
+        3
+      ],
+      [
+        "bg-black",
+        1
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "readiness/page.tsx",
+    "lines": 333,
+    "darkScore": 50,
+    "darkTags": [
+      [
+        "bg-white-overlay",
+        16
+      ],
+      [
+        "text-white",
+        13
+      ],
+      [
+        "border-white-overlay",
+        10
+      ],
+      [
+        "amber-accent",
+        5
+      ],
+      [
+        "text-slate-light",
+        4
+      ],
+      [
+        "amber-bg",
+        2
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "report/page.tsx",
+    "lines": 747,
+    "darkScore": 120,
+    "darkTags": [
+      [
+        "border-white-overlay",
+        31
+      ],
+      [
+        "text-white",
+        27
+      ],
+      [
+        "bg-white-overlay",
+        25
+      ],
+      [
+        "amber-accent",
+        12
+      ],
+      [
+        "text-slate-light",
+        11
+      ],
+      [
+        "bg-black",
+        9
+      ],
+      [
+        "amber-bg",
+        5
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "risks/page.tsx",
+    "lines": 364,
+    "darkScore": 42,
+    "darkTags": [
+      [
+        "bg-white-overlay",
+        9
+      ],
+      [
+        "border-white-overlay",
+        9
+      ],
+      [
+        "text-white",
+        8
+      ],
+      [
+        "text-slate-light",
+        6
+      ],
+      [
+        "amber-accent",
+        5
+      ],
+      [
+        "amber-bg",
+        5
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "security/page.tsx",
+    "lines": 587,
+    "darkScore": 78,
+    "darkTags": [
+      [
+        "text-white",
+        22
+      ],
+      [
+        "bg-white-overlay",
+        17
+      ],
+      [
+        "border-white-overlay",
+        13
+      ],
+      [
+        "text-slate-light",
+        12
+      ],
+      [
+        "amber-accent",
+        9
+      ],
+      [
+        "amber-bg",
+        4
+      ],
+      [
+        "bg-black",
+        1
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  },
+  {
+    "page": "warehouse/page.tsx",
+    "lines": 412,
+    "darkScore": 39,
+    "darkTags": [
+      [
+        "bg-white-overlay",
+        11
+      ],
+      [
+        "border-white-overlay",
+        11
+      ],
+      [
+        "text-white",
+        10
+      ],
+      [
+        "text-slate-light",
+        4
+      ],
+      [
+        "amber-accent",
+        2
+      ],
+      [
+        "amber-bg",
+        1
+      ]
+    ],
+    "lightScore": 0,
+    "lightTags": [],
+    "verdict": "DARK-OK"
+  }
+]

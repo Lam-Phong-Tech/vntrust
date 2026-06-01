@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "068a9ef6-b92f-4b5f-82a1-b128258ebd46"
+      }
+    },
+    "android": {
+      "package": "com.hidequan.webhanggia"
+    }
+  }
+}

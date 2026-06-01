@@ -1,0 +1,2072 @@
+[
+  {
+    "file": "src\\app\\api\\auth\\login\\route.ts",
+    "line": 15,
+    "text": "if (username === \"nsx@vntrust.vn\" && password === \"123456\") { foundRole = \"manufacturer\"; foundUsername = \"Nhà sản xuất (Demo)\"; }"
+  },
+  {
+    "file": "src\\app\\api\\auth\\login\\route.ts",
+    "line": 16,
+    "text": "else if (username === \"nhapkhau@vntrust.vn\" && password === \"123456\") { foundRole = \"importer\"; foundUsername = \"Nhà nhập khẩu (Demo)\"; }"
+  },
+  {
+    "file": "src\\app\\api\\auth\\login\\route.ts",
+    "line": 17,
+    "text": "else if (username === \"nguoitieudung@vntrust.vn\" && password === \"123456\") { foundRole = \"consumer\"; foundUsername = \"Người tiêu dùng (Demo)\"; }"
+  },
+  {
+    "file": "src\\app\\api\\auth\\login\\route.ts",
+    "line": 40,
+    "text": "action: \"Đăng nhập hệ thống thành công\","
+  },
+  {
+    "file": "src\\app\\api\\auth\\login\\route.ts",
+    "line": 52,
+    "text": "message: 'Đăng nhập thành công',"
+  },
+  {
+    "file": "src\\app\\api\\auth\\login\\route.ts",
+    "line": 68,
+    "text": "action: `Đăng nhập thất bại: ${username}`,"
+  },
+  {
+    "file": "src\\app\\api\\auth\\login\\route.ts",
+    "line": 78,
+    "text": "{ error: 'Sai tên đăng nhập hoặc mật khẩu!' },"
+  },
+  {
+    "file": "src\\app\\api\\auth\\login\\route.ts",
+    "line": 83,
+    "text": "return NextResponse.json({ error: 'Đã xảy ra lỗi hệ thống' }, { status: 500 });"
+  },
+  {
+    "file": "src\\app\\api\\auth\\register\\route.ts",
+    "line": 16,
+    "text": "{ error: 'Email này đã được đăng ký!' },"
+  },
+  {
+    "file": "src\\app\\api\\auth\\register\\route.ts",
+    "line": 23,
+    "text": "{ error: 'Không thể đăng ký tài khoản Quản trị hệ thống!' },"
+  },
+  {
+    "file": "src\\app\\api\\auth\\register\\route.ts",
+    "line": 41,
+    "text": "message: 'Đăng ký thành công',"
+  },
+  {
+    "file": "src\\app\\api\\auth\\register\\route.ts",
+    "line": 46,
+    "text": "return NextResponse.json({ error: 'Đã xảy ra lỗi hệ thống' }, { status: 500 });"
+  },
+  {
+    "file": "src\\app\\api\\haukiem\\route.ts",
+    "line": 26,
+    "text": "return NextResponse.json({ error: \"Lỗi Server\" }, { status: 500 });"
+  },
+  {
+    "file": "src\\app\\api\\haukiem\\route.ts",
+    "line": 65,
+    "text": "return NextResponse.json({ error: \"Lỗi Server\" }, { status: 500 });"
+  },
+  {
+    "file": "src\\app\\api\\haukiem\\[id]\\route.ts",
+    "line": 20,
+    "text": "return NextResponse.json({ error: \"Lỗi Server\" }, { status: 500 });"
+  },
+  {
+    "file": "src\\app\\api\\haukiem\\[id]\\route.ts",
+    "line": 32,
+    "text": "return NextResponse.json({ error: \"Lỗi Server\" }, { status: 500 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 25,
+    "text": "return NextResponse.json({ error: \"Chưa có doanh nghiệp nào. Hãy gọi /api/seed trước.\" }, { status: 404 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 55,
+    "text": "return NextResponse.json({ error: \"Forbidden: Bạn không có quyền thêm dữ liệu\" }, { status: 403 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 65,
+    "text": "return NextResponse.json({ error: \"Vui lòng nhập đầy đủ các trường thông tin\" }, { status: 400 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 75,
+    "text": "return NextResponse.json({ error: \"Chưa có doanh nghiệp. Hãy gọi /api/seed trước.\" }, { status: 404 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 94,
+    "text": "return NextResponse.json({ error: \"Thiếu thông tin bắt buộc\" }, { status: 400 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 103,
+    "text": "return NextResponse.json({ error: \"Ngày sản xuất không được lớn hơn ngày hiện tại\" }, { status: 400 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 106,
+    "text": "return NextResponse.json({ error: \"Hạn dùng không được nhỏ hơn ngày sản xuất\" }, { status: 400 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 111,
+    "text": "return NextResponse.json({ error: \"Forbidden: Bạn không có quyền thêm lô hàng vào sản phẩm này\" }, { status: 403 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 122,
+    "text": "soLuong: qty,  // Lưu số thực tế tạo ra, đảm bảo khớp với số tem QR"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 138,
+    "text": "return NextResponse.json({ error: \"type phải là 'product' hoặc 'batch'\" }, { status: 400 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 175,
+    "text": "if (actualUids === declared) continue; // Đã đồng bộ, bỏ qua"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 206,
+    "text": "? \"Tất cả lô hàng đã đồng bộ, không cần sửa chữa.\""
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "line": 207,
+    "text": ": `Đã đồng bộ ${synced} lô hàng.`,"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\[id]\\route.ts",
+    "line": 28,
+    "text": "return NextResponse.json({ error: \"Không tìm thấy lô hàng\" }, { status: 404 });"
+  },
+  {
+    "file": "src\\app\\api\\inventory\\[id]\\route.ts",
+    "line": 33,
+    "text": "return NextResponse.json({ error: \"Forbidden: Bạn không có quyền truy cập dữ liệu của doanh nghiệp khác\" }, { status: 403 });"
+  },
+  {
+    "file": "src\\app\\api\\seed\\route.ts",
+    "line": 22,
+    "text": "ten: \"Tổng Công ty Dược phẩm và Y tế VNTrust Phú Mỹ\","
+  },
+  {
+    "file": "src\\app\\api\\seed\\route.ts",
+    "line": 23,
+    "text": "diaChi: \"Tòa nhà Bitexco, Q1, TP.HCM\","
+  },
+  {
+    "file": "src\\app\\api\\seed\\route.ts",
+    "line": 32,
+    "text": "ten: \"Thực phẩm Bảo vệ sức khỏe Nattokinase Premium\","
+  },
+  {
+    "file": "src\\app\\api\\seed\\route.ts",
+    "line": 33,
+    "text": "moTa: \"Viên uống hỗ trợ tim mạch với nguồn gốc nguyên liệu đạt chuẩn GlobalGAP, nhập khẩu 100% từ Nhật Bản.\","
+  },
+  {
+    "file": "src\\app\\api\\seed\\route.ts",
+    "line": 70,
+    "text": "serialNumber: \"8935049501234\", // Chuẩn barcode giả định EAN-13"
+  },
+  {
+    "file": "src\\app\\api\\verify\\[uid]\\route.ts",
+    "line": 34,
+    "text": "moTa: `Phát hiện quét mã QR không hợp lệ hoặc giả mạo: ${uid}`,"
+  },
+  {
+    "file": "src\\app\\api\\verify\\[uid]\\route.ts",
+    "line": 38,
+    "text": "return NextResponse.json({ status: \"fake\", message: \"Mã không tồn tại trên hệ thống VNTrust. Đây có thể là hàng giả.\" });"
+  },
+  {
+    "file": "src\\app\\api\\verify\\[uid]\\route.ts",
+    "line": 42,
+    "text": "return NextResponse.json({ status: \"fake\", message: \"Mã này đã bị gắn cờ là hàng giả.\" });"
+  },
+  {
+    "file": "src\\app\\api\\verify\\[uid]\\route.ts",
+    "line": 79,
+    "text": "moTa: `Mã ${uid} đã bị quét ${updatedMa.soLanQuet} lần — có thể đang bị làm giả.`,"
+  },
+  {
+    "file": "src\\app\\api\\verify\\[uid]\\route.ts",
+    "line": 92,
+    "text": "return NextResponse.json({ status: \"fake\", message: \"Lỗi hệ thống xác thực. Vui lòng thử lại.\" }, { status: 500 });"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 81,
+    "text": "showToast(\"✗ Ngày lấy mẫu không thể ở tương lai\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 85,
+    "text": "showToast(\"✗ Ngày ra kết quả không thể trước ngày lấy mẫu\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 98,
+    "text": "if (!res.ok) throw new Error(json.error || \"Lỗi không xác định\");"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 99,
+    "text": "showToast(\"✓ Đã thêm kết quả phân tích thành công\", true);"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 101,
+    "text": "action: \"Tải lên kết quả hậu kiểm\","
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 102,
+    "text": "user: localStorage.getItem('userName') || 'Người dùng',"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 118,
+    "text": "case 'doanhnghiep': return 'Doanh nghiệp';"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 119,
+    "text": "case 'nguoitieudung': return 'Người tiêu dùng';"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 120,
+    "text": "case 'doituongthu3': return 'Đối tác thứ 3 / QLTT';"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 127,
+    "text": "case \"verified\": return <span className=\"px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-200\">Đã xác minh</span>;"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 128,
+    "text": "case \"pending\": return <span className=\"px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full border border-amber-200\">Chờ duyệt</span>;"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 129,
+    "text": "case \"rejected\": return <span className=\"px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded-full border border-red-200\">Từ chối</span>;"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 141,
+    "text": "<p className=\"font-label text-xs font-bold text-primary tracking-[0.2em] uppercase mb-2\">Giám sát Chất lượng</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 148,
+    "text": "Upload Kết quả Phân tích"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 160,
+    "text": "<p className=\"text-slate-300 font-bold\">Chưa có kết quả giám định nào</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 161,
+    "text": "<p className=\"text-sm text-slate-400\">Tải lên kết quả test để cập nhật hồ sơ chất lượng công khai.</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 164,
+    "text": "+ Tải lên Kết quả"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 173,
+    "text": "<th className=\"px-6 py-4\">Sản phẩm</th>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 174,
+    "text": "<th className=\"px-6 py-4\">Cơ sở / Ngày Test</th>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 175,
+    "text": "<th className=\"px-6 py-4\">Đối tượng</th>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 176,
+    "text": "<th className=\"px-6 py-4\">Kết quả</th>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 177,
+    "text": "<th className=\"px-6 py-4\">Xác minh</th>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 189,
+    "text": ") : <p className=\"text-slate-400 text-sm italic\">Không xác định</p>}"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 205,
+    "text": "Đạt chuẩn"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 211,
+    "text": "Vuợt ngưỡng"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 233,
+    "text": "<h2 className=\"text-xl font-bold font-headline\">Tải lên Kết quả Phân tích</h2>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 241,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Sản phẩm lấy mẫu *</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 244,
+    "text": "<option value=\"\">-- Chọn sản phẩm --</option>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 252,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Cơ sở phân tích *</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 255,
+    "text": "placeholder=\"VD: Viện kiểm nghiệm quốc gia...\" />"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 258,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Người gửi mẫu</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 261,
+    "text": "<option value=\"doanhnghiep\">Doanh nghiệp</option>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 262,
+    "text": "<option value=\"nguoitieudung\">Người tiêu dùng</option>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 263,
+    "text": "<option value=\"doituongthu3\">Quản lý thị trường</option>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 270,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Ngày lấy mẫu *</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 275,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Ngày ra kết quả *</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 282,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Tổng quan kết quả</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 286,
+    "text": "<span className=\"text-sm font-semibold text-emerald-700\">Đạt chỉ tiêu (Đảm bảo)</span>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 290,
+    "text": "<span className=\"text-sm font-semibold text-red-700\">Vượt ngưỡng quy định</span>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 297,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Chỉ tiêu vượt ngưỡng</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 300,
+    "text": "rows={2} placeholder=\"Nêu rõ chất phân tích nào vượt ngưỡng bao nhiêu...\" />"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 308,
+    "text": "Huỷ"
+  },
+  {
+    "file": "src\\app\\dashboard\\haukiem\\page.tsx",
+    "line": 313,
+    "text": "Lưu Hệ thống"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 65,
+    "text": "showToast(\"✗ Vui lòng điền đầy đủ thông tin\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 72,
+    "text": "showToast(\"✗ Vui lòng chọn sản phẩm\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 77,
+    "text": "showToast(\"✗ Vui lòng điền đầy đủ thông tin\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 86,
+    "text": "showToast(\"✗ Ngày sản xuất không hợp lệ\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 90,
+    "text": "showToast(\"✗ Ngày sản xuất không được lớn hơn hạn sử dụng\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 94,
+    "text": "showToast(\"✗ Ngày sản xuất không thể ở tương lai\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 99,
+    "text": "showToast(\"✗ Số lượng phải là số nguyên dương\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 103,
+    "text": "showToast(\"✗ Số lượng không được vượt quá 10,000\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 119,
+    "text": "if (!res.ok) throw new Error(json.error || \"Lỗi không xác định\");"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 120,
+    "text": "showToast(type === \"product\" ? `✓ Lưu thành công: Đã thêm sản phẩm ${json.sanPham.ten}` : `✓ Lưu thành công: Đã tạo lô ${json.loHang.maLo} với ${json.totalUids} tem QR`, true);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 122,
+    "text": "action: type === 'product' ? `Tạo sản phẩm: ${json.sanPham.ten}` : `Tạo lô hàng ${json.loHang.maLo}`,"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 123,
+    "text": "user: localStorage.getItem('userName') || 'Người dùng',"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 151,
+    "text": "showToast(\"✗ Lỗi kết nối khi đồng bộ\", false);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 161,
+    "text": "if (json.doanhNghiep) showToast(\"✓ Database đã khởi tạo dữ liệu mẫu\", true);"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 211,
+    "text": "+ Thêm sản phẩm đầu tiên"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 232,
+    "text": "{sp._count.loHangs} lô hàng"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 237,
+    "text": "Thêm lô hàng"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 243,
+    "text": "<div className=\"p-8 text-center text-slate-400 text-sm\">{t(\"inv_empty\")}. Thêm lô hàng để tạo tem QR.</div>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 279,
+    "text": "title={`Lệch: khai báo ${lo.soLuong} nhưng thực tế ${lo._count.uids} tem. Nhấn để đồng bộ.`}"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 322,
+    "text": "{modal === \"product\" ? \"Thêm Sản phẩm mới\" : \"Thêm Lô hàng mới\"}"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 333,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Tên sản phẩm *</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 336,
+    "text": "placeholder=\"VD: Nước mắm Phú Quốc 35N\" />"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 339,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Mô tả</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 342,
+    "text": "rows={3} placeholder=\"Mô tả ngắn về sản phẩm...\" />"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 352,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Nước SX</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 355,
+    "text": "placeholder=\"Việt Nam\" />"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 362,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Sản phẩm *</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 365,
+    "text": "<option value=\"\">-- Chọn sản phẩm --</option>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 373,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Ngày SX *</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 378,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Hạn dùng *</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 384,
+    "text": "<label className=\"block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5\">Số lượng sản phẩm *</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 388,
+    "text": "<p className=\"text-xs text-slate-400 mt-1\">Hệ thống sẽ tự động tạo tem QR tương ứng</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 397,
+    "text": "Huỷ"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\page.tsx",
+    "line": 402,
+    "text": "{modal === \"product\" ? \"Tạo Sản phẩm\" : \"Tạo Lô hàng & In tem\"}"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 48,
+    "text": "<p className=\"text-red-500 font-bold\">Không tìm thấy lô hàng</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 58,
+    "text": "{/* Toolbar — ẩn khi print */}"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 62,
+    "text": "<p className=\"text-xs text-slate-500 font-bold uppercase tracking-wider mb-1\">In tem QR — Lô hàng</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 63,
+    "text": "<h1 className=\"text-xl font-bold text-slate-900\">{batch.maLo} — {batch.sanPham?.ten || \"Sản phẩm không có tên\"}</h1>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 64,
+    "text": "<p className=\"text-xs text-slate-500 mt-1\">{batch.uids.length} tem tổng cộng · NSX: {ngaySX} · HSD: {hanDung}</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 68,
+    "text": "<label className=\"text-sm font-bold text-slate-600\">Số lượng in:</label>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 80,
+    "text": "← Quay lại"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 89,
+    "text": "title=\"Mẹo: Chọn 'Save as PDF' (Lưu dưới dạng PDF) trong hộp thoại in để xuất file PDF.\""
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 92,
+    "text": "In / Xuất PDF ({printCount} tem)"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 98,
+    "text": "{/* Thông báo hướng dẫn in PDF */}"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 102,
+    "text": "Để xuất file PDF: Bấm nút In, sau đó ở mục \"Máy in\" (Destination), chọn \"Lưu dưới dạng PDF\" (Save as PDF)."
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 122,
+    "text": "{/* Thông tin */}"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 126,
+    "text": "<p className=\"text-[9px] text-slate-400\">{(batch.sanPham?.ten || \"Sản phẩm không rõ\").substring(0, 18)}</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\inventory\\[id]\\qr\\page.tsx",
+    "line": 131,
+    "text": "#{idx + 1} · {item.soLanQuet > 0 ? `${item.soLanQuet} quét` : \"Mới\"}"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 59,
+    "text": "match: /^(xin chào|hello|hi|chào|hey|alo)[\\s!]*/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 61,
+    "text": "\"Chào bạn! 😊 Rất vui được gặp bạn hôm nay. Mình là AI của VNTrust nha — bạn cần tra serial, kiểm tra lô hàng, hay hỏi gì khác không?\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 62,
+    "text": "\"Hey! 👋 Mình đây. Có gì cần giúp không bạn? Nhập số serial để mình check ngay, hoặc hỏi thoải mái nhé!\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 63,
+    "text": "\"Chào bạn nhé, mình là AI VNTrust 🤖 Hôm nay bạn muốn mình hỗ trợ gì không?\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 67,
+    "text": "match: /cảm ơn|thanks|thank you|ngon|tốt lắm|hay quá|giỏi/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 69,
+    "text": "\"Không có gì bạn ơi 😄 Giúp được bạn là mình vui rồi. Cần gì thêm cứ hỏi nha!\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 70,
+    "text": "\"Hehe, tất nhiên thôi! Đó là việc của mình mà 😎 Còn gì cần không?\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 71,
+    "text": "\"Oki! Lúc nào cũng sẵn sàng hỗ trợ bạn nhé 🙌\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 79,
+    "text": "match: /serial|mã|uid|qr|tem|quét|scan|số sê/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 81,
+    "text": "\"Bạn nhập thẳng số serial vào đây mình tra ngay nha! Ví dụ: EDG123456 hay gì đó tương tự 🔎\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 82,
+    "text": "\"Để mình giúp! Bạn gõ mã serial hoặc UID từ tem QR vào đây nhé, mình xử lý trong vài giây thôi 😊\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 86,
+    "text": "match: /hàng giả|làm giả|giả mạo|fake|đáng ngờ|không chính hãng/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 88,
+    "text": "\"🚨 Ôi, nghe có vẻ nghiêm trọng đó! Bạn cho mình biết mã serial của sản phẩm được không? Mình kiểm tra ngay.\\n\\nHoặc nếu cần báo cáo khẩn, có thể:\\n• Gọi: **1800 6789** (miễn phí 24/7)\\n• Email: report@vntrust.vn\\n• Bấm nút 113 trên Dashboard để báo nhanh\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 89,
+    "text": "\"Hmm, đáng lo đó! 😟 Bạn đang nghi ngờ sản phẩm nào? Cho mình mã serial, mình check xem có đăng ký trong hệ thống không nhé.\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 93,
+    "text": "match: /sản phẩm|kho|lô hàng|inventory|thêm|đăng ký/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 95,
+    "text": "\"Để quản lý sản phẩm, bạn vào **Tài sản & Lô hàng** nhé 📦\\n• Thêm sản phẩm → Hệ thống tạo mã QR ngay\\n• Tạo lô hàng → Phân phối tem theo lô\\n• Xem báo cáo quét realtime\\n\\nBạn đang cần làm bước nào?\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 96,
+    "text": "\"Thêm sản phẩm mới à? Dễ lắm! 😊 Vào **Kho hàng** → **Thêm sản phẩm** → Điền thông tin → Hệ thống tự sinh mã UID duy nhất. Bạn muốn mình hướng dẫn chi tiết hơn không?\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 100,
+    "text": "match: /giá|chi phí|bao nhiêu|gói|plan|pricing|mất tiền/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 102,
+    "text": "\"Bạn hỏi về giá à? Mình mà tiết lộ hết thì ông chủ cho mình nghỉ mất 😄\\n\\nNhưng thực ra là:\\n🟢 **Starter** — Miễn phí (100 SP, 500 QR/tháng)\\n🔵 **Business** — 2.990.000₫/tháng (không giới hạn + AI reports)\\n🟡 **Enterprise** — Liên hệ để được báo giá riêng\\n\\nBạn đang ở quy mô nào, mình tư vấn gói phù hợp cho?\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 106,
+    "text": "match: /chuỗi cung ứng|supply chain|phân phối|bản đồ|logistics/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 108,
+    "text": "\"Chuỗi cung ứng của VNTrust hiện đang theo dõi **4,821 điểm** trên toàn quốc 🗺️\\n\\nBạn có thể xem realtime:\\n• Luồng hàng từ nhà máy → kho → điểm bán\\n• Bản đồ nhiệt cảnh báo vùng hàng giả\\n• Thống kê quét theo tỉnh thành\\n\\nVào **Chuỗi Cung ứng** trên menu để xem nhé! Hoặc bấm vào bản đồ bên phải để chọn tỉnh 😊\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 112,
+    "text": "match: /bảo mật|hack|xâm nhập|lộ data|an toàn/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 114,
+    "text": "\"Bảo mật là ưu tiên số 1 của VNTrust đó bạn! 🔐\\n• Mã hóa AES-256 toàn bộ data\\n• 2FA bắt buộc cho tài khoản doanh nghiệp\\n• Blockchain không thể giả mạo\\n• AI giám sát 24/7, phát hiện xâm nhập < 10 giây\\n• Tuân thủ ISO/IEC 27001\\n\\nBạn muốn biết về chính sách bảo mật cụ thể nào không?\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 118,
+    "text": "match: /app|ứng dụng|mobile|điện thoại|ios|android/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 120,
+    "text": "\"À, app VNTrust Mobile thì xịn lắm đó! 📱\\n• Quét QR bằng camera mà không cần nhập tay\\n• Nhận thông báo ngay khi phát hiện hàng giả\\n• Offline mode: cache data để dùng khi mất mạng\\n\\n**iOS**: App Store → 'VNTrust'\\n**Android**: Google Play → 'VNTrust'\\n\\nHoặc bấm **APP DOWNLOAD** trên thanh đầu, mình sẽ mở link tải cho bạn!\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 124,
+    "text": "match: /xuất|báo cáo|report|pdf|csv|export/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 126,
+    "text": "\"Xuất báo cáo thì dễ bạn ơi! 📊 Bấm nút **EXPORT OFFLINE REPORT** ở góc phải phía trên bản đồ, AI sẽ tổng hợp và tải file CSV về máy trong vài giây.\\n\\nFile bao gồm:\\n• Thống kê quét 30 ngày\\n• Danh sách cảnh báo hàng giả\\n• Phân tích theo vùng\\n\\nBạn cần thêm thông tin gì trong báo cáo không?\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 130,
+    "text": "match: /liên hệ|support|hỗ trợ|hotline|điện thoại|gọi|email/i,"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 132,
+    "text": "\"Bạn cần liên hệ thì mình kết nối ngay nha! 📞\\n• **Hotline**: 1800 6789 (miễn phí, 24/7)\\n• **Email**: support@vntrust.vn\\n• **Zalo**: zalo.me/vntrust\\n• **Địa chỉ**: 123 Nguyễn Huệ, Q1, TP.HCM\\n\\nHoặc bấm **ĐƯỜNG DÂY NÓNG 24/7** ở góc phải Dashboard, mình hiện số điện thoại theo khu vực của bạn 😊\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 138,
+    "text": "\"Hmm, mình chưa hiểu câu đó lắm 🤔 Bạn có thể nói rõ hơn không? Hoặc nhập số serial để mình tra cứu ngay nha!\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 139,
+    "text": "\"Câu hỏi thú vị đó! Nhưng mình cần thêm thông tin xíu. Bạn đang hỏi về: sản phẩm cụ thể, hay về cách dùng hệ thống, hay về giá cả?\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 140,
+    "text": "\"Haha, mình AI thôi nên đôi khi không hiểu hết 😄 Bạn thử hỏi theo cách khác, hoặc nhập thẳng số serial để mình check nhanh nhé!\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 141,
+    "text": "\"Ừm... mình nghĩ bạn đang hỏi về điều gì đó rất hay, nhưng mình cần thêm context xíu. Bạn có thể nói cụ thể hơn không? 😊\","
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 149,
+    "text": "if (found) return `🔍 Xong rồi! Mình tìm thấy mã **${s}** trong database nhé!\\n\\n✅ Kết quả: **Chính hãng**\\n📦 Sản phẩm: Nước mắm Phú Quốc 35N\\n🏭 NSX: Công ty Thực phẩm Phú Quốc\\n📅 SX: 01/03/2026 · HSD: 01/03/2028\\n📍 Phân phối: Khu vực Miền Nam\\n\\nBạn muốn xem trang xác thực đầy đủ tại **/verify/${s}** không?`;"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 150,
+    "text": "return `⚠️ Ồ, mã **${s}** không có trong hệ thống đó bạn!\\n\\nCó thể là:\\n• Sản phẩm chưa được đăng ký với VNTrust\\n• Mã bị nhập sai hoặc tem hỏng\\n• **Nguy hiểm: Đây có thể là hàng giả!**\\n\\nBạn muốn mình báo cáo sản phẩm này không? Mình kết nối với đội bảo mật ngay!`;"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 215,
+    "text": "const statusText = data.status === \"genuine\" ? \"✅ Chính hãng\" : data.status === \"expired\" ? \"⏰ Đã hết hạn\" : \"⚠️ Nghi ngờ làm giả\";"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 216,
+    "text": "reply = `🔍 Xong rồi! Mình tìm thấy mã **${serial.toUpperCase()}**\\n${statusText}\\n📦 Sản phẩm: ${sp?.tenSanPham ?? \"N/A\"}\\n🏭 NSX: ${sp?.doanhNghiep?.tenDoanhNghiep ?? \"N/A\"}\\n📅 SX: ${lo?.ngaySanXuat ? new Date(lo.ngaySanXuat).toLocaleDateString(\"vi-VN\") : \"N/A\"} · HSD: ${lo?.hanDung ? new Date(lo.hanDung).toLocaleDateString(\"vi-VN\") : \"N/A\"}\\n\\nXem chi tiết tại /verify/${serial.toUpperCase()}`;"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 218,
+    "text": "reply = `⚠️ Mã **${serial.toUpperCase()}** không có trong hệ thống!\\n\\nCó thể là:\\n• Sản phẩm chưa đăng ký VNTrust\\n• Mã bị nhập sai hoặc tem hỏng\\n• **Nguy hiểm: Có thể là hàng giả!**`;"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 221,
+    "text": "reply = \"⚠️ Không thể kết nối hệ thống xác thực. Vui lòng thử lại sau.\";"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 231,
+    "text": "const quickBtns = [\"Cách tra mã QR?\", \"Báo cáo hàng giả\", \"Giá dịch vụ\", \"Liên hệ hỗ trợ\", \"Hướng dẫn dùng app\"];"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 234,
+    "text": "<ModalWrapper onClose={onClose} title=\"Trợ lý AI VNTrust\" icon=\"smart_toy\" iconColor=\"bg-cyan-500\">"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 270,
+    "text": "placeholder=\"Chat với AI VNTrust...\""
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 290,
+    "text": "const csv = [\"BÁO CÁO VNTRUST - AI SUMMARY\", `Ngày: ${now}`, \"\", \"Chỉ số,Giá trị\", \"Tổng lượt quét,18.420\", \"Chính hãng,17.801\", \"Hàng giả,312\", \"Cảnh báo,8\", \"Toàn vẹn,96.7%\", \"\", \"Khu vực,Lượt quét,Hàng giả\", \"TP.HCM,8420,142\", \"Hà Nội,5210,98\", \"Bình Dương,2340,44\", \"Đà Nẵng,1580,28\"].join(\"\\n\");"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 298,
+    "text": "<ModalWrapper onClose={onClose} title=\"Xuất Báo cáo AI\" icon=\"summarize\" iconColor=\"bg-violet-500\">"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 300,
+    "text": "{[\"Tóm tắt hoạt động 30 ngày\", \"Danh sách cảnh báo hàng giả\", \"Phân tích theo vùng\", \"Đánh giá rủi ro AI\"].map(i => ("
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 310,
+    "text": "<p className=\"text-emerald-400 font-bold mt-1\">File CSV đã được tải về máy!</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 311,
+    "text": "<button onClick={doExport} className=\"mt-2 text-xs text-cyan-400 underline\">Tải lại</button>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 316,
+    "text": "{state === \"loading\" ? <><span className=\"w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin\" /> Đang tạo báo cáo AI...</> : <><span className=\"material-symbols-outlined text-[18px]\">download</span> Xuất CSV</>}"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 325,
+    "text": "<ModalWrapper onClose={onClose} title=\"Chuyên gia Bảo mật\" icon=\"shield_person\" iconColor=\"bg-emerald-500\">"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 327,
+    "text": "{[{ name: \"Nguyễn Văn An\", role: \"Chuyên gia chống giả cấp cao\", status: \"online\" }, { name: \"Trần Thị Bình\", role: \"Phân tích chuỗi cung ứng\", status: \"online\" }, { name: \"Lê Minh Cường\", role: \"Kỹ thuật xác thực AI\", status: \"busy\" }].map((ex, i) => ("
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 338,
+    "text": "<span className=\"material-symbols-outlined text-[18px]\">security</span> Mở trang Bảo mật"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 346,
+    "text": "<ModalWrapper onClose={onClose} title=\"Đường dây Nóng 24/7\" icon=\"call\" iconColor=\"bg-cyan-500\">"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 348,
+    "text": "{[{ area: \"TP. Hồ Chí Minh\", number: \"1800 6789\", online: true }, { area: \"Hà Nội\", number: \"1800 1234\", online: true }, { area: \"Đà Nẵng & Miền Trung\", number: \"1800 4567\", online: false }, { area: \"Cần Thơ & Tây Nam Bộ\", number: \"1900 8888\", online: true }].map((h, i) => ("
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 358,
+    "text": "<p className=\"text-center text-xs text-slate-500\">Miễn phí · 24 giờ · 7 ngày / tuần</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 377,
+    "text": "<p className=\"text-[9px] text-slate-400 mt-1\">Lượt quét</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 381,
+    "text": "<p className=\"text-[9px] text-slate-400 mt-1\">Hàng giả</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 385,
+    "text": "<p className=\"text-[9px] text-slate-400 mt-1\">Toàn vẹn</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 391,
+    "text": "<span className=\"material-symbols-outlined text-[18px]\">warning</span> Cảnh báo hàng giả"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 393,
+    "text": "<p className=\"text-slate-300 text-xs mt-1\">Phát hiện {marker.fake} sản phẩm nghi vấn tại <strong>{marker.name}</strong> trong 30 ngày qua.</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 397,
+    "text": "<span className=\"material-symbols-outlined text-[18px]\">open_in_new</span> Mở bản đồ phân phối"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 509,
+    "text": "<div title=\"Quét Mã QR\" className=\"w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center\"><span className=\"material-symbols-outlined text-white text-[20px]\">qr_code_scanner</span></div>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 510,
+    "text": "<div title=\"Quét Mã Vạch\" className=\"w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center\"><span className=\"material-symbols-outlined text-white text-[20px]\">barcode_reader</span></div>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 511,
+    "text": "<div title=\"Nhập Serial\" className=\"w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center\"><span className=\"material-symbols-outlined text-white text-[20px]\">pin</span></div>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 512,
+    "text": "<div title=\"AI Giấy tờ\" className=\"w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center\"><span className=\"material-symbols-outlined text-white text-[20px]\">document_scanner</span></div>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 532,
+    "text": "<a href=\"tel:113\" className=\"flex-1 bg-red-500/20 rounded-xl p-2 text-center border border-red-500/30 hover:bg-red-500/40 transition\"><p className=\"text-[9px] font-bold text-red-200\">CẢNH BÁO</p><p className=\"text-lg font-black text-white\">113</p></a>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 533,
+    "text": "<a href=\"tel:1900\" className=\"flex-1 bg-orange-500/20 rounded-xl p-2 text-center border border-orange-500/30 hover:bg-orange-500/40 transition\"><p className=\"text-[9px] font-bold text-orange-200\">HỖ TRỢ</p><p className=\"text-lg font-black text-white\">1900</p></a>"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 549,
+    "text": "{log.status === 'success' ? 'THÀNH CÔNG' : log.status === 'warning' ? 'CẢNH BÁO' : 'NGUY HIỂM'}"
+  },
+  {
+    "file": "src\\app\\dashboard\\page.tsx",
+    "line": 600,
+    "text": "<span className=\"material-symbols-outlined text-[14px]\">logout</span> Đăng xuất"
+  },
+  {
+    "file": "src\\app\\dashboard\\security\\page.tsx",
+    "line": 15,
+    "text": "<p className=\"font-label text-xs font-bold text-primary tracking-[0.2em] uppercase mb-2\">Quản trị Hệ thống</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\security\\page.tsx",
+    "line": 16,
+    "text": "<h2 className=\"font-headline text-4xl font-extrabold text-white\">Cài đặt Bảo mật</h2>"
+  },
+  {
+    "file": "src\\app\\dashboard\\security\\page.tsx",
+    "line": 24,
+    "text": "<h3 className=\"text-xl font-bold font-headline mt-2\">Xác thực Hai yếu tố (2FA)</h3>"
+  },
+  {
+    "file": "src\\app\\dashboard\\security\\page.tsx",
+    "line": 25,
+    "text": "<p className=\"text-slate-300 text-sm\">Tăng cường tính bảo mật của tài khoản với mã OTP từ Google Authenticator hoặc SMS.</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\security\\page.tsx",
+    "line": 34,
+    "text": "<span className=\"font-bold text-sm\">{mfa ? \"Đang Bật\" : \"Đã Tắt\"}</span>"
+  },
+  {
+    "file": "src\\app\\dashboard\\security\\page.tsx",
+    "line": 42,
+    "text": "<h3 className=\"text-xl font-bold font-headline mt-2\">Đổi mật khẩu</h3>"
+  },
+  {
+    "file": "src\\app\\dashboard\\security\\page.tsx",
+    "line": 43,
+    "text": "<p className=\"text-slate-300 text-sm\">Nên thay đổi mật khẩu định kỳ 3 tháng một lần để đảm bảo an toàn tuyệt đối cho DApp.</p>"
+  },
+  {
+    "file": "src\\app\\dashboard\\security\\page.tsx",
+    "line": 47,
+    "text": "onClick={() => alert(\"Chức năng đang được tích hợp cùng hệ thống SSO.\")}"
+  },
+  {
+    "file": "src\\app\\dashboard\\security\\page.tsx",
+    "line": 49,
+    "text": "Cập nhật Ngay"
+  },
+  {
+    "file": "src\\app\\layout.tsx",
+    "line": 11,
+    "text": "description: \"Bảo vệ Di sản Thương hiệu với VNTrust.\","
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 41,
+    "text": "return \"Số điện thoại không hợp lệ (định dạng: 0xxxxxxxxx, 10 chữ số)\";"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 109,
+    "text": "showToast(data.error || \"Sai tên đăng nhập hoặc mật khẩu!\", \"error\");"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 127,
+    "text": "showToast(\"Đăng ký thành công! Vui lòng đăng nhập.\", \"success\");"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 135,
+    "text": "if (data.error?.toLowerCase().includes(\"phone\") || data.error?.toLowerCase().includes(\"sdt\") || data.error?.toLowerCase().includes(\"điện thoại\")) {"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 136,
+    "text": "setRegPhoneError(\"Số điện thoại này đã được đăng ký\");"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 138,
+    "text": "showToast(data.error || \"Đăng ký thất bại!\", \"error\");"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 142,
+    "text": "showToast(\"Hướng dẫn đã được gửi vào email/sđt của bạn!\", \"info\");"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 148,
+    "text": "showToast(\"Lỗi kết nối máy chủ!\", \"error\");"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 183,
+    "text": "<p className=\"text-slate-400 mt-2 text-sm text-center font-medium\">Hệ thống xác thực thông minh</p>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 190,
+    "text": "<h2 className=\"text-2xl font-bold text-white mb-2\">Đăng nhập</h2>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 191,
+    "text": "<p className=\"text-slate-400 text-sm mb-6\">Nhập thông tin tài khoản để truy cập</p>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 195,
+    "text": "<label className=\"block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2\">Email / Số điện thoại</label>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 204,
+    "text": "placeholder=\"Email hoặc số điện thoại\""
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 210,
+    "text": "<label className=\"block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2\">Mật khẩu</label>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 219,
+    "text": "placeholder=\"Nhập mật khẩu\""
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 233,
+    "text": "<>ĐĂNG NHẬP <span className=\"material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform\">arrow_forward</span></>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 240,
+    "text": "Quên mật khẩu?"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 243,
+    "text": "Chưa có tài khoản? <button onClick={() => setView(\"register\")} className=\"text-cyan-400 font-medium hover:underline\">Đăng ký ngay</button>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 256,
+    "text": "<h2 className=\"text-2xl font-bold text-white\">Đăng ký tài khoản</h2>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 257,
+    "text": "<p className=\"text-slate-400 text-sm mt-1\">Tham gia hệ thống VNTrust</p>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 263,
+    "text": "<label className=\"block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5\">Họ và tên</label>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 268,
+    "text": "placeholder=\"Nhập họ và tên\" />"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 278,
+    "text": "placeholder=\"Địa chỉ email\" />"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 283,
+    "text": "<label className=\"block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5\">Số điện thoại</label>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 302,
+    "text": "<label className=\"block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5\">Vai trò đăng ký</label>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 307,
+    "text": "<option value=\"\">Chọn vai trò của bạn</option>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 308,
+    "text": "<option value=\"manufacturer\">Nhà sản xuất</option>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 309,
+    "text": "<option value=\"importer\">Nhà nhập khẩu</option>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 310,
+    "text": "<option value=\"consumer\">Người tiêu dùng</option>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 317,
+    "text": "<label className=\"block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5\">Mật khẩu</label>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 322,
+    "text": "placeholder=\"Tạo mật khẩu (tối thiểu 6 ký tự)\" minLength={6} />"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 335,
+    "text": "<>ĐĂNG KÝ <span className=\"material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform\">person_add</span></>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 349,
+    "text": "<h2 className=\"text-2xl font-bold text-white\">Quên mật khẩu</h2>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 350,
+    "text": "<p className=\"text-slate-400 text-sm mt-1\">Khôi phục truy cập tài khoản</p>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 356,
+    "text": "Vui lòng nhập địa chỉ email hoặc số điện thoại đã đăng ký. Chúng tôi sẽ gửi cho bạn hướng dẫn để đặt lại mật khẩu."
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 359,
+    "text": "<label className=\"block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2\">Email hoặc Số điện thoại</label>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 364,
+    "text": "placeholder=\"Nhập email hoặc số điện thoại\" />"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 372,
+    "text": "<>GỬI YÊU CẦU <span className=\"material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform\">send</span></>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 385,
+    "text": "<span className=\"text-xs font-bold text-slate-500 uppercase tracking-widest\">Tài khoản DEMO</span>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 391,
+    "text": "<span className=\"text-sm font-semibold text-white\">Nhà sản xuất</span>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 395,
+    "text": "<span className=\"text-sm font-semibold text-white\">Nhà nhập khẩu</span>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 399,
+    "text": "<span className=\"text-sm font-semibold text-white\">Người tiêu dùng</span>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 403,
+    "text": "<span className=\"text-sm font-semibold text-white\">Quản trị hệ thống</span>"
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "line": 412,
+    "text": "Quay lại Trang chủ"
+  },
+  {
+    "file": "src\\app\\supply-chain\\page.tsx",
+    "line": 8,
+    "text": "const LOCATION_HUBS = [\"Hà Nội\", \"TP. Hồ Chí Minh\", \"Đà Nẵng\", \"Hải Phòng\", \"Cần Thơ\", \"Nha Trang\", \"Biên Hòa\", \"Huế\"];"
+  },
+  {
+    "file": "src\\app\\supply-chain\\page.tsx",
+    "line": 9,
+    "text": "const PRODUCTS = [\"Túi Xách Cao Cấp\", \"Đồng Hồ Cơ\", \"Rượu Vang Grand Cru\", \"Thiết Bị Y Tế\", \"Linh Kiện Bán Dẫn\", \"Mỹ Phẩm Thuần Chay\"];"
+  },
+  {
+    "file": "src\\app\\supply-chain\\page.tsx",
+    "line": 23,
+    "text": "{ id: \"1\", type: \"success\", titleKey: \"sc_log_auth_done\", titleSuffix: \" - HK-9201\", desc: \"3,200 Túi Xách Cao Cấp | Chữ Ký RFID: 0x4f...e8\", timeKey: \"sc_log_just_now\", timeSuffix: \"\" },"
+  },
+  {
+    "file": "src\\app\\supply-chain\\page.tsx",
+    "line": 24,
+    "text": "{ id: \"2\", type: \"error\",   titleKey: \"sc_log_blocked\",  titleSuffix: \"\", desc: \"Vị trí: Ga Hà Nội | Nỗ Lực Quét Mã QR Trùng Lặp\",  timeKey: \"sc_log_mins_ago\", timeSuffix: \"1 \" },"
+  },
+  {
+    "file": "src\\app\\supply-chain\\page.tsx",
+    "line": 25,
+    "text": "{ id: \"3\", type: \"info\",    titleKey: \"sc_log_contract\", titleSuffix: \"\", desc: \"Kết Nối Nút Mạng Mới: TP.HCM Hub (SGN-04)\",          timeKey: \"sc_log_mins_ago\", timeSuffix: \"3 \" },"
+  },
+  {
+    "file": "src\\app\\supply-chain\\page.tsx",
+    "line": 29,
+    "text": "loc: \"Hà Nội\","
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 43,
+    "text": "setError(t(\"aidoc_format_error\") || \"Định dạng file không hỗ trợ\");"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 66,
+    "text": "setError(t(\"aidoc_format_error\") || \"Định dạng file không hỗ trợ\");"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 76,
+    "text": "setError(t(\"aidoc_format_error\") || \"Định dạng file không hỗ trợ\");"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 93,
+    "text": "const isValid = ['chứng nhận', 'giấy chứng nhận', 'certificate', 'vietgap', 'iso', 'tiêu chuẩn', 'kiểm định', 'công nhận', 'giấy phép'].some(kw => lowerText.includes(kw));"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 97,
+    "text": "let type = \"Giấy chứng nhận (Tự động)\";"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 98,
+    "text": "if (lowerText.includes(\"vietgap\")) type = \"Chứng nhận VietGAP\";"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 99,
+    "text": "else if (lowerText.includes(\"iso\")) type = \"Chứng nhận ISO\";"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 103,
+    "text": "const issuer = lines.length > 0 ? lines[0].replace(/[|\\\\_>~=]/g, '') : \"Không tìm thấy\";"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 105,
+    "text": "const date = dateMatch ? dateMatch[0] : \"Không tìm thấy\";"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 118,
+    "text": "rawText: cleanText || \"Không thể nhận diện văn bản rõ ràng.\""
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 139,
+    "text": "Về Trung tâm Xác thực"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 211,
+    "text": "Bắt đầu Xác thực AI"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 219,
+    "text": "<span className=\"material-symbols-outlined text-outline\">analytics</span> Ghi nhận Phân tích"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 276,
+    "text": "<span className=\"text-outline flex items-center gap-2\"><span className=\"material-symbols-outlined text-[14px]\">terminal</span> Dữ liệu bóc tách (OCR):</span>"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 305,
+    "text": "<span className=\"text-outline flex items-center gap-2\"><span className=\"material-symbols-outlined text-[14px]\">terminal</span> Dữ liệu bóc tách (OCR):</span>"
+  },
+  {
+    "file": "src\\app\\verify\\ai-doc\\page.tsx",
+    "line": 307,
+    "text": "{extracted.rawText || \"Không tìm thấy ký tự nào\"}"
+  },
+  {
+    "file": "src\\app\\verify\\manual\\page.tsx",
+    "line": 29,
+    "text": "Về Trung tâm Xác thực"
+  },
+  {
+    "file": "src\\app\\verify\\manual\\page.tsx",
+    "line": 38,
+    "text": "<h2 className=\"text-3xl font-black font-headline text-on-surface mb-4\">Tra cứu Mã Serial</h2>"
+  },
+  {
+    "file": "src\\app\\verify\\manual\\page.tsx",
+    "line": 39,
+    "text": "<p className=\"text-on-surface-variant mb-10 mx-auto max-w-sm\">Nhập chuỗi định danh duy nhất (UUID/Serial) in chìm dưới lớp phủ tem VNTrust chống giả.</p>"
+  },
+  {
+    "file": "src\\app\\verify\\manual\\page.tsx",
+    "line": 43,
+    "text": "<label className=\"block text-[11px] font-black text-outline uppercase tracking-[0.2em] mb-3 ml-2\">Mã định danh (UID)</label>"
+  },
+  {
+    "file": "src\\app\\verify\\manual\\page.tsx",
+    "line": 58,
+    "text": "Xác thực Tức thì"
+  },
+  {
+    "file": "src\\app\\verify\\manual\\page.tsx",
+    "line": 66,
+    "text": "<strong className=\"text-on-surface block mb-1\">Mã hóa Cấp Ngân hàng</strong>"
+  },
+  {
+    "file": "src\\app\\verify\\manual\\page.tsx",
+    "line": 67,
+    "text": "Giao dịch truy vấn của bạn được mã hóa hoàn toàn. VNTrust ẩn danh địa chỉ mạng để đảm bảo tính riêng tư trong đối soát."
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 8,
+    "text": "{ id: 0, name: \"Lai Châu\", country: \"Việt Nam\", lat: 22.39, lon: 103.15, scans: 1200, fake: 5, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 9,
+    "text": "{ id: 1, name: \"Điện Biên\", country: \"Việt Nam\", lat: 21.38, lon: 103.02, scans: 1800, fake: 12, type: \"warning\", color: \"#f97316\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 10,
+    "text": "{ id: 2, name: \"Lào Cai\", country: \"Việt Nam\", lat: 22.48, lon: 103.97, scans: 3400, fake: 21, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 11,
+    "text": "{ id: 3, name: \"Tuyên Quang\", country: \"Việt Nam\", lat: 21.82, lon: 105.23, scans: 2100, fake: 0, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 12,
+    "text": "{ id: 4, name: \"Cao Bằng\", country: \"Việt Nam\", lat: 22.66, lon: 106.26, scans: 1540, fake: 8, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 13,
+    "text": "{ id: 5, name: \"Lạng Sơn\", country: \"Việt Nam\", lat: 21.85, lon: 106.75, scans: 4300, fake: 87, type: \"hot\", color: \"#fbbf24\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 14,
+    "text": "{ id: 6, name: \"Sơn La\", country: \"Việt Nam\", lat: 21.32, lon: 103.91, scans: 1950, fake: 4, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 15,
+    "text": "{ id: 7, name: \"Phú Thọ\", country: \"Việt Nam\", lat: 21.34, lon: 105.22, scans: 2230, fake: 15, type: \"warning\", color: \"#f97316\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 16,
+    "text": "{ id: 8, name: \"Thái Nguyên\", country: \"Việt Nam\", lat: 21.59, lon: 105.84, scans: 3100, fake: 11, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 17,
+    "text": "{ id: 9, name: \"Bắc Ninh\", country: \"Việt Nam\", lat: 21.18, lon: 106.07, scans: 8900, fake: 42, type: \"hot\", color: \"#fbbf24\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 18,
+    "text": "{ id: 10, name: \"Quảng Ninh\", country: \"Việt Nam\", lat: 21.04, lon: 107.19, scans: 6100, fake: 75, type: \"hot\", color: \"#fbbf24\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 19,
+    "text": "{ id: 11, name: \"Hà Nội\", country: \"Việt Nam\", lat: 21.03, lon: 105.85, scans: 15210, fake: 98, type: \"hot\", color: \"#fbbf24\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 20,
+    "text": "{ id: 12, name: \"Hải Phòng\", country: \"Việt Nam\", lat: 20.84, lon: 106.68, scans: 5100, fake: 55, type: \"warning\", color: \"#f97316\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 21,
+    "text": "{ id: 13, name: \"Hưng Yên\", country: \"Việt Nam\", lat: 20.65, lon: 106.05, scans: 2750, fake: 9, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 22,
+    "text": "{ id: 14, name: \"Ninh Bình\", country: \"Việt Nam\", lat: 20.25, lon: 105.97, scans: 1800, fake: 0, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 24,
+    "text": "{ id: 15, name: \"Thanh Hóa\", country: \"Việt Nam\", lat: 19.80, lon: 105.77, scans: 2300, fake: 18, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 25,
+    "text": "{ id: 16, name: \"Nghệ An\", country: \"Việt Nam\", lat: 19.06, lon: 104.97, scans: 2100, fake: 10, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 26,
+    "text": "{ id: 17, name: \"Hà Tĩnh\", country: \"Việt Nam\", lat: 18.34, lon: 105.90, scans: 1500, fake: 2, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 27,
+    "text": "{ id: 18, name: \"Quảng Trị\", country: \"Việt Nam\", lat: 16.74, lon: 107.19, scans: 1100, fake: 4, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 28,
+    "text": "{ id: 19, name: \"Thừa Thiên Huế\", country: \"Việt Nam\", lat: 16.46, lon: 107.59, scans: 2100, fake: 14, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 29,
+    "text": "{ id: 20, name: \"Đà Nẵng\", country: \"Việt Nam\", lat: 16.07, lon: 108.21, scans: 5580, fake: 28, type: \"warning\", color: \"#f97316\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 30,
+    "text": "{ id: 21, name: \"Quảng Ngãi\", country: \"Việt Nam\", lat: 15.11, lon: 108.80, scans: 1400, fake: 6, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 31,
+    "text": "{ id: 22, name: \"Gia Lai\", country: \"Việt Nam\", lat: 13.98, lon: 108.00, scans: 2500, fake: 22, type: \"warning\", color: \"#f97316\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 32,
+    "text": "{ id: 23, name: \"Đắk Lắk\", country: \"Việt Nam\", lat: 12.66, lon: 108.03, scans: 3200, fake: 35, type: \"warning\", color: \"#f97316\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 33,
+    "text": "{ id: 24, name: \"Khánh Hòa\", country: \"Việt Nam\", lat: 12.24, lon: 109.19, scans: 2800, fake: 8, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 34,
+    "text": "{ id: 25, name: \"Lâm Đồng\", country: \"Việt Nam\", lat: 11.54, lon: 108.08, scans: 3100, fake: 16, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 36,
+    "text": "{ id: 26, name: \"Đồng Nai\", country: \"Việt Nam\", lat: 10.95, lon: 106.82, scans: 6900, fake: 87, type: \"hot\", color: \"#fbbf24\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 37,
+    "text": "{ id: 27, name: \"Tây Ninh\", country: \"Việt Nam\", lat: 11.30, lon: 106.10, scans: 4200, fake: 64, type: \"warning\", color: \"#f97316\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 38,
+    "text": "{ id: 28, name: \"Đồng Tháp\", country: \"Việt Nam\", lat: 10.45, lon: 105.63, scans: 2600, fake: 18, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 39,
+    "text": "{ id: 29, name: \"An Giang\", country: \"Việt Nam\", lat: 10.37, lon: 105.43, scans: 3500, fake: 22, type: \"warning\", color: \"#f97316\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 40,
+    "text": "{ id: 30, name: \"TP. Hồ Chí Minh\", country: \"Việt Nam\", lat: 10.82, lon: 106.63, scans: 18420, fake: 142, type: \"hot\", color: \"#fbbf24\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 41,
+    "text": "{ id: 31, name: \"Vĩnh Long\", country: \"Việt Nam\", lat: 10.25, lon: 105.96, scans: 1900, fake: 5, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 42,
+    "text": "{ id: 32, name: \"Cần Thơ\", country: \"Việt Nam\", lat: 10.04, lon: 105.74, scans: 3240, fake: 12, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 43,
+    "text": "{ id: 33, name: \"Cà Mau\", country: \"Việt Nam\", lat: 9.17, lon: 105.15, scans: 2200, fake: 15, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 44,
+    "text": "{ id: 34, name: \"Đảo Phú Quốc\", country: \"Việt Nam\", lat: 10.22, lon: 103.96, scans: 4100, fake: 33, type: \"warning\", color: \"#f97316\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 45,
+    "text": "{ id: 35, name: \"QĐ Hoàng Sa\", country: \"Việt Nam\", lat: 16.83, lon: 112.33, scans: 50, fake: 0, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 46,
+    "text": "{ id: 36, name: \"QĐ Trường Sa\", country: \"Việt Nam\", lat: 8.64, lon: 111.91, scans: 80, fake: 0, type: \"normal\", color: \"#4ade80\" },"
+  },
+  {
+    "file": "src\\components\\GlobeCanvas.tsx",
+    "line": 371,
+    "text": "<span className=\"text-[9px] text-cyan-400 font-bold\">{m.scans.toLocaleString()} quét</span>"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 10,
+    "text": "{ code: \"vi\", name: \"Tiếng Việt\", flag: \"🇻🇳\", short: \"VN\" },"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 54,
+    "text": "{ match: /^(xin chào|hello|hi|chào|hey|alo)[\\s!]*/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 58,
+    "text": "{ match: /cảm ơn|thanks|thank you|ngon|tốt lắm|hay quá|giỏi/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 62,
+    "text": "{ match: /serial|mã|uid|qr|tem|quét|scan|số sê/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 66,
+    "text": "{ match: /hàng giả|làm giả|giả mạo|fake|đáng ngờ|không chính hãng/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 69,
+    "text": "{ match: /sản phẩm|kho|lô hàng|inventory|thêm|đăng ký/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 72,
+    "text": "{ match: /giá|chi phí|bao nhiêu|gói|plan|pricing|mất tiền/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 75,
+    "text": "{ match: /chuỗi cung ứng|supply chain|phân phối|bản đồ|logistics/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 78,
+    "text": "{ match: /bảo mật|hack|xâm nhập|lộ data|an toàn/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 81,
+    "text": "{ match: /app|ứng dụng|mobile|điện thoại|ios|android/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 84,
+    "text": "{ match: /xuất|báo cáo|report|pdf|csv|export/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 87,
+    "text": "{ match: /liên hệ|support|hỗ trợ|hotline|điện thoại|gọi|email/i, replies: ["
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 121,
+    "text": "setWarning(val.length > MAX_CHAT_LEN ? `⚠️ Vượt quá giới hạn ${MAX_CHAT_LEN} ký tự.` : \"\");"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 128,
+    "text": "if (q.length > MAX_CHAT_LEN) { setWarning(`⚠️ Tin nhắn vượt quá ${MAX_CHAT_LEN} ký tự.`); return; }"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 143,
+    "text": "const statusText = data.status === \"genuine\" ? \"✅ Chính hãng\" : data.status === \"expired\" ? \"⏰ Đã hết hạn\" : \"⚠️ Nghi ngờ làm giả\";"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 144,
+    "text": "reply = `🔍 Xong rồi! Mình tìm thấy mã **${serial.toUpperCase()}**\\n${statusText}\\n📦 Sản phẩm: ${sp?.tenSanPham ?? \"N/A\"}\\n🏭 NSX: ${sp?.doanhNghiep?.tenDoanhNghiep ?? \"N/A\"}\\n📅 SX: ${lo?.ngaySanXuat ? new Date(lo.ngaySanXuat).toLocaleDateString(\"vi-VN\") : \"N/A\"} · HSD: ${lo?.hanDung ? new Date(lo.hanDung).toLocaleDateString(\"vi-VN\") : \"N/A\"}\\n\\nXem chi tiết tại /verify/${serial.toUpperCase()}`;"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 146,
+    "text": "reply = `⚠️ Mã **${serial.toUpperCase()}** không có trong hệ thống!\\n\\nCó thể là:\\n• Sản phẩm chưa đăng ký VNTrust\\n• Mã bị nhập sai hoặc tem hỏng\\n• **Nguy hiểm: Có thể là hàng giả!**`;"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 148,
+    "text": "} catch { reply = \"⚠️ Không thể kết nối hệ thống xác thực. Vui lòng thử lại sau.\"; }"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 175,
+    "text": "{/* Header — giống Dashboard */}"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 189,
+    "text": "{/* Messages — giống hệt Dashboard */}"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 214,
+    "text": "{/* Quick buttons — giống Dashboard */}"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 231,
+    "text": "{/* Input — giống Dashboard */}"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 286,
+    "text": "<p className=\"text-[11px] text-slate-300 font-medium mb-1\">Tải trên</p>"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 292,
+    "text": "<p className=\"text-[11px] text-slate-300 font-medium mb-1\">Tải trên</p>"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 299,
+    "text": "Phiên bản 2.4.1 · iOS 14+ · Android 8+"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 16,
+    "text": "name: \"QĐ. Hoàng Sa (Đà Nẵng)\","
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 21,
+    "text": "name: \"QĐ. Trường Sa (Khánh Hòa)\","
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 29,
+    "text": "{name:'Bà Rịa-VT',lat:10.4973,lon:107.1683},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 30,
+    "text": "{name:'Bạc Liêu',lat:9.2941,lon:105.7278},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 31,
+    "text": "{name:'Bắc Giang',lat:21.2731,lon:106.1946},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 32,
+    "text": "{name:'Bắc Kạn',lat:22.147,lon:105.8348},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 33,
+    "text": "{name:'Bắc Ninh',lat:21.1861,lon:106.0763},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 34,
+    "text": "{name:'Bến Tre',lat:10.2443,lon:106.3756},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 35,
+    "text": "{name:'Bình Dương',lat:11.2268,lon:106.666},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 36,
+    "text": "{name:'Bình Định',lat:13.7829,lon:109.2197},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 37,
+    "text": "{name:'Bình Phước',lat:11.7516,lon:106.9189},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 38,
+    "text": "{name:'Bình Thuận',lat:11.085,lon:108.0827},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 39,
+    "text": "{name:'Cà Mau',lat:8.5991,lon:105.0847},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 40,
+    "text": "{name:'Cao Bằng',lat:22.6582,lon:106.257},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 41,
+    "text": "{name:'Cần Thơ',lat:10.0452,lon:105.7469},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 42,
+    "text": "{name:'Đà Nẵng',lat:16.0544,lon:108.2022},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 43,
+    "text": "{name:'Đắk Lắk',lat:12.6667,lon:108.0382},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 44,
+    "text": "{name:'Đắk Nông',lat:11.9961,lon:107.935},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 45,
+    "text": "{name:'Điện Biên',lat:21.3853,lon:103.0189},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 46,
+    "text": "{name:'Đồng Nai',lat:10.9388,lon:106.8153},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 47,
+    "text": "{name:'Đồng Tháp',lat:10.2882,lon:105.7601},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 49,
+    "text": "{name:'Hà Giang',lat:22.8233,lon:104.9839},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 50,
+    "text": "{name:'Hà Nam',lat:20.5453,lon:105.9122},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 51,
+    "text": "{name:'Hà Nội',lat:21.0285,lon:105.8542},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 52,
+    "text": "{name:'Hà Tĩnh',lat:18.3428,lon:105.9042},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 53,
+    "text": "{name:'Hải Dương',lat:20.9372,lon:106.3146},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 54,
+    "text": "{name:'Hải Phòng',lat:20.8449,lon:106.6881},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 55,
+    "text": "{name:'Hậu Giang',lat:9.7828,lon:105.4746},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 56,
+    "text": "{name:'Hòa Bình',lat:20.8242,lon:105.3384},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 57,
+    "text": "{name:'Hưng Yên',lat:20.6464,lon:106.0511},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 58,
+    "text": "{name:'Khánh Hòa',lat:12.2388,lon:109.1967},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 59,
+    "text": "{name:'Kiên Giang',lat:10.0125,lon:105.0809},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 61,
+    "text": "{name:'Lai Châu',lat:22.3965,lon:103.4682},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 62,
+    "text": "{name:'Lạng Sơn',lat:21.8475,lon:106.7571},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 63,
+    "text": "{name:'Lào Cai',lat:22.4836,lon:104.0233},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 64,
+    "text": "{name:'Lâm Đồng',lat:11.5546,lon:108.1407},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 66,
+    "text": "{name:'Nam Định',lat:20.4308,lon:106.1759},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 67,
+    "text": "{name:'Nghệ An',lat:18.6667,lon:105.6667},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 68,
+    "text": "{name:'Ninh Bình',lat:20.2539,lon:105.9748},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 69,
+    "text": "{name:'Ninh Thuận',lat:11.5647,lon:108.9886},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 70,
+    "text": "{name:'Phú Thọ',lat:21.3168,lon:105.2173},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 71,
+    "text": "{name:'Phú Yên',lat:13.0886,lon:109.3005},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 72,
+    "text": "{name:'Quảng Bình',lat:17.5147,lon:106.2573},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 73,
+    "text": "{name:'Quảng Nam',lat:15.5682,lon:108.0195},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 74,
+    "text": "{name:'Quảng Ngãi',lat:15.1205,lon:108.7923},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 75,
+    "text": "{name:'Quảng Ninh',lat:21.0069,lon:107.2925},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 76,
+    "text": "{name:'Quảng Trị',lat:16.7456,lon:107.1881},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 77,
+    "text": "{name:'Sóc Trăng',lat:9.6033,lon:105.9806},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 78,
+    "text": "{name:'Sơn La',lat:21.3283,lon:103.9142},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 79,
+    "text": "{name:'Tây Ninh',lat:11.3134,lon:106.0958},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 80,
+    "text": "{name:'Thái Bình',lat:20.4463,lon:106.3366},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 81,
+    "text": "{name:'Thái Nguyên',lat:21.5928,lon:105.8442},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 82,
+    "text": "{name:'Thanh Hóa',lat:19.8055,lon:105.7725},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 83,
+    "text": "{name:'Huế',lat:16.4637,lon:107.5905},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 84,
+    "text": "{name:'Tiền Giang',lat:10.3541,lon:106.3601},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 86,
+    "text": "{name:'Trà Vinh',lat:9.9405,lon:106.3403},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 87,
+    "text": "{name:'Tuyên Quang',lat:21.8214,lon:105.2166},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 88,
+    "text": "{name:'Vĩnh Long',lat:10.0531,lon:105.9482},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 89,
+    "text": "{name:'Vĩnh Phúc',lat:21.3093,lon:105.6046},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 90,
+    "text": "{name:'Yên Bái',lat:21.7229,lon:104.9113},"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 254,
+    "text": "fontSize={4.5} fill=\"#94a3b8\">Tỉnh/Thành phố • Việt Nam</text>"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 257,
+    "text": "{m.scans.toLocaleString()} lượt quét"
+  },
+  {
+    "file": "src\\components\\VietnamMap.tsx",
+    "line": 263,
+    "text": "{m.fake > 0 ? `⚠ ${m.fake} cảnh báo giả` : \"✓ An toàn\"}"
+  },
+  {
+    "file": "src\\contexts\\ChatContext.tsx",
+    "line": 30,
+    "text": "\"Chào! Tôi là AI VNTrust\","
+  },
+  {
+    "file": "src\\contexts\\ChatContext.tsx",
+    "line": 31,
+    "text": "\"Mình là AI VNTrust. Bạn cần phân tích\","
+  },
+  {
+    "file": "src\\contexts\\ChatContext.tsx",
+    "line": 32,
+    "text": "\"ở đây để giúp bạn\","
+  },
+  {
+    "file": "src\\contexts\\ChatContext.tsx",
+    "line": 33,
+    "text": "\"Chào bạn! 👋 Mình là AI VNTrust\","
+  },
+  {
+    "file": "src\\generated\\prisma\\internal\\class.ts",
+    "line": 23,
+    "text": "\"inlineSchema\": \"generator client {\\n  provider = \\\"prisma-client\\\"\\n  output   = \\\"../src/generated/prisma\\\"\\n}\\n\\ndatasource db {\\n  provider = \\\"sqlite\\\"\\n}\\n\\nmodel DoanhNghiep {\\n  id         String      @id @default(uuid())\\n  maSoThue   String      @unique\\n  ten        String\\n  diaChi     String?\\n  nganh_VSIC String?\\n  loai       String // NSX | NNK\\n  ngayDangKy DateTime    @default(now())\\n  trangThai  String      @default(\\\"pending\\\") // pending | verified | suspended\\n  sanPhams   SanPham[]\\n  nguoiDungs NguoiDung[]\\n}\\n\\nmodel SanPham {\\n  id            String          @id @default(uuid())\\n  maSKU         String          @unique\\n  GTIN          String?\\n  ten           String\\n  moTa          String?\\n  hinhAnh       String?\\n  nuocSanXuat   String?\\n  ngayTao       DateTime        @default(now())\\n  doanhNghiepId String\\n  doanhNghiep   DoanhNghiep     @relation(fields: [doanhNghiepId], references: [id])\\n  loHangs       LoHang[]\\n  chungNhans    ChungNhan[]\\n  hauKiems      KetQuaHauKiem[]\\n}\\n\\nmodel LoHang {\\n  id          String          @id @default(uuid())\\n  maLo        String          @unique\\n  ngaySanXuat DateTime\\n  hanDung     DateTime\\n  soLuong     Int\\n  trangThai   String          @default(\\\"active\\\")\\n  sanPhamId   String\\n  sanPham     SanPham         @relation(fields: [sanPhamId], references: [id])\\n  uids        MaDinhDanh[]\\n  chungNhans  ChungNhan[]\\n  hauKiems    KetQuaHauKiem[]\\n}\\n\\nmodel MaDinhDanh {\\n  uid          String     @id @default(uuid()) // UUID v4\\n  qrCodeUrl    String?\\n  serialNumber String?    @unique\\n  loai         String     @default(\\\"QR\\\") // QR | Serial\\n  ngayTao      DateTime   @default(now())\\n  soLanQuet    Int        @default(0)\\n  trangThai    String     @default(\\\"active\\\") // active | expired | flagged | fake\\n  loHangId     String\\n  loHang       LoHang     @relation(fields: [loHangId], references: [id])\\n  luotQuets    LuotQuet[]\\n}\\n\\nmodel LuotQuet {\\n  id         String     @id @default(uuid())\\n  uid        String\\n  thoiGian   DateTime   @default(now())\\n  diaChi_IP  String?\\n  lat        Float?\\n  lng        Float?\\n  ketQua     String // genuine | suspect | fake | expired\\n  thietBi    String?\\n  maDinhDanh MaDinhDanh @relation(fields: [uid], references: [uid])\\n}\\n\\nmodel CanhBao {\\n  id        String   @id @default(uuid())\\n  loai      String\\n  mucDo     String // low | medium | high\\n  moTa      String\\n  thoiGian  DateTime @default(now())\\n  trangThai String   @default(\\\"open\\\") // open | reviewing | closed\\n  // Tùy chọn liên kết đến MaDinhDanh hoặc SanPham\\n  uid       String?\\n}\\n\\nmodel ChungNhan {\\n  id          String   @id @default(uuid())\\n  loai        String // ISO | HACCP | GMP | CFS\\n  soChungNhan String\\n  ngayCap     DateTime\\n  ngayHetHan  DateTime\\n  toChucCap   String?\\n  sanPhamId   String?\\n  sanPham     SanPham? @relation(fields: [sanPhamId], references: [id])\\n  loHangId    String?\\n  loHang      LoHang?  @relation(fields: [loHangId], references: [id])\\n}\\n\\nmodel NguoiDung {\\n  id            String       @id @default(uuid())\\n  ten           String?\\n  soDienThoai   String?\\n  email         String       @unique\\n  matKhau       String\\n  vaiTro        String       @default(\\\"staff\\\") // admin | manufacturer | importer | consumer\\n  trangThai     String       @default(\\\"active\\\")\\n  doanhNghiepId String?\\n  doanhNghiep   DoanhNghiep? @relation(fields: [doanhNghiepId], references: [id])\\n}\\n\\nmodel KetQuaHauKiem {\\n  id                String   @id @default(uuid())\\n  doiTuongLayMau    String // doanhnghiep | nguoitieudung | doituongthu3 (quanlythitruong)\\n  coSoPhanTich      String\\n  ngayLayMau        DateTime\\n  ngayPhanTich      DateTime\\n  ketQua            String // dambao | khongdambao\\n  chiTieuVuotNguong String? // Danh sách các chỉ tiêu vượt ngưỡng (nếu có)\\n  fileDinhKem       String? // URL tới chứng nhận kết quả phân tích\\n  trangThaiXacMinh  String   @default(\\\"pending\\\") // pending | verified | rejected\\n  ghiChu            String?\\n  ngayTao           DateTime @default(now())\\n\\n  sanPhamId String?\\n  sanPham   SanPham? @relation(fields: [sanPhamId], references: [id])\\n\\n  loHangId String?\\n  loHang   LoHang? @relation(fields: [loHangId], references: [id])\\n}\\n\\nmodel NhatKy {\\n  id     String   @id @default(uuid())\\n  action String\\n  user   String\\n  role   String   @default(\\\"user\\\")\\n  ip     String   @default(\\\"Unknown\\\")\\n  time   DateTime @default(now())\\n  status String   @default(\\\"success\\\")\\n}\\n\","
+  }
+]

@@ -1,0 +1,135 @@
+Mã TC
+
+Tên Test Case
+
+Kết quả mong đợi
+
+Kết quả thực tế 
+
+Trạng thái
+
+Hình ảnh minh họa
+
+TC01
+
+Giao diện 
+
+Giao diện hiển thị menu dễ nhìn và rõ ràng 
+
+Bị ép hết ra góc
+
+FALSE
+
+TC02
+
+Sửa sản phẩm
+
+Sửa sản phẩm hiện ra bảng thông tin sản phẩm để sửa 1 thông tin bất kì và hiện 
+sửa thành công 1 lần ở cuối tên 
+
+Hiện đã sửa nhiều lần khi ấn vào nút sửa nhưng chưa sửa cái gì 
+
+TC03
+
+Xóa sản phẩm
+
+Xóa thành công và mất sản phẩm
+
+Không thể xóa sản phẩm
+
+TC04
+
+Thêm lô hàng 
+
+Có nút thêm lô hàng 
+
+Không có 
+
+TC05
+
+Hậu kiểm 
+
+Xóa và sửa sử dụng được 
+
+Xóa và sửa không sử dụng được 
+
+FALSE
+
+FALSE
+
+FALSE
+
+FALSE
+
+TC06
+
+Hậu kiểm 
+
+Upload kết quả khong có ảnh chỉ có tên thì không cho phép và kết quả phải là 
+Không đạt chuẩn 
+
+Vẫn cho upload không có ảnh và kết quả là đạt chuẩn
+
+FALSE
+
+TC07
+
+Hậu kiểm 
+
+Upload kết quả xong, kết quả được lưu lại
+
+Kết quả được lưu lại, nhưng khi trở về giao diện chính vào lại hậu kiểm thì kết quả vẫn chưa được lưu
+
+FALSE
+
+TC08
+
+Mã bảo mật
+
+Khi quét mã, yêu cầu cho phép sử dụng camera, nhận diện được hàng thật giả
+
+Đã nhận diện được mã QR, mã vạch sai, nhưng chưa nhận diện hàng thật
+
+FALSE
+
+TC09
+
+AI đối soát giấy tờ
+
+Upload được giấy tờ
+
+Chưa nhận diện được giấy tờ đúng hay sai
+
+TC10
+
+Thông tin doanh nghiệp
+
+Hiển thị thôn tin doanh nghiệp, không thể sửa hoặc xóa
+
+Bấm vào vẫn xóa được chữ bên trong
+
+TC11
+
+Bảo vệ thương hiệu
+
+Các nút bấm bật tắt được
+
+Phần button bật tắt cảnh báo không bật tắt được
+
+FALSE
+
+FALSE
+
+FALSE
+
+TC12
+
+Cài đặt hệ thống
+
+Chuyển ngôn ngữ tiếng việt qua tiếng anh
+
+Chưa chuyển được ngôn ngữ sang tiếng anh, nút bật âm máy quét không hoạt động 
+
+FALSE
+
+

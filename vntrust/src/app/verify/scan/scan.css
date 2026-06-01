@@ -1,0 +1,500 @@
+.s-scan-wrapper {
+  --cream: #F6F1E8;
+  --gold: #C8A557;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+.s-scan {
+  background: #050B14;
+  color: var(--cream);
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.s-scan-camera {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 45%, rgba(40, 60, 80, 0.7) 0%, rgba(15, 25, 40, 0.95) 100%),
+    linear-gradient(135deg, #142235 0%, #050B14 100%);
+  z-index: 0;
+}
+
+#qr-reader {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
+}
+#qr-reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+/* hide html5-qrcode ui if any appears */
+#qr-reader__dashboard_section_csr,
+#qr-reader__dashboard_section_csr span,
+#qr-reader__dashboard_section_csr button,
+#qr-reader__dashboard_section_swaplink,
+#qr-reader__status_span,
+#qr-reader canvas,
+#qr-reader__scan_region,
+#qr-reader__scan_region img,
+#qr-reader [class*="shaded"],
+#qr-reader > div:not(#qr-reader__camera_selection),
+#qr-reader::before,
+#qr-reader::after {
+  display: none !important;
+}
+/* keep video visible */
+#qr-reader video {
+  display: block !important;
+}
+
+.s-scan-camera::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(200, 165, 87, 0.02) 30px, rgba(200, 165, 87, 0.02) 31px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+
+
+.s-scan-top {
+  position: absolute;
+  top: 50px; /* will adjust for web */
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 3;
+}
+
+.s-scan-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(246, 241, 232, 0.12);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(246, 241, 232, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--cream);
+  padding: 0;
+  margin: 0;
+}
+
+.s-scan-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.s-scan-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--cream);
+}
+
+/* Viewfinder — QR mode (vuông) */
+.s-scan-finder {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(280px, 70vw);
+  height: min(280px, 70vw);
+  z-index: 2;
+  border-radius: 16px;
+  box-shadow: 0 0 0 9999px rgba(5, 11, 20, 0.78);
+  pointer-events: none;
+  transition: width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
+}
+
+/* Viewfinder — Barcode mode (chữ nhật ngang, 1D barcode aspect) */
+.s-scan-finder.barcode {
+  width: min(320px, 84vw);
+  height: min(120px, 32vw);
+  border-radius: 14px;
+}
+
+.s-scan-corner {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border: 2.5px solid var(--gold);
+  filter: drop-shadow(0 0 6px rgba(200, 165, 87, 0.5));
+}
+
+/* Barcode mode — corners nhỏ gọn hơn để vừa khung ngang */
+.s-scan-finder.barcode .s-scan-corner {
+  width: 24px;
+  height: 24px;
+}
+
+.s-scan-corner.tl {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: 12px;
+}
+
+.s-scan-corner.tr {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: 12px;
+}
+
+.s-scan-corner.bl {
+  bottom: 0;
+  left: 0;
+  border-right: none;
+  border-top: none;
+  border-bottom-left-radius: 12px;
+}
+
+.s-scan-corner.br {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: 12px;
+}
+
+.s-scan-line {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  box-shadow: 0 0 16px var(--gold);
+  animation: scanLine 2.4s ease-in-out infinite;
+}
+
+@keyframes scanLine {
+  0%, 100% { top: 8px; }
+  50% { top: calc(100% - 10px); }
+}
+
+.s-scan-hint {
+  position: absolute;
+  top: calc(38% - 160px);
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 3;
+  width: 300px;
+}
+
+.s-scan-hint-icon {
+  display: none; /* Hide the big icon to make it closer to a pill or simpler text like MoMo */
+}
+
+.s-scan-hint-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.s-scan-hint-text {
+  font-size: 14px;
+  color: var(--cream);
+  font-weight: 600;
+  margin-bottom: 4px;
+  background: rgba(200, 165, 87, 0.85); /* Gold pill background */
+  color: #050B14;
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(200, 165, 87, 0.3);
+}
+
+.s-scan-hint-sub {
+  font-size: 12px;
+  color: rgba(246, 241, 232, 0.8);
+  margin-top: 8px;
+}
+
+.s-scan-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  background: rgba(11, 22, 35, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.s-scan-options {
+  padding: 10px 8px calc(10px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid rgba(200, 165, 87, 0.15);
+  gap: 2px;
+}
+
+.s-scan-option {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 2px;
+  color: rgba(246, 241, 232, 0.45);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 10px;
+  font-weight: 500;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s-scan-option:hover {
+  color: #C8A557;
+}
+
+.s-scan-option.active {
+  color: #C8A557;
+  background: rgba(200, 165, 87, 0.15);
+  border-color: rgba(200, 165, 87, 0.3);
+}
+
+.s-scan-option svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Alert inside finder */
+.s-scan-alert {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  z-index: 10;
+  color: #333;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-family: 'Outfit', sans-serif;
+}
+
+.s-scan-alert-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ef4444; /* Danger text */
+}
+
+.s-scan-alert-content svg:first-child {
+  width: 16px;
+  height: 16px;
+  color: #ef4444; /* Danger info icon */
+  flex-shrink: 0;
+}
+
+.s-scan-alert-content button {
+  margin-left: auto;
+  background: none;
+  border: none;
+  padding: 4px;
+  color: #999;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s-scan-alert-content button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.s-scan-alert-action {
+  text-align: right;
+  font-size: 13px;
+  color: #ef4444;
+  margin-top: 8px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Custom Modal styles for camera permission */
+.s-scan-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 11, 20, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.s-scan-modal-card {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  animation: modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #1e293b;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+@keyframes modalScaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.s-scan-modal-header {
+  padding: 24px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.s-scan-modal-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s-scan-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+  color: #0f172a;
+}
+
+.s-scan-modal-body {
+  padding: 20px 24px;
+}
+
+.s-scan-modal-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #64748b;
+  margin: 0 0 16px;
+}
+
+.s-scan-instruction-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.s-scan-instruction-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.s-scan-instruction-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #004c4c;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.s-scan-instruction-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #334155;
+}
+
+.s-scan-instruction-text strong {
+  color: #0f172a;
+}
+
+.s-scan-modal-footer {
+  padding: 16px 24px 24px;
+  display: flex;
+  gap: 12px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+}
+
+.s-scan-modal-footer.solo {
+  justify-content: center;
+}
+
+.s-scan-modal-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  text-align: center;
+}
+
+.s-scan-modal-btn.primary {
+  background: #004c4c;
+  color: #ffffff;
+}
+
+.s-scan-modal-btn.primary:hover {
+  background: #003333;
+}
+
+.s-scan-modal-btn.secondary {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.s-scan-modal-btn.secondary:hover {
+  background: #cbd5e1;
+}
+
+

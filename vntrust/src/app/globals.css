@@ -1,0 +1,864 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE APP DESIGN TOKENS — VNTrust Mobile
+   Theo thiết kế vntrust_mobile.html
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  /* Brand colours */
+  --ink:            #0B1623;
+  --ink-2:          #142235;
+  --ink-3:          #1E3148;
+  --cream:          #F6F1E8;
+  --cream-2:        #EDE6D6;
+  --paper:          #FDFBF6;
+  --gold:           #C8A557;
+  --gold-dark:      #A6873E;
+  --gold-light:     #E4D2A1;
+  --verified:       #4A7C5C;
+  --verified-light: #DCE9DF;
+  --verified-bright:#6FB585;
+  --amber:          #C8893A;
+  --amber-light:    #F4E4CB;
+  --crimson:        #9F2D3E;
+  --crimson-bright: #D14C5F;
+  --crimson-light:  #F0D5DA;
+  --line:           rgba(11, 22, 35, 0.10);
+  --line-strong:    rgba(11, 22, 35, 0.18);
+  --muted:          rgba(246, 241, 232, 0.55);
+  --muted-dim:      rgba(246, 241, 232, 0.35);
+
+  /* Spacing */
+  --page-px: 16px;
+  --card-radius: 16px;
+  --bottom-nav-height: 64px;
+
+  /* Fonts */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans:    'Outfit', 'Inter', -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+}
+
+@theme inline {
+  --color-on-surface-variant: #e0e0e0;
+  --color-surface-variant: #142235;          /* ink-2 */
+  --color-outline: rgba(200,165,87,0.20);    /* gold subtle */
+  --color-background: #0B1623;               /* ink canonical (login) */
+  --color-surface: #142235;                  /* ink-2 raised cards */
+  --color-on-surface: #F6F1E8;               /* cream */
+  --color-primary: #C8A557;                  /* gold (login accent) */
+  --color-on-primary: #0B1623;               /* ink on gold */
+  --color-secondary: rgba(246,241,232,0.65); /* cream muted */
+
+  --font-headline: "Manrope", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Inter", sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  /* Background đồng bộ với trang đăng nhập: ink đen + gold glow + cream subtle */
+  background-color: #0B1623;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 50% 0%,  rgba(200,165,87,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(200,165,87,0.06) 0%, transparent 60%),
+    radial-gradient(circle 600px at 20% 20%,    rgba(200,165,87,0.04) 0%, transparent 70%),
+    radial-gradient(circle 800px at 80% 80%,    rgba(228,210,161,0.03) 0%, transparent 70%);
+  background-attachment: fixed;
+  color: #F6F1E8;
+  font-family: var(--font-body);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Authentic Glassmorphism mimicking the image */
+.glass-effect {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-panel {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.15);
+}
+
+.glass-card {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: linear-gradient(135deg, rgba(220, 235, 255, 0.1) 0%, rgba(150, 180, 220, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+.glass-card:hover {
+  background: linear-gradient(135deg, rgba(220, 235, 255, 0.15) 0%, rgba(150, 180, 220, 0.08) 100%);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.1);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.4);
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.pulse-ai {
+  box-shadow: 0 0 0 0 rgba(100, 220, 220, 0.3);
+  animation: pulse-ring 2s infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(100, 220, 220, 0.5); }
+  70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(100, 220, 220, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(100, 220, 220, 0); }
+}
+
+/* Fix for native select options looking white-on-white */
+select option {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LIGHT MODE — Clean professional white theme
+   ═══════════════════════════════════════════════════════════ */
+html.light-mode {
+  --color-background:          #f0f6ff;
+  --color-surface:             #ffffff;
+  --color-on-surface:          #0d1b2e;
+  --color-on-surface-variant:  #2d4a6e;
+  --color-primary:             #0369a1;
+  --color-outline:             rgba(3,105,161,0.2);
+}
+
+/* Body background */
+html.light-mode body {
+  background-color: #eef5fb;
+  background-image:
+    radial-gradient(circle at 10% 10%,  rgba(186,230,253,0.5) 0%, transparent 40%),
+    radial-gradient(circle at 90% 5%,   rgba(147,197,253,0.3) 0%, transparent 35%),
+    radial-gradient(circle at 50% 60%,  rgba(224,242,254,0.6) 0%, transparent 55%),
+    radial-gradient(circle at 85% 90%,  rgba(186,230,253,0.4) 0%, transparent 45%),
+    radial-gradient(circle at 10% 90%,  rgba(147,197,253,0.3) 0%, transparent 40%);
+  color: #0d1b2e;
+}
+
+/* ─── Text colours ─────────────────────────────── */
+html.light-mode .text-white       { color: #0d1b2e !important; }
+html.light-mode .text-slate-50    { color: #0f2233 !important; }
+html.light-mode .text-slate-100   { color: #152e47 !important; }
+html.light-mode .text-slate-200   { color: #1e3a5f !important; }
+html.light-mode .text-slate-300   { color: #2d5479 !important; }
+html.light-mode .text-slate-400   { color: #4a7a9b !important; }
+html.light-mode .text-slate-500   { color: #5e8fa8 !important; }
+html.light-mode .text-slate-600   { color: #4a7a9b !important; }
+
+/* Cyan/teal accent → ocean blue */
+html.light-mode .text-cyan-400    { color: #0369a1 !important; }
+html.light-mode .text-cyan-300    { color: #0284c7 !important; }
+html.light-mode .text-cyan-200    { color: #0369a1 !important; }
+html.light-mode .text-cyan-100    { color: #0e7490 !important; }
+html.light-mode .text-sky-400     { color: #0369a1 !important; }
+html.light-mode .text-blue-300    { color: #1d4ed8 !important; }
+html.light-mode .text-blue-400    { color: #1d4ed8 !important; }
+
+/* Status colours — deeper for light bg */
+html.light-mode .text-emerald-400 { color: #065f46 !important; }
+html.light-mode .text-emerald-300 { color: #047857 !important; }
+html.light-mode .text-green-400   { color: #166534 !important; }
+html.light-mode .text-amber-400   { color: #92400e !important; }
+html.light-mode .text-orange-400  { color: #9a3412 !important; }
+html.light-mode .text-red-400     { color: #991b1b !important; }
+html.light-mode .text-red-300     { color: #991b1b !important; }
+html.light-mode .text-purple-400  { color: #6b21a8 !important; }
+html.light-mode .text-violet-400  { color: #5b21b6 !important; }
+html.light-mode .text-indigo-400  { color: #3730a3 !important; }
+html.light-mode .text-pink-400    { color: #9d174d !important; }
+
+/* ─── Gradient text fix (bg-clip-text text-transparent) ─── */
+html.light-mode .bg-clip-text.text-transparent,
+html.light-mode [class*="bg-gradient"][class*="text-transparent"] {
+  -webkit-text-fill-color: #0d1b2e !important;
+  color: #0d1b2e !important;
+  background: none !important;
+}
+
+/* ─── Glass panels & cards ─────────────────────── */
+html.light-mode .glass-panel {
+  background: linear-gradient(160deg, rgba(255,255,255,0.92) 0%, rgba(240,248,255,0.85) 100%) !important;
+  border: 1px solid rgba(3,105,161,0.18) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+}
+
+html.light-mode .glass-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(237,247,255,0.88) 100%) !important;
+  border: 1px solid rgba(3,105,161,0.2) !important;
+  box-shadow: 0 6px 24px rgba(0,30,80,0.08), inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+html.light-mode .glass-card:hover {
+  background: linear-gradient(145deg, #ffffff 0%, rgba(224,242,254,0.95) 100%) !important;
+  border-color: rgba(3,105,161,0.35) !important;
+  box-shadow: 0 10px 32px rgba(0,30,80,0.12) !important;
+}
+
+html.light-mode .glass-effect {
+  background: rgba(255,255,255,0.82) !important;
+  border: 1px solid rgba(3,105,161,0.2) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+}
+
+/* ─── Arbitrary dark bg overrides ──────────────── */
+html.light-mode [class*="bg-[#0"] {
+  background-color: rgba(255,255,255,0.88) !important;
+}
+html.light-mode .bg-white\/5    { background: rgba(255,255,255,0.55) !important; }
+html.light-mode .bg-white\/10   { background: rgba(255,255,255,0.7)  !important; }
+html.light-mode .bg-white\/20   { background: rgba(255,255,255,0.8)  !important; }
+html.light-mode .bg-black\/50   { background: rgba(0,0,0,0.15)       !important; }
+html.light-mode .bg-black\/40   { background: rgba(0,0,0,0.12)       !important; }
+html.light-mode .border-white\/10 { border-color: rgba(3,105,161,0.15) !important; }
+html.light-mode .border-white\/20 { border-color: rgba(3,105,161,0.22) !important; }
+
+/* ─── Navbar ────────────────────────────────────── */
+html.light-mode nav {
+  background: rgba(230,245,255,0.92) !important;
+  border-bottom: 1px solid rgba(3,105,161,0.15) !important;
+  backdrop-filter: blur(20px);
+}
+html.light-mode nav a,
+html.light-mode nav span,
+html.light-mode nav button { color: #0d1b2e !important; }
+html.light-mode nav a.text-blue-100\/70 { color: #1e4976 !important; }
+
+/* ─── Badge & pill tinted backgrounds ──────────── */
+html.light-mode .bg-cyan-500\/20    { background: rgba(3,105,161,0.12)  !important; }
+html.light-mode .bg-emerald-500\/20 { background: rgba(6,95,70,0.1)     !important; }
+html.light-mode .bg-amber-500\/20   { background: rgba(146,64,14,0.1)   !important; }
+html.light-mode .bg-red-500\/20     { background: rgba(153,27,27,0.1)   !important; }
+html.light-mode .bg-purple-500\/20  { background: rgba(107,33,168,0.1)  !important; }
+html.light-mode .bg-blue-500\/20    { background: rgba(29,78,216,0.1)   !important; }
+
+/* ─── Buttons ───────────────────────────────────── */
+html.light-mode button.bg-white\/10 {
+  background: rgba(3,105,161,0.1) !important;
+  color: #0d1b2e !important;
+}
+
+/* ─── Charts & stat text ────────────────────────── */
+html.light-mode .text-4xl,
+html.light-mode .text-3xl,
+html.light-mode .text-2xl,
+html.light-mode .text-xl { color: #0d1b2e; }
+
+/* ─── Inputs ─────────────────────────────────────── */
+html.light-mode input,
+html.light-mode textarea,
+html.light-mode select {
+  background: rgba(255,255,255,0.9) !important;
+  color: #0d1b2e !important;
+  border-color: rgba(3,105,161,0.3) !important;
+}
+html.light-mode input::placeholder,
+html.light-mode textarea::placeholder { color: #6b97b5 !important; }
+html.light-mode select option {
+  background-color: #f0f8ff;
+  color: #0d1b2e;
+}
+
+/* ─── Scrollbar ──────────────────────────────────── */
+html.light-mode ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+html.light-mode ::-webkit-scrollbar-thumb { background: rgba(3,105,161,0.25); }
+html.light-mode ::-webkit-scrollbar-thumb:hover { background: rgba(3,105,161,0.45); }
+
+/* ─── Dividers ───────────────────────────────────── */
+html.light-mode .divide-white\/10 > * + *,
+html.light-mode [class*="border-white"] { border-color: rgba(3,105,161,0.15) !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   DESIGN TOKEN CLASS OVERRIDES — @theme inline compiles
+   these as STATIC values, not CSS vars. Must override directly.
+   ═══════════════════════════════════════════════════════════ */
+
+/* text-on-surface  →  was #ffffff (white), override to dark navy */
+html.light-mode .text-on-surface           { color: #0d1b2e !important; }
+
+/* text-on-surface-variant  →  was #e0e0e0 (light gray), barely visible on light bg */
+html.light-mode .text-on-surface-variant   { color: #2d4a6e !important; }
+
+/* text-primary  →  was #52c2c2 (cyan), override to ocean blue */
+html.light-mode .text-primary              { color: #0369a1 !important; }
+
+/* text-secondary  →  was #a3b8cc (light blue-gray), too faint */
+html.light-mode .text-secondary            { color: #4a7a9b !important; }
+
+/* text-tertiary — undefined in theme but used in verify page cards */
+html.light-mode .text-tertiary             { color: #0e7490 !important; }
+
+/* Surface containers — cards/panels backgrounds */
+html.light-mode .bg-surface-container-lowest,
+html.light-mode [class*="bg-surface-container"] {
+  background: rgba(255,255,255,0.88) !important;
+}
+html.light-mode .bg-surface-container-high {
+  background: rgba(224,242,254,0.85) !important;
+}
+
+/* bg-primary, bg-secondary, bg-tertiary tinted */
+html.light-mode .bg-primary\/10   { background: rgba(3,105,161,0.1) !important; }
+html.light-mode .bg-tertiary\/10  { background: rgba(14,116,144,0.1) !important; }
+html.light-mode .bg-secondary\/10 { background: rgba(74,122,155,0.1) !important; }
+
+/* border-outline-variant → override to light blue */
+html.light-mode .border-outline-variant\/20,
+html.light-mode [class*="border-outline-variant"] {
+  border-color: rgba(3,105,161,0.18) !important;
+}
+
+/* opacity-60 wrapper text on light bg is still too faint — boost */
+html.light-mode .opacity-60 .text-on-surface,
+html.light-mode .opacity-60 span { color: #4a7a9b !important; }
+
+/* Fix: any element with white/near-white text inside a light bg */
+html.light-mode [style*="color: #fff"],
+html.light-mode [style*="color: white"],
+html.light-mode [style*="color: rgb(255"] { color: #0d1b2e !important; }
+
+/* ─── Input / Select / Textarea text visibility in light mode ──── */
+html.light-mode input:not([type="radio"]):not([type="checkbox"]):not([type="file"]),
+html.light-mode select,
+html.light-mode textarea {
+  color: #0d1b2e !important;
+  background-color: rgba(255,255,255,0.85) !important;
+  border-color: rgba(3,105,161,0.25) !important;
+}
+
+html.light-mode input::placeholder,
+html.light-mode textarea::placeholder {
+  color: rgba(13,27,46,0.45) !important;
+}
+
+/* Date input calendar icon in light mode */
+html.light-mode input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6) sepia(1) saturate(3) hue-rotate(175deg);
+  opacity: 0.7;
+}
+
+/* Number input spin buttons */
+html.light-mode input[type="number"]::-webkit-inner-spin-button,
+html.light-mode input[type="number"]::-webkit-outer-spin-button {
+  filter: invert(0.5);
+}
+
+/* MOBILE APP UI COMPONENTS */
+
+.mobile-page { position: relative; z-index: 1; min-height: calc(100vh - 64px); padding-bottom: 88px; }
+
+.mobile-card {
+  background: linear-gradient(180deg, rgba(246,241,232,0.05) 0%, rgba(246,241,232,0.02) 100%);
+  border: 1px solid rgba(200, 165, 87, 0.15);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.mobile-hero-card {
+  background: linear-gradient(135deg, #0B1623 0%, #142235 60%, #1E3148 100%);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  color: #F6F1E8;
+}
+.mobile-hero-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(200,165,87,0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.mobile-badge-verified {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px 4px 7px;
+  background: rgba(74,124,92,0.2); border: 1px solid rgba(111,181,133,0.35);
+  border-radius: 100px; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: #94CFA8;
+}
+.mobile-badge-fake {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  background: rgba(159,45,62,0.2); border: 1px solid rgba(209,76,95,0.35);
+  border-radius: 100px; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: #D14C5F;
+}
+.mobile-badge-pending {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  background: rgba(200,137,58,0.15); border: 1px solid rgba(200,137,58,0.3);
+  border-radius: 100px; font-size: 10px; font-weight: 600; color: #C8893A;
+}
+
+.gold-pulse-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #C8A557; box-shadow: 0 0 0 4px rgba(200,165,87,0.2);
+  animation: gold-pulse 2.4s ease-in-out infinite;
+}
+@keyframes gold-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(200,165,87,0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(200,165,87,0); }
+}
+
+.verified-pulse-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #6FB585; box-shadow: 0 0 0 3px rgba(111,181,133,0.3);
+  animation: verified-pulse 2s ease-in-out infinite;
+}
+@keyframes verified-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(111,181,133,0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(111,181,133,0); }
+}
+
+.mobile-btn-gold {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, #E4D2A1, #C8A557);
+  color: #0B1623; border: none; border-radius: 14px;
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-btn-gold:active { transform: scale(0.98); opacity: 0.9; }
+
+.font-display { font-family: 'Fraunces', Georgia, serif; }
+.font-sans-mobile { font-family: 'Outfit', 'Inter', sans-serif; }
+.font-mono-mobile { font-family: 'JetBrains Mono', monospace; font-feature-settings: 'tnum'; }
+
+@keyframes scanLine {
+  0%, 100% { top: 8px; }
+  50% { top: calc(100% - 10px); }
+}
+.scan-line-anim { animation: scanLine 2.4s ease-in-out infinite; }
+
+@keyframes blink-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.blink-dot { animation: blink-dot 1.2s ease-in-out infinite; }
+
+.tap-feedback { -webkit-tap-highlight-color: transparent; transition: transform 0.1s, opacity 0.1s; }
+.tap-feedback:active { transform: scale(0.97); opacity: 0.85; }
+
+.gold-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,165,87,0.3), transparent);
+  margin: 16px 0;
+}
+
+.mobile-input {
+  width: 100%; padding: 12px 14px;
+  background: rgba(246,241,232,0.06); border: 1px solid rgba(200,165,87,0.2);
+  border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 14px;
+  color: #F6F1E8; outline: none; transition: border-color 0.2s;
+}
+.mobile-input::placeholder { color: rgba(246,241,232,0.35); }
+.mobile-input:focus { border-color: #C8A557; }
+
+.mobile-chip {
+  padding: 6px 12px; border: 1px solid rgba(200,165,87,0.25); border-radius: 100px;
+  font-size: 11px; font-weight: 500; color: rgba(246,241,232,0.55);
+  cursor: pointer; transition: all 0.2s; background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-chip.active {
+  background: rgba(200,165,87,0.15); border-color: #C8A557; color: #C8A557;
+}
+
+.mobile-role-card {
+  display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+  border: 1px solid rgba(200,165,87,0.15); border-radius: 14px;
+  background: linear-gradient(180deg, rgba(246,241,232,0.03), rgba(246,241,232,0.01));
+  cursor: pointer; transition: border-color 0.25s, transform 0.25s;
+  -webkit-tap-highlight-color: transparent; text-decoration: none; color: #F6F1E8;
+}
+.mobile-role-card:active { border-color: #C8A557; transform: translateX(2px); }
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  RESPONSIVE GLOBAL OVERRIDES — auto-fit mobile (≤ 767px)         ║
+   ║  Áp dụng cho tất cả các trang để vừa khít màn hình điện thoại.   ║
+   ║  Không cần sửa từng page, chỉ override các pattern thường gặp.   ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
+/* Base — chặn horizontal scroll toàn cục */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Container trong normal flow giới hạn viewport — KHÔNG áp cho
+   position:absolute / fixed / sticky (popover, dropdown, modal).
+   Các element absolute/fixed cần max-width theo parent positioned,
+   không phải viewport. */
+body *:not([class*="absolute"]):not([class*="fixed"]):not([class*="sticky"]) {
+  max-width: 100vw;
+}
+
+/* Cho phép một số element vẫn cần overflow nội bộ */
+body table,
+body pre,
+body code,
+body [data-allow-overflow],
+body [class*="absolute"],
+body [class*="fixed"] {
+  max-width: none;
+}
+
+@media (max-width: 767px) {
+
+  /* ── A. Bỏ giới hạn pixel cứng quá lớn ──────────────────────────── */
+  /* Tailwind arbitrary widths/heights lớn hơn 100vw → cap về 100% */
+  [class*="max-w-[1"]:not([class*="max-w-[100%"]),
+  [class*="max-w-[2"]:not([class*="max-w-[20%"]):not([class*="max-w-[25%"]),
+  [class*="w-[1"]:not([class*="w-[10%"]):not([class*="w-[100%"]):not([class*="w-[1px"]):not([class*="w-[1rem"]):not([class*="w-[1.5"]),
+  [class*="min-w-[1"]:not([class*="min-w-[100%"]):not([class*="min-w-[10%"]) {
+    max-width: 100vw !important;
+  }
+
+  /* ── B. Padding container quá lớn → vừa với mobile ──────────────── */
+  .p-8, .p-10, .p-12, .p-16, .p-20,
+  [class*="lg:p-1"], [class*="xl:p-1"],
+  [class*="lg:p-2"], [class*="xl:p-2"] {
+    padding: 0.75rem !important;
+  }
+  .px-8, .px-10, .px-12, .px-16,
+  [class*="lg:px-1"], [class*="xl:px-1"] {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  .py-8, .py-10, .py-12, .py-16 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  /* ── C. Font size cap — text quá lớn trên mobile khó đọc ────────── */
+  .text-4xl { font-size: 1.875rem !important; line-height: 1.1 !important; }
+  .text-5xl { font-size: 2rem !important; line-height: 1.05 !important; }
+  .text-6xl { font-size: 2.25rem !important; line-height: 1.05 !important; }
+  .text-7xl { font-size: 2.5rem !important; line-height: 1 !important; }
+  .text-8xl, .text-9xl { font-size: 2.75rem !important; line-height: 1 !important; }
+
+  /* ── D. Grid → tự stack 1 cột trên mobile ───────────────────────── */
+  /* Một số trang có grid không có responsive prefix → ép thành 1 cột */
+  [class*="grid-cols-12"]:not(.sm\:grid-cols-1):not(.md\:grid-cols-1),
+  [class*="grid-cols-1"][class*="0"],
+  [class*="grid-cols-9"],
+  [class*="grid-cols-8"],
+  [class*="grid-cols-7"],
+  [class*="grid-cols-6"]:not([class*="sm:grid-cols"]):not([class*="md:grid-cols"]) {
+    grid-template-columns: 1fr !important;
+  }
+  /* grid-cols-4/5 → 2 cột mobile (vừa đẹp cho stats) */
+  [class*="grid-cols-5"]:not([class*="sm:grid-cols"]):not([class*="md:grid-cols"]),
+  [class*="grid-cols-4"]:not([class*="sm:grid-cols"]):not([class*="md:grid-cols"]) {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  /* grid-cols-3 → 2 cột mobile */
+  [class*="grid-cols-3"]:not([class*="sm:grid-cols"]):not([class*="md:grid-cols"]) {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* ── E. Tables → wrap horizontal scroll ─────────────────────────── */
+  table { display: block; overflow-x: auto; max-width: 100%; white-space: nowrap; }
+  thead, tbody, tfoot, tr { width: max-content; min-width: 100%; }
+
+  /* ── F. Modals — chỉ áp dụng cho modal overlay (fixed + inset), tránh dropdown ─ */
+  .fixed.inset-0 > [class*="max-w-md"],
+  .fixed.inset-0 > [class*="max-w-lg"],
+  .fixed.inset-0 > [class*="max-w-xl"],
+  .fixed.inset-0 > [class*="max-w-2xl"],
+  .fixed.inset-0 > [class*="max-w-3xl"],
+  .fixed.inset-0 > [class*="max-w-4xl"],
+  [role="dialog"] [class*="max-w-md"],
+  [role="dialog"] [class*="max-w-lg"],
+  [role="dialog"] [class*="max-w-xl"],
+  [role="dialog"] [class*="max-w-2xl"],
+  [role="dialog"] [class*="max-w-3xl"],
+  [role="dialog"] [class*="max-w-4xl"] {
+    max-width: calc(100vw - 16px) !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+  }
+
+  /* ── G. Sidebar / sticky panels (full-width) — CHỈ áp khi không phải dropdown ─
+       Loại trừ position:absolute (dropdown menu, popover) và position:fixed (modal toolbar).
+       Rule này dành cho sidebar nội dung trang. */
+  :not([class*="absolute"]):not([class*="fixed"])[class*="w-64"]:not([class*="absolute"]),
+  :not([class*="absolute"]):not([class*="fixed"])[class*="w-72"]:not([class*="absolute"]),
+  [class*="w-80"]:not([class*="absolute"]):not([class*="fixed"]),
+  [class*="w-96"]:not([class*="absolute"]):not([class*="fixed"]) {
+    max-width: 100vw !important;
+  }
+
+  /* ── H. Long flex rows — wrap to multi-line ─────────────────────── */
+  [class*="flex-row"]:not([class*="flex-col"]):not([class*="md:flex-row"]) {
+    flex-wrap: wrap;
+  }
+
+  /* ── I. Avatar img/div cố định lớn → cap. KHÔNG áp cho map/chart container. */
+  div[class*="rounded-full"][class*="w-32"][class*="h-32"],
+  div[class*="rounded-full"][class*="w-40"][class*="h-40"],
+  div[class*="rounded-full"][class*="w-48"][class*="h-48"],
+  img[class*="w-32"][class*="h-32"],
+  img[class*="w-40"][class*="h-40"] {
+    max-width: 96px !important;
+    max-height: 96px !important;
+  }
+
+  /* ── J. Cards 3D / wide hero — giảm chiều cao ───────────────────── */
+  [class*="h-[400px"], [class*="h-[500px"], [class*="h-[600px"], [class*="h-[700px"] {
+    height: auto !important;
+    min-height: 240px !important;
+    max-height: 50vh !important;
+  }
+
+  /* ── K. Mobile bottom nav padding — tránh che content ───────────── */
+  main { padding-bottom: 80px !important; }
+
+  /* ── L. Material symbols quá lớn ────────────────────────────────── */
+  .material-symbols-outlined.text-7xl,
+  .material-symbols-outlined.text-8xl,
+  .material-symbols-outlined.text-9xl {
+    font-size: 56px !important;
+  }
+}
+
+/* ── Tablet (768–1023px) — soft adjustments ──────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  [class*="grid-cols-12"]:not([class*="lg:grid-cols"]):not([class*="md:grid-cols"]) {
+    grid-template-columns: repeat(6, 1fr) !important;
+  }
+  .text-5xl { font-size: 2.5rem !important; }
+  .text-6xl { font-size: 3rem !important; }
+}
+
+/* ── Touch device — đảm bảo tap target ≥ 44px ──────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  button, a, [role="button"], input, select, textarea {
+    min-height: 36px;
+  }
+  /* Mobile bottom nav items giữ ≥ 48px tap target */
+  .mobile-bottom-nav a, .mobile-bottom-nav button {
+    min-height: 48px;
+  }
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  MOBILE-ONLY FRAME LAYOUT (Flutter Web style)                    ║
+   ║  Trên desktop: render như mobile app, fixed width 430px,         ║
+   ║  căn giữa với background ink ngoài. KHÔNG responsive.            ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
+:root {
+  --vntrust-frame-width: 430px; /* iPhone 14 Pro Max width */
+  --vntrust-frame-half: 215px;
+}
+
+.vntrust-mobile-frame {
+  width: 100%;
+  max-width: var(--vntrust-frame-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background-color: #0B1623;
+}
+
+/* Desktop (≥600px): hiển thị frame mobile centered + outside dark */
+@media (min-width: 600px) {
+  html, body {
+    /* Background "ngoài" frame: ink đậm hơn + gold subtle */
+    background-color: #050A14 !important;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200,165,87,0.10) 0%, transparent 70%),
+      radial-gradient(ellipse 70% 50% at 50% 100%, rgba(200,165,87,0.05) 0%, transparent 70%) !important;
+    background-attachment: fixed;
+  }
+
+  .vntrust-mobile-frame {
+    /* Frame có viền gold subtle + shadow */
+    border-left: 1px solid rgba(200,165,87,0.18);
+    border-right: 1px solid rgba(200,165,87,0.18);
+    box-shadow:
+      0 0 0 1px rgba(200,165,87,0.06),
+      0 0 100px rgba(200,165,87,0.12),
+      0 8px 40px rgba(0,0,0,0.4);
+    background-color: #0B1623;
+    background-image:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(200,165,87,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(200,165,87,0.06) 0%, transparent 60%);
+  }
+
+  /* Top bar và bottom nav (position: fixed) — constraint về frame width centered */
+  .mobile-top-bar,
+  .mobile-bottom-nav {
+    left: max(0px, calc(50vw - var(--vntrust-frame-half))) !important;
+    right: max(0px, calc(50vw - var(--vntrust-frame-half))) !important;
+    max-width: var(--vntrust-frame-width);
+  }
+
+  /* Body — không cho horizontal scroll khi frame nhỏ hơn viewport */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Modals/drawers full-screen → vẫn centered trong viewport, không trong frame */
+  /* (giữ nguyên — modal floating override mọi container) */
+}
+
+/* Tablet 600–767: vẫn hiển thị frame nhưng cho phép rộng hơn */
+@media (min-width: 600px) and (max-width: 767px) {
+  :root {
+    --vntrust-frame-width: 100%;
+    --vntrust-frame-half: 50%;
+  }
+}
+
+/* Mobile <600px: frame full-width, không có viền — như native mobile */
+@media (max-width: 599px) {
+  .vntrust-mobile-frame {
+    border: none;
+    box-shadow: none;
+    background-image: none;
+  }
+}
+
+/* MOBILE FRAME — Override một số responsive rules global trước đó */
+@media (max-width: 767px) {
+  /* Trong mobile frame, main không cần padding-bottom 80px nữa
+     vì mobile-bottom-nav đã có */
+  .vntrust-mobile-frame main {
+    padding-bottom: 80px !important;
+  }
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  RESPONSIVE-APP WRAPPER (admin / manufacturer / importer)        ║
+   ║  Full responsive desktop + mobile (KHÔNG frame 430px centered)   ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.vntrust-responsive-app {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Trên desktop ≥600px (responsive mode):
+   - Body bg KHÔNG đậm bên ngoài (vì frame không tồn tại)
+   - Fixed bars hiển thị FULL viewport (không centered) */
+@media (min-width: 600px) {
+  /* Khi wrapper là responsive-app, body bg quay về ink + gold glow nội bộ
+     (override rule responsive-mode CSS body ngoài frame) */
+  body:has(.vntrust-responsive-app) {
+    background-color: #0B1623 !important;
+    background-image:
+      radial-gradient(ellipse 70% 50% at 50% 0%,  rgba(200,165,87,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(200,165,87,0.06) 0%, transparent 60%) !important;
+  }
+  /* Khi responsive-app: mobile-top-bar và mobile-bottom-nav (nếu render <lg)
+     vẫn full width — KHÔNG centered theo frame */
+  .vntrust-responsive-app .mobile-top-bar,
+  .vntrust-responsive-app .mobile-bottom-nav {
+    left: 0 !important;
+    right: 0 !important;
+    max-width: none !important;
+  }
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  MOBILE FIT — viewport ≤480px (rewrite v2 — safer)               ║
+   ║  Không phá dropdown/map/panels position:absolute                 ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
+@media (max-width: 480px) {
+  /* A. Cho phép flex/grid items shrink */
+  *, *::before, *::after { min-width: 0; }
+
+  /* B. Word-break cho text dài; loại trừ SVG/icon/code/chart */
+  body, body * { word-break: break-word; overflow-wrap: anywhere; }
+  code, pre, [class*="font-mono"],
+  svg, svg *, .material-symbols-outlined,
+  [data-no-break], [role="img"] {
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+  svg text, svg tspan {
+    word-break: keep-all !important;
+    white-space: pre !important;
+  }
+  code, pre, [class*="font-mono"] { overflow-x: auto; }
+
+  /* C. Modal overlay (.fixed.inset-0 hoặc [role=dialog]) — co theo viewport */
+  .fixed.inset-0 > [class*="max-w-"]:not([class*="absolute"]),
+  [role="dialog"] [class*="max-w-"] {
+    max-width: calc(100vw - 16px) !important;
+  }
+
+  /* D. Tables — KHÔNG ép display:block (sẽ phá table layout, chữ dọc).
+       Thay vào đó: wrap parent overflow-x scrollable, keep cells nowrap. */
+  table {
+    font-size: 11px;
+    max-width: 100%;
+  }
+  table th, table td {
+    padding: 6px 8px;
+    white-space: nowrap !important;  /* tránh chữ break dọc theo từng ký tự */
+    word-break: keep-all !important;
+  }
+  /* Parent của table tự động scroll-x (modern browsers support :has()) */
+  div:has(> table),
+  .table-wrap,
+  [class*="overflow-x-auto"]:has(> table) {
+    overflow-x: auto !important;
+    max-width: 100% !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* E. Grid 2-col tự stack — chỉ áp khi KHÔNG có responsive prefix */
+  [class*="grid-cols-2"]:not([class*="sm:grid"]):not([class*="md:grid"]):not([class*="lg:grid"]):not([class*="xl:grid"]) {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* F. Heading siêu lớn cap (kèm context h1/h2 để không dính component nhỏ) */
+  h1[class*="text-4xl"], h1[class*="text-5xl"], h1[class*="text-6xl"] { font-size: 1.6rem !important; }
+  h2[class*="text-3xl"], h2[class*="text-4xl"] { font-size: 1.3rem !important; }
+
+  /* G. Padding container outer giảm — chỉ wrapper page */
+  main > .p-8, main > .p-10, main > .p-12,
+  main > div > .p-8, main > div > .p-10, main > div > .p-12 {
+    padding: 0.75rem !important;
+  }
+
+  /* H. Mobile bottom nav clearance */
+  main { padding-bottom: 80px !important; }
+}

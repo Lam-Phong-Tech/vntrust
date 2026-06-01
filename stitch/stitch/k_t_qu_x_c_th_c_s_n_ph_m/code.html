@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Verification Results | VeriGuard AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#434654",
+                    "tertiary-fixed-dim": "#66df75",
+                    "on-primary-container": "#00eaea",
+                    "surface-variant": "#e1e3e4",
+                    "outline": "#737685",
+                    "inverse-primary": "#00dddd",
+                    "on-secondary-container": "#5f6368",
+                    "surface-tint": "#006a6a",
+                    "background": "#f8f9fa",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2e3132",
+                    "surface": "#f8f9fa",
+                    "surface-container-low": "#f3f4f5",
+                    "secondary-fixed-dim": "#c3c7cc",
+                    "primary-fixed": "#00fbfb",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#dde0e5",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#002020",
+                    "on-tertiary-fixed-variant": "#00531a",
+                    "inverse-on-surface": "#f0f1f2",
+                    "on-secondary-fixed": "#181c20",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#d9dadb",
+                    "surface-bright": "#f8f9fa",
+                    "on-surface": "#191c1d",
+                    "on-background": "#191c1d",
+                    "tertiary-fixed": "#83fc8e",
+                    "secondary": "#5b5f63",
+                    "primary-container": "#006666",
+                    "primary-fixed-dim": "#00dddd",
+                    "secondary-fixed": "#e0e3e8",
+                    "outline-variant": "#c3c6d6",
+                    "on-primary-fixed-variant": "#004f4f",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#002106",
+                    "primary": "#004c4c",
+                    "tertiary": "#004f18",
+                    "on-secondary-fixed-variant": "#43474c",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container": "#edeeef",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#006a23",
+                    "on-tertiary-container": "#73ec80",
+                    "surface-container-high": "#e7e8e9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ghost-border {
+            border: 1px solid rgba(115, 118, 133, 0.15);
+        }
+        .pulse-glow {
+            box-shadow: 0 0 15px rgba(0, 221, 221, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/80 backdrop-blur-xl shadow-sm">
+<div class="flex justify-between items-center max-w-full px-8 py-4 font-headline antialiased tracking-tight">
+<div class="text-2xl font-black tracking-tighter text-blue-700 uppercase">VeriGuard AI</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-blue-700 font-bold border-b-2 border-blue-700 pb-1" href="#">Verification</a>
+<a class="text-slate-600 hover:text-blue-600 transition-colors" href="#">Supply Chain</a>
+<a class="text-slate-600 hover:text-blue-600 transition-colors" href="#">Dashboard</a>
+<a class="text-slate-600 hover:text-blue-600 transition-colors" href="#">Enterprise</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="flex gap-2 mr-4">
+<button class="p-2 hover:bg-slate-100/50 rounded-full transition-all duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-100/50 rounded-full transition-all duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+</button>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2 rounded-lg font-semibold scale-98 active:opacity-80 transition-transform">Secure Login</button>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
+<!-- Hero: Verification Status -->
+<section class="relative mb-12">
+<div class="flex flex-col md:flex-row items-center gap-8 bg-surface-container-lowest p-8 rounded-xl ghost-border overflow-hidden">
+<div class="absolute top-0 right-0 opacity-5 pointer-events-none translate-x-1/4 -translate-y-1/4">
+<span class="material-symbols-outlined text-[300px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="relative w-32 h-32 md:w-48 md:h-48 flex items-center justify-center bg-tertiary-container/10 rounded-full">
+<span class="material-symbols-outlined text-tertiary-container text-7xl md:text-9xl" style="font-variation-settings: 'FILL' 1;">verified</span>
+<div class="absolute inset-0 rounded-full border-4 border-tertiary-container animate-pulse opacity-20"></div>
+</div>
+<div class="flex-1 text-center md:text-left">
+<div class="flex flex-wrap justify-center md:justify-start gap-2 mb-4">
+<span class="px-3 py-1 bg-tertiary-container text-on-tertiary-container rounded-full text-xs font-bold uppercase tracking-widest font-label">Official Authentication</span>
+<span class="px-3 py-1 bg-surface-variant text-on-surface-variant rounded-full text-xs font-bold font-label tracking-widest uppercase">ID: VG-8829-01X</span>
+</div>
+<h1 class="text-4xl md:text-6xl font-headline font-extrabold tracking-tighter text-on-surface mb-2">Verified Authentic</h1>
+<p class="text-on-surface-variant max-w-xl text-lg">This item has been successfully scanned and validated against the VeriGuard Immutable Ledger. Origin and provenance are 100% confirmed.</p>
+</div>
+</div>
+</section>
+<!-- Product Data Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+<!-- Product Specs -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between min-h-[200px]">
+<span class="text-xs font-label text-outline uppercase tracking-widest mb-4">Product Identity</span>
+<div>
+<h2 class="text-2xl font-headline font-bold mb-1">Quantum S-7 Chronograph</h2>
+<p class="text-on-surface-variant font-body">Limited Edition Sapphire Series</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest ghost-border p-6 rounded-xl">
+<span class="text-xs font-label text-outline uppercase tracking-widest mb-4 block">Manufacturing Logs</span>
+<div class="space-y-4">
+<div>
+<p class="text-[10px] uppercase text-outline mb-1">Batch Identifier</p>
+<p class="font-bold text-on-surface font-headline">B-992-ALPHA-Z</p>
+</div>
+<div>
+<p class="text-[10px] uppercase text-outline mb-1">Manufacture Date</p>
+<p class="font-bold text-on-surface font-headline">October 14, 2024</p>
+</div>
+<div class="pt-4 border-t border-outline-variant/20">
+<div class="flex items-center gap-2 text-primary font-bold text-sm">
+<span class="material-symbols-outlined text-sm">link</span>
+<span>VIEW BLOCKCHAIN HASH</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Digital Twin Timeline -->
+<div class="md:col-span-5 bg-surface-container-low rounded-xl p-8">
+<div class="flex justify-between items-start mb-8">
+<h3 class="font-headline font-bold text-xl">Digital Twin Journey</h3>
+<span class="material-symbols-outlined text-primary-fixed-dim">hub</span>
+</div>
+<div class="relative space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-outline-variant/30">
+<div class="relative flex gap-6 items-start">
+<div class="z-10 w-6 h-6 bg-tertiary-container rounded-full flex items-center justify-center ring-4 ring-surface-container-low">
+<span class="material-symbols-outlined text-xs text-white" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div>
+<p class="text-xs font-bold text-primary uppercase">Current State</p>
+<p class="font-bold text-on-surface">Verified by End-User</p>
+<p class="text-xs text-on-surface-variant">Today • 09:42 AM • New York, NY</p>
+</div>
+</div>
+<div class="relative flex gap-6 items-start">
+<div class="z-10 w-6 h-6 bg-outline-variant rounded-full flex items-center justify-center ring-4 ring-surface-container-low"></div>
+<div>
+<p class="font-bold text-on-surface">Regional Distribution Hub</p>
+<p class="text-xs text-on-surface-variant">Oct 18 • 02:15 PM • Frankfurt, DE</p>
+</div>
+</div>
+<div class="relative flex gap-6 items-start">
+<div class="z-10 w-6 h-6 bg-outline-variant rounded-full flex items-center justify-center ring-4 ring-surface-container-low"></div>
+<div>
+<p class="font-bold text-on-surface">Precision Assembly Finished</p>
+<p class="text-xs text-on-surface-variant">Oct 14 • 11:30 AM • Geneva, CH</p>
+</div>
+</div>
+<div class="relative flex gap-6 items-start">
+<div class="z-10 w-6 h-6 bg-outline-variant rounded-full flex items-center justify-center ring-4 ring-surface-container-low"></div>
+<div>
+<p class="font-bold text-on-surface">Ledger Genesis Created</p>
+<p class="text-xs text-on-surface-variant">Oct 12 • 08:00 AM • Secure Node 01</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Map View & Location -->
+<div class="md:col-span-3 flex flex-col gap-6">
+<div class="bg-surface-container-low rounded-xl overflow-hidden h-full flex flex-col">
+<div class="p-4 bg-surface-container-high flex justify-between items-center">
+<span class="text-[10px] font-bold uppercase tracking-tighter">Last Verified Location</span>
+<span class="material-symbols-outlined text-sm">location_on</span>
+</div>
+<div class="flex-1 min-h-[200px] relative">
+<img class="w-full h-full object-cover grayscale opacity-50" data-alt="abstract stylized topographic map of New York City with grid lines and neon digital accents" data-location="New York" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoW5TKBMO9mez-ZTdAOisaDsO_PG66wUUEdSpVtIt8IoJxOhks00HlJ4s0JlY0z0_D7mbBpFjVqClt7qetRmhzAXYs3D_gmte7izqbWt0TBlv8lylWYechod99kCO5_sKQzwy25zcdZvN1s47_eBN2ggOHo31B4IBAsxzCgj9XSHtNk0A20q9O0GA3g7sv7fHaywy7XWBkTIL4KKEWTL6dZLNtDMLuBkBHFBCTvTkmDVg5RqvSzy5AA0ywMT9AQAeH4vut5cGJwAOs"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-8 h-8 bg-primary rounded-full pulse-glow flex items-center justify-center">
+<div class="w-2 h-2 bg-white rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-lowest">
+<p class="text-sm font-bold text-on-surface">Manhattan District</p>
+<p class="text-xs text-on-surface-variant">Lat: 40.7128° N, Long: 74.0060° W</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Grid: Ownership & Warranty -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="group bg-surface-container-low p-8 rounded-xl flex items-center justify-between hover:bg-primary transition-all duration-300">
+<div class="flex gap-6 items-center">
+<div class="w-14 h-14 rounded-full bg-surface-container-high group-hover:bg-primary-container flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-on-primary">history_edu</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-xl group-hover:text-on-primary transition-colors">Digital Warranty</h4>
+<p class="text-on-surface-variant group-hover:text-on-primary/70 transition-colors">Active through Oct 2026. Includes 24/7 priority support.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary group-hover:text-on-primary transform group-hover:translate-x-2 transition-all">chevron_right</span>
+</div>
+<div class="group bg-surface-container-lowest ghost-border p-8 rounded-xl flex items-center justify-between hover:border-primary/50 transition-all duration-300">
+<div class="flex gap-6 items-center">
+<div class="w-14 h-14 rounded-full bg-surface-container-low group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-primary">person_add</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-xl">Ownership Transfer</h4>
+<p class="text-on-surface-variant">Securely reassign the digital twin to a new owner wallet.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary transform group-hover:translate-x-2 transition-all">chevron_right</span>
+</div>
+</section>
+</main>
+<!-- Footer Shell -->
+<footer class="w-full border-t border-slate-200/30 bg-slate-50 mt-12">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-8 gap-4 font-inter text-xs uppercase tracking-widest">
+<div class="font-manrope font-bold text-slate-900 text-base normal-case">VeriGuard AI</div>
+<div class="flex gap-8">
+<a class="text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Trust Center</a>
+<a class="text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Blockchain Transparency</a>
+<a class="text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Privacy Protocol</a>
+<a class="text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Terms of Service</a>
+</div>
+<div class="text-slate-500 text-right">© 2024 VeriGuard AI. Immutable Ledger Security.</div>
+</div>
+</footer>
+</body></html>

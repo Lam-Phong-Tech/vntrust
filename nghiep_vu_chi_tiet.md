@@ -1,0 +1,1018 @@
+# 📋 TÀI LIỆU CHI TIẾT NGHIỆP VỤ HỆ THỐNG VNTRUST
+
+> 📁 **Nguồn tài liệu:** VNTrust.pdf — Trích xuất 100% từ tài liệu gốc, không bổ sung thêm
+> 🗓️ **Ngày cập nhật:** 08/04/2026 | **Phiên bản:** 1.0
+
+---
+
+## 📑 MỤC LỤC
+
+| # | Chương | Nội dung |
+|:---:|:---|:---|
+| I | VNTrust | Hệ thống xác thực và bảo vệ thương hiệu |
+| II | TrustCheck | Nền tảng giám sát và phản ánh hàng hóa cộng đồng |
+| III | Bảo mật & Pháp lý | Thiết kế hệ thống tiếp nhận phản ánh |
+| IV | Reconciliation | Hệ thống đối sát và cảnh báo hàng giả |
+| V | Vòng đời | Cảnh báo hạn hiệu lực |
+| VI | Tuân thủ | Bảng điều khiển rà soát hồ sơ doanh nghiệp |
+
+---
+
+## I. 🛡️ HỆ THỐNG XÁC THỰC VÀ BẢO VỆ THƯƠNG HIỆU (VNTRUST)
+
+### 1. Tổng quan hệ thống
+
+> 💡 **Tên gợi ý:** VNTrust — Hệ thống xác thực và truy xuất nguồn gốc sản phẩm Việt Nam
+
+#### 🎯 Mục tiêu chiến lược
+
+| # | Mục tiêu | Mô tả chi tiết |
+|:---:|:---|:---|
+| 1 | **Bảo vệ thương hiệu** | Tạo ra "vân tay số" duy nhất cho mỗi sản phẩm, không thể sao chép |
+| 2 | **Xây dựng niềm tin** | Cung cấp thông tin minh bạch, có thể xác thực về nguồn gốc sản phẩm |
+| 3 | **Phát hiện hàng giả & thị trường xám** | Giám sát và cảnh báo các hoạt động bất thường |
+| 4 | **Tuân thủ quy định** | Đáp ứng yêu cầu truy xuất nguồn gốc theo **Nghị định 37/2026/NĐ-CP** |
+
+#### 👥 Đối tượng người dùng
+
+| Vai trò | Mô tả |
+|:---|:---|
+| 🏭 **Nhà sản xuất** | Doanh nghiệp sản xuất hàng hóa, đăng ký sản phẩm, quản lý mã số |
+| 📦 **Nhà nhập khẩu** | Doanh nghiệp nhập khẩu và phân phối hàng hóa |
+| 🛒 **Người tiêu dùng** | Quét mã, xác thực sản phẩm, báo cáo nghi ngờ |
+| ⚙️ **Quản trị hệ thống** | Quản lý người dùng, giám sát, báo cáo |
+
+---
+
+### 2. Kiến trúc chức năng chi tiết — 6 Phân hệ
+
+---
+
+#### 📁 PHÂN HỆ 1 — Quản lý hồ sơ doanh nghiệp & sản phẩm
+
+> *Dành cho Nhà sản xuất & Nhà nhập khẩu đăng ký và quản lý thông tin.*
+
+##### 1.1 Quản lý hồ sơ doanh nghiệp
+
+| Chức năng | Mô tả | Dữ liệu liên quan |
+|:---|:---|:---|
+| Đăng ký thông tin | Nhập MST, tên, địa chỉ, ngành VSIC 2025 | A01, A02, A04, A05 |
+| Tải lên chứng nhận | Upload scan giấy ĐKKD, chứng nhận an toàn | C01, C02, C03, C04, C05 |
+| Xác thực doanh nghiệp | OCR + AI kiểm tra chứng từ, đối chiếu với CSDL quốc gia | — |
+| Quản lý người dùng nội bộ | Phân quyền: admin, nhân viên nhập liệu, kho | — |
+
+##### 1.2 Quản lý danh mục sản phẩm
+
+| Chức năng | Mô tả | Dữ liệu liên quan |
+|:---|:---|:---|
+| Thêm sản phẩm | Nhập tên, mã SKU, GTIN, hình ảnh sản phẩm | B01, B02, B03, B04 |
+| Quản lý lô hàng | Nhập số lô, ngày sản xuất, hạn dùng | B05, D03, D04 |
+| Đính kèm chứng nhận | Liên kết ISO, HACCP, Halal, Organic… với sản phẩm | C01 – C05 |
+| Tạo mã truy xuất | Sinh mã QR duy nhất cho từng sản phẩm / lô | B07 |
+
+> 📌 **Tham khảo thực tế:** Giải pháp *Verified by GS1* cho phép brand owners upload dữ liệu sản phẩm vào GS1 Registries thông qua API, giúp các đối tác và cơ quan chính phủ xác thực thông tin một cách tin cậy.
+
+---
+
+#### 🔑 PHÂN HỆ 2 — Tạo và quản lý mã định danh duy nhất (UID)
+
+> *Đây là lớp bảo mật cốt lõi, áp dụng công nghệ UID không thể đoán trước (non-guessable, non-sequential).*
+
+##### 2.1 Cấu trúc mã định danh
+
+| Loại mã | Mô tả | Công nghệ |
+|:---|:---|:---|
+| UID sản phẩm | Mã định danh duy nhất cho từng sản phẩm | UUID phiên bản 4 ngẫu nhiên + mã hóa AES-256 |
+| Mã QR | Vật mang dữ liệu để người dùng quét | QR Code theo **TCVN 13275:2020** |
+| Mã số lô (Batch) | Dùng cho quản lý nội bộ và truy xuất | Alphanumeric, theo quy tắc riêng của doanh nghiệp |
+| Serial Number | Cho sản phẩm giá trị cao | Số thứ tự duy nhất, có thể kiểm tra độc lập |
+
+##### 2.2 Quy trình cấp phát mã
+
+```
+Bước 1: Doanh nghiệp chọn sản phẩm cần tạo mã
+Bước 2: Hệ thống tự động sinh UID duy nhất
+Bước 3: Tạo mã QR và xuất file để in ấn (PDF, EPS, SVG)
+Bước 4: Lưu UID vào cơ sở dữ liệu cùng với metadata sản phẩm
+```
+
+> ⚠️ **Lưu ý bảo mật:** Mã QR không được chứa trực tiếp thông tin nhạy cảm. Thay vào đó, nó là **"khóa"** để tra cứu, giống như cơ chế của *Verified by GS1*, nơi mã GTIN được sử dụng để truy cập thông tin từ GS1 Registries.
+
+---
+
+#### 🔍 PHÂN HỆ 3 — Xác thực sản phẩm cho người tiêu dùng
+
+> *Dành cho Người tiêu dùng quét mã để kiểm tra hàng thật/giả.*
+
+##### 3.1 Giao diện quét mã
+
+| Kênh | Mô tả |
+|:---|:---|
+| **Web-based scanner** | Truy cập qua trình duyệt, sử dụng camera thiết bị |
+| **Mobile app** *(tùy chọn nâng cao)* | Chụp ảnh chất lượng cao hơn, hỗ trợ phân tích vân tay |
+
+##### 3.2 Bảng kết quả xác thực
+
+| 🎨 Màu | Trạng thái | Điều kiện kích hoạt | Hành động gợi ý |
+|:---:|:---|:---|:---|
+| 🟢 Xanh | **Chính hãng** | UID hợp lệ, không có bất thường | Hiển thị thông tin sản phẩm, khuyến mãi |
+| 🟡 Vàng | **Nghi ngờ** | Quét >3 lần/ngày hoặc vị trí ngoài vùng phân phối | Cảnh báo người dùng, yêu cầu xác nhận thêm |
+| 🔴 Đỏ | **Hàng giả / Vi phạm** | Mã không tồn tại hoặc đã bị đánh dấu giả | Cảnh báo mạnh, hướng dẫn báo cáo cơ quan chức năng |
+| ⚫ Xám | **Hết hạn** | Sản phẩm đã quá hạn sử dụng | Cảnh báo không sử dụng |
+
+##### 3.3 Thông tin hiển thị khi quét thành công
+
+| Nhóm | Chi tiết |
+|:---|:---|
+| **Sản phẩm** | Tên, thương hiệu, hình ảnh |
+| **Sản xuất** | Nhà sản xuất, nước sản xuất, ngày sản xuất, hạn dùng |
+| **Chứng nhận** | ISO, HACCP, Organic, Halal… |
+| **Hướng dẫn** | Cách sử dụng, bảo hành |
+| **Khuyến mãi** | Thông tin ưu đãi (nếu có) |
+
+> 📌 **Tham khảo thực tế:** *Codikett 2.0* của Securikett cho phép tùy chỉnh trang phản hồi theo từng vai trò: người tiêu dùng thấy xác thực, nhà phân phối thấy dữ liệu quy trình, kiểm toán viên thấy thông tin mở rộng.
+
+---
+
+#### 🤖 PHÂN HỆ 4 — Giám sát & phát hiện bất thường (AI-powered)
+
+> *Đây là "bộ não" của hệ thống, phân tích dữ liệu quét để phát hiện hàng giả và thị trường xám.*
+
+##### 4.1 Các mô hình phát hiện bất thường
+
+| Loại bất thường | Phương pháp phát hiện | Hành động |
+|:---|:---|:---|
+| Quét nhiều lần cùng một UID | Theo dõi số lần quét (hit count) | Cảnh báo sau ngưỡng (VD: >3 lần/ngày) |
+| Quét tại vị trí địa lý bất thường | Phân tích IP, GPS (nếu có) | So sánh với khu vực phân phối chính thức |
+| Tần suất quét bất thường theo batch | Phân tích thống kê theo lô hàng | Phát hiện lô hàng bị làm giả hàng loạt |
+| Điểm tương đồng thấp (AI vision) | So sánh vector đặc trưng với mẫu chuẩn | Cảnh báo hàng giả cấp độ cao |
+
+##### 4.2 Bảng điều khiển giám sát (Dashboard)
+
+> *Dành cho Doanh nghiệp và Quản trị hệ thống:*
+
+| Chỉ số | Mô tả | Ứng dụng |
+|:---|:---|:---|
+| Tổng số lượt quét | Số lần sản phẩm được kiểm tra | Đo lường mức độ tương tác |
+| Số cảnh báo bất thường | Số UID có dấu hiệu vi phạm | Phát hiện thị trường xám |
+| Bản đồ quét (Heatmap) | Phân bố địa lý các lượt quét | Xác định khu vực có nguy cơ cao |
+| Tỷ lệ thật/giả | Thống kê kết quả xác thực | Đánh giá hiệu quả chống giả |
+
+> 📌 **Tham khảo thực tế:** *Red Points* xử lý 90 triệu tín hiệu mỗi ngày, sử dụng AI để phát hiện và gỡ bỏ các danh sách hàng giả trên toàn cầu.
+
+---
+
+#### 🔔 PHÂN HỆ 5 — Quản lý cảnh báo & báo cáo
+
+##### 5.1 Quy trình xử lý cảnh báo
+
+```
+Phát hiện bất thường
+    → Tạo cảnh báo (F02, F03, F04)
+    → Phân loại mức độ (Thấp / Trung bình / Cao)
+    → Gửi thông báo cho doanh nghiệp
+    → (Nếu cần) Chuyển sang kiểm tra thủ công
+    → Cập nhật trạng thái sản phẩm / lô hàng
+```
+
+##### 5.2 Các loại báo cáo định kỳ
+
+| Báo cáo | Đối tượng | Nội dung |
+|:---|:---|:---|
+| Báo cáo tóm tắt | Ban lãnh đạo | Số lượng sản phẩm, lượt quét, cảnh báo |
+| Báo cáo chi tiết lô hàng | Quản lý chất lượng | Từng SP bị cảnh báo, kèm thời gian, vị trí |
+| Báo cáo xuất khẩu | Cơ quan quản lý | Dữ liệu truy xuất theo Nghị định 37/2026 |
+| Báo cáo thị trường xám | Bộ phận kinh doanh | Phân tích khu vực phân phối không chính thức |
+
+> 📌 **Tham khảo thực tế:** Giải pháp của *Honeywell* cung cấp báo cáo tuân thủ với khả năng tự động hóa, cho phép theo dõi hiệu suất từng doanh nghiệp và phát hiện hoạt động bất thường.
+
+---
+
+#### 🔗 PHÂN HỆ 6 — Tích hợp & Mở rộng
+
+##### 6.1 Kết nối với hệ thống bên ngoài
+
+| Hệ thống | Mục đích | Phương thức |
+|:---|:---|:---|
+| GS1 Vietnam | Đăng ký và xác thực GTIN | API |
+| Cổng thông tin truy xuất nguồn gốc quốc gia | Tuân thủ Nghị định 37/2026 | API đồng bộ dữ liệu |
+| Hệ thống ERP doanh nghiệp | Đồng bộ sản phẩm, lô hàng | REST API / Webhook |
+| Nền tảng thương mại điện tử | Xác thực sản phẩm trực tiếp trên sàn | Plugin / API |
+
+##### 6.2 API công khai
+
+| Endpoint | Phương thức | Mô tả |
+|:---|:---:|:---|
+| `/api/verify/{uid}` | `GET` | Xác thực sản phẩm — trả về trạng thái và thông tin cơ bản |
+| `/api/products` | `POST` | Đăng ký sản phẩm — dành cho doanh nghiệp tích hợp |
+| `/api/report` | `POST` | Báo cáo sự cố — người dùng báo cáo hàng giả |
+
+---
+
+### 3. Lộ trình triển khai & Công nghệ đề xuất
+
+#### 📅 Lộ trình theo giai đoạn
+
+| Giai đoạn | Thời gian | Tính năng chính |
+|:---:|:---:|:---|
+| **Giai đoạn 1 — MVP** | 3 tháng | Đăng ký DN & upload chứng từ cơ bản; Tạo mã QR tĩnh; Giao diện quét mã web cơ bản; Hiển thị thông tin sản phẩm cố định |
+| **Giai đoạn 2 — Nâng cao** | 3–6 tháng | Tích hợp OCR + AI xử lý chứng từ; Phân tích bất thường; Dashboard giám sát; API kết nối hệ thống ngoài |
+| **Giai đoạn 3 — Hoàn thiện** | 6–12 tháng | AI vision phát hiện hàng giả cấp cao; Tích hợp Blockchain (tùy chọn); Mobile app chuyên dụng; Báo cáo nâng cao |
+
+#### ⚙️ Công nghệ đề xuất
+
+| Thành phần | Công nghệ | Lý do |
+|:---|:---|:---|
+| Frontend | React / Next.js | Tương tác mượt mà, hỗ trợ PWA |
+| Backend | Node.js + Express / Python FastAPI | Linh hoạt, nhiều thư viện AI/OCR |
+| Database | PostgreSQL + Redis | Dữ liệu quan hệ + cache truy vấn nhanh |
+| OCR | PaddleOCR (fine-tune tiếng Việt) | Miễn phí, hỗ trợ tiếng Việt tốt |
+| AI/ML | TensorFlow / PyTorch | Triển khai RAML, Siamese Network |
+| Mã QR | qrcode, node-qrcode | Tuân thủ TCVN 13275:2020 |
+| Hosting | Cloud (AWS / Viettel IDC) | Đảm bảo uptime và bảo mật |
+
+---
+
+## II.  NỀN TẢNG GIÁM SÁT VÀ PHẢN ÁNH HÀNG HÓA CỘNG ĐỒNG (TRUSTCHECK)
+
+### 1. Tổng quan hệ thống
+
+>  **Tên gợi ý:** TrustCheck  Nền tảng xác thực và phản ánh hàng hóa thông minh
+
+####  Mục tiêu chiến lược
+
+| # | Mục tiêu | Mô tả |
+|:---:|:---|:---|
+| 1 | **Tạo kênh phản ánh chính thống** | Nơi người tiêu dùng báo cáo nghi ngờ từ chợ truyền thống, sàn TMĐT, mạng xã hội |
+| 2 | **Xây dựng CSDL cảnh báo cộng đồng** | Thu thập và phân tích thông tin từ hàng triệu người dùng |
+| 3 | **Hỗ trợ phát hiện sớm hàng giả** | Cung cấp công cụ AI để phân biệt thật/giả ngay trên điện thoại |
+| 4 | **Kết nối cơ quan quản lý** | Chia sẻ dữ liệu với lực lượng chức năng theo chỉ đạo của Bộ Công Thương |
+
+####  Đối tượng người dùng
+
+| Vai trò | Mô tả |
+|:---|:---|
+|  **Người tiêu dùng** | Người mua hàng, muốn kiểm tra hoặc báo cáo sản phẩm nghi ngờ |
+|  **Quản trị hệ thống** | Xử lý cảnh báo, phân tích dữ liệu, đối soát |
+|  **Cơ quan chức năng** | Truy cập dữ liệu để kiểm tra, xử lý vi phạm |
+|  **Doanh nghiệp** | Nhận cảnh báo về hàng giả của thương hiệu mình |
+
+---
+
+### 2. Kiến trúc chức năng chi tiết
+
+---
+
+####  PHÂN HỆ 1  Tra cứu & Xác thực sản phẩm
+
+> *Dành cho Người tiêu dùng kiểm tra nhanh sản phẩm trước/sau khi mua.*
+
+##### 1.1 Các phương thức tra cứu
+
+| Phương thức | Mô tả | Ứng dụng |
+|:---|:---|:---|
+| Quét mã QR / DataMatrix | Dùng camera điện thoại quét mã trên bao bì | Tra cứu nhanh, phổ biến nhất |
+| Nhập mã số | Nhập tay mã UID, số serial, mã lô | Khi mã bị mờ hoặc không quét được |
+| Chụp ảnh sản phẩm | Chụp bao bì, logo, tem chống giả | Dùng AI so sánh với CSDL mẫu chuẩn |
+| Tìm kiếm bằng giọng nói | Nói tên sản phẩm, thương hiệu | Tiện lợi cho người lớn tuổi |
+
+##### 1.2 Kết quả xác thực (Confidence Score)
+
+|  Màu | Confidence | Trạng thái | Mô tả | Hành động gợi ý |
+|:---:|:---:|:---|:---|:---|
+|  Xanh | 0.9  1.0 | Chính hãng  Tin cậy cao | Sản phẩm khớp với dữ liệu chính thức | Hiển thị thông tin, hướng dẫn sử dụng |
+|  Vàng | 0.6  0.89 | Nghi ngờ  Cần kiểm tra | Phát hiện một số bất thường | Cảnh báo, gợi ý kiểm tra thêm |
+|  Cam | 0.3  0.59 | Cảnh báo  Rủi ro cao | Nhiều dấu hiệu không khớp | Khuyến cáo không sử dụng, báo cáo |
+|  Đỏ | 0  0.29 | Hàng giả  Không hợp lệ | Mã không tồn tại hoặc đã bị đánh dấu | Cảnh báo, hướng dẫn báo cơ quan chức năng |
+
+##### 1.3 Thông tin hiển thị khi tra cứu thành công
+
+- Tên sản phẩm, thương hiệu, hình ảnh mẫu chuẩn
+- Nhà sản xuất / nhà nhập khẩu
+- Ngày sản xuất, hạn sử dụng (nếu có)
+- Các chứng nhận: ISO, HACCP, Organic, Halal, CE, RoHS...
+- Lịch sử cảnh báo từ cộng đồng (số lượt báo cáo)
+- Khuyến cáo an toàn
+
+>  **Tham khảo thực tế:** Công nghệ AI của *Entrupy* cho phép xác định hàng hiệu giả với độ chính xác lên đến 99% bằng cách quét các chi tiết vi mô như logo, kết cấu da, số serial.
+
+---
+
+####  PHÂN HỆ 2  Phản ánh & Báo cáo sản phẩm nghi ngờ
+
+> *Đây là "xương sống" của hệ thống, cho phép người dùng đóng góp dữ liệu.*
+
+##### 2.1 Quy trình phản ánh (4 bước)
+
+**Bước 1  Chọn loại phản ánh:**
+- Báo cáo sản phẩm nghi ngờ (hàng giả, kém chất lượng)
+- Báo cáo người bán gian lận (shop, tài khoản TMĐT)
+- Báo cáo quảng cáo sai sự thật
+- Gửi phản hồi về kết quả xác thực
+
+**Bước 2  Nhập thông tin sản phẩm:**
+- Chụp ảnh sản phẩm / bao bì *(bắt buộc)*
+- Chụp tem, mã vạch, QR code *(nếu có)*
+- Nhập tên sản phẩm, thương hiệu
+- Nhập nơi mua (chợ / sàn TMĐT / Shopee / TikTok Shop / Facebook)
+- Nhập giá mua (phát hiện giá rẻ bất thường)
+- Mô tả lý do nghi ngờ
+
+**Bước 3  Cung cấp thông tin người bán (nếu có):**
+- Tên shop / tài khoản
+- Link sản phẩm (nếu mua online)
+- Số điện thoại / địa chỉ (nếu biết)
+
+**Bước 4  Xác nhận & gửi:**
+- Hệ thống tạo mã báo cáo duy nhất để theo dõi
+
+##### 2.2 Hỗ trợ phát hiện bằng AI
+
+| Tính năng | Mô tả |
+|:---|:---|
+| Nhận diện hàng giả qua ảnh | AI phân tích logo, font chữ, chất liệu |
+| Phát hiện ảnh trùng lặp | Ngăn chặn báo cáo giả mạo |
+| Gợi ý điểm cần kiểm tra | Hướng dẫn người dùng chụp đúng vị trí quan trọng |
+
+##### 2.3 Chế độ báo cáo ẩn danh
+
+- Người dùng có thể chọn **báo cáo ẩn danh** để bảo vệ an toàn
+- Vẫn cần **xác thực số điện thoại** để chống spam
+- Tuân thủ **Luật Bảo vệ quyền lợi người tiêu dùng 2023** về bảo vệ thông tin
+
+---
+
+####  PHÂN HỆ 3  Quản lý & Phân tích dữ liệu (Admin)
+
+> *Dành cho Quản trị hệ thống và Cơ quan chức năng.*
+
+##### 3.1 Dashboard tổng quan
+
+| Chỉ số | Mô tả | Ý nghĩa quản lý |
+|:---|:---|:---|
+| Tổng số báo cáo | Số lượng phản ánh đã nhận | Đo lường mức độ tương tác |
+| Báo cáo đang xử lý | Số lượng chưa được phân loại | Đánh giá backlog |
+| Tỷ lệ phát hiện hàng giả | % báo cáo được xác nhận là giả | Đo lường hiệu quả |
+| Điểm tin cậy trung bình | Độ tin cậy của các báo cáo | Đánh giá chất lượng dữ liệu |
+| Top sản phẩm bị báo cáo | Sản phẩm có nhiều phản ánh nhất | Xác định ưu tiên xử lý |
+
+##### 3.2 Thống kê phân tích đa chiều
+
+**Theo thời gian:**
+
+| Kỳ báo cáo | Mô tả |
+|:---|:---|
+| Theo giờ | Phát hiện giờ cao điểm mua sắm (livestream, sale) |
+| Theo ngày / tuần | Xu hướng ngắn hạn |
+| Theo tháng / quý | Xu hướng dài hạn, so sánh cùng kỳ |
+| Theo mùa vụ | Phát hiện hàng giả vào dịp lễ, Tết |
+
+**Theo địa bàn:**
+
+| Phân loại | Mô tả | Ứng dụng |
+|:---|:---|:---|
+| Theo tỉnh/thành | Bản đồ nóng khu vực nhiều báo cáo | Điều phối kiểm tra |
+| Theo quận/huyện | Chi tiết đến cấp địa phương | Khoanh vùng xử lý |
+| Theo loại hình bán lẻ | Chợ truyền thống / sàn TMĐT / mạng xã hội | Xác định kênh vi phạm |
+
+**Theo ngành hàng:**
+
+| Nhóm | Ví dụ sản phẩm |
+|:---|:---|
+| Thực phẩm  đồ uống | Thực phẩm chức năng, rượu, bia, nước giải khát |
+| Mỹ phẩm  chăm sóc cá nhân | Kem dưỡng, sữa tắm, nước hoa |
+| Điện tử  viễn thông | Điện thoại, phụ kiện, linh kiện |
+| Thời trang  túi xách | Quần áo hiệu, giày dép, túi xách xa xỉ |
+| Dược phẩm  thiết bị y tế | Thuốc, khẩu trang, test nhanh |
+| Hóa chất  vật liệu xây dựng | Sơn, dây điện, ống nhựa |
+
+##### 3.3 Công cụ phân tích nâng cao
+
+| Công cụ | Mô tả |
+|:---|:---|
+| **Phân tích cụm (Clustering)** | Nhóm báo cáo cùng đặc điểm để phát hiện đường dây hàng giả |
+| **Phát hiện bất thường (Anomaly Detection)** | Nhận diện mẫu báo cáo có dấu hiệu spam hoặc tấn công có tổ chức |
+| **Dự báo xu hướng (Trend Forecasting)** | Dự đoán sản phẩm/ngành hàng có nguy cơ bị làm giả cao trong tương lai |
+
+---
+
+####  PHÂN HỆ 4  Xuất báo cáo & Cảnh báo
+
+##### 4.1 Các loại báo cáo định kỳ
+
+| Báo cáo | Đối tượng | Tần suất | Nội dung chính |
+|:---|:---|:---:|:---|
+| Báo cáo tóm tắt | Quản lý hệ thống | Hàng tuần | Số liệu tổng quan, xu hướng chính |
+| Báo cáo phân tích | Cơ quan quản lý | Hàng tháng | Phân tích theo địa bàn, ngành hàng |
+| Báo cáo cảnh báo sớm | Doanh nghiệp | Thời gian thực | Thông báo hàng giả thương hiệu |
+| Báo cáo chuyên đề | Công an, QLTT | Theo yêu cầu | Chi tiết vụ việc có dấu hiệu hình sự |
+| Báo cáo công khai | Người tiêu dùng | Hàng quý | Danh sách SP/người bán bị cảnh báo |
+
+##### 4.2 Hệ thống cảnh báo đa kênh
+
+| Kênh | Đối tượng | Mục đích |
+|:---|:---|:---|
+| Push notification | Người dùng app | Cảnh báo khi quét sản phẩm nghi ngờ |
+| Email | Doanh nghiệp đăng ký | Hàng giả của thương hiệu |
+| SMS | Cơ quan chức năng | Cảnh báo khẩn cấp về lô hàng giả lớn |
+| Trang web / Fanpage | Công khai | Danh sách đen người bán, sản phẩm |
+
+##### 4.3 Cơ chế xác nhận báo cáo (Validation)
+
+**1. Tự động kiểm tra:**
+- Loại bỏ báo cáo trùng lặp (cùng sản phẩm, cùng người dùng)
+- Phát hiện báo cáo spam (cùng IP, cùng nội dung)
+- So sánh với CSDL hàng thật để xác định độ tin cậy
+
+**2. Bán tự động (Human-in-the-loop):**
+- Chuyên viên kiểm tra báo cáo có độ tin cậy trung bình (0.4  0.7)
+- Xác minh chéo với các báo cáo khác về cùng sản phẩm
+
+**3. Xác nhận chính thức:**
+- Báo cáo được xác nhận khi có ** 3 nguồn độc lập**
+- Hoặc có **bằng chứng ảnh/video rõ ràng**
+
+---
+
+####  PHÂN HỆ 5  Tích hợp & Kết nối
+
+| Hệ thống | Mục đích | Phương thức |
+|:---|:---|:---|
+| Nền tảng quốc gia (Bộ Công an) | Đồng bộ dữ liệu sản phẩm thật | API / Đồng bộ định kỳ |
+| Cổng truy xuất nguồn gốc quốc gia (Bộ KH&CN) | Đối chiếu thông tin sản phẩm chính hãng | API |
+| CSDL quốc gia về sản phẩm, hàng hóa | Tra cứu thông tin DN, chứng nhận | API |
+| Sàn TMĐT (Shopee, TikTok, Lazada, Tiki) | Gửi cảnh báo, yêu cầu gỡ listing vi phạm | API / Email |
+| Lực lượng Quản lý thị trường | Chuyển giao vụ việc có dấu hiệu vi phạm | Dashboard riêng / Email |
+
+**API công khai:**
+
+| Endpoint | Phương thức | Mô tả |
+|:---|:---:|:---|
+| /api/product/lookup?code={uid} | GET | Tra cứu sản phẩm  trả về thông tin và trạng thái |
+| /api/report | POST | Gửi báo cáo sản phẩm nghi ngờ |
+| /api/alerts?category={cat}&location={loc} | GET | Lấy danh sách cảnh báo  dành cho cơ quan quản lý |
+| /api/verify-image | POST | Gửi ảnh để AI phân tích |
+
+---
+
+### 3. Luồng xử lý dữ liệu tổng thể
+
+`
+Người tiêu dùng
+
+ Quét mã QR  Tra cứu CSDL  Hiển thị kết quả xác thực
+
+ Chụp ảnh sản phẩm  AI phân tích  So sánh với mẫu chuẩn
+                                            Đưa ra điểm tin cậy
+
+ Gửi báo cáo nghi ngờ  Lưu vào CSDL báo cáo
+                                    
+                        Phân loại tự động (AI)
+                                     
+                    Tin cậy    Nghi ngờ  Spam
+                    cao        (xác minh) (loại bỏ)
+                                    
+               Cập nhật CSDL    Chuyển xử lý thủ công
+                              
+              Phân tích thống kê (time / location / category)
+                              
+              Xuất báo cáo định kỳ / Gửi cảnh báo DN & QLTT
+`
+
+### 4. Lộ trình triển khai (TrustCheck)
+
+| Giai đoạn | Thời gian | Tính năng |
+|:---:|:---:|:---|
+| **Giai đoạn 1  MVP** | 23 tháng | Giao diện tra cứu cơ bản, form báo cáo, kết nối CSDL sản phẩm thật, Dashboard admin đơn giản |
+| **Giai đoạn 2  Nâng cao** | 34 tháng | AI phân tích ảnh, thống kê đa chiều, heatmap địa bàn, báo cáo tự động |
+| **Giai đoạn 3  Mở rộng** | 46 tháng | Kết nối nền tảng quốc gia, tích hợp sàn TMĐT, mobile app, cảnh báo đa kênh |
+
+
+---
+
+## III.  THIẾT KẾ HỆ THỐNG TIẾP NHẬN PHẢN ÁNH (BẢO MẬT & PHÁP LÝ)
+
+### 1. Nguyên tắc thiết kế tổng thể
+
+| Nguyên tắc | Mô tả | Căn cứ pháp lý |
+|:---|:---|:---|
+| **Tối thiểu dữ liệu** | Chỉ thu thập thông tin thực sự cần thiết cho mục đích xử lý báo cáo | Điều 5 Luật Bảo vệ dữ liệu cá nhân 2025 |
+| **Ẩn danh mặc định** | Người dùng có toàn quyền lựa chọn cung cấp hay không cung cấp thông tin định danh | Tinh thần GDPR và Luật Việt Nam |
+| **Phân tách dữ liệu** | Dữ liệu định danh và dữ liệu báo cáo lưu tách biệt, chỉ kết hợp khi có điều kiện đặc biệt | Điều 17 Luật BVDLCN |
+| **Mã hóa và giả danh hóa** | Mọi thông tin cá nhân đều được mã hóa hoặc giả danh hóa ngay từ khi thu thập | Điều 19 Luật BVDLCN 2025 |
+| **Zero Trust API** | Mọi kết nối giữa các microservice đều được xác thực và ủy quyền | NIST SP 800-228 |
+
+### 2. Phân loại thông tin người dùng
+
+| Nhóm thông tin | Mức độ bắt buộc | Lý do |
+|:---|:---:|:---|
+| Nội dung báo cáo (ảnh, mô tả, lý do nghi ngờ) | **Bắt buộc** | Cốt lõi để xử lý và phân tích |
+| Thông tin sản phẩm (tên, mã vạch, nơi mua) | **Bắt buộc** | Định danh sản phẩm và đối tượng bị báo cáo |
+| Email / Số điện thoại | Không bắt buộc | Chỉ để liên hệ báo kết quả hoặc xác minh |
+| Họ tên / CCCD | Không bắt buộc | Chỉ khi tự nguyện để được ưu tiên xử lý hoặc bồi thường |
+
+### 3. Kiến trúc phân tách cơ sở dữ liệu (3 Kho độc lập)
+
+| Kho dữ liệu | Nội dung | Hình thức lưu trữ | Cơ chế kết nối |
+|:---|:---|:---|:---|
+| **Identity Vault** | Email, SĐT, CCCD (nếu có), mã băm người dùng | Mã hóa AES-256, khóa lưu riêng biệt | Chỉ qua Identity Service API |
+| **Report Vault** | Nội dung báo cáo, hình ảnh, mô tả sản phẩm | Mã hóa tầng ứng dụng, gắn với Report ID | API Gateway + Fine-grained authorization |
+| **Anonymous Session Store** | Token tạm thời, phiên làm việc, mã OTP | Hash + Salt, không lưu IP lịch sử | Tự động xóa sau 30 ngày |
+
+>  **Nguyên lý hoạt động:** Identity Vault lưu ánh xạ Hash(UserID)  ReportID nhưng **không lưu UserID trực tiếp**. Muốn liên hệ người dùng, hệ thống phải có lệnh đặc biệt từ người dùng hoặc cơ quan chức năng.
+
+### 4. Mã hóa thông tin người dùng (Tuân thủ Điều 19 Luật BVDLCN 2025)
+
+| Loại dữ liệu | Phương pháp mã hóa | Quản lý khóa |
+|:---|:---|:---|
+| Email | AES-256-GCM kèm IV (Initialization Vector) | Key Management Service riêng, không lưu cùng dữ liệu |
+| Số điện thoại | AES-256 + mã hóa bảo vệ toàn vẹn | Key được xoay vòng mỗi 90 ngày |
+| Số CCCD | Hash (SHA-256) + Salt ngẫu nhiên  lưu hash, không lưu bản gốc | Không thể đảo ngược nếu không biết Salt |
+| Địa chỉ | AES-256 hoặc Tokenization | Tokenization vault riêng |
+
+### 5. Ba chế độ bảo vệ danh tính người dùng
+
+| Chế độ | Mô tả | Thông tin lưu trữ | Hiển thị công khai |
+|:---|:---|:---|:---|
+| **Hoàn toàn ẩn danh** | Không cung cấp bất kỳ thông tin nào | Chỉ Report ID, thời gian, nội dung | "Người tiêu dùng ẩn danh" |
+| **Báo cáo có liên hệ** | Cung cấp email/SĐT để nhận phản hồi, nhưng không công khai | Email/SĐT được mã hóa | "Người dùng đã xác minh (ẩn danh)" |
+| **Công khai có chọn lọc** | Đồng ý công khai một phần thông tin | Tên hoặc biệt danh lưu riêng | Theo lựa chọn của người dùng |
+
+### 6. Cơ chế xác minh ẩn danh (Pseudonymous Verification)
+
+`
+Bước 1: Người dùng chọn "Xác minh số điện thoại"
+Bước 2: Hệ thống gửi mã OTP, không lưu SĐT nếu không được đồng ý
+Bước 3: Tạo "danh tính tạm thời" chỉ tồn tại cho phiên
+Bước 4: Mọi báo cáo từ danh tính này được gắn nhãn "Đã xác minh"
+`
+
+### 7. Các microservice bảo mật
+
+| Microservice | Trách nhiệm | Giao tiếp API |
+|:---|:---|:---|
+| **Report Ingestion Service** | Tiếp nhận báo cáo từ người dùng, tạo Report ID | REST API, rate limiting |
+| **Identity Service** | Quản lý mã hóa/giải mã thông tin người dùng | gRPC + mTLS, chỉ gọi nội bộ |
+| **Anonymization Service** | Xóa thông tin định danh khỏi báo cáo trước khi lưu | Event-driven (Kafka) |
+| **API Gateway** | Điều phối, xác thực, phân quyền | OAuth 2.0 + JWT + RBAC |
+
+### 8. Biện pháp bảo mật API
+
+| Biện pháp | Mô tả | Tham chiếu |
+|:---|:---|:---|
+| mTLS nội bộ | Xác thực lẫn nhau giữa các microservice | NIST, OWASP |
+| Rate Limiting | Giới hạn số báo cáo/IP/ngày | Ngăn spam, DDoS |
+| Input Validation | Kiểm tra dữ liệu đầu vào theo schema | Ngăn injection, XSS |
+| JWT TTL ngắn | Token hết hạn sau 1530 phút | Giảm rủi ro token bị đánh cắp |
+| Logging & Monitoring | Ghi log đầy đủ, phát hiện bất thường | SIEM integration |
+
+### 9. Quy trình xử lý yêu cầu từ cơ quan chức năng
+
+>  **Điều kiện bắt buộc để giải mã dữ liệu người dùng:**
+> 1. Có **quyết định bằng văn bản** của cơ quan có thẩm quyền
+> 2. Quyết định phải **xác định rõ phạm vi** thông tin cần cung cấp
+> 3. Có **sự giám sát của pháp chế** doanh nghiệp
+> 4. Mọi hoạt động đều được **ghi log đầy đủ**
+
+### 10. Tuân thủ pháp lý Việt Nam
+
+**10.1 Luật Bảo vệ dữ liệu cá nhân 2025 (hiệu lực 1/1/2026)**
+
+| Yêu cầu | Cách thiết kế đáp ứng |
+|:---|:---|
+| Sự đồng ý của chủ thể dữ liệu | Giao diện có checkbox riêng cho từng mục đích sử dụng |
+| Thông báo mục đích xử lý | Hiển thị rõ lý do thu thập email/SĐT |
+| Mã hóa dữ liệu nhạy cảm | Mọi dữ liệu cá nhân được mã hóa khi lưu và truyền tải |
+| Đánh giá tác động (DPIA) | Có quy trình DPIA cho hoạt động xử lý báo cáo |
+| Bổ nhiệm DPO | Có người chịu trách nhiệm về tuân thủ |
+
+**10.2 Luật An ninh mạng**
+
+| Yêu cầu | Cách thiết kế đáp ứng |
+|:---|:---|
+| Lưu trữ dữ liệu trong nước | Dữ liệu người dùng Việt Nam lưu trên máy chủ đặt tại Việt Nam |
+| Bảo vệ bí mật thông tin | Mã hóa đầu cuối (end-to-end encryption) cho báo cáo |
+| Ngăn chặn nội dung vi phạm | Cơ chế tự động phát hiện và gắn cờ nội dung vi phạm |
+
+**10.3 Luật Dữ liệu 2025 (hiệu lực 1/7/2025)**
+
+| Yêu cầu | Cách thiết kế đáp ứng |
+|:---|:---|
+| Phân loại dữ liệu | Phân biệt rõ Dữ liệu cơ bản / Nhạy cảm / Quan trọng |
+| Báo cáo đánh giá tác động | DTIA được chuẩn bị và nộp khi có chuyển giao xuyên biên giới |
+
+---
+
+## IV.  HỆ THỐNG ĐỐI SÁT VÀ CẢNH BÁO HÀNG GIẢ (RECONCILIATION)
+
+> *Hệ thống được xây dựng theo mô hình Lambda Architecture kết hợp xử lý batch (phân tích chuyên sâu) và streaming (cảnh báo thời gian thực).*
+
+### 1. Phân loại các cặp đối sánh
+
+| Loại đối sánh | Dữ liệu nguồn (Chính thống) | Dữ liệu đích (Cộng đồng) | Kỹ thuật AI |
+|:---|:---|:---|:---|
+| Sản phẩm  Sản phẩm | Mã SKU, GTIN, tên sản phẩm | Tên SP, mã vạch từ ảnh | Entity Resolution, Fuzzy Matching |
+| Logo  Logo | File vector (SVG/AI), ảnh chuẩn | Ảnh chụp từ bao bì thực tế | Siamese Network, SIFT, ORB |
+| Chứng nhận | Số hiệu, ngày cấp, đơn vị cấp | Text OCR từ ảnh bao bì | NER, Regex, Tra cứu CSDL |
+| Ngày tháng | MFG, EXP từ hồ sơ lô hàng | MFG, EXP in trên bao bì | Date parsing, Logic validation |
+| Mã số lô / Serial | Batch number từ ERP | Batch number từ ảnh tem | Exact matching + Checksum |
+| Thông tin DN | Tên, địa chỉ, MST | Tên nhà SX in trên bao bì | Fuzzy matching, Levenshtein |
+
+### 2. Pipeline đối sánh hình ảnh (AI Vision)
+
+| Bước | Kỹ thuật | Mô tả |
+|:---:|:---|:---|
+| 1 | **Image normalization** | Chuẩn hóa kích thước, ánh sáng, góc chụp |
+| 2 | **ResNet-152 / EfficientNet** | Trích xuất vector đặc trưng 2048 chiều |
+| 3 | **YOLOv8 / Faster R-CNN** | Xác định vùng logo, tem, microtext |
+| 4 | **Siamese Network + Triplet Loss** | Tính khoảng cách Euclidean giữa vector đặc trưng |
+| 5 | **Similarity threshold** | score < 0.85  Cảnh báo sai lệch |
+
+>  **Độ chính xác:** Các mô hình hiện đại đạt **98.84%** trên ảnh chụp điện thoại với phương pháp RAML (Region-Aware Metric Learning).
+
+### 3. Pipeline đối sánh văn bản (OCR)
+
+| Bước | Kỹ thuật | Mô tả |
+|:---:|:---|:---|
+| 1 | **PaddleOCR (fine-tuned tiếng Việt)** | Nhận dạng chữ in trên ảnh bao bì |
+| 2 | **Spell checking, normalization** | Sửa lỗi chính tả, chuẩn hóa Unicode |
+| 3 | **PhoBERT + CRF (NER)** | Nhận diện: tên SP, hạn dùng, số lô, nhà SX |
+| 4 | **Fuzzy matching (Levenshtein, Jaro-Winkler)** | So sánh với dữ liệu chính thống, ngưỡng >0.9 |
+| 5 | **Rule-based engine** | Phát hiện mâu thuẫn logic (VD: hạn dùng < ngày SX) |
+
+### 4. Đối sánh cấu trúc mã số (Barcode/QR)
+
+| Loại mã | Kiểm tra chính thống | Kiểm tra thực tế | Phát hiện sai lệch |
+|:---|:---|:---|:---|
+| GTIN (EAN-13) | Đã đăng ký GS1, có trong CSDL quốc gia | Giải mã từ ảnh bao bì | Mã không tồn tại, sai checksum, hoặc thuộc DN khác |
+| Mã QR truy xuất | UID duy nhất, gắn với lô hàng cụ thể | Quét được nội dung | UID không tồn tại hoặc đã bị quét quá nhiều lần |
+| Số lô (Batch) | Định dạng theo quy tắc nội bộ DN | OCR từ bao bì | Sai định dạng hoặc không khớp lô đã sản xuất |
+| Số Serial | Duy nhất trong ERP | OCR hoặc RFID | Số serial đã được gán cho sản phẩm khác (trùng lặp) |
+
+### 5. Phát hiện bất thường với Big Data
+
+| Loại bất thường | Kỹ thuật | Dữ liệu đầu vào | Ngưỡng cảnh báo |
+|:---|:---|:---|:---|
+| Cùng UID quét quá nhiều lần | Time-series counting | Log quét từ app/web | >3 lần/ngày hoặc >10 lần/tuần |
+| SP xuất hiện ở vị trí địa lý bất thường | Geospatial clustering | IP, GPS | Ngoài vùng phân phối chính thức |
+| Tần suất báo cáo tăng đột biến theo batch | Change point detection | Số báo cáo theo thời gian | Z-score > 3 so với trung bình 7 ngày |
+| Similarity score thấp bất thường | Statistical process control | Similarity scores từ image matching | Dưới ngưỡng 0.7 và nằm dưới 3 sigma |
+| Hành vi báo cáo bất thường (spam) | Isolation Forest, DBSCAN | IP, user agent, nội dung | Phát hiện outlier trong không gian đặc trưng |
+
+### 6. Hệ thống xếp hạng tin cậy (Trust Scoring: 0  100)
+
+| Thành phần điểm | Trọng số | Cách tính |
+|:---|:---:|:---|
+| Image matching score | **35%** | Điểm tương đồng từ Siamese Network (0-1)  quy đổi 0-35 |
+| Text/OCR matching score | **25%** | Tỷ lệ các trường văn bản khớp với chính thống |
+| Code/UID validation | **20%** | 100% nếu mã hợp lệ, 0% nếu không tồn tại hoặc trùng lặp |
+| Community report score | **10%** | Giảm dần theo số lượng báo cáo nghi ngờ (tối đa trừ 10 điểm) |
+| Batch/lot anomaly score | **10%** | Dựa trên phát hiện bất thường về tần suất, địa lý |
+
+#### Phân loại Trust Score
+
+| Trust Score | Phân loại | Màu sắc | Hành động |
+|:---:|:---|:---:|:---|
+| 90  100 | Chính hãng  Tin cậy cao |  Xanh | Hiển thị bình thường |
+| 70  89 | Chính hãng  Cần theo dõi |  Vàng nhạt | Gắn cờ theo dõi thêm |
+| 50  69 | Nghi ngờ  Cần xác minh |  Cam | Cảnh báo nội bộ, ưu tiên kiểm tra |
+| 30  49 | Rủi ro cao  Có dấu hiệu giả |  Đỏ nhạt | Cảnh báo khẩn, đề xuất kiểm tra thực tế |
+| 0  29 | Hàng giả  Không hợp lệ |  Đỏ đậm | Chuyển hồ sơ sang cơ quan chức năng |
+
+---
+
+---
+
+## V.  CẢNH BÁO VÒNG ĐỜI VÀ HẠN HIỆU LỰC
+
+### 1. Cơ sở dữ liệu về thời hạn của các chứng nhận & sản phẩm
+
+Dựa trên các quy định hiện hành, hệ thống quản lý các loại thời hạn sau:
+
+| Loại chứng nhận / dữ liệu | Thời hạn hiệu lực điển hình | Căn cứ / Ghi chú |
+|:---|:---:|:---|
+| Chứng nhận HACCP | 3 năm | Có hiệu lực 3 năm, kèm đánh giá giám sát định kỳ hàng năm |
+| Chứng nhận ISO (các loại) | 3 năm | Yêu cầu đánh giá giám sát hàng năm và tái chứng nhận sau 3 năm |
+| Chứng nhận VietGAP | Tối đa 3 năm | Theo hướng dẫn tại Thông tư 28/2012/TT-BKHCN |
+| Chứng nhận Organic | 1 - 3 năm | Tùy theo tổ chức chứng nhận và quốc gia |
+| Chứng nhận Halal | 1 - 3 năm | Phụ thuộc vào tổ chức chứng nhận Halal từng quốc gia |
+| Chứng nhận RoHS | Không có thời hạn cố định | Là chứng nhận tuân thủ cho từng lô sản phẩm |
+| Chứng nhận CE | Không có thời hạn cố định | Có hiệu lực khi sản phẩm còn được sản xuất theo tiêu chuẩn đó |
+| Thời hạn sử dụng sản phẩm (EXP) | Theo sản phẩm | Ghi trực tiếp trên bao bì và hồ sơ lô hàng |
+| Ngày sản xuất (MFG) | Điểm mốc tham chiếu | Dùng để tính hạn sử dụng |
+
+### 2. Kiến trúc tính năng: Hệ thống Cảnh báo Đa lớp
+
+Hệ thống được thiết kế với 3 lớp cảnh báo độc lập nhưng tích hợp chặt chẽ:
+
+####  Lớp 1: Cảnh báo chứng nhận doanh nghiệp
+Tự động rà quét tất cả các chứng nhận đã được số hóa trong hệ thống (ISO, HACCP, Halal, v.v.).
+
+| Mức cảnh báo | Ngưỡng thời gian | Hành động hệ thống |
+|:---:|:---|:---|
+| **Bình thường** | Còn > 90 ngày | Không có cảnh báo |
+| **Sắp hết hạn** | Còn 90 ngày | Gửi email/thông báo nội bộ cho doanh nghiệp, hiển thị badge vàng trên dashboard |
+| **Nguy cơ cao** | Còn 30 ngày | Gửi thông báo hàng ngày, hiển thị badge cam, đề xuất gia hạn |
+| **Quá hạn** | < 0 ngày | Cảnh báo đỏ, tự động gắn cờ sản phẩm liên quan, chặn xuất kho nếu cấu hình |
+
+####  Lớp 2: Cảnh báo hạn sử dụng sản phẩm (EXP)
+Quản lý theo từng lô hàng, đặc biệt quan trọng cho thực phẩm, mỹ phẩm, dược phẩm.
+
+| Mức cảnh báo | Ngưỡng thời gian | Hành động hệ thống |
+|:---:|:---|:---|
+| **Còn dài** | Còn > 30% thời gian | Không cảnh báo |
+| **Cận date** | Còn 30 ngày (hoặc tùy chỉnh) | Cảnh báo nội bộ, đề xuất chương trình ưu đãi để xả hàng |
+| **Sắp hết hạn** | Còn 7 ngày | Cảnh báo khẩn cấp, yêu cầu xử lý (trả lại NCC, tiêu hủy, chuyển đổi) |
+| **Quá hạn** | < 0 ngày | Cảnh báo đỏ, tự động chặn xuất kho, không cho phép bán |
+
+####  Lớp 3: Cảnh báo tuân thủ phiên bản tiêu chuẩn
+Kiểm tra tính hợp lệ của phiên bản tiêu chuẩn đang áp dụng.
+
+| Tiêu chuẩn | Phiên bản hiện hành | Ngày ban hành | Cảnh báo khi |
+|:---|:---:|:---:|:---|
+| RoHS | RoHS 3.0 (2019) | 2019 | Doanh nghiệp chỉ có RoHS 1.0 hoặc 2.0 |
+| HACCP | Codex Rev.5:2020 | 2020 | Doanh nghiệp chỉ có bản 1997 hoặc 2003 |
+
+### 3. Kênh cảnh báo & Thông báo
+
+Hệ thống hỗ trợ đa kênh để đảm bảo doanh nghiệp không bỏ lỡ cảnh báo quan trọng:
+
+| Kênh thông báo | Đối tượng | Thời điểm | Nội dung |
+|:---|:---|:---|:---|
+| **Dashboard nội bộ** | Quản trị doanh nghiệp | Thời gian thực | Hiển thị badge đỏ/vàng/cam trên từng mục |
+| **Email** | Người quản lý được chỉ định | Hàng ngày (8:00) | Báo cáo tổng hợp các cảnh báo mới |
+| **Push notification** | Người dùng app DN | Thời gian thực | Cảnh báo khẩn cấp (quá hạn, <7 ngày) |
+| **Webhook / API** | Hệ thống ERP của DN | Thời gian thực | Tự động chặn xuất kho hoặc tạo phiếu xử lý |
+| **Báo cáo định kỳ** | Ban lãnh đạo | Hàng tuần / tháng | Báo cáo phân tích xu hướng hết hạn |
+
+---
+
+## VI.  BẢNG ĐIỀU KHIỂN TUÂN THỦ & RÀ SOÁT HỒ SƠ DOANH NGHIỆP
+
+### 1. Tổng quan yêu cầu & phạm vi
+*   **Mục tiêu chính:** Cung cấp bức tranh toàn diện, tự động về mức độ tuân thủ của doanh nghiệp dựa trên dữ liệu đã số hóa.
+*   **Đối tượng sử dụng:** Cán bộ tư vấn cấp cao, chuyên viên tuân thủ nội bộ.
+
+### 2. Cơ chế kiểm tra tự động
+
+| Nhóm dữ liệu | Dữ liệu cần kiểm tra | Cơ chế kiểm tra & Phát hiện thiếu sót |
+|:---|:---|:---|
+| **Chứng nhận hệ thống** | ISO, HACCP, Halal, VietGAP, Organic... | Kiểm tra sự tồn tại (file scan), hiệu lực (ngày hết hạn), lỗi thời (phiên bản), phát hiện thiếu theo ngành hàng. |
+| **Sản phẩm & Lô hàng** | EXP, MFG, Mã lô, GTIN | Kiểm tra hết hạn, tính hợp lệ của GTIN (đúng checksum, đăng ký GS1). |
+| **Hồ sơ pháp lý** | Giấy phép kinh doanh, ATTP, C/O, Giấy phép nhập khẩu... | Kiểm tra sự hiện diện, đối chiếu tên DN, thẩm quyền cấp phép (Cục ATTP, Bộ Công Thương). |
+| **Thông tin công bố** | Bản tự công bố sản phẩm | Kiểm tra sự tồn tại, hiệu lực (gắn cờ nếu quá 3-5 năm để xem xét cập nhật), đầy đủ thành phần (CFS, kiểm nghiệm, nhãn phụ). |
+
+### 3. Checklist Tuân thủ Động (Ví dụ)
+
+**Checklist cho ngành hàng Mỹ phẩm nhập khẩu:**
+| ID | Hạng mục kiểm tra | Yêu cầu | Hành động đề xuất |
+|:---|:---|:---|:---|
+| C01 | Phiếu công bố sản phẩm | Bắt buộc phải có số tiếp nhận từ Bộ Y tế | - |
+| C02 | Giấy ủy quyền của nhà SX | Bắt buộc phải có | Yêu cầu bổ sung ngay để hoàn thiện hồ sơ. |
+| C03 | Giấy chứng nhận CFS | Bắt buộc với hàng nhập khẩu | Liên hệ nhà SX để xin gia hạn CFS mới (nếu sắp hết hạn). |
+
+### 4. Các báo cáo nội bộ dành cho Quản lý cấp cao
+
+*   **Báo cáo tổng hợp mức độ tuân thủ:** Tỷ lệ DN đáp ứng đầy đủ / đáp ứng một phần / chưa đáp ứng.
+*   **Báo cáo chi tiết theo loại thiếu hụt:** Liệt kê DN cần bổ sung hồ sơ theo mức độ ưu tiên (Cao/Rất cao).
+*   **Báo cáo xu hướng theo thời gian:** Biểu đồ tăng giảm số lượng DN đáp ứng đủ hồ sơ qua các tháng.
+*   **Bản đồ nóng (Heatmap):** Phân bố các doanh nghiệp có rủi ro cao theo khu vực địa lý.
+
+### 5. Quy trình vận hành liên tục
+
+1.  **Nhập dữ liệu & Số hóa:** DN tải file scan lên, hệ thống trích xuất thông tin (OCR).
+2.  **Xây dựng "Ngân hàng yêu cầu":** Pháp chế nhập quy định về hồ sơ, thời hạn theo từng ngành hàng.
+3.  **Rà quét & Đối chiếu:** Hệ thống tự động chạy định kỳ so sánh dữ liệu DN với yêu cầu.
+4.  **Chấm điểm & Phân loại:** Chấm điểm 0-100 và phân nhóm rủi ro.
+5.  **Báo cáo & Cảnh báo:** Gửi thông báo đến cán bộ phụ trách và cấp quản lý.
+
+---
+*Ghi chú: Toàn bộ nội dung trên được trích xuất và hệ thống hóa trực tiếp từ tài liệu VNTrust.pdf.*
+
+## V.  CẢNH BÁO VÒNG ĐỜI VÀ HẠN HIỆU LỰC
+
+### 1. Cơ sở dữ liệu về thời hạn chứng nhận & sản phẩm
+
+| Loại chứng nhận / dữ liệu | Thời hạn điển hình | Căn cứ / Ghi chú |
+|:---|:---:|:---|
+| Chứng nhận HACCP | 3 năm | Kèm đánh giá giám sát định kỳ hàng năm |
+| Chứng nhận ISO (các loại) | 3 năm | Yêu cầu đánh giá giám sát hàng năm và tái chứng nhận |
+| Chứng nhận VietGAP | Tối đa 3 năm | Theo Thông tư 28/2012/TT-BKHCN |
+| Chứng nhận Organic | 13 năm | Tùy theo tổ chức chứng nhận và quốc gia |
+| Chứng nhận Halal | 13 năm | Phụ thuộc vào tổ chức chứng nhận Halal từng quốc gia |
+| Chứng nhận RoHS | Không có thời hạn cố định | Là chứng nhận tuân thủ cho từng lô sản phẩm |
+| Chứng nhận CE | Không có thời hạn cố định | Có hiệu lực khi SP còn được sản xuất theo tiêu chuẩn đó |
+| Thời hạn sử dụng (EXP) | Theo sản phẩm | Ghi trực tiếp trên bao bì và hồ sơ lô hàng |
+| Ngày sản xuất (MFG) | Điểm mốc tham chiếu | Dùng để tính hạn sử dụng |
+
+### 2. Kiến trúc 3 lớp cảnh báo đa tầng
+
+---
+
+####  LỚP 1  Cảnh báo chứng nhận doanh nghiệp
+
+> *Tự động rà quét tất cả các chứng nhận đã được số hóa trong hệ thống (ISO, HACCP, Halal, v.v.)*
+
+| Mức cảnh báo | Ngưỡng thời gian | Hành động hệ thống |
+|:---|:---:|:---|
+|  Bình thường | Còn > 90 ngày | Không có cảnh báo |
+|  Sắp hết hạn | Còn 90 ngày | Gửi email/thông báo nội bộ cho DN, hiển thị badge vàng |
+|  Nguy cơ cao | Còn 30 ngày | Gửi thông báo hàng ngày, hiển thị badge cam, đề xuất gia hạn |
+|  Quá hạn | < 0 ngày | Cảnh báo đỏ, tự động gắn cờ SP liên quan, chặn xuất kho (nếu cấu hình) |
+
+**Công thức tính:**
+```
+Ngày hết hạn = Ngày cấp + Thời hạn hiệu lực (năm)
+Số ngày còn lại = Ngày hết hạn - Ngày hiện tại
+```
+
+---
+
+####  LỚP 2  Cảnh báo hạn sử dụng sản phẩm (EXP)
+
+> *Quản lý theo từng lô hàng, đặc biệt quan trọng cho thực phẩm, mỹ phẩm, dược phẩm.*
+
+| Mức cảnh báo | Ngưỡng thời gian | Hành động hệ thống |
+|:---|:---:|:---|
+|  Còn dài | Còn > 30% thời gian | Không cảnh báo |
+|  Cận date | Còn 30 ngày (hoặc theo cài đặt) | Cảnh báo nội bộ, đề xuất chương trình ưu đãi để xả hàng |
+|  Sắp hết hạn | Còn 7 ngày | Cảnh báo khẩn cấp, yêu cầu xử lý (trả lại NCC, tiêu hủy) |
+|  Quá hạn | < 0 ngày | Cảnh báo đỏ, tự động chặn xuất kho, không cho phép bán |
+
+**Tính năng mở rộng (tùy chỉnh theo doanh nghiệp):**
+- Sữa bột: cảnh báo trước **60 ngày**
+- Mỹ phẩm: cảnh báo trước **90 ngày**
+
+---
+
+####  LỚP 3  Cảnh báo tuân thủ phiên bản tiêu chuẩn
+
+> *Một số tiêu chuẩn có nhiều phiên bản, chỉ phiên bản mới nhất được chấp nhận.*
+
+| Tiêu chuẩn | Phiên bản hiện hành | Năm ban hành | Cảnh báo khi |
+|:---|:---:|:---:|:---|
+| RoHS | RoHS 3.0 (2019) | 2019 | DN chỉ có RoHS 1.0 hoặc 2.0 |
+| HACCP Codex | Rev.5:2020 | 2020 | DN chỉ có bản 1997 hoặc 2003 |
+
+### 3. Các kênh cảnh báo & thông báo
+
+| Kênh thông báo | Đối tượng | Thời điểm | Nội dung |
+|:---|:---|:---:|:---|
+| **Dashboard nội bộ** | Quản trị doanh nghiệp | Thời gian thực | Hiển thị badge đỏ/vàng/cam trên từng mục |
+| **Email** | Người quản lý được chỉ định | Hàng ngày (8:00) | Báo cáo tổng hợp các cảnh báo mới |
+| **Push notification (App)** | Người dùng app doanh nghiệp | Thời gian thực | Cảnh báo khẩn cấp (quá hạn, <7 ngày) |
+| **Webhook / API** | Hệ thống ERP của DN | Thời gian thực | Tự động chặn xuất kho hoặc tạo phiếu xử lý |
+| **Báo cáo định kỳ** | Ban lãnh đạo | Hàng tuần / tháng | Báo cáo phân tích xu hướng hết hạn |
+
+**Mẫu email cảnh báo hàng ngày:**
+```
+TIÊU ĐỀ: [CẢNH BÁO] Hệ thống - Báo cáo cảnh báo ngày DD/MM/YYYY
+
+NỘI DUNG:
+ Quá hạn (cần xử lý ngay):   3 chứng nhận, 12 lô hàng
+ Sắp hết hạn (<30 ngày):   5 chứng nhận, 8 lô hàng
+ Sắp hết hạn (<90 ngày):   2 chứng nhận
+
+CHI TIẾT:
+1. Chứng nhận ISO 9001 của Công ty A hết hạn ngày 15/05/2025 (còn 12 ngày)
+2. Lô hàng Kem chống nắng XYZ (Lô: LOT2401) hết hạn 20/04/2025 (còn 7 ngày)
+```
+
+### 4. Cấu hình linh hoạt cho doanh nghiệp
+
+| Tham số cấu hình | Giá trị mặc định | Phạm vi cho phép |
+|:---|:---:|:---:|
+| Số ngày cảnh báo trước khi hết hạn (EXP) | 30 ngày | 1  365 ngày |
+| Số ngày cảnh báo chứng nhận | 90 ngày | 30  365 ngày |
+| Tự động chặn xuất kho khi quá hạn | Bật (có thể tắt) | Bật / Tắt |
+| Tần suất gửi email cảnh báo | Hàng ngày 8:00 | Hàng ngày / Hàng tuần |
+| Danh sách người nhận cảnh báo | Quản trị viên | Có thể thêm nhiều email |
+
+### 5. Báo cáo & Phân tích vòng đời
+
+| Báo cáo | Mô tả | Xu hướng phân tích |
+|:---|:---|:---|
+| Báo cáo chứng nhận sắp hết hạn | Danh sách chứng nhận hết hạn trong 3 tháng tới | Theo loại chứng nhận, theo thời gian |
+| Báo cáo lô hàng cận date | Sản phẩm sắp hết hạn, đề xuất xả hàng | Theo nhóm sản phẩm, theo kho |
+| Báo cáo tuân thủ tiêu chuẩn | Tỷ lệ chứng nhận còn hiệu lực / hết hạn | Theo doanh nghiệp, theo ngành hàng |
+| Báo cáo xử lý cảnh báo | Thống kê thời gian phản hồi và xử lý | Đánh giá hiệu quả quản lý |
+
+### 6. Lộ trình phát triển (Cảnh báo vòng đời)
+
+| Giai đoạn | Thời gian | Tính năng |
+|:---:|:---:|:---|
+| **Phase 1** | 23 tuần | Quản lý thời hạn chứng nhận cơ bản, cảnh báo email |
+| **Phase 2** | 34 tuần | Quản lý EXP sản phẩm theo lô, cảnh báo đa kênh, tùy chỉnh ngưỡng |
+| **Phase 3** | 23 tuần | Kiểm tra phiên bản tiêu chuẩn, tích hợp Webhook ERP, báo cáo nâng cao |
+
+---
+
+## VI.  BẢNG ĐIỀU KHIỂN TUÂN THỦ & RÀ SOÁT HỒ SƠ DOANH NGHIỆP
+
+### 1. Tổng quan & Phạm vi
+
+| Thuộc tính | Chi tiết |
+|:---|:---|
+| **Mục tiêu chính** | Cung cấp bức tranh toàn diện, tự động và chính xác về mức độ tuân thủ của doanh nghiệp |
+| **Đối tượng sử dụng** | Cán bộ tư vấn cấp cao, chuyên viên tuân thủ nội bộ  không phổ cập ra bên ngoài |
+| **Tính chất** | Báo cáo nội bộ, phục vụ đánh giá rủi ro, tư vấn giải pháp và ra quyết định |
+
+### 2. Dữ liệu cốt lõi và cơ chế kiểm tra tự động
+
+| Nhóm dữ liệu | Dữ liệu cần kiểm tra | Nguồn dữ liệu | Cơ chế kiểm tra |
+|:---|:---|:---|:---|
+| **Chứng nhận hệ thống** | ISO, HACCP, Halal, VietGAP, GMP, CE, RoHS... | File scan (PDF, JPG), dữ liệu OCR | Kiểm tra sự tồn tại, hiệu lực, phiên bản tiêu chuẩn, phát hiện thiếu |
+| **Sản phẩm & Lô hàng** | EXP, MFG, Mã lô, Mã vạch (GTIN) | Hồ sơ công bố sản phẩm, nhập liệu DN | Kiểm tra hết hạn, tính hợp lệ GTIN (cấu trúc checksum + GS1) |
+| **Hồ sơ pháp lý** | Giấy phép ĐKKD, ATTP, C/O, giấy phép nhập khẩu, phiếu công bố mỹ phẩm | File scan, dữ liệu OCR | Kiểm tra sự hiện diện, đối chiếu tên DN, thẩm quyền cấp |
+| **Thông tin công bố** | Bản tự công bố sản phẩm (thực phẩm, mỹ phẩm) | File scan, dữ liệu OCR | Kiểm tra sự tồn tại, hiệu lực, đầy đủ thành phần hồ sơ (CFS, kiểm nghiệm, nhãn phụ) |
+
+### 3. Checklist Tuân thủ Động theo ngành hàng
+
+####  Checklist Mỹ phẩm nhập khẩu (Quy định 09/VBHN-BYT 2025)
+
+| ID | Hạng mục kiểm tra | Yêu cầu | Trạng thái (Ví dụ) | Hành động đề xuất |
+|:---:|:---|:---|:---:|:---|
+| C01 | Phiếu công bố sản phẩm mỹ phẩm | Bắt buộc có số tiếp nhận từ Bộ Y tế |  Đã có |  |
+| C02 | Giấy ủy quyền của nhà sản xuất | Bắt buộc phải có |  Chưa có | Yêu cầu bổ sung ngay để hoàn thiện hồ sơ công bố |
+| C03 | Giấy chứng nhận lưu hành tự do (CFS) | Bắt buộc với hàng nhập khẩu |  Sắp hết hạn (15 ngày) | Liên hệ nhà SX để xin gia hạn CFS mới |
+
+####  Checklist Thực phẩm bảo vệ sức khỏe (Nghị định 15/2018/NĐ-CP)
+
+| ID | Hạng mục kiểm tra | Yêu cầu | Trạng thái | Hành động đề xuất |
+|:---:|:---|:---|:---:|:---|
+| F01 | Giấy chứng nhận GMP | Bắt buộc theo Nghị định 15/2018 |  Có (còn 6 tháng) |  |
+| F02 | Kết quả kiểm nghiệm an toàn thực phẩm | Phải có trong hồ sơ và còn hiệu lực (12 tháng) |  Chưa có | Không thể lưu hành. Yêu cầu bổ sung kết quả kiểm nghiệm |
+| F03 | Nhãn phụ tiếng Việt | Bắt buộc với hàng nhập khẩu |  Đã có |  |
+
+### 4. Báo cáo nội bộ dành cho Quản lý cấp cao
+
+#### 4.1 Báo cáo tổng hợp mức độ tuân thủ (Ví dụ minh họa)
+
+| Hạng mục | Số lượng | Tỷ lệ |
+|:---|:---:|:---:|
+| Tổng số doanh nghiệp đang được giám sát | 150 | 100% |
+| DN **Đáp ứng đầy đủ** (có đủ mọi chứng nhận, giấy tờ, còn hiệu lực) | 45 | 30% |
+| DN **Đáp ứng một phần** (còn thiếu 12 loại giấy tờ / chứng nhận) | 75 | 50% |
+| DN **Chưa đáp ứng** (thiếu nhiều giấy tờ hoặc có giấy tờ đã hết hạn) | 30 | 20% |
+
+#### 4.2 Báo cáo chi tiết theo loại thiếu hụt
+
+| Doanh nghiệp | Loại thiếu hụt chính | Mức độ ưu tiên | Hành động đề xuất |
+|:---|:---|:---:|:---|
+| Công ty TNHH Mỹ phẩm A | Thiếu CFS, hết hạn công bố |  Cao | Liên hệ đôn đốc bổ sung CFS, hỗ trợ làm lại thủ tục công bố SP |
+| Công ty CP Thực phẩm B | Hết hạn chứng nhận HACCP (đã 2 tháng) |  Rất cao | Cảnh báo khẩn! DN đang hoạt động không có HACCP. Đề xuất kiểm tra đột xuất |
+| Công ty Xuất nhập khẩu C | Thiếu C/O cho lô hàng sắp xuất |  Trung bình | Nhắc nhở DN chuẩn bị C/O để được hưởng ưu đãi thuế |
+
+#### 4.3 Báo cáo xu hướng theo thời gian
+
+- **Biểu đồ đường (Line Chart):** Số lượng DN "đáp ứng đầy đủ" tăng/giảm theo từng tháng  phản ánh hiệu quả đội ngũ tư vấn.
+- **Biểu đồ tròn (Pie Chart):** Phân bố các loại thiếu hụt phổ biến nhất (VD: 40% thiếu CFS, 30% hết hạn ISO, 20% thiếu nhãn phụ).
+- **Bản đồ nóng (Heatmap):** Phân bố các DN có rủi ro cao theo khu vực địa lý.
+
+### 5. Quy trình vận hành & Công nghệ
+
+| Giai đoạn | Mô tả | Công nghệ / Việc cần làm |
+|:---:|:---|:---|
+| 1. Nhập dữ liệu & Số hóa | DN tải file scan lên, hệ thống tự động trích xuất | OCR (PaddleOCR), Key-Value Extraction, Data Lake |
+| 2. Xây dựng "Ngân hàng yêu cầu" | Pháp chế nhập yêu cầu theo ngành hàng, thị trường | Admin Panel với giao diện Rule Engine |
+| 3. Rà quét & Đối chiếu | Hệ thống tự động chạy định kỳ (hàng đêm, tuần) | Rule Engine (VD: Drools), so sánh ngày tháng, fuzzy matching |
+| 4. Chấm điểm & Phân loại | Chấm điểm 0100 và phân nhóm rủi ro | Scoring engine, xác định ngưỡng cho từng mức |
+| 5. Báo cáo & Cảnh báo | Tự động tạo dashboard, báo cáo PDF, gửi cảnh báo | BI tools (Power BI / Tableau), SendGrid, Amazon SES |
+
+### 6. Lộ trình triển khai (Compliance Dashboard)
+
+| Giai đoạn | Thời gian | Tính năng |
+|:---:|:---:|:---|
+| **Phase 1** | 23 tuần | Xây dựng Checklist tĩnh  Rule engine cơ bản: hạn chứng nhận (ISO, HACCP) và hạn sản phẩm (EXP) |
+| **Phase 2** | 34 tuần | Mở rộng & Tự động hóa: kiểm tra sự hiện diện CFS/GMP/C/O, tính hợp lệ GTIN, báo cáo tổng hợp |
+| **Phase 3** | 23 tuần | Cảnh báo chủ động & Đề xuất thông minh: gửi cảnh báo tự động, tích hợp gợi ý hành động theo loại thiếu hụt |
+
+---
+
+* Ghi chú: Toàn bộ nội dung trên được bổ sung bao gồm các quy định từ tài liệu cập nhật của hệ thống.
+
+---
+
+## VII. QUẢN LÝ DỮ LIỆU HẬU KIỂM & PHÂN TÍCH CHẤT LƯỢNG (POST-MARKET SURVEILLANCE)
+
+### 1. Tổng quan yêu cầu & mục tiêu
+* **Khái niệm:** Thu thập và quản lý kết quả phân tích chất lượng mẫu sản phẩm/hàng hóa sau khi đã đưa ra thị trường (hậu kiểm).
+* **Mục đích:** Phát hiện các trường hợp vi phạm an toàn thực phẩm, chất lượng (vd: rau củ quả Vietgap nhưng vượt ngưỡng dư lượng thuốc bảo vệ thực vật, thịt lợn bệnh trà trộn,...) để có biện pháp xử lý kịp thời, ngăn chặn gian lận thương mại.
+
+### 2. Luồng nghiệp vụ cập nhật kết quả phân tích
+Hệ thống cho phép các đối tượng khác nhau tải lên kết quả phân tích từ cơ sở kiểm nghiệm hợp chuẩn:
+1. **Doanh nghiệp sản xuất:** Tự lấy mẫu phân tích lô hàng của mình và cung cấp kết quả lên hệ thống để minh bạch chất lượng.
+2. **Người tiêu dùng:** Khách hàng mua sản phẩm, lấy mẫu đi thuê cơ sở uy tín phân tích và upload kết quả.
+3. **Đơn vị đối tác thứ 3 (Quản lý thị trường / Công an):** Lấy mẫu đi phân tích và cập nhật vào hệ thống để phục vụ công tác thanh tra.
+
+### 3. Quy trình kiểm tra & Đối chiếu tự động
+1. **Kiểm tra tính chính danh:** Xác thực tính hợp lệ của Giấy công bố kết quả phân tích (nguồn gốc, chữ ký số (nếu có)).
+2. **So sánh tiêu chuẩn:** Hệ thống tự động trích xuất các chỉ tiêu phân tích và đối chiếu với tiêu chuẩn quy định / ngưỡng cho phép đối với sản phẩm đó.
+3. **Kết luận tự động:** 
+   * **Đảm bảo:** Nếu tất cả các chỉ tiêu KHÔNG vượt ngưỡng cho phép.
+   * **Không đảm bảo:** Nếu có bất kỳ chỉ tiêu nào VƯỢT ngưỡng cho phép.
+4. **Báo cáo & Thống kê:** Hiển thị trên biểu đồ, dashboard, xuất báo cáo danh sách cảnh báo vi phạm chất lượng.
+
+### 4. Tích hợp và Mở rộng
+* **API Hậu kiểm:** Thiết kế sẵn các "đầu chờ" API để sẵn sàng tích hợp với hệ thống của các cơ quan chức năng (Quản lý thị trường, Công an vệ sinh ATTP) trong tương lai. Hiện tại để đảm bảo tính độc lập và khách quan, hệ thống hoạt động khép kín.
+* **Mở rộng phần cứng:** Hệ thống đã được thiết kế sẵn kho dữ liệu để sau này bổ sung tính năng thu nhận dữ liệu phân tích hàm lượng trực tiếp từ các **thiết bị phần cứng cầm tay tích hợp AI (Vision AI, Deep Learning)** có khả năng quét và phát hiện hàng kém chất lượng tại hiện trường.

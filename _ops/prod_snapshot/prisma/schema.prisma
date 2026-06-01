@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model DoanhNghiep {
+  id              String      @id @default(uuid())
+  maSoThue        String      @unique
+  ten             String
+  diaChi          String?
+  nganh_VSIC      String?
+  email           String?     // Email miền riêng doanh nghiệp
+  hotline         String?     // Hotline xác thực
+  nguoiDaiDien    String?     // Người đại diện pháp luật
+  giayphep_url    String?     // URL/tên file giấy phép KD đã upload
+  cmnd_url        String?     // URL/tên file CMND/CCCD người đại diện
+  loai            String      // NSX | NNK
+  ngayDangKy      DateTime    @default(now())
+  trangThai       String      @default("pending") // pending | verified | suspended
+  sanPhams        SanPham[]
+  nguoiDungs      NguoiDung[]
+}
+
+
+model SanPham {
+  id            String          @id @default(uuid())
+  maSKU         String          @unique
+  GTIN          String?
+  ten           String
+  moTa          String?
+  hinhAnh       String?
+  nuocSanXuat   String?
+  // FR-PRD-01: Extended fields
+  thanhPhan     String?         // Thành phần / Ingredients
+  nhomSanPham   String?         // Nhóm SP cấp 1: Thực phẩm | Dược phẩm | Mỹ phẩm
+  phanLoai2     String?         // Phân loại cấp 2
+  phamCap       String?         // Phẩm cấp: premium | standard | economy
+  khoiLuong     String?         // Khối lượng/thể tích (VD: 500g, 1L)
+  quyCach       String?         // Quy cách đóng gói (VD: 24 hộp/thùng)
+  hinhAnhUrl    String?         // URL ảnh sản phẩm (upload bởi NSX)
+  phienBan      Int             @default(1)  // Version control FR-PRD-06
+  ngayTao       DateTime        @default(now())
+  doanhNghiepId String
+  doanhNghiep   DoanhNghiep     @relation(fields: [doanhNghiepId], references: [id])
+  loHangs       LoHang[]
+  chungNhans    ChungNhan[]
+  hauKiems      KetQuaHauKiem[]
+}
+
+model LoHang {
+  id             String          @id @default(uuid())
+  maLo           String          @unique
+  ngaySanXuat    DateTime
+  hanDung        DateTime
+  soLuong        Int
+  trangThai      String          @default("active") // active | distributed | suspended | recalled | pending_review | pending_distributor | ready
+  khuVucPhanPhoi String?
+  // FR-BAT-07: Tờ khai hải quan
+  soToKhaiHQ     String?         // Số tờ khai hải quan
+  ngayThongQuan  DateTime?       // Ngày thông quan
+  cuaKhau        String?         // Cửa khẩu nhập
+  hsCode         String?         // HS Code hàng hóa
+  nuocXuatXu     String?         // Nước xuất xứ
+  sanPhamId      String
+  sanPham        SanPham         @relation(fields: [sanPhamId], references: [id])
+  uids           MaDinhDanh[]
+  chungNhans     ChungNhan[]
+  hauKiems       KetQuaHauKiem[]
+  khoHangs       KhoHang[]
+  donChuyenHangs DonChuyenHang[]
+}
+
+// FR-BAT-05: Nhập/xuất kho với timestamp, vị trí GPS
+model KhoHang {
+  id        String   @id @default(uuid())
+  loaiGD    String   // NHAP_KHO | XUAT_KHO | CHUYEN_KHO
+  soLuong   Int
+  viTri     String?  // Địa chỉ kho
+  lat       Float?
+  lng       Float?
+  nguoiThuc String   // Người thực hiện
+  ghiChu    String?
+  thoiGian  DateTime @default(now())
+  loHangId  String
+  loHang    LoHang   @relation(fields: [loHangId], references: [id])
+}
+
+model MaDinhDanh {
+  uid          String     @id @default(uuid()) // UUID v4
+  qrCodeUrl    String?
+  serialNumber String?    @unique
+  loai         String     @default("QR") // QR | Serial
+  ngayTao      DateTime   @default(now())
+  soLanQuet    Int        @default(0)
+  trangThai    String     @default("active") // active | expired | flagged | fake
+  loHangId     String
+  loHang       LoHang     @relation(fields: [loHangId], references: [id])
+  luotQuets    LuotQuet[]
+}
+
+model LuotQuet {
+  id         String     @id @default(uuid())
+  uid        String
+  thoiGian   DateTime   @default(now())
+  diaChi_IP  String?
+  lat        Float?
+  lng        Float?
+  ketQua     String // genuine | suspect | fake | expired
+  thietBi    String?
+  maDinhDanh MaDinhDanh @relation(fields: [uid], references: [uid])
+}
+
+model CanhBao {
+  id          String   @id @default(uuid())
+  loai        String
+  mucDo       String // low | medium | high
+  moTa        String
+  thoiGian    DateTime @default(now())
+  trangThai   String   @default("open") // open | reviewing | closed
+  // Tùy chọn liên kết đến MaDinhDanh hoặc SanPham
+  uid         String?
+  nguoiBaoCao String?
+}
+
+model ChungNhan {
+  id               String   @id @default(uuid())
+  loai             String   // ISO | HACCP | GMP | CFS
+  soChungNhan      String
+  ngayCap          DateTime
+  ngayHetHan       DateTime
+  toChucCap        String?
+  hinhAnhUrl       String?  // URL ảnh chứng nhận upload bởi NSX
+  trangThaiDuyet   String   @default("pending") // pending | approved | rejected
+  ghiChuAdmin      String?  // Ghi chú khi admin từ chối
+  ngayDuyet        DateTime?
+  ngayTao          DateTime @default(now())
+  sanPhamId        String?
+  sanPham          SanPham? @relation(fields: [sanPhamId], references: [id])
+  loHangId         String?
+  loHang           LoHang?  @relation(fields: [loHangId], references: [id])
+}
+
+model NguoiDung {
+  id            String       @id @default(uuid())
+  ten           String?
+  soDienThoai   String?
+  email         String       @unique
+  matKhau       String
+  vaiTro        String       @default("staff") // admin | manufacturer | importer | consumer
+  trangThai     String       @default("active")
+  doanhNghiepId String?
+  doanhNghiep   DoanhNghiep? @relation(fields: [doanhNghiepId], references: [id])
+}
+
+model KetQuaHauKiem {
+  id                String   @id @default(uuid())
+  doiTuongLayMau    String // doanhnghiep | nguoitieudung | doituongthu3 (quanlythitruong)
+  coSoPhanTich      String
+  ngayLayMau        DateTime
+  ngayPhanTich      DateTime
+  ketQua            String // dambao | khongdambao
+  chiTieuVuotNguong String? // Danh sách các chỉ tiêu vượt ngưỡng (nếu có)
+  fileDinhKem       String? // URL tới chứng nhận kết quả phân tích
+  trangThaiXacMinh  String   @default("pending") // pending | verified | rejected
+  ghiChu            String?
+  ngayTao           DateTime @default(now())
+
+  sanPhamId String?
+  sanPham   SanPham? @relation(fields: [sanPhamId], references: [id])
+
+  loHangId String?
+  loHang   LoHang? @relation(fields: [loHangId], references: [id])
+}
+
+model NhatKy {
+  id     String   @id @default(uuid())
+  action String
+  user   String
+  role   String   @default("user")
+  ip     String   @default("Unknown")
+  time   DateTime @default(now())
+  status String   @default("success")
+}
+
+// Thông báo hệ thống — gửi tới người dùng / doanh nghiệp / role
+model ThongBao {
+  id           String   @id @default(uuid())
+  tieuDe       String
+  noiDung      String
+  loai         String   @default("system") // system | kyc | shipment | alert
+  nguoiNhanId  String?  // Gửi tới user cụ thể
+  doanhNghiepId String? // Gửi tới toàn bộ doanh nghiệp
+  roleTarget   String?  // Gửi tới theo role: admin | manufacturer | importer | consumer | all
+  daDoc        Boolean  @default(false)
+  thoiGian     DateTime @default(now())
+}
+
+// Đơn chuyển hàng từ NSX tới NSD
+model DonChuyenHang {
+  id            String   @id @default(uuid())
+  loHangId      String
+  loHang        LoHang   @relation(fields: [loHangId], references: [id])
+  nsxDoanhNghiepId  String   // ID doanh nghiệp NSX
+  nsdDoanhNghiepId  String?  // ID doanh nghiệp NSD (có thể chọn sau)
+  ghiChu        String?
+  hinhAnhUrls   String?  // JSON array URLs ảnh lô hàng
+  // Trạng thái: pending_review | approved | rejected | pending_distributor | ready | distributed
+  trangThai     String   @default("pending_review")
+  adminNote     String?  // Ghi chú khi admin từ chối
+  thoiGian      DateTime @default(now())
+  capNhat       DateTime @updatedAt
+}
+
+// Báo cáo vi phạm từ người dùng
+model BaoCaoNguoiDung {
+  id          String   @id @default(uuid())
+  uid         String
+  noiMua      String?
+  giaMua      String?
+  lyDo        String?
+  hinhAnhUrls String?  // JSON array chứa danh sách URL ảnh
+  trangThai   String   @default("pending") // pending | resolved | rejected
+  thoiGian    DateTime @default(now())
+}

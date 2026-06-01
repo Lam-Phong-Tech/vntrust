@@ -1,0 +1,319 @@
+[
+  {
+    "page": "page.tsx",
+    "lines": 1242,
+    "onScore": 4,
+    "onTags": [
+      "cream-rgba",
+      "gold",
+      "gold-rgba",
+      "ink-bg"
+    ],
+    "offScore": 40,
+    "offTags": [
+      [
+        "bg-white",
+        29
+      ],
+      [
+        "tailwind-gradient",
+        11
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "report/page.tsx",
+    "lines": 747,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 25,
+    "offTags": [
+      [
+        "bg-white",
+        25
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "distribution/page.tsx",
+    "lines": 890,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 24,
+    "offTags": [
+      [
+        "bg-white",
+        24
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "profile/page.tsx",
+    "lines": 454,
+    "onScore": 1,
+    "onTags": [
+      "ink-bg"
+    ],
+    "offScore": 24,
+    "offTags": [
+      [
+        "bg-white",
+        23
+      ],
+      [
+        "tailwind-gradient",
+        1
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "kyc/page.tsx",
+    "lines": 752,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 22,
+    "offTags": [
+      [
+        "bg-white",
+        22
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "inventory/_id_/qr/page.tsx",
+    "lines": 461,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 21,
+    "offTags": [
+      [
+        "bg-slate-light",
+        8
+      ],
+      [
+        "bg-white",
+        7
+      ],
+      [
+        "text-slate-dark",
+        6
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "inventory/page.tsx",
+    "lines": 832,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 19,
+    "offTags": [
+      [
+        "bg-white",
+        19
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "security/page.tsx",
+    "lines": 587,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 17,
+    "offTags": [
+      [
+        "bg-white",
+        17
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "alerts/page.tsx",
+    "lines": 606,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 16,
+    "offTags": [
+      [
+        "bg-white",
+        16
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "readiness/page.tsx",
+    "lines": 333,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 16,
+    "offTags": [
+      [
+        "bg-white",
+        16
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "haukiem/page.tsx",
+    "lines": 591,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 12,
+    "offTags": [
+      [
+        "bg-white",
+        12
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "warehouse/page.tsx",
+    "lines": 412,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 11,
+    "offTags": [
+      [
+        "bg-white",
+        11
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "history/page.tsx",
+    "lines": 183,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 9,
+    "offTags": [
+      [
+        "bg-white",
+        9
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "risks/page.tsx",
+    "lines": 364,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 9,
+    "offTags": [
+      [
+        "bg-white",
+        9
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "certificates/page.tsx",
+    "lines": 364,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 8,
+    "offTags": [
+      [
+        "bg-white",
+        8
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "analytics/page.tsx",
+    "lines": 397,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 6,
+    "offTags": [
+      [
+        "bg-white",
+        6
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "compliance/page.tsx",
+    "lines": 383,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 6,
+    "offTags": [
+      [
+        "bg-white",
+        6
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "glossary/page.tsx",
+    "lines": 217,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 6,
+    "offTags": [
+      [
+        "bg-white",
+        6
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "create/page.tsx",
+    "lines": 55,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 5,
+    "offTags": [
+      [
+        "bg-white",
+        5
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "integration/page.tsx",
+    "lines": 312,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 5,
+    "offTags": [
+      [
+        "bg-white",
+        5
+      ]
+    ],
+    "classification": "OFF-THEME"
+  },
+  {
+    "page": "roadmap/page.tsx",
+    "lines": 279,
+    "onScore": 0,
+    "onTags": [],
+    "offScore": 5,
+    "offTags": [
+      [
+        "bg-white",
+        5
+      ]
+    ],
+    "classification": "OFF-THEME"
+  }
+]

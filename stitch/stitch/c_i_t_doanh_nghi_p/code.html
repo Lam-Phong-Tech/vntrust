@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Enterprise Settings | VeriGuard AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "secondary-fixed-dim": "#c3c7cc",
+                      "secondary-fixed": "#e0e3e8",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#00eaea",
+                      "tertiary": "#004f18",
+                      "inverse-primary": "#00dddd",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface-variant": "#434654",
+                      "on-tertiary-container": "#73ec80",
+                      "on-error": "#ffffff",
+                      "surface-container-high": "#e7e8e9",
+                      "inverse-on-surface": "#f0f1f2",
+                      "primary-fixed-dim": "#00dddd",
+                      "on-primary-fixed-variant": "#004f4f",
+                      "surface-tint": "#006a6a",
+                      "primary": "#004c4c",
+                      "on-background": "#191c1d",
+                      "primary-container": "#006666",
+                      "tertiary-fixed": "#83fc8e",
+                      "on-primary-fixed": "#002020",
+                      "background": "#f8f9fa",
+                      "surface-variant": "#e1e3e4",
+                      "on-secondary-fixed": "#181c20",
+                      "on-secondary-container": "#5f6368",
+                      "surface-container": "#edeeef",
+                      "surface-bright": "#f8f9fa",
+                      "tertiary-container": "#006a23",
+                      "on-surface": "#191c1d",
+                      "outline": "#737685",
+                      "on-secondary-fixed-variant": "#43474c",
+                      "on-error-container": "#93000a",
+                      "surface-container-low": "#f3f4f5",
+                      "inverse-surface": "#2e3132",
+                      "tertiary-fixed-dim": "#66df75",
+                      "secondary-container": "#dde0e5",
+                      "on-tertiary-fixed": "#002106",
+                      "on-secondary": "#ffffff",
+                      "surface-container-highest": "#e1e3e4",
+                      "secondary": "#5b5f63",
+                      "on-tertiary-fixed-variant": "#00531a",
+                      "surface-dim": "#d9dadb",
+                      "outline-variant": "#c3c6d6",
+                      "primary-fixed": "#00fbfb",
+                      "surface": "#f8f9fa"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Manrope"],
+                      "body": ["Inter"],
+                      "label": ["Inter"]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-fixed-dim/30">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-100 dark:bg-slate-950 flex flex-col p-4 gap-2 z-50">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-lg" data-weight="fill" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<span class="text-lg font-bold text-slate-900 dark:text-slate-100 font-headline">VeriGuard Dashboard</span>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all rounded-lg font-medium text-sm" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all rounded-lg font-medium text-sm" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+                Active Scans
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all rounded-lg font-medium text-sm" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+                Blockchain Ledger
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all rounded-lg font-medium text-sm" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+                AI Analytics
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 rounded-lg shadow-sm font-bold text-sm" href="#">
+<span class="material-symbols-outlined">shield</span>
+                Security Settings
+            </a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-outline-variant/15 pt-4">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all rounded-lg font-medium text-sm" href="#">
+<span class="material-symbols-outlined">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all rounded-lg font-medium text-sm" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Sign Out
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- Header / Breadcrumbs -->
+<header class="bg-surface px-8 py-6 sticky top-0 z-40">
+<div class="flex items-center justify-between max-w-6xl mx-auto">
+<div class="space-y-1">
+<nav class="flex items-center gap-2 text-xs font-label text-outline uppercase tracking-wider mb-2">
+<span>Dashboard</span>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span class="text-primary font-bold">Settings</span>
+</nav>
+<h1 class="text-3xl font-extrabold font-headline tracking-tighter text-on-surface">Enterprise Configuration</h1>
+</div>
+<div class="flex gap-4">
+<button class="px-5 py-2.5 rounded-lg border border-outline-variant/30 text-primary font-semibold text-sm hover:bg-surface-container-low transition-colors">
+                        Discard Changes
+                    </button>
+<button class="px-5 py-2.5 rounded-lg bg-gradient-to-r from-primary to-primary-container text-white font-semibold text-sm shadow-lg shadow-primary/20 hover:opacity-90 transition-all">
+                        Save Changes
+                    </button>
+</div>
+</div>
+</header>
+<div class="max-w-6xl mx-auto px-8 py-8 space-y-12 pb-24">
+<!-- Section: Blockchain Infrastructure -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="space-y-2">
+<h2 class="text-xl font-bold font-headline text-on-surface">Blockchain Network</h2>
+<p class="text-sm text-secondary leading-relaxed">Configure which ledger environment your organization uses for verification transactions.</p>
+</div>
+<div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/15 shadow-sm space-y-6">
+<div class="space-y-4">
+<label class="block text-sm font-bold text-on-surface">Active Environment</label>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<label class="relative flex cursor-pointer rounded-lg border border-outline-variant/30 p-4 shadow-sm focus:outline-none bg-surface-container-low/50">
+<input checked="" class="sr-only" name="network" type="radio" value="mainnet"/>
+<span class="flex flex-1">
+<span class="flex flex-col">
+<span class="block text-sm font-bold text-on-surface">Mainnet (Production)</span>
+<span class="mt-1 flex items-center text-xs text-secondary">
+                                            Live immutable ledger for enterprise-grade verification.
+                                        </span>
+</span>
+</span>
+<span class="material-symbols-outlined text-primary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</label>
+<label class="relative flex cursor-pointer rounded-lg border border-outline-variant/30 p-4 shadow-sm focus:outline-none">
+<input class="sr-only" name="network" type="radio" value="testnet"/>
+<span class="flex flex-1">
+<span class="flex flex-col">
+<span class="block text-sm font-bold text-on-surface">Testnet (Sandbox)</span>
+<span class="mt-1 flex items-center text-xs text-secondary">
+                                            Experimental environment for integration and testing.
+                                        </span>
+</span>
+</span>
+</label>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/10">
+<div class="flex items-center gap-2 text-xs font-mono bg-surface-container p-3 rounded-lg text-secondary">
+<span class="material-symbols-outlined text-sm">terminal</span>
+<span>Current Node Hash: 0x4f2a...b91c | Status: <span class="text-tertiary font-bold uppercase">Synchronized</span></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: API Access Control -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="space-y-2">
+<h2 class="text-xl font-bold font-headline text-on-surface">API Management</h2>
+<p class="text-sm text-secondary leading-relaxed">Securely manage your programmatic access keys for AI verification endpoints.</p>
+</div>
+<div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/15 shadow-sm space-y-8">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-bold text-on-surface uppercase tracking-tight">Active API Keys</h3>
+<button class="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
+<span class="material-symbols-outlined text-sm">add</span> Generate New Key
+                            </button>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg border border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-white rounded border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary">key</span>
+</div>
+<div>
+<div class="text-sm font-bold">Production_AutoScan_01</div>
+<div class="text-xs font-mono text-outline">vg_live_••••••••••••••••3a7f</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary text-[10px] font-bold uppercase">Active</span>
+<button class="p-1 hover:text-error transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg border border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-white rounded border border-outline-variant/20 text-outline">
+<span class="material-symbols-outlined">key</span>
+</div>
+<div>
+<div class="text-sm font-bold text-outline">QA_Staging_Key</div>
+<div class="text-xs font-mono text-outline">vg_test_••••••••••••••••9e21</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded bg-outline-variant/30 text-outline text-[10px] font-bold uppercase">Revoked</span>
+<button class="p-1 hover:text-error transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Multi-Factor Authentication -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="space-y-2">
+<h2 class="text-xl font-bold font-headline text-on-surface">Security Enforcement</h2>
+<p class="text-sm text-secondary leading-relaxed">Establish mandatory safety protocols for all users within the enterprise workspace.</p>
+</div>
+<div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/15 shadow-sm space-y-6">
+<div class="flex items-start justify-between">
+<div class="space-y-1">
+<h3 class="text-sm font-bold text-on-surface">Mandatory Two-Factor Authentication</h3>
+<p class="text-xs text-secondary leading-relaxed max-w-sm">Require all team members to use an authenticator app or hardware key to sign in. Users without 2FA will be locked out until configured.</p>
+</div>
+<button class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-primary">
+<span class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+<div class="pt-6 border-t border-outline-variant/10 flex items-start justify-between">
+<div class="space-y-1">
+<h3 class="text-sm font-bold text-on-surface">IP Whitelisting</h3>
+<p class="text-xs text-secondary leading-relaxed max-w-sm">Restrict access to the VeriGuard portal from specific enterprise office IP ranges only.</p>
+</div>
+<button class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-surface-container-highest">
+<span class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+</div>
+</section>
+<!-- Section: Team Permissions -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="space-y-2">
+<h2 class="text-xl font-bold font-headline text-on-surface">Team Management</h2>
+<p class="text-sm text-secondary leading-relaxed">Assign roles and granular permissions to control data access and verification authority.</p>
+</div>
+<div class="md:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/15 shadow-sm overflow-hidden">
+<table class="min-w-full divide-y divide-outline-variant/15">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-4 text-left text-xs font-bold text-on-surface uppercase tracking-wider">User</th>
+<th class="px-6 py-4 text-left text-xs font-bold text-on-surface uppercase tracking-wider">Role</th>
+<th class="px-6 py-4 text-left text-xs font-bold text-on-surface uppercase tracking-wider">Last Activity</th>
+<th class="px-6 py-4 text-right text-xs font-bold text-on-surface uppercase tracking-wider">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low/30 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="h-8 w-8 rounded-full bg-primary-container text-white flex items-center justify-center text-[10px] font-bold">JD</div>
+<div>
+<div class="text-sm font-semibold">Jameson Dillinger</div>
+<div class="text-xs text-outline">jameson@enterprise.ai</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary uppercase">Org Admin</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-xs text-outline">2 mins ago</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-xs font-bold text-primary">
+<button class="hover:underline">Edit</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/30 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center gap-3">
+<img class="h-8 w-8 rounded-full object-cover" data-alt="professional portrait of female enterprise security executive with neutral expression and soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeypBQpqzK4tnXATo7XfpZpX0DjB0ClOZLgUD1fazwKv6GwExuKBwIlhAefAzGYnIxU1roIPkrWwomRPDSQ2KzI_gUvf14VDeh0WHGT4SLQhyEm843p6JdgeXoifXF5w7j50sYqDrelKsv5M4TPYujJJHTRRlchznzKvKausoPT1nPGFGCCiFX1i6bAM38FRZDkEAr6VNhR_JXEHI6KEiix0Dvxh5EzVQx8OgImDsgtR7prPy1TRrGtPTU_LcnTofSpMDzdipbASz0"/>
+<div>
+<div class="text-sm font-semibold">Sarah Chen</div>
+<div class="text-xs text-outline">s.chen@enterprise.ai</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-secondary-container/50 text-secondary uppercase">Security Lead</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-xs text-outline">4 hours ago</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-xs font-bold text-primary">
+<button class="hover:underline">Edit</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="p-4 bg-surface-container-low/50 flex justify-center border-t border-outline-variant/10">
+<button class="text-xs font-bold text-primary hover:underline">View All 12 Team Members</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Contextual "Laser" Pulse for AI Settings -->
+<div class="fixed bottom-8 right-8 pointer-events-none">
+<div class="relative flex items-center justify-center">
+<div class="absolute w-24 h-24 bg-primary-fixed-dim/20 rounded-full blur-2xl animate-pulse"></div>
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-primary/20 shadow-xl pointer-events-auto flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">auto_fix_high</span>
+<div class="text-xs">
+<div class="font-bold">AI Pulse Active</div>
+<div class="text-secondary">Security hardening enabled</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

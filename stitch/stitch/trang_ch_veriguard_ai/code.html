@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VeriGuard AI | Immutable Ledger Security</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#434654",
+                    "tertiary-fixed-dim": "#66df75",
+                    "on-primary-container": "#00eaea",
+                    "surface-variant": "#e1e3e4",
+                    "outline": "#737685",
+                    "inverse-primary": "#00dddd",
+                    "on-secondary-container": "#5f6368",
+                    "surface-tint": "#006a6a",
+                    "background": "#f8f9fa",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2e3132",
+                    "surface": "#f8f9fa",
+                    "surface-container-low": "#f3f4f5",
+                    "secondary-fixed-dim": "#c3c7cc",
+                    "primary-fixed": "#00fbfb",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#dde0e5",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#002020",
+                    "on-tertiary-fixed-variant": "#00531a",
+                    "inverse-on-surface": "#f0f1f2",
+                    "on-secondary-fixed": "#181c20",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#d9dadb",
+                    "surface-bright": "#f8f9fa",
+                    "on-surface": "#191c1d",
+                    "on-background": "#191c1d",
+                    "tertiary-fixed": "#83fc8e",
+                    "secondary": "#5b5f63",
+                    "primary-container": "#006666",
+                    "primary-fixed-dim": "#00dddd",
+                    "secondary-fixed": "#e0e3e8",
+                    "outline-variant": "#c3c6d6",
+                    "on-primary-fixed-variant": "#004f4f",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#002106",
+                    "primary": "#004c4c",
+                    "tertiary": "#004f18",
+                    "on-secondary-fixed-variant": "#43474c",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container": "#edeeef",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#006a23",
+                    "on-tertiary-container": "#73ec80",
+                    "surface-container-high": "#e7e8e9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            background: rgba(248, 249, 250, 0.8);
+        }
+        .anti-divider {
+            border-bottom: 1px solid rgba(115, 118, 133, 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #004c4c 0%, #006666 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm">
+<div class="flex justify-between items-center max-w-full px-8 py-4">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black tracking-tighter text-blue-700 dark:text-blue-400 uppercase font-headline">VeriGuard AI</span>
+<div class="hidden md:flex gap-6">
+<a class="text-blue-700 dark:text-blue-400 font-bold border-b-2 border-blue-700 dark:border-blue-400 pb-1 font-headline tracking-tight" href="#">Verification</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors font-headline tracking-tight" href="#">Supply Chain</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors font-headline tracking-tight" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors font-headline tracking-tight" href="#">Enterprise</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-slate-200/20 dark:bg-slate-800/20 rounded-full px-4 py-2">
+<span class="material-symbols-outlined text-slate-500 text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 font-body" placeholder="Trace serial number..." type="text"/>
+</div>
+<div class="flex gap-4 items-center">
+<span class="material-symbols-outlined text-slate-600 cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-slate-600 cursor-pointer">account_circle</span>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-bold scale-98 active:opacity-80 transition-transform">Secure Login</button>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24">
+<!-- Hero Section -->
+<section class="relative px-8 py-24 md:py-32 overflow-hidden">
+<div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+<div class="z-10">
+<div class="inline-flex items-center gap-2 bg-tertiary-container/10 px-4 py-1.5 rounded-full mb-6">
+<span class="material-symbols-outlined text-tertiary-container text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-tertiary-container font-label text-xs font-bold uppercase tracking-widest">Phygital Authenticity Secured</span>
+</div>
+<h1 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter leading-none mb-8 text-on-surface">
+                        The Immutable <span class="gradient-text">Physical-Digital</span> Bridge.
+                    </h1>
+<p class="text-lg text-secondary mb-10 max-w-xl leading-relaxed">
+                        VeriGuard AI merges industrial-grade AI scanning with blockchain transparency to protect luxury assets, high-value electronics, and pharmaceuticals from global counterfeiting networks.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="bg-primary hover:bg-primary-container text-white px-8 py-4 rounded-xl font-headline font-bold text-lg shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-3 group">
+                            Verify Now
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<button class="border border-outline-variant/30 text-primary px-8 py-4 rounded-xl font-headline font-bold text-lg hover:bg-surface-container-low transition-all">
+                            Enterprise Demo
+                        </button>
+</div>
+<div class="mt-12 flex items-center gap-6">
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="professional executive headshot with neutral background soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAV3w4RT3P1BekmcYCjLQydERg9JmJFETbb1mvDz-oYfmnZUnBUqrqTQVbn53jsRnxmOszqQMjauXgMh1P1Va5VXLC7IQLFDD9ST_lopm42mQaV4z4zRhBwN_JgQw2v_N3MVyCazTm16JgsYS3ucBPFqPNJIJ1rp8oE9XoIeh0KcRer9PJhckwaasRjM7qPE4h559clPj3RGOFyHmbJIYXvlFwlwLjUg7Gy9VpnZBKADEmc8-agkVzaJNVmfhLqCTTQbXhTJGK1u3U"/>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="confident female entrepreneur portrait in modern office setting with natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARYK1PdGF5CVMDk53qzerqa9RTJdxo14Jq8hAx2Htsr4wvVH4DPxcKwTfwxyf_NiEi0tyIvukL0vQfQ90VOxOvuBACYRgq8DR58V7Bpg0sJPtuDu3W797Lr4FMrCZlbCSi1jQufpyvLzJw7HTtEHoOIzTuExCL-IEuz3XAqU2AjXpW38gefJAkx6Jwf9P3k28N8hZ7HppOUoHHZEgkEsr-JKJcwYSPdlapyjebkSGn5W2icAdJH5R4ZTZlXWPyiNOcnBvaglYoQBHU"/>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="tech leader headshot with clean minimalist background and professional attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1P93loPXPWmRhWaUddgWdy61zgwG-iWJCU1ZWjllsUR9FhSabSKYmimIRlh1RMraJcYGXK_gECtc_m8LlyMdZOX_l0Os9MFKPdbvW_ZUxCxaZiF00m-w9jfd2KjyyNuQUnO22oDGMHvti1ZDvmQUbjEWSD5aACd76RjSvIqUPZV2nWEIgKGB9xMMgRA9lIbj9uAY2cofapAoTsxQzKzVxuu2Gea7av0cuvIMMEDheEegF0BwsaNQaP6iSEG7zgQaE69hveWu45GrM"/>
+</div>
+</div>
+<p class="text-sm text-secondary font-medium"><span class="text-on-surface font-bold">500+</span> Global Brands Protected</p>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -top-12 -right-12 w-64 h-64 bg-primary-container/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-12 -left-12 w-64 h-64 bg-tertiary-container/10 rounded-full blur-3xl"></div>
+<div class="relative bg-surface-container-lowest border border-outline-variant/10 rounded-3xl p-4 shadow-2xl">
+<img class="w-full h-auto rounded-2xl" data-alt="macro photograph of a holographic security seal on a high-end luxury watch reflecting blue and green light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM_tdlwE_vJrkpmuBb-bMTPD3toS9vscyM6zfgGo_sPJch20XgYUJOAysqNMa-K7XwIcGMJaWy3mSDAiYR7xRHM2wYqKkRxkbfD_E1S6nFlBRzuDahHCiiq4rWpGqmRazLZFbQ50WTr-YVd61jemboRCFCssGvztwlbrpLA8-Mbmlz0URF1WSg1Q8hrepzecVcHrpzCGqF4UuEHa0b-7UNHu_1rcKiAuSbK8CYmKOufcqvuJrd9LdE4rehoyPLUzBTy6rjbvD6sTvD"/>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md px-6 py-4 rounded-2xl shadow-xl flex items-center gap-4 border border-tertiary-container/20">
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">qr_code_scanner</span>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold uppercase tracking-wider">Status</p>
+<p class="text-on-surface font-bold">100% Authentic</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Brand Partners -->
+<section class="bg-surface-container-low py-16 border-y border-outline-variant/10">
+<div class="px-8 max-w-7xl mx-auto">
+<p class="text-center text-xs font-bold text-secondary uppercase tracking-[0.3em] mb-12">Securing the World's most trusted entities</p>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 items-center opacity-60 grayscale hover:grayscale-0 transition-all">
+<img alt="Partner" class="h-8 mx-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI4noi2hHOge_bTOHy2cLsKIQC9HXKKbCpA2w7Aki5U3lKFy9OX0_TdgX6uwPKMZoA6XRw7JLckZRi99l2nJWfUGg3Z_rjKK5C7wxWBD7fyN5ZhuOmM0MEc7XWDKp-KC5wLuWey6XvdfBkW-vuR_GltntpVjNLfpfaMrvieARbpnDYqSeqdr-XpOwSV5oo1WxukSqUH0QaCOOSzkOo6PosHMWRNl25OWe5l5_CLECrVV0yarWD0RONKG8Yb_foXEsdcK9s9yG3pU2A"/>
+<img alt="Partner" class="h-10 mx-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbX7zrQjIHdW8sr13fbUqU1Gw3M-KN_b1s39yKux3-AM5KrfKG8VUkbpRxtV-p1Wx5Zjdoqt09B_JGyftTeLpA3DmziSzT_LaSz-y-WLaxUv9rnxX_CGUeuxEpauJOqWTdWWQX0JgaoLPDt8R7OCZLOWNMJIBtBYCL9kTdJCQ82K9-hXmJZBAYXkGgLTyLH3OkTF10vSP7x4vVoAYGesAFeOxNOW6iibXMxpji7fJFe6xXnNwb0Eya664RTzVrdUcgBn2Vrn6Md7LW"/>
+<img alt="Partner" class="h-6 mx-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA623-ZMHiwreGY7-EXVl8WXJK5kX9jMNgFPOw9AzcIjTzcOc2lVI55LnXua93UKT5Ss2FfFDIIIkKgz7BRpv9IKkzePegjOC0rBfnW8SH5jyHRpOTjW_WNQ_yJSo3cojmhdMZrPDkfLHGw3pjsOs9x_w4PAdZy1-jqVETusqJr-sPH3Ef9zaeWi0mHjwGMWj8lsDYDGm8aaPT8P0132J9Z_rKbc5OdNmx8IcszOgMCJ6jI0USst_CsYWqJwQ0gMZ1jqEMhbp-7YnY3"/>
+<img alt="Partner" class="h-8 mx-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZLiNxK10_44vQi0iRZMn07a6BvFuXeEoT3yoyEtEu-rcYIrFW2CKgY5sTurBZHCerqwdTDBLqT923KelPJrxfvIth4GOsrFwQ8KjaHdgQB-ZYg8YzjlSzlxtC2rX8H-dfvU0IZjCMDhwwxkrtp2U0W-VD4yhGbz_eIUByuuHenpu1f70r7BoFlS_HkuzNxjePt3ekJWpiNKNuGCW_x4DOOAIcLuk0S0nJ-8fJCj8Mxi4ydqEqOyAfizjT8bOVgvj8sLsL04iPLfnI"/>
+<img alt="Partner" class="h-6 mx-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxSoWOhCPd0E8vjLbHZpcyUuwNH7M2vBnvbZKan_XI-80xEcgiP6izrqrEQB7ym7vYPEd1DrJp1iksBq_3ZAI2wgtYTh1uYqa6jkPBP_u-zaJytq3fZbMaBoQD01ZUZ1PmilnMU6LhUE-ssW2_GKQ1IjMxTujIG4J6ipxxZ-S_lJ7xAnxD3J1ay8mnXELFIBqUVOFNm_76mX6RFz-2NgpXDajf2jIdn_WGMT3STPLs81MAfoPvXMP4K77KS3kEFY593ZnycNWhGYSi"/>
+<img alt="Partner" class="h-8 mx-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbSLNVj_CAZwGkmBmSSfiyZoJDxGNBg3TmkUe3XJ22Zcxx7Aa-daHmZS1i7MUUdjoGtkq_wEBRrd66uUK90dcedprUWzwhgpzuzWxYujBwhj3M6tCXzIG5FKJp54H2QB2wn6REY8by5qPrHQQiVuKupF680hbkEsXhN_0gqbHvrLWXpcaR6s0je3dTRyU_g0PayCBXpzl8rwA5aRJt9HAAk_i0By0anM19no6eaSap8EzdsAJ7fXWpmQToCEq5Y5IhSDL8Jx2051Gl"/>
+</div>
+</div>
+</section>
+<!-- Technology Overview (Asymmetric Bento Grid) -->
+<section class="px-8 py-24 md:py-32 max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+<div class="max-w-2xl">
+<h2 class="text-4xl md:text-5xl font-headline font-bold tracking-tight text-on-surface mb-6">Built on the bedrock of <br/><span class="text-primary">Next-Gen Verification.</span></h2>
+<p class="text-secondary text-lg">We create a unique cryptographic fingerprint for every physical item, anchored to a decentralized ledger.</p>
+</div>
+<div class="bg-surface-container-highest px-6 py-3 rounded-full flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></div>
+<span class="text-sm font-bold font-headline">Live Mainnet Nodes: 4,821</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- NFT Digital Twins -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-3xl p-10 border border-outline-variant/10 relative overflow-hidden group">
+<div class="relative z-10">
+<span class="material-symbols-outlined text-4xl text-primary mb-6">token</span>
+<h3 class="text-2xl font-headline font-bold mb-4">NFT Digital Twins</h3>
+<p class="text-secondary max-w-md mb-8">Every physical product is minted as a 1:1 Digital Twin on the blockchain, containing its full provenance, manufacturing data, and ownership history.</p>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 text-sm font-bold text-on-surface">
+<span class="material-symbols-outlined text-tertiary-container font-bold">check_circle</span>
+                                Immutable Ownership Records
+                            </li>
+<li class="flex items-center gap-3 text-sm font-bold text-on-surface">
+<span class="material-symbols-outlined text-tertiary-container font-bold">check_circle</span>
+                                Automated Royalty Enforcement
+                            </li>
+<li class="flex items-center gap-3 text-sm font-bold text-on-surface">
+<span class="material-symbols-outlined text-tertiary-container font-bold">check_circle</span>
+                                Secondary Market Protection
+                            </li>
+</ul>
+</div>
+<div class="absolute right-0 bottom-0 w-1/2 h-full opacity-10 group-hover:opacity-20 transition-opacity">
+<img class="w-full h-full object-cover" data-alt="abstract 3d render of glowing hexagonal crystal structure representing a digital twin on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkxzTmtbHeqxdUJmEoy4PC0FpFAdhGMhMzn94rxjYVZKhVFh31IjZKNuo1r8TlVnZFmfsSveSQ9JKL53nX5J0usE336zFhM3wDPVz4UMUexRxwmAg_4UXgMHGsaDUtzxcr8e2prHtstKOKGuU8fGhDxOnJqIpfswR-cpQk_Gdk0gf8dj6NlQLacRXjAPy-DaWvHWdqYUpVTFaRVHFpncmRBNAOXNSLdABL9tJsvzdUsPZxRjZ6YWk9bXzUdTICjARvkt5JKg2seF9l"/>
+</div>
+</div>
+<!-- AI Pulse Scanning -->
+<div class="md:col-span-4 bg-primary text-white rounded-3xl p-10 flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">insights</span>
+</div>
+<h3 class="text-2xl font-headline font-bold mb-4">AI Pulse Scanning</h3>
+<p class="text-white/70 text-sm leading-relaxed">Proprietary vision models detect microscopic variations in texture and material signatures that the human eye cannot see.</p>
+</div>
+<div class="mt-12 pt-8 border-t border-white/10">
+<div class="flex items-center justify-between">
+<span class="text-xs uppercase tracking-widest font-bold opacity-60">Accuracy</span>
+<span class="text-xl font-headline font-bold text-primary-fixed">99.99%</span>
+</div>
+</div>
+</div>
+<!-- Supply Chain -->
+<div class="md:col-span-5 bg-surface-container-high rounded-3xl p-10 flex flex-col justify-between">
+<div>
+<h3 class="text-2xl font-headline font-bold mb-4">Real-time Visibility</h3>
+<p class="text-secondary text-sm">Track assets through the "Last Mile" with geo-fenced smart contracts that trigger alerts upon unauthorized detours.</p>
+</div>
+<div class="mt-8 rounded-2xl overflow-hidden shadow-lg">
+<img class="w-full h-32 object-cover" data-alt="stylized world map showing glowing data connection lines between major cities in deep blue tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrxNe70LY8cjL60CaZo98zHRe9RW7WwcFSljrVmID6CjbBwIJOXsGq5HpIXtxByUJLgYGUPMqG1HIwFONqeWXTn-IJgX7GybmR7vdzxkyPdmkUuStEBEkFLpjTaUFXwC0Y_xP80UduHkftAfdqoVQ5R9pQa4ZjHmTjC4bl8pTpGxkYW3lb6_JwStwPcZlG-rmy917rAUz8sGQHXGNYpBSd5Pd29MyQAp7c1pjVc9UskPv-VKsd415Q9df1khJNnJgtAOa2PNJJ_yMM"/>
+</div>
+</div>
+<!-- Enterprise Security -->
+<div class="md:col-span-7 bg-tertiary-container text-on-tertiary-container rounded-3xl p-10 flex flex-col md:flex-row gap-8 items-center">
+<div class="flex-1">
+<h3 class="text-2xl font-headline font-bold mb-4 text-white">Bank-Grade Integration</h3>
+<p class="text-white/80 text-sm mb-6">Seamlessly integrate VeriGuard AI into your existing ERP or CRM with our high-throughput REST API and SDKs.</p>
+<button class="bg-white text-tertiary-container px-6 py-2 rounded-full font-bold text-sm">View Documentation</button>
+</div>
+<div class="w-full md:w-48 aspect-square bg-black/10 rounded-2xl flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl text-white opacity-40">terminal</span>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="px-8 py-24">
+<div class="max-w-7xl mx-auto bg-slate-900 rounded-[2.5rem] p-12 md:p-24 text-center relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-full opacity-30">
+<img class="w-full h-full object-cover" data-alt="cinematic background of high-tech server room with glowing green and blue status lights and sleek metal surfaces" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK8W9xpt43QjHn35-MRXjzAD-sRiNyt7AxMGlnqQz6xsNL2R6cTShSW9x5m56-MPMh7X0ZueBQDqKp_xKiOipIf742T7GMVBjsMzwu469LSq97CMxag6k46oBn05NCiHnN_m3VqmGns9bGv15KBvtCFKGc9ML6cnaHb8dz6RXino1HnUT6lH_9l3d_2TyUB9nXTvNpH4TTGozENcvAy8z0dJYhs3qR0aR0UJlEsF-kZ66T6HCqcYDTmhkZz6INtB2spUwKfJjO454y"/>
+</div>
+<div class="relative z-10 max-w-3xl mx-auto">
+<h2 class="text-4xl md:text-6xl font-headline font-extrabold text-white tracking-tighter mb-8">
+                        Ready to Secure your Brand’s <span class="text-primary-fixed">Legacy?</span>
+</h2>
+<p class="text-white/60 text-lg mb-12">Join the growing ecosystem of luxury houses and industrial leaders who trust VeriGuard AI for complete protection.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-4">
+<button class="bg-primary-fixed text-on-primary-fixed px-10 py-5 rounded-2xl font-headline font-black text-lg scale-98 active:opacity-80 transition-all">Start Free Pilot</button>
+<button class="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md px-10 py-5 rounded-2xl font-headline font-bold text-lg border border-white/20 transition-all">Contact Sales</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-slate-200/30 dark:border-slate-800/30 bg-slate-50 dark:bg-slate-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-8 gap-4">
+<div class="flex flex-col gap-2">
+<span class="font-manrope font-bold text-slate-900 dark:text-white text-lg">VeriGuard AI</span>
+<p class="font-inter text-xs uppercase tracking-widest text-slate-500">© 2024 VeriGuard AI. Immutable Ledger Security.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-inter text-xs uppercase tracking-widest text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Trust Center</a>
+<a class="font-inter text-xs uppercase tracking-widest text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Blockchain Transparency</a>
+<a class="font-inter text-xs uppercase tracking-widest text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Privacy Protocol</a>
+<a class="font-inter text-xs uppercase tracking-widest text-slate-500 hover:text-emerald-500 transition-opacity" href="#">Terms of Service</a>
+</div>
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center cursor-pointer hover:opacity-75">
+<span class="material-symbols-outlined text-sm">language</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center cursor-pointer hover:opacity-75">
+<span class="material-symbols-outlined text-sm">share</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,537 @@
+
+TÀI LIỆU NGHIỆP VỤ ĐẦY ĐỦ
+HỆ THỐNG VNTRUST
+Chống hàng giả & Xác thực nguồn gốc sản phẩm Việt Nam
+Phiên bản: 2.0  |  Ngày cập nhật: 14/05/2026
+Bảo mật: Nội bộ - Không phát tán ra bên ngoài
+
+MỤC LỤC
+I. Tổng quan hệ thống VNTrust
+II. Kiến trúc chức năng - 6 Phân hệ
+III. Nền tảng TrustCheck - Giám sát cộng đồng
+IV. Thiết kế bảo mật & Pháp lý
+V. Hệ thống Đối sát & Cảnh báo hàng giả
+VI. Cảnh báo Vòng đời & Hạn hiệu lực
+VII. Bảng điều khiển Tuân thủ
+VIII. Quản lý Hậu kiểm & Phân tích chất lượng
+IX. Use Cases chi tiết (UC01–UC20)
+X. Phân quyền & Xác thực người dùng (KYC)
+
+TÀI LIỆU CHI TIẾT NGHIỆP VỤ HỆ THỐNG VNTRUST
+>  Nguồn tài liệu: VNTrust.pdf — Trích xuất 100% từ tài liệu gốc, không bổ sung thêm
+> � Ngày cập nhật: 08/04/2026 | Phiên bản: 1.0
+� MỤC LỤC
+
+I.  HỆ THỐNG XÁC THỰC VÀ BẢO VỆ THƯƠNG HIỆU (VNTRUST)
+1. Tổng quan hệ thống
+🎯 Mục tiêu chiến lược
+
+� Đối tượng người dùng
+
+2. Kiến trúc chức năng chi tiết — 6 Phân hệ
+PHÂN HỆ 1 — Quản lý hồ sơ doanh nghiệp & sản phẩm
+> *Dành cho Nhà sản xuất & Nhà nhập khẩu đăng ký và quản lý thông tin.*
+1.1 Quản lý hồ sơ doanh nghiệp
+
+1.2 Quản lý danh mục sản phẩm
+
+PHÂN HỆ 2 — Tạo và quản lý mã định danh duy nhất (UID)
+> *Đây là lớp bảo mật cốt lõi, áp dụng công nghệ UID không thể đoán trước (non-guessable, non-sequential).*
+2.1 Cấu trúc mã định danh
+
+2.2 Quy trình cấp phát mã
+PHÂN HỆ 3 — Xác thực sản phẩm cho người tiêu dùng
+> *Dành cho Người tiêu dùng quét mã để kiểm tra hàng thật/giả.*
+3.1 Giao diện quét mã
+
+3.2 Bảng kết quả xác thực
+
+3.3 Thông tin hiển thị khi quét thành công
+
+PHÂN HỆ 4 — Giám sát & phát hiện bất thường (AI-powered)
+> *Đây là "bộ não" của hệ thống, phân tích dữ liệu quét để phát hiện hàng giả và thị trường xám.*
+4.1 Các mô hình phát hiện bất thường
+
+4.2 Bảng điều khiển giám sát (Dashboard)
+> *Dành cho Doanh nghiệp và Quản trị hệ thống:*
+
+PHÂN HỆ 5 — Quản lý cảnh báo & báo cáo
+5.1 Quy trình xử lý cảnh báo
+5.2 Các loại báo cáo định kỳ
+
+PHÂN HỆ 6 — Tích hợp & Mở rộng
+6.1 Kết nối với hệ thống bên ngoài
+
+6.2 API công khai
+
+3. Lộ trình triển khai & Công nghệ đề xuất
+Lộ trình theo giai đoạn
+
+Công nghệ đề xuất
+
+II.  NỀN TẢNG GIÁM SÁT VÀ PHẢN ÁNH HÀNG HÓA CỘNG ĐỒNG (TRUSTCHECK)
+1. Tổng quan hệ thống
+>  Tên gợi ý: TrustCheck  Nền tảng xác thực và phản ánh hàng hóa thông minh
+Mục tiêu chiến lược
+
+Đối tượng người dùng
+
+2. Kiến trúc chức năng chi tiết
+PHÂN HỆ 1  Tra cứu & Xác thực sản phẩm
+> *Dành cho Người tiêu dùng kiểm tra nhanh sản phẩm trước/sau khi mua.*
+1.1 Các phương thức tra cứu
+
+1.2 Kết quả xác thực (Confidence Score)
+
+1.3 Thông tin hiển thị khi tra cứu thành công
+Tên sản phẩm, thương hiệu, hình ảnh mẫu chuẩn
+Nhà sản xuất / nhà nhập khẩu
+Ngày sản xuất, hạn sử dụng (nếu có)
+Các chứng nhận: ISO, HACCP, Organic, Halal, CE, RoHS...
+Lịch sử cảnh báo từ cộng đồng (số lượt báo cáo)
+Khuyến cáo an toàn
+>  Tham khảo thực tế: Công nghệ AI của *Entrupy* cho phép xác định hàng hiệu giả với độ chính xác lên đến 99% bằng cách quét các chi tiết vi mô như logo, kết cấu da, số serial.
+PHÂN HỆ 2  Phản ánh & Báo cáo sản phẩm nghi ngờ
+> *Đây là "xương sống" của hệ thống, cho phép người dùng đóng góp dữ liệu.*
+2.1 Quy trình phản ánh (4 bước)
+Bước 1  Chọn loại phản ánh:
+Báo cáo sản phẩm nghi ngờ (hàng giả, kém chất lượng)
+Báo cáo người bán gian lận (shop, tài khoản TMĐT)
+Báo cáo quảng cáo sai sự thật
+Gửi phản hồi về kết quả xác thực
+Bước 2  Nhập thông tin sản phẩm:
+Chụp ảnh sản phẩm / bao bì *(bắt buộc)*
+Chụp tem, mã vạch, QR code *(nếu có)*
+Nhập tên sản phẩm, thương hiệu
+Nhập nơi mua (chợ / sàn TMĐT / Shopee / TikTok Shop / Facebook)
+Nhập giá mua (phát hiện giá rẻ bất thường)
+Mô tả lý do nghi ngờ
+Bước 3  Cung cấp thông tin người bán (nếu có):
+Tên shop / tài khoản
+Link sản phẩm (nếu mua online)
+Số điện thoại / địa chỉ (nếu biết)
+Bước 4  Xác nhận & gửi:
+Hệ thống tạo mã báo cáo duy nhất để theo dõi
+2.2 Hỗ trợ phát hiện bằng AI
+
+2.3 Chế độ báo cáo ẩn danh
+Người dùng có thể chọn báo cáo ẩn danh để bảo vệ an toàn
+Vẫn cần xác thực số điện thoại để chống spam
+Tuân thủ Luật Bảo vệ quyền lợi người tiêu dùng 2023 về bảo vệ thông tin
+PHÂN HỆ 3  Quản lý & Phân tích dữ liệu (Admin)
+> *Dành cho Quản trị hệ thống và Cơ quan chức năng.*
+3.1 Dashboard tổng quan
+
+3.2 Thống kê phân tích đa chiều
+Theo thời gian:
+
+Theo địa bàn:
+
+Theo ngành hàng:
+
+3.3 Công cụ phân tích nâng cao
+
+PHÂN HỆ 4  Xuất báo cáo & Cảnh báo
+4.1 Các loại báo cáo định kỳ
+
+4.2 Hệ thống cảnh báo đa kênh
+
+4.3 Cơ chế xác nhận báo cáo (Validation)
+1. Tự động kiểm tra:
+Loại bỏ báo cáo trùng lặp (cùng sản phẩm, cùng người dùng)
+Phát hiện báo cáo spam (cùng IP, cùng nội dung)
+So sánh với CSDL hàng thật để xác định độ tin cậy
+2. Bán tự động (Human-in-the-loop):
+Chuyên viên kiểm tra báo cáo có độ tin cậy trung bình (0.4  0.7)
+Xác minh chéo với các báo cáo khác về cùng sản phẩm
+3. Xác nhận chính thức:
+Báo cáo được xác nhận khi có  3 nguồn độc lập
+Hoặc có bằng chứng ảnh/video rõ ràng
+PHÂN HỆ 5  Tích hợp & Kết nối
+
+API công khai:
+
+3. Luồng xử lý dữ liệu tổng thể
+`
+Người tiêu dùng
+Quét mã QR  Tra cứu CSDL  Hiển thị kết quả xác thực
+Chụp ảnh sản phẩm  AI phân tích  So sánh với mẫu chuẩn
+Đưa ra điểm tin cậy
+Gửi báo cáo nghi ngờ  Lưu vào CSDL báo cáo
+Phân loại tự động (AI)
+Tin cậy    Nghi ngờ  Spam
+cao        (xác minh) (loại bỏ)
+Cập nhật CSDL    Chuyển xử lý thủ công
+Phân tích thống kê (time / location / category)
+Xuất báo cáo định kỳ / Gửi cảnh báo DN & QLTT
+`
+4. Lộ trình triển khai (TrustCheck)
+
+III.  THIẾT KẾ HỆ THỐNG TIẾP NHẬN PHẢN ÁNH (BẢO MẬT & PHÁP LÝ)
+1. Nguyên tắc thiết kế tổng thể
+
+2. Phân loại thông tin người dùng
+
+3. Kiến trúc phân tách cơ sở dữ liệu (3 Kho độc lập)
+
+>  Nguyên lý hoạt động: Identity Vault lưu ánh xạ Hash(UserID)  ReportID nhưng không lưu UserID trực tiếp. Muốn liên hệ người dùng, hệ thống phải có lệnh đặc biệt từ người dùng hoặc cơ quan chức năng.
+4. Mã hóa thông tin người dùng (Tuân thủ Điều 19 Luật BVDLCN 2025)
+
+5. Ba chế độ bảo vệ danh tính người dùng
+
+6. Cơ chế xác minh ẩn danh (Pseudonymous Verification)
+`
+Bước 1: Người dùng chọn "Xác minh số điện thoại"
+Bước 2: Hệ thống gửi mã OTP, không lưu SĐT nếu không được đồng ý
+Bước 3: Tạo "danh tính tạm thời" chỉ tồn tại cho phiên
+Bước 4: Mọi báo cáo từ danh tính này được gắn nhãn "Đã xác minh"
+`
+7. Các microservice bảo mật
+
+8. Biện pháp bảo mật API
+
+9. Quy trình xử lý yêu cầu từ cơ quan chức năng
+>  Điều kiện bắt buộc để giải mã dữ liệu người dùng:
+> 1. Có quyết định bằng văn bản của cơ quan có thẩm quyền
+> 2. Quyết định phải xác định rõ phạm vi thông tin cần cung cấp
+> 3. Có sự giám sát của pháp chế doanh nghiệp
+> 4. Mọi hoạt động đều được ghi log đầy đủ
+10. Tuân thủ pháp lý Việt Nam
+10.1 Luật Bảo vệ dữ liệu cá nhân 2025 (hiệu lực 1/1/2026)
+
+10.2 Luật An ninh mạng
+
+10.3 Luật Dữ liệu 2025 (hiệu lực 1/7/2025)
+
+IV.  HỆ THỐNG ĐỐI SÁT VÀ CẢNH BÁO HÀNG GIẢ (RECONCILIATION)
+> *Hệ thống được xây dựng theo mô hình Lambda Architecture kết hợp xử lý batch (phân tích chuyên sâu) và streaming (cảnh báo thời gian thực).*
+1. Phân loại các cặp đối sánh
+
+2. Pipeline đối sánh hình ảnh (AI Vision)
+
+>  Độ chính xác: Các mô hình hiện đại đạt 98.84% trên ảnh chụp điện thoại với phương pháp RAML (Region-Aware Metric Learning).
+3. Pipeline đối sánh văn bản (OCR)
+
+4. Đối sánh cấu trúc mã số (Barcode/QR)
+
+5. Phát hiện bất thường với Big Data
+
+6. Hệ thống xếp hạng tin cậy (Trust Scoring: 0  100)
+
+Phân loại Trust Score
+
+V.  CẢNH BÁO VÒNG ĐỜI VÀ HẠN HIỆU LỰC
+1. Cơ sở dữ liệu về thời hạn của các chứng nhận & sản phẩm
+Dựa trên các quy định hiện hành, hệ thống quản lý các loại thời hạn sau:
+
+2. Kiến trúc tính năng: Hệ thống Cảnh báo Đa lớp
+Hệ thống được thiết kế với 3 lớp cảnh báo độc lập nhưng tích hợp chặt chẽ:
+Lớp 1: Cảnh báo chứng nhận doanh nghiệp
+Tự động rà quét tất cả các chứng nhận đã được số hóa trong hệ thống (ISO, HACCP, Halal, v.v.).
+
+Lớp 2: Cảnh báo hạn sử dụng sản phẩm (EXP)
+Quản lý theo từng lô hàng, đặc biệt quan trọng cho thực phẩm, mỹ phẩm, dược phẩm.
+
+Lớp 3: Cảnh báo tuân thủ phiên bản tiêu chuẩn
+Kiểm tra tính hợp lệ của phiên bản tiêu chuẩn đang áp dụng.
+
+3. Kênh cảnh báo & Thông báo
+Hệ thống hỗ trợ đa kênh để đảm bảo doanh nghiệp không bỏ lỡ cảnh báo quan trọng:
+
+VI.  BẢNG ĐIỀU KHIỂN TUÂN THỦ & RÀ SOÁT HỒ SƠ DOANH NGHIỆP
+1. Tổng quan yêu cầu & phạm vi
+Mục tiêu chính: Cung cấp bức tranh toàn diện, tự động về mức độ tuân thủ của doanh nghiệp dựa trên dữ liệu đã số hóa.
+Đối tượng sử dụng: Cán bộ tư vấn cấp cao, chuyên viên tuân thủ nội bộ.
+2. Cơ chế kiểm tra tự động
+
+3. Checklist Tuân thủ Động (Ví dụ)
+Checklist cho ngành hàng Mỹ phẩm nhập khẩu:
+
+4. Các báo cáo nội bộ dành cho Quản lý cấp cao
+Báo cáo tổng hợp mức độ tuân thủ: Tỷ lệ DN đáp ứng đầy đủ / đáp ứng một phần / chưa đáp ứng.
+Báo cáo chi tiết theo loại thiếu hụt: Liệt kê DN cần bổ sung hồ sơ theo mức độ ưu tiên (Cao/Rất cao).
+Báo cáo xu hướng theo thời gian: Biểu đồ tăng giảm số lượng DN đáp ứng đủ hồ sơ qua các tháng.
+Bản đồ nóng (Heatmap): Phân bố các doanh nghiệp có rủi ro cao theo khu vực địa lý.
+5. Quy trình vận hành liên tục
+1. Nhập dữ liệu & Số hóa: DN tải file scan lên, hệ thống trích xuất thông tin (OCR).
+2. Xây dựng "Ngân hàng yêu cầu": Pháp chế nhập quy định về hồ sơ, thời hạn theo từng ngành hàng.
+3. Rà quét & Đối chiếu: Hệ thống tự động chạy định kỳ so sánh dữ liệu DN với yêu cầu.
+4. Chấm điểm & Phân loại: Chấm điểm 0-100 và phân nhóm rủi ro.
+5. Báo cáo & Cảnh báo: Gửi thông báo đến cán bộ phụ trách và cấp quản lý.
+*Ghi chú: Toàn bộ nội dung trên được trích xuất và hệ thống hóa trực tiếp từ tài liệu VNTrust.pdf.*
+V.  CẢNH BÁO VÒNG ĐỜI VÀ HẠN HIỆU LỰC
+1. Cơ sở dữ liệu về thời hạn chứng nhận & sản phẩm
+
+2. Kiến trúc 3 lớp cảnh báo đa tầng
+LỚP 1  Cảnh báo chứng nhận doanh nghiệp
+> *Tự động rà quét tất cả các chứng nhận đã được số hóa trong hệ thống (ISO, HACCP, Halal, v.v.)*
+
+Công thức tính:
+LỚP 2  Cảnh báo hạn sử dụng sản phẩm (EXP)
+> *Quản lý theo từng lô hàng, đặc biệt quan trọng cho thực phẩm, mỹ phẩm, dược phẩm.*
+
+Tính năng mở rộng (tùy chỉnh theo doanh nghiệp):
+Sữa bột: cảnh báo trước 60 ngày
+Mỹ phẩm: cảnh báo trước 90 ngày
+LỚP 3  Cảnh báo tuân thủ phiên bản tiêu chuẩn
+> *Một số tiêu chuẩn có nhiều phiên bản, chỉ phiên bản mới nhất được chấp nhận.*
+
+3. Các kênh cảnh báo & thông báo
+
+Mẫu email cảnh báo hàng ngày:
+4. Cấu hình linh hoạt cho doanh nghiệp
+
+5. Báo cáo & Phân tích vòng đời
+
+6. Lộ trình phát triển (Cảnh báo vòng đời)
+
+VI.  BẢNG ĐIỀU KHIỂN TUÂN THỦ & RÀ SOÁT HỒ SƠ DOANH NGHIỆP
+1. Tổng quan & Phạm vi
+
+2. Dữ liệu cốt lõi và cơ chế kiểm tra tự động
+
+3. Checklist Tuân thủ Động theo ngành hàng
+Checklist Mỹ phẩm nhập khẩu (Quy định 09/VBHN-BYT 2025)
+
+Checklist Thực phẩm bảo vệ sức khỏe (Nghị định 15/2018/NĐ-CP)
+
+4. Báo cáo nội bộ dành cho Quản lý cấp cao
+4.1 Báo cáo tổng hợp mức độ tuân thủ (Ví dụ minh họa)
+
+4.2 Báo cáo chi tiết theo loại thiếu hụt
+
+4.3 Báo cáo xu hướng theo thời gian
+Biểu đồ đường (Line Chart): Số lượng DN "đáp ứng đầy đủ" tăng/giảm theo từng tháng  phản ánh hiệu quả đội ngũ tư vấn.
+Biểu đồ tròn (Pie Chart): Phân bố các loại thiếu hụt phổ biến nhất (VD: 40% thiếu CFS, 30% hết hạn ISO, 20% thiếu nhãn phụ).
+Bản đồ nóng (Heatmap): Phân bố các DN có rủi ro cao theo khu vực địa lý.
+5. Quy trình vận hành & Công nghệ
+
+6. Lộ trình triển khai (Compliance Dashboard)
+
+Ghi chú: Toàn bộ nội dung trên được bổ sung bao gồm các quy định từ tài liệu cập nhật của hệ thống.
+VII. QUẢN LÝ DỮ LIỆU HẬU KIỂM & PHÂN TÍCH CHẤT LƯỢNG (POST-MARKET SURVEILLANCE)
+1. Tổng quan yêu cầu & mục tiêu
+Khái niệm: Thu thập và quản lý kết quả phân tích chất lượng mẫu sản phẩm/hàng hóa sau khi đã đưa ra thị trường (hậu kiểm).
+Mục đích: Phát hiện các trường hợp vi phạm an toàn thực phẩm, chất lượng (vd: rau củ quả Vietgap nhưng vượt ngưỡng dư lượng thuốc bảo vệ thực vật, thịt lợn bệnh trà trộn,...) để có biện pháp xử lý kịp thời, ngăn chặn gian lận thương mại.
+2. Luồng nghiệp vụ cập nhật kết quả phân tích
+Hệ thống cho phép các đối tượng khác nhau tải lên kết quả phân tích từ cơ sở kiểm nghiệm hợp chuẩn:
+1. Doanh nghiệp sản xuất: Tự lấy mẫu phân tích lô hàng của mình và cung cấp kết quả lên hệ thống để minh bạch chất lượng.
+2. Người tiêu dùng: Khách hàng mua sản phẩm, lấy mẫu đi thuê cơ sở uy tín phân tích và upload kết quả.
+3. Đơn vị đối tác thứ 3 (Quản lý thị trường / Công an): Lấy mẫu đi phân tích và cập nhật vào hệ thống để phục vụ công tác thanh tra.
+3. Quy trình kiểm tra & Đối chiếu tự động
+1. Kiểm tra tính chính danh: Xác thực tính hợp lệ của Giấy công bố kết quả phân tích (nguồn gốc, chữ ký số (nếu có)).
+2. So sánh tiêu chuẩn: Hệ thống tự động trích xuất các chỉ tiêu phân tích và đối chiếu với tiêu chuẩn quy định / ngưỡng cho phép đối với sản phẩm đó.
+3. Kết luận tự động:
+* Đảm bảo: Nếu tất cả các chỉ tiêu KHÔNG vượt ngưỡng cho phép.
+* Không đảm bảo: Nếu có bất kỳ chỉ tiêu nào VƯỢT ngưỡng cho phép.
+4. Báo cáo & Thống kê: Hiển thị trên biểu đồ, dashboard, xuất báo cáo danh sách cảnh báo vi phạm chất lượng.
+4. Tích hợp và Mở rộng
+API Hậu kiểm: Thiết kế sẵn các "đầu chờ" API để sẵn sàng tích hợp với hệ thống của các cơ quan chức năng (Quản lý thị trường, Công an vệ sinh ATTP) trong tương lai. Hiện tại để đảm bảo tính độc lập và khách quan, hệ thống hoạt động khép kín.
+Mở rộng phần cứng: Hệ thống đã được thiết kế sẵn kho dữ liệu để sau này bổ sung tính năng thu nhận dữ liệu phân tích hàm lượng trực tiếp từ các thiết bị phần cứng cầm tay tích hợp AI (Vision AI, Deep Learning) có khả năng quét và phát hiện hàng kém chất lượng tại hiện trường.
+
+USE CASES CHI TIẾT TỪNG CHỨC NĂNG
+VNTrust – Use Case Chi Tiết Từng Chức Năng
+> Phiên bản: 1.0 | Ngày: 2026-04-08
+> Hệ thống: VNTrust – Xác thực & Bảo vệ Thương hiệu Việt Nam
+Danh mục Use Case
+
+PHÂN HỆ 1 – Quản lý Hồ sơ Doanh nghiệp & Sản phẩm
+UC01 – Đăng ký Tài khoản Doanh nghiệp
+
+Điều kiện tiên quyết (Preconditions):
+Doanh nghiệp chưa có tài khoản trên hệ thống
+Doanh nghiệp có Mã số thuế (MST) hợp lệ
+Luồng chính (Main Flow):
+
+Luồng thay thế (Alternative Flows):
+A1 – MST đã tồn tại: Hệ thống hiển thị lỗi "Mã số thuế đã được đăng ký", gợi ý liên hệ hỗ trợ
+A2 – Email không hợp lệ: Hệ thống validate và yêu cầu nhập lại
+A3 – Hết thời gian kích hoạt (48h): Link hết hạn, DN phải yêu cầu gửi lại email xác nhận
+Điều kiện sau (Postconditions):
+Tài khoản tạo thành công với trạng thái `pending_verification`
+Hệ thống lưu log thời gian đăng ký
+UC02 – Upload & Xác thực Chứng từ Doanh nghiệp
+
+Điều kiện tiên quyết:
+Đã hoàn thành UC01
+Tài khoản đang ở trạng thái `pending_verification`
+Luồng chính:
+
+Luồng thay thế:
+A1 – OCR sai < 90%: Chuyển sang kiểm tra thủ công bởi Quản trị hệ thống
+A2 – MST không tìm thấy trên CSDL Quốc gia: Yêu cầu DN cung cấp thêm bằng chứng
+A3 – File không đọc được: Thông báo lỗi, yêu cầu upload lại
+Postconditions:
+Trạng thái DN chuyển thành `verified` hoặc `manual_review`
+Chứng từ được lưu vào Object Storage, liên kết với hồ sơ DN
+UC03 – Quản lý Phân quyền Nội bộ
+
+Điều kiện tiên quyết:
+DN đã ở trạng thái `verified`
+Actor là người dùng có vai trò `company_admin`
+Luồng chính:
+
+Luồng thay thế:
+A1 – Email đã tồn tại trong hệ thống: Cảnh báo, cho phép mời vào với vai trò mới
+A2 – Thu hồi quyền: Admin chọn nhân viên → "Vô hiệu hóa" → phiên đăng nhập hiện tại bị hủy
+Ma trận phân quyền:
+
+UC04 – Thêm / Sửa / Xóa Sản phẩm
+
+Điều kiện tiên quyết:
+DN đã `verified`
+Actor có quyền `staff_input` trở lên
+Luồng chính – Thêm sản phẩm:
+
+Luồng chính – Sửa sản phẩm:
+NV chọn sản phẩm → "Chỉnh sửa" → thay đổi thông tin → Lưu → HT ghi log thay đổi (ai, khi nào, thay đổi gì)
+Luồng chính – Xóa sản phẩm:
+Chỉ xóa được nếu chưa có UID nào được phát hành
+Nếu đã có UID: chuyển trạng thái SP thành `archived`, không xóa thật
+Luồng thay thế:
+A1 – GTIN không hợp lệ: Cảnh báo, cho phép lưu nháp hoặc sửa
+A2 – Trùng mã SKU: Hệ thống cảnh báo trùng, cho phép ghi đè hoặc đặt mã mới
+UC05 – Quản lý Lô hàng
+
+Điều kiện tiên quyết:
+Sản phẩm đã được tạo (UC04 hoàn thành)
+Luồng chính:
+
+Thông tin theo dõi:
+Trạng thái lô: `created` → `qr_generated` → `distributed` → `completed`
+Lịch sử thay đổi trạng thái, ai thay đổi, thời gian
+UC06 – Đính kèm Chứng nhận vào Sản phẩm / Lô hàng
+
+Điều kiện tiên quyết: Sản phẩm đã tạo, chứng nhận còn hiệu lực
+Luồng chính:
+
+Postconditions:
+Chứng nhận hiển thị trên trang kết quả quét QR
+Hệ thống theo dõi ngày hết hạn cho module TrustCheck (UC18)
+PHÂN HỆ 2 – Tạo & Quản lý Mã Định danh
+UC07 – Tạo Mã UID & QR Hàng loạt
+
+Điều kiện tiên quyết:
+Lô hàng đã được tạo (UC05)
+DN đã `verified`
+Luồng chính:
+
+Quy tắc quan trọng:
+UID phải non-guessable, non-sequential – hoàn toàn ngẫu nhiên
+QR chỉ chứa URL tra cứu dạng `https://vntrust.vn/v/{encrypted_uid}`, không chứa thông tin thật
+Mỗi UID chỉ được tạo một lần duy nhất, không thể tái sử dụng
+Luồng thay thế:
+A1 – Hết quota gói dịch vụ: Thông báo, gợi ý nâng cấp gói
+A2 – Số lượng > 10,000/lần: Tách thành job background, gửi email khi hoàn tất
+UC08 – Xuất File In ấn Mã QR
+
+Điều kiện tiên quyết: UC07 đã hoàn thành
+Luồng chính:
+
+PHÂN HỆ 3 – Xác thực Sản phẩm cho Người tiêu dùng
+UC09 – Quét Mã QR Xác thực Sản phẩm
+
+Điều kiện tiên quyết:
+Sản phẩm có gắn mã QR do VNTrust phát hành
+Người tiêu dùng có thiết bị có camera và trình duyệt web
+Luồng chính:
+
+Bảng trạng thái trả về:
+
+Luồng thay thế:
+A1 – Camera không hoạt động: Cho phép nhập thủ công mã số bên dưới QR
+A2 – Mạng yếu/mất kết nối: Hiển thị thông báo lỗi, cho phép thử lại
+A3 – QR bị mờ/rách: Hướng dẫn nhập mã thủ công
+UC10 – Xem Thông tin Chi tiết Sản phẩm
+
+Điều kiện tiên quyết: UC09 trả về kết quả Xanh hoặc Vàng
+Thông tin hiển thị:
+
+Luồng chính:
+1. NTD xem trang kết quả sau UC09
+2. NTD cuộn xuống để xem lịch sử quét: mã này đã được quét bao nhiêu lần
+3. NTD có thể chia sẻ link sản phẩm
+4. NTD có thể bấm "Báo cáo nghi ngờ" → chuyển UC11
+UC11 – Báo cáo Nghi ngờ Hàng giả
+
+Luồng chính:
+
+PHÂN HỆ 4 – Giám sát & Phát hiện Bất thường
+UC12 – Xem Dashboard Giám sát
+
+Điều kiện tiên quyết: Đã đăng nhập với quyền xem dashboard
+Giao diện Dashboard gồm:
+
+Luồng chính:
+1. Actor đăng nhập → Trang chủ là Dashboard
+2. Actor lọc theo: sản phẩm / lô hàng / khoảng thời gian
+3. Actor click vào widget để xem chi tiết (drill-down)
+4. Actor có thể export dashboard ra PDF/Excel
+UC13 – Xem Bản đồ Quét Địa lý
+
+Luồng chính:
+
+UC14 – Cấu hình Ngưỡng Cảnh báo
+
+Các ngưỡng có thể cấu hình:
+
+PHÂN HỆ 5 – Quản lý Cảnh báo & Báo cáo
+UC15 – Xem & Xử lý Cảnh báo
+
+Điều kiện tiên quyết: Có cảnh báo đang ở trạng thái `open`
+Luồng chính:
+
+Luồng thay thế:
+A1 – Không xử lý trong 48h: Hệ thống tự động leo thang (escalate) lên mức cao hơn, gửi cảnh báo nhắc nhở
+UC16 – Xuất Báo cáo Tóm tắt (Ban lãnh đạo)
+
+Nội dung báo cáo:
+Tổng số sản phẩm đăng ký, lô hàng, mã QR đã phát hành
+Tổng lượt quét theo tháng/quý/năm
+Số cảnh báo theo mức độ và trạng thái xử lý
+Tỷ lệ phát hiện hàng giả (fake rate)
+Top 10 sản phẩm bị giả mạo nhiều nhất
+So sánh kỳ này vs kỳ trước
+Định dạng xuất: PDF (có logo, tiêu đề) | Excel | CSV
+UC17 – Xuất Báo cáo Chi tiết Lô hàng
+
+Nội dung báo cáo:
+Thông tin lô: mã lô, ngày SX, số lượng, điểm xuất phát
+Danh sách UID trong lô và trạng thái từng UID
+Lịch sử từng lượt quét: thời gian, vị trí, kết quả
+Các cảnh báo liên quan và cách xử lý
+Chứng nhận đính kèm và hạn hiệu lực
+PHÂN HỆ 6 – Tuân thủ Pháp lý (TrustCheck)
+UC18 – Kiểm tra Tuân thủ Chứng nhận
+
+Điều kiện tiên quyết: DN đã đăng ký và có sản phẩm trong hệ thống
+Luồng chính:
+
+Bộ chứng nhận kiểm tra theo ngành:
+
+UC19 – Kiểm tra Tính hợp lệ GTIN
+
+Luồng chính:
+
+ADMIN HỆ THỐNG
+UC20 – Quản lý Người dùng (Quản trị hệ thống)
+
+Chức năng:
+
+Sơ đồ luồng tổng quan Use Case
+
+PHÂN QUYỀN & XÁC THỰC NGƯỜI DÙNG (KYC)
+Hệ thống tách biệt hoàn toàn 4 loại tài khoản:
+1. Admin (Quản trị viên): Truy cập toàn bộ hệ thống, duyệt KYC, quản lý người dùng. Không có chức năng đăng ký từ UI.
+2. Nhà sản xuất (NSX): Quản lý sản phẩm, lô hàng, mã QR. Phải đăng ký và chờ Admin duyệt KYC mới được đăng nhập.
+3. Nhà nhập khẩu (NNK): Tương tự NSX, quản lý hàng nhập khẩu. Bắt buộc qua quy trình KYC.
+4. Người tiêu dùng: Quét mã QR, xác thực sản phẩm, gửi báo cáo nghi ngờ.
+Quy trình KYC bắt buộc:
+1. Doanh nghiep dang ky tai khoan tai /login/manufacturer hoac /login/importer
+2. He thong luu tai khoan voi trang thai pending (cho duyet)
+3. Admin dang nhap, vao muc Phe duyet ho so, kiem tra ho so doanh nghiep
+4. Admin duyet (verified) hoac tu choi (suspended)
+5. Sau khi duoc duyet, doanh nghiep moi duoc phep dang nhap vao he thong
+Cơ chế bảo vệ:
+API /api/auth/login kiểm tra trangThai của DoanhNghiep. Nếu là "pending" hoặc "suspended", hệ thống trả về lỗi 403 với thông báo rõ ràng cho người dùng.
+Mỗi phân quyền có trang đăng nhập/đăng ký riêng biệt tại /login/admin, /login/manufacturer, /login/importer, /login/consumer - không có form đăng nhập chung.
