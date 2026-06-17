@@ -37,6 +37,12 @@ workflows:
           cd mobile_app/ios/App
           pod install
 
+      - name: Set up Code Signing
+        script: |
+          keychain initialize
+          keychain add-certificates
+          xcode-project use-profiles
+
       - name: Build iOS Release (.ipa)
         script: |
           cd mobile_app
