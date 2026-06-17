@@ -3,6 +3,7 @@
 // Truy cập qua link: /team/accept-invite?token=...
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 
 interface InvitePreview {
@@ -68,10 +69,7 @@ export default function AcceptInvitePage() {
       <div className="w-full max-w-md bg-white/5 border border-[#C8A557]/20 rounded-3xl p-6 sm:p-8 shadow-2xl">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-6">
-          <div className="w-10 h-10 rounded-xl border border-[#C8A557] text-[#C8A557] flex items-center justify-center">
-            <span className="material-symbols-outlined">shield</span>
-          </div>
-          <span className="font-display text-xl font-bold">VN<span className="text-[#C8A557]">Trust</span></span>
+          <Image src="/logo.png" alt="AI VeriGoods Logo" width={140} height={45} style={{objectFit: 'contain'}} priority />
         </div>
 
         {loading && <p className="text-center text-slate-400 py-8">Đang xác thực lời mời…</p>}

@@ -177,9 +177,9 @@ export default function PortalLandingPage() {
           <p className="text-xs sm:text-sm font-bold text-[#C8A557] uppercase tracking-widest mb-2">
             {tr("Nền tảng quốc gia chống hàng giả", "National Anti-Counterfeit Platform")}
           </p>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-display mb-3 tracking-tight">
-            VN<span className="text-[#C8A557]">Trust</span>
-          </h1>
+          <div className="flex justify-center mb-6">
+            <Image src="/logo.png" alt="AI VeriGoods Logo" width={280} height={90} style={{objectFit: 'contain'}} priority />
+          </div>
           <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
             {tr(
               "Unified Anti-Counterfeit Intelligence Platform — Xác thực doanh nghiệp, truy xuất nguồn gốc, giám sát thị trường, chống hàng giả bằng AI",

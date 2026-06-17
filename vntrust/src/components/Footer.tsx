@@ -1,5 +1,6 @@
 "use client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import Image from "next/image";
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -7,7 +8,7 @@ export default function Footer() {
     <footer className="w-full border-t border-slate-200/30 dark:border-slate-800/30 bg-slate-50 dark:bg-slate-950">
       <div className="flex flex-col md:flex-row justify-between items-center px-12 py-8 gap-4">
         <div className="flex flex-col gap-2">
-          <span className="font-display font-bold text-slate-900 dark:text-white text-lg">VNTRUST</span>
+          <Image src="/logo.png" alt="AI VeriGoods Logo" width={110} height={36} style={{objectFit: 'contain'}} />
           <p className="font-body text-xs uppercase tracking-widest text-slate-500">© 2026 VNTrust. {t("footer_sub")}</p>
         </div>
         <div className="flex flex-wrap justify-center gap-8">

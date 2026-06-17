@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -294,12 +295,14 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [geoEnabled, setGeoEnabled] = useState(true);
   const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
     setIsLoggedIn(!!role);
+    setUserRole(role || "");
     setUserName(localStorage.getItem("userName") || "");
     // Restore geo preference
     const savedGeo = localStorage.getItem("geo_enabled");
@@ -364,12 +367,16 @@ export default function Navbar() {
 
   const toggleTheme = () => setTheme(t => t === "dark" ? "light" : "dark");
 
-  const navLinks = [
+  const allNavLinks = [
     { key: "nav_verify", href: "/verify" },
     { key: "nav_supply", href: "/supply-chain" },
     { key: "nav_dashboard", href: "/dashboard" },
     { key: "nav_enterprise", href: "/enterprise" },
   ];
+  // Người tiêu dùng + Doanh nghiệp: chỉ hiển thị Bảng điều khiển
+  const navLinks = (userRole === "consumer" || userRole === "manufacturer" || userRole === "importer")
+    ? allNavLinks.filter(l => l.href === "/dashboard")
+    : allNavLinks;
 
   const isActive = (href: string) =>
     href === "/dashboard"
@@ -397,12 +404,7 @@ export default function Navbar() {
           {/* Left: Logo + nav */}
           <div className="flex items-center gap-10">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#C8A557] to-[#E4D2A1] flex items-center justify-center shadow-[0_0_15px_rgba(0,221,221,0.5)]">
-                <span className="material-symbols-outlined text-white">shield</span>
-              </div>
-              <span className="text-xl font-black tracking-tight text-white font-display">
-                VN<span className="text-[#C8A557]">TRUST</span>
-              </span>
+              <Image src="/logo.png" alt="AI VeriGoods Logo" width={140} height={45} style={{objectFit: 'contain'}} priority />
             </Link>
 
             <div className="hidden lg:flex items-center gap-7 pt-0.5">
