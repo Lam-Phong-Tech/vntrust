@@ -1,0 +1,64 @@
+workflows:
+  deploy-to-vps:
+    name: Deploy to VPS
+    max_build_duration: 60
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+
+    environment:
+      vars:
+        # Cấu hình VPS — lưu ở Environment variables trong Codemagic dashboard
+        VPS_HOST: 45.119.83.233
+        VPS_USER: root
+        VPS_DEPLOY_PATH: /var/www/vntrust
+        # SSH private key lưu trong Codemagic SSH keys
+      node: 20.19.1
+
+    scripts:
+      - name: Install dependencies
+        script: |
+          cd vntrust
+          npm ci
+
+      - name: Generate Prisma client
+        script: |
+          cd vntrust
+          npx prisma generate
+
+      - name: Build Next.js app
+        script: |
+          cd vntrust
+          npm run build
+
+      - name: Deploy to VPS via rsync + SSH
+        script: |
+          # Tạo thư mục target trên VPS
+          ssh -o StrictHostKeyChecking=no \
+            -i ~/.ssh/codemagic_vps \
+            $VPS_USER@$VPS_HOST "mkdir -p $VPS_DEPLOY_PATH"
+
+          # Sync toàn bộ source (bỏ qua node_modules, .next)
+          rsync -avz --delete \
+            --exclude='node_modules' \
+            --exclude='.git' \
+            --exclude='dev.db' \
+            --exclude='dev.db-journal' \
+            -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/codemagic_vps" \
+            ./vntrust/ $VPS_USER@$VPS_HOST:$VPS_DEPLOY_PATH/
+
+          # Cài dependencies + restart trên VPS
+          ssh -o StrictHostKeyChecking=no \
+            -i ~/.ssh/codemagic_vps \
+            $VPS_USER@$VPS_HOST \
+            "cd $VPS_DEPLOY_PATH && \
+             npm ci --omit=dev && \
+             npx prisma generate && \
+             npm run build && \
+             pm2 restart vntrust || pm2 start npm --name vntrust -- start"
+
+    artifacts:
+      - vntrust/.next/**
