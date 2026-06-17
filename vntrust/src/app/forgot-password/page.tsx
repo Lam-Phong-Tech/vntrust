@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 // ─── Validation chuẩn hoá (đồng bộ với /login/[role]) ─────────────────────────
@@ -144,11 +145,8 @@ export default function ForgotPasswordPage() {
 
       {/* Logo */}
       <div className="flex flex-col items-center mb-8 z-10">
-        <div className="w-16 h-16 bg-gradient-to-br from-[#C8A557]/20 to-[#E4D2A1]/10 rounded-3xl flex items-center justify-center mb-4 border border-[#C8A557]/20 shadow-lg shadow-blue-900/20">
-          <span className="material-symbols-outlined text-4xl text-[#C8A557]">shield_person</span>
-        </div>
-        <h1 className="text-3xl font-display font-bold text-white tracking-tight">VNTrust</h1>
-        <p className="text-slate-400 mt-2 text-sm text-center">Nền tảng xác thực hàng hóa chống giả mạo toàn quốc</p>
+        <Image src="/logo.png" alt="AI VeriGoods Logo" width={160} height={50} style={{objectFit: 'contain'}} priority />
+        <p className="text-slate-400 mt-4 text-sm text-center">Nền tảng xác thực hàng hóa chống giả mạo toàn quốc</p>
       </div>
 
       {/* Card */}

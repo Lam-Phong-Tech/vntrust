@@ -17,24 +17,11 @@ const roles = [
   },
   {
     id: "manufacturer",
-    title: "Nhà sản xuất",
-    desc: "Quản lý sản phẩm & mã QR",
+    title: "Doanh nghiệp",
+    desc: "Sản phẩm, mã QR & chuỗi cung ứng",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M3 21h18M5 21V7l8-4 8 4v14" />
-      </svg>
-    ),
-  },
-  {
-    id: "importer",
-    title: "Nhà phân phối",
-    desc: "Chuỗi cung ứng & nhập khẩu",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M1 3h15v13H1z" />
-        <path d="M16 8h4l3 3v5h-7" />
-        <circle cx="5.5" cy="18.5" r="2.5" />
-        <circle cx="18.5" cy="18.5" r="2.5" />
       </svg>
     ),
   },

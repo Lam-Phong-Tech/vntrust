@@ -3,6 +3,7 @@
 // Hợp nhất 4 module thành 1 entry point duy nhất theo §V (file 5)
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -119,12 +120,14 @@ export default function PortalLandingPage() {
       <header className="sticky top-0 z-40 bg-[#0B1623]/85 backdrop-blur-md border-b border-[#C8A557]/20 px-4 sm:px-8 py-3 flex items-center gap-4">
         {/* Logo */}
         <Link href="/portal" className="flex items-center gap-2 shrink-0">
-          <div className="w-9 h-9 rounded-xl border border-[#C8A557] flex items-center justify-center text-[#C8A557]">
-            <span className="material-symbols-outlined text-[20px]">shield</span>
-          </div>
-          <span className="font-display text-lg sm:text-xl font-bold">
-            VN<span className="text-[#C8A557]">Trust</span>
-          </span>
+          <Image
+            src="/logo.png"
+            alt="AI VeriGoods Logo"
+            width={140}
+            height={45}
+            style={{ objectFit: "contain" }}
+            priority
+          />
         </Link>
 
         {/* Global search — hide on mobile */}
@@ -277,8 +280,7 @@ export default function PortalLandingPage() {
             <div>
               <p className="text-[#C8A557] font-bold mb-2">{tr("Đăng ký", "Register")}</p>
               <ul className="space-y-1 text-slate-400">
-                <li><Link href="/login/manufacturer" className="hover:text-white">{tr("Nhà sản xuất", "Manufacturer")}</Link></li>
-                <li><Link href="/login/importer" className="hover:text-white">{tr("Nhà nhập khẩu", "Importer")}</Link></li>
+                <li><Link href="/login/manufacturer" className="hover:text-white">{tr("Doanh nghiệp", "Enterprise")}</Link></li>
                 <li><Link href="/login/consumer" className="hover:text-white">{tr("Người tiêu dùng", "Consumer")}</Link></li>
               </ul>
             </div>

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import NotificationBell from "@/components/NotificationBell";
@@ -66,6 +67,14 @@ export default function MobileBottomNav() {
       { label: t("mob_nav_more")   || "Khác",    icon: "apps", onClick: () => setDrawerOpen(true) },
     ];
   }
+
+  // Người tiêu dùng + Doanh nghiệp: thanh gọn, chỉ phạm vi bảng điều khiển
+  const isSimpleNav = userRole === "consumer" || userRole === "manufacturer" || userRole === "importer";
+  const consumerTabs: NavItem[] = [
+    { label: t("mob_nav_home") || "Trang chủ", href: "/dashboard",         icon: "home" },
+    { label: t("mob_nav_me")   || "Hồ sơ",     href: "/dashboard/profile", icon: "person" },
+    { label: t("mob_nav_more") || "Khác",      icon: "apps", onClick: () => setDrawerOpen(true) },
+  ];
 
   const isActive = (href?: string) =>
     !href
@@ -144,6 +153,21 @@ export default function MobileBottomNav() {
 
   return (
     <>
+      {isSimpleNav ? (
+      <nav
+        className="mobile-bottom-nav"
+        style={{
+          position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
+          background: "rgba(11, 22, 35, 0.92)",
+          backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
+          borderTop: "1px solid rgba(200, 165, 87, 0.15)",
+          display: "flex", justifyContent: "space-around", alignItems: "stretch",
+          paddingBottom: "env(safe-area-inset-bottom, 0px)", minHeight: "64px",
+        }}
+      >
+        {consumerTabs.map((item, idx) => renderTab(item, idx, "C"))}
+      </nav>
+      ) : (
       <nav
         className="mobile-bottom-nav"
         style={{
@@ -219,6 +243,7 @@ export default function MobileBottomNav() {
         {/* Right 2 tabs */}
         {rightTabs.map((item, idx) => renderTab(item, idx, "R"))}
       </nav>
+      )}
       <MobileMenuDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} userRole={userRole} />
     </>
   );
@@ -404,24 +429,16 @@ export function MobileTopBar() {
         paddingRight: 12,
         paddingTop: "env(safe-area-inset-top, 0px)",
       }}>
-        {/* Left: Logo — đồng bộ palette login (ink/gold) */}
-        <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-          <div style={{
-            width: 30, height: 30, borderRadius: 8,
-            border: "1px solid #C8A557",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#C8A557",
-            position: "relative",
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 0" }}>shield</span>
-          </div>
-          <span style={{
-            fontFamily: "'Fraunces', Georgia, serif",
-            fontWeight: 600, fontSize: 17, letterSpacing: "-0.01em",
-            color: "#F6F1E8",
-          }}>
-            VN<span style={{ color: "#C8A557" }}>Trust</span>
-          </span>
+        {/* Left: Logo */}
+        <Link href="/dashboard" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+          <Image
+            src="/logo.png"
+            alt="AI VeriGoods Logo"
+            width={110}
+            height={36}
+            style={{ objectFit: "contain" }}
+            priority
+          />
         </Link>
 
         {/* Right: utility icons */}
