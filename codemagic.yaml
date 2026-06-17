@@ -1,7 +1,71 @@
 workflows:
-  deploy-to-vps:
-    name: Deploy to VPS
+  # ─── Build iOS và gửi lên TestFlight ─────────────────────────────────────
+  ios-testflight:
+    name: iOS → TestFlight
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.hidequan.webhanggia   # ← Bundle ID từ app.json
+      vars:
+        EXPO_PUBLIC_API_URL: https://anticounterfeit.test9.io.vn
+      node: 20.19.1
+      xcode: latest
+      cocoapods: default
+
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install -g expo-cli@latest eas-cli@latest
+          npm ci
+
+      - name: Expo prebuild (generate native iOS project)
+        script: |
+          npx expo prebuild --clean --platform ios
+
+      - name: Install CocoaPods
+        script: |
+          cd ios && pod install
+
+      - name: Build iOS .ipa for App Store
+        script: |
+          xcode-project build-ipa \
+            --workspace "ios/vntrust.xcworkspace" \
+            --scheme "vntrust"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        # Tạo API Key tại: https://appstoreconnect.apple.com/access/api
+        # Sau đó thêm vào Codemagic: Settings → Integrations → App Store Connect
+        api_key: $APP_STORE_CONNECT_API_KEY
+        key_id: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: true
+        expire_build_submitted_for_review: true
+      email:
+        recipients:
+          - admin@aiverigoods.com   # ← Đổi thành email của bạn
+
+  # ─── Build Android APK (tuỳ chọn) ────────────────────────────────────────
+  android-build:
+    name: Android APK
     max_build_duration: 60
+    instance_type: linux_x2
+
     triggering:
       events:
         - push
@@ -10,55 +74,21 @@ workflows:
           include: true
 
     environment:
-      vars:
-        # Cấu hình VPS — lưu ở Environment variables trong Codemagic dashboard
-        VPS_HOST: 45.119.83.233
-        VPS_USER: root
-        VPS_DEPLOY_PATH: /var/www/vntrust
-        # SSH private key lưu trong Codemagic SSH keys
       node: 20.19.1
 
     scripts:
       - name: Install dependencies
         script: |
-          cd vntrust
+          npm install -g expo-cli@latest
           npm ci
 
-      - name: Generate Prisma client
+      - name: Expo prebuild Android
         script: |
-          cd vntrust
-          npx prisma generate
+          npx expo prebuild --clean --platform android
 
-      - name: Build Next.js app
+      - name: Build Android APK (debug)
         script: |
-          cd vntrust
-          npm run build
-
-      - name: Deploy to VPS via rsync + SSH
-        script: |
-          # Tạo thư mục target trên VPS
-          ssh -o StrictHostKeyChecking=no \
-            -i ~/.ssh/codemagic_vps \
-            $VPS_USER@$VPS_HOST "mkdir -p $VPS_DEPLOY_PATH"
-
-          # Sync toàn bộ source (bỏ qua node_modules, .next)
-          rsync -avz --delete \
-            --exclude='node_modules' \
-            --exclude='.git' \
-            --exclude='dev.db' \
-            --exclude='dev.db-journal' \
-            -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/codemagic_vps" \
-            ./vntrust/ $VPS_USER@$VPS_HOST:$VPS_DEPLOY_PATH/
-
-          # Cài dependencies + restart trên VPS
-          ssh -o StrictHostKeyChecking=no \
-            -i ~/.ssh/codemagic_vps \
-            $VPS_USER@$VPS_HOST \
-            "cd $VPS_DEPLOY_PATH && \
-             npm ci --omit=dev && \
-             npx prisma generate && \
-             npm run build && \
-             pm2 restart vntrust || pm2 start npm --name vntrust -- start"
+          cd android && ./gradlew assembleDebug
 
     artifacts:
-      - vntrust/.next/**
+      - android/app/build/outputs/apk/debug/*.apk
