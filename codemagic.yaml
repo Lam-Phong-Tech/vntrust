@@ -1,7 +1,6 @@
 workflows:
-  # ─── Build iOS và gửi lên TestFlight ─────────────────────────────────────
   ios-testflight:
-    name: iOS → TestFlight
+    name: iOS WebView App → TestFlight
     max_build_duration: 90
     instance_type: mac_mini_m2
 
@@ -16,79 +15,46 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.hidequan.webhanggia   # ← Bundle ID từ app.json
-      vars:
-        EXPO_PUBLIC_API_URL: https://anticounterfeit.test9.io.vn
+        bundle_identifier: com.hidequan.webhanggia
       node: 20.19.1
       xcode: latest
       cocoapods: default
 
     scripts:
-      - name: Install dependencies
+      - name: Install dependencies & Capacitor
         script: |
-          npm install -g expo-cli@latest eas-cli@latest
-          npm ci
+          cd mobile_app
+          npm install
 
-      - name: Expo prebuild (generate native iOS project)
+      - name: Generate iOS Native Project
         script: |
-          npx expo prebuild --clean --platform ios
+          cd mobile_app
+          npx cap add ios
+          npx cap sync ios
 
       - name: Install CocoaPods
         script: |
-          cd ios && pod install
+          cd mobile_app/ios/App
+          pod install
 
-      - name: Build iOS .ipa for App Store
+      - name: Build iOS Release (.ipa)
         script: |
+          cd mobile_app
           xcode-project build-ipa \
-            --workspace "ios/vntrust.xcworkspace" \
-            --scheme "vntrust"
+            --workspace "ios/App/App.xcworkspace" \
+            --scheme "App"
 
     artifacts:
-      - build/ios/ipa/*.ipa
+      - mobile_app/build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
 
     publishing:
       app_store_connect:
-        # Tạo API Key tại: https://appstoreconnect.apple.com/access/api
-        # Sau đó thêm vào Codemagic: Settings → Integrations → App Store Connect
         api_key: $APP_STORE_CONNECT_API_KEY
         key_id: $APP_STORE_CONNECT_KEY_ID
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true
-        expire_build_submitted_for_review: true
       email:
         recipients:
-          - admin@aiverigoods.com   # ← Đổi thành email của bạn
+          - admin@aiverigoods.com
 
-  # ─── Build Android APK (tuỳ chọn) ────────────────────────────────────────
-  android-build:
-    name: Android APK
-    max_build_duration: 60
-    instance_type: linux_x2
-
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: main
-          include: true
-
-    environment:
-      node: 20.19.1
-
-    scripts:
-      - name: Install dependencies
-        script: |
-          npm install -g expo-cli@latest
-          npm ci
-
-      - name: Expo prebuild Android
-        script: |
-          npx expo prebuild --clean --platform android
-
-      - name: Build Android APK (debug)
-        script: |
-          cd android && ./gradlew assembleDebug
-
-    artifacts:
-      - android/app/build/outputs/apk/debug/*.apk

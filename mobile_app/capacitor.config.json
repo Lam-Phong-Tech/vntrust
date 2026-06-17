@@ -1,0 +1,10 @@
+{
+  "appId": "com.hidequan.webhanggia",
+  "appName": "VNTrust",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://anticounterfeit.test9.io.vn",
+    "cleartext": true
+  }
+}
