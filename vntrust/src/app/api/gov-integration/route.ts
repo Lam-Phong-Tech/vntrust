@@ -216,7 +216,7 @@ export async function GET(req: NextRequest) {
             cuaKhau: lo.cuaKhau,
             hsCode: lo.hsCode,
             nuocXuatXu: lo.nuocXuatXu,
-            source: 'VNTrust DB (cached from Hải quan API)',
+            source: 'Dữ liệu khai báo trên VNTrust',
           };
         }
       } else if (type === 'check_byt') {
@@ -237,7 +237,7 @@ export async function GET(req: NextRequest) {
             ngayCap: cert.ngayCap?.toISOString().split('T')[0],
             ngayHetHan: cert.ngayHetHan?.toISOString().split('T')[0],
             toChucCap: cert.toChucCap,
-            source: 'VNTrust DB (cached from Bộ Y tế API)',
+            source: 'Dữ liệu khai báo trên VNTrust',
           };
         }
       }

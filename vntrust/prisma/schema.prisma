@@ -8,27 +8,51 @@ datasource db {
 }
 
 model DoanhNghiep {
-  id              String      @id @default(uuid())
-  maSoThue        String      @unique
-  ten             String
-  diaChi          String?
+  id             String           @id @default(uuid())
+  maSoThue       String           @unique
+  ten            String
+  diaChi         String?
   // Phase 3 — geocoded coords từ diaChi (qua VietMap Search API)
-  lat             Float?
-  lng             Float?
-  nganh_VSIC      String?
-  email           String?     // Email miền riêng doanh nghiệp
-  hotline         String?     // Hotline xác thực
-  nguoiDaiDien    String?     // Người đại diện pháp luật
-  giayphep_url    String?     // URL/tên file giấy phép KD đã upload
-  cmnd_url        String?     // URL/tên file CMND/CCCD người đại diện
-  loai            String      // NSX | NNK
-  ngayDangKy      DateTime    @default(now())
-  trangThai       String      @default("pending") // pending | verified | suspended
-  sanPhams        SanPham[]
-  nguoiDungs      NguoiDung[]
-  loiMoiNhanVien  LoiMoiNhanVien[]
+  lat            Float?
+  lng            Float?
+  nganh_VSIC     String?
+  email          String? // Email miền riêng doanh nghiệp
+  hotline        String? // Hotline xác thực
+  nguoiDaiDien   String? // Người đại diện pháp luật
+  giayphep_url   String? // URL/tên file giấy phép KD đã upload
+  cmnd_url       String? // URL/tên file CMND/CCCD người đại diện
+  loai           String // NSX | NNK
+  ngayDangKy     DateTime         @default(now())
+  trangThai      String           @default("pending") // pending | verified | suspended
+  sanPhams       SanPham[]
+  nguoiDungs     NguoiDung[]
+  loiMoiNhanVien LoiMoiNhanVien[]
+
+  // Missing fields & models from Word file
+  website    String?
+  logoUrl    String?
+  thuongHieu String?
+  chungNhans ChungNhan[]
+  giayPhepLuuHanhs GiayPhepLuuHanh[]
 }
 
+// Giấy phép lưu hành sản phẩm — gắn vào hồ sơ doanh nghiệp
+model GiayPhepLuuHanh {
+  id            String       @id @default(uuid())
+  tenGiayPhep   String // VD: Đăng ký lưu hành mỹ phẩm / Số công bố TPCN / Giấy phép lưu hành thuốc
+  soGiayPhep    String // Số giấy phép / số đăng ký lưu hành
+  coQuanCap     String? // Cơ quan cấp (Cục QLD, Bộ Y tế, ...)
+  ngayCap       DateTime?
+  ngayHetHan    DateTime?
+  phamVi        String? // Phạm vi lưu hành (Toàn quốc / EU / ...)
+  fileUrl       String? // Ảnh/scan giấy phép
+  trangThai     String       @default("active") // active | expired | revoked
+  ngayTao       DateTime     @default(now())
+  doanhNghiepId String
+  doanhNghiep   DoanhNghiep  @relation(fields: [doanhNghiepId], references: [id])
+
+  @@index([doanhNghiepId])
+}
 
 model SanPham {
   id            String          @id @default(uuid())
@@ -39,20 +63,28 @@ model SanPham {
   hinhAnh       String?
   nuocSanXuat   String?
   // FR-PRD-01: Extended fields
-  thanhPhan     String?         // Thành phần / Ingredients
-  nhomSanPham   String?         // Nhóm SP cấp 1: Thực phẩm | Dược phẩm | Mỹ phẩm
-  phanLoai2     String?         // Phân loại cấp 2
-  phamCap       String?         // Phẩm cấp: premium | standard | economy
-  khoiLuong     String?         // Khối lượng/thể tích (VD: 500g, 1L)
-  quyCach       String?         // Quy cách đóng gói (VD: 24 hộp/thùng)
-  hinhAnhUrl    String?         // URL ảnh sản phẩm (upload bởi NSX)
-  phienBan      Int             @default(1)  // Version control FR-PRD-06
+  thanhPhan     String? // Thành phần / Ingredients
+  nhomSanPham   String? // Nhóm SP cấp 1: Thực phẩm | Dược phẩm | Mỹ phẩm
+  phanLoai2     String? // Phân loại cấp 2
+  phamCap       String? // Phẩm cấp: premium | standard | economy
+  khoiLuong     String? // Khối lượng/thể tích (VD: 500g, 1L)
+  quyCach       String? // Quy cách đóng gói (VD: 24 hộp/thùng)
+  hinhAnhUrl    String? // URL ảnh sản phẩm (upload bởi NSX)
+  phienBan      Int             @default(1) // Version control FR-PRD-06
   ngayTao       DateTime        @default(now())
   doanhNghiepId String
   doanhNghiep   DoanhNghiep     @relation(fields: [doanhNghiepId], references: [id])
   loHangs       LoHang[]
   chungNhans    ChungNhan[]
   hauKiems      KetQuaHauKiem[]
+
+  // Missing fields from Word file
+  anhMatTruocUrl    String?
+  anhTemChongGiaUrl String?
+
+  // Module 3 AI Algo — Giá tham chiếu (Mục 8)
+  giaNiemYet Float? // Giá niêm yết chính thức do DN khai báo
+  giaSan     Float? // Giá sàn tối thiểu cho phép bán
 }
 
 model LoHang {
@@ -64,11 +96,11 @@ model LoHang {
   trangThai      String          @default("active") // active | distributed | suspended | recalled | pending_review | pending_distributor | ready
   khuVucPhanPhoi String?
   // FR-BAT-07: Tờ khai hải quan
-  soToKhaiHQ     String?         // Số tờ khai hải quan
-  ngayThongQuan  DateTime?       // Ngày thông quan
-  cuaKhau        String?         // Cửa khẩu nhập
-  hsCode         String?         // HS Code hàng hóa
-  nuocXuatXu     String?         // Nước xuất xứ
+  soToKhaiHQ     String? // Số tờ khai hải quan
+  ngayThongQuan  DateTime? // Ngày thông quan
+  cuaKhau        String? // Cửa khẩu nhập
+  hsCode         String? // HS Code hàng hóa
+  nuocXuatXu     String? // Nước xuất xứ
   sanPhamId      String
   sanPham        SanPham         @relation(fields: [sanPhamId], references: [id])
   uids           MaDinhDanh[]
@@ -81,12 +113,12 @@ model LoHang {
 // FR-BAT-05: Nhập/xuất kho với timestamp, vị trí GPS
 model KhoHang {
   id        String   @id @default(uuid())
-  loaiGD    String   // NHAP_KHO | XUAT_KHO | CHUYEN_KHO
+  loaiGD    String // NHAP_KHO | XUAT_KHO | CHUYEN_KHO
   soLuong   Int
-  viTri     String?  // Địa chỉ kho
+  viTri     String? // Địa chỉ kho
   lat       Float?
   lng       Float?
-  nguoiThuc String   // Người thực hiện
+  nguoiThuc String // Người thực hiện
   ghiChu    String?
   thoiGian  DateTime @default(now())
   loHangId  String
@@ -94,19 +126,19 @@ model KhoHang {
 }
 
 model MaDinhDanh {
-  uid             String     @id @default(uuid()) // UUID v4
-  qrCodeUrl       String?
-  serialNumber    String?    @unique
+  uid            String     @id @default(uuid()) // UUID v4
+  qrCodeUrl      String?
+  serialNumber   String?    @unique
   // Phase 8: AES-256-GCM encrypted token nhúng vào QR (thay vì plaintext UUID)
   // Format: base64url(IV || authTag || ciphertext). Unique để verify reverse.
-  encryptedToken  String?    @unique
-  loai            String     @default("QR") // QR | Serial
-  ngayTao         DateTime   @default(now())
-  soLanQuet       Int        @default(0)
-  trangThai       String     @default("active") // active | expired | flagged | fake
-  loHangId        String
-  loHang          LoHang     @relation(fields: [loHangId], references: [id])
-  luotQuets       LuotQuet[]
+  encryptedToken String?    @unique
+  loai           String     @default("QR") // QR | Serial
+  ngayTao        DateTime   @default(now())
+  soLanQuet      Int        @default(0)
+  trangThai      String     @default("active") // active | expired | flagged | fake
+  loHangId       String
+  loHang         LoHang     @relation(fields: [loHangId], references: [id])
+  luotQuets      LuotQuet[]
 }
 
 model LuotQuet {
@@ -119,47 +151,78 @@ model LuotQuet {
   ketQua     String // genuine | suspect | fake | expired
   thietBi    String?
   maDinhDanh MaDinhDanh @relation(fields: [uid], references: [uid])
+
+  // Module 2 NTD — Metadata thu thập từ người dùng (Mục 9)
+  kenhMua            String? // cho | sieu_thi | tap_hoa | tmdt | livestream | khong_ro
+  deviceId           String? // Device fingerprint chống spam/clone
+  networkFingerprint String? // Hash(IP + ISP) chống spam mạng
+  exifData           String? // JSON EXIF metadata từ ảnh chụp
+  barcodeRaw         String? // Raw barcode/GTIN quét được từ sản phẩm
+  clickstream        String? // JSON nhật ký hành vi trong phiên quét
 }
 
 model CanhBao {
-  id            String    @id @default(uuid())
-  loai          String
-  mucDo         String // low | medium | high
-  moTa          String
-  thoiGian      DateTime  @default(now())
-  trangThai     String    @default("open") // open | reviewing | closed
+  id             String    @id @default(uuid())
+  loai           String
+  mucDo          String // low | monitor | medium | high | confirmed_fake
+  moTa           String
+  thoiGian       DateTime  @default(now())
+  trangThai      String    @default("open") // open | reviewing | closed
   // Tùy chọn liên kết đến MaDinhDanh hoặc SanPham
-  uid           String?
+  uid            String?
   // FR-REPORT: Người gửi báo cáo NTD (nullable — vì có thể ẩn danh)
-  nguoiBaoCao   String?
+  nguoiBaoCao    String?
   // Phase 7: Mở rộng báo cáo NTD (UC11 - TrustCheck)
-  loaiPhanAnh   String?   // san_pham | shop_gian_lan | quang_cao_sai | phan_hoi
-  noiMua        String?   // cho | shopee | tiktok | facebook | lazada | tiki | khac
-  giaMua        Float?    // Phát hiện giá rẻ bất thường
-  cheDoAnDanh   String?   // an_danh | co_lien_he | cong_khai
+  loaiPhanAnh    String? // san_pham | shop_gian_lan | quang_cao_sai | phan_hoi
+  noiMua         String? // cho | shopee | tiktok | facebook | lazada | tiki | khac
+  giaMua         Float? // Phát hiện giá rẻ bất thường
+  cheDoAnDanh    String? // an_danh | co_lien_he | cong_khai
   // Auto-escalation (UC15 — leo thang sau 48h chưa xử lý)
-  escalatedAt   DateTime?
-  escalateLevel Int?      // 1, 2, 3 — số lần đã escalate
+  escalatedAt    DateTime?
+  escalateLevel  Int? // 1, 2, 3 — số lần đã escalate
   // Phase 9: SHA-256 hash của ảnh đính kèm — phát hiện báo cáo trùng spam
-  hinhAnhHash   String?
-  reportVaultRef String?  // Phase 10: link to ReportVault.reportRef (nếu dùng vault)
+  hinhAnhHash    String?
+  reportVaultRef String? // Phase 10: link to ReportVault.reportRef (nếu dùng vault)
+
+  // Module 2 NTD — Tình trạng & ảnh sản phẩm do người tiêu dùng cung cấp (Mục 9, 10)
+  tinhTrangSP      String? // nguyen_seal | mo_hop | hu_hong | bat_thuong | khong_co_tem | gia_bat_thuong
+  anhMatTruocUrl   String? // Ảnh mặt trước SP do NTD chụp
+  anhMatSauUrl     String? // Ảnh mặt sau SP do NTD chụp
+  anhTemUrl        String? // Ảnh tem chống giả do NTD chụp
+  anhNSXHSDUrl     String? // Ảnh NSX/HSD do NTD chụp
+  anhBarcodeUrl    String? // Ảnh barcode/QR do NTD chụp
+  // Module 2 NTD — AI Risk Engine (Mục 11)
+  riskScore        Int? // Điểm rủi ro AI tổng hợp 0–100
+  riskDetail       String? // JSON chi tiết từng luật rủi ro đã kích hoạt
+  // Module 2 NTD — Mã hồ sơ & trạng thái điều tra (Mục 12, 13)
+  maCaseHoSo       String? // VD: CASE-2026-000189 — hiển thị cho NTD
+  trangThaiDieuTra String? // cho_phan_tich | dang_dieu_tra | da_xu_ly | dong
+
+  @@index([maCaseHoSo])
 }
 
 model ChungNhan {
-  id               String   @id @default(uuid())
-  loai             String   // ISO | HACCP | GMP | CFS
-  soChungNhan      String
-  ngayCap          DateTime
-  ngayHetHan       DateTime
-  toChucCap        String?
-  hinhAnhUrl       String?  // URL ảnh chứng nhận upload bởi NSX
-  trangThaiDuyet   String   @default("pending") // pending | approved | rejected
-  ghiChuAdmin      String?  // Ghi chú khi admin từ chối
-  ngayDuyet        DateTime?
-  sanPhamId        String?
-  sanPham          SanPham? @relation(fields: [sanPhamId], references: [id])
-  loHangId         String?
-  loHang           LoHang?  @relation(fields: [loHangId], references: [id])
+  id             String    @id @default(uuid())
+  loai           String // ISO | HACCP | GMP | CFS
+  soChungNhan    String
+  ngayCap        DateTime
+  ngayHetHan     DateTime
+  toChucCap      String?
+  hinhAnhUrl     String? // URL ảnh chứng nhận upload bởi NSX
+  trangThaiDuyet String    @default("pending") // pending | approved | rejected
+  ghiChuAdmin    String? // Ghi chú khi admin từ chối
+  ngayDuyet      DateTime?
+  sanPhamId      String?
+  sanPham        SanPham?  @relation(fields: [sanPhamId], references: [id])
+  loHangId       String?
+  loHang         LoHang?   @relation(fields: [loHangId], references: [id])
+
+  // Missing fields & relations from Word file
+  fileScanOCR   String?
+  qrXacThuc     String?
+  apiVerifyUrl  String?
+  doanhNghiepId String?
+  doanhNghiep   DoanhNghiep? @relation(fields: [doanhNghiepId], references: [id])
 }
 
 model NguoiDung {
@@ -169,11 +232,11 @@ model NguoiDung {
   email         String       @unique
   matKhau       String
   // Hồ sơ cá nhân mở rộng (tất cả role)
-  avatar        String?      // URL ảnh đại diện (upload qua /api/upload?type=avatar)
-  diaChi        String?      // Địa chỉ cá nhân
-  ngaySinh      DateTime?    // Ngày sinh
-  gioiTinh      String?      // M (Nam) | F (Nữ) | O (Khác)
-  cccd          String?      // CCCD/CMND
+  avatar        String? // URL ảnh đại diện (upload qua /api/upload?type=avatar)
+  diaChi        String? // Địa chỉ cá nhân
+  ngaySinh      DateTime? // Ngày sinh
+  gioiTinh      String? // M (Nam) | F (Nữ) | O (Khác)
+  cccd          String? // CCCD/CMND
   vaiTro        String       @default("staff") // admin | manufacturer | importer | consumer | consultant | authority
   // UC03 — Phân quyền nội bộ DN (chỉ áp dụng với NSX/NNK):
   // company_admin: quản lý nhân viên + toàn quyền dữ liệu DN
@@ -187,23 +250,23 @@ model NguoiDung {
   doanhNghiep   DoanhNghiep? @relation(fields: [doanhNghiepId], references: [id])
 
   // UC03 — invite token tracking
-  loiMoiDaTao   LoiMoiNhanVien[] @relation("NguoiTao")
+  loiMoiDaTao LoiMoiNhanVien[] @relation("NguoiTao")
 }
 
 // UC03 — Lời mời nhân viên gia nhập DN (Sprint 14)
 model LoiMoiNhanVien {
-  id             String      @id @default(uuid())
-  token          String      @unique  // JWT hash 7-day
-  email          String                // email NV được mời
-  doanhNghiepId  String
-  doanhNghiep    DoanhNghiep @relation(fields: [doanhNghiepId], references: [id])
-  vaiTroCty      String                // company_admin | staff_input | warehouse | viewer
-  trangThai      String      @default("pending")  // pending | accepted | revoked | expired
-  ngayTao        DateTime    @default(now())
-  ngayHetHan     DateTime
-  ngayChapNhan   DateTime?
-  nguoiTaoId     String                // NguoiDung.id của người mời
-  nguoiTao       NguoiDung   @relation("NguoiTao", fields: [nguoiTaoId], references: [id])
+  id            String      @id @default(uuid())
+  token         String      @unique // JWT hash 7-day
+  email         String // email NV được mời
+  doanhNghiepId String
+  doanhNghiep   DoanhNghiep @relation(fields: [doanhNghiepId], references: [id])
+  vaiTroCty     String // company_admin | staff_input | warehouse | viewer
+  trangThai     String      @default("pending") // pending | accepted | revoked | expired
+  ngayTao       DateTime    @default(now())
+  ngayHetHan    DateTime
+  ngayChapNhan  DateTime?
+  nguoiTaoId    String // NguoiDung.id của người mời
+  nguoiTao      NguoiDung   @relation("NguoiTao", fields: [nguoiTaoId], references: [id])
 
   @@index([doanhNghiepId])
   @@index([email])
@@ -234,26 +297,12 @@ model KetQuaHauKiem {
 // UC14: Cấu hình hệ thống (admin chỉnh ngưỡng cảnh báo, retention, etc.)
 // Key-value store, namespace theo loại (alert | report | retention | notification)
 model CauHinhHeThong {
-  key         String   @id           // VD: "scan_threshold_per_day", "consumer_report_threshold"
-  value       String                 // JSON-encoded
+  key         String   @id // VD: "scan_threshold_per_day", "consumer_report_threshold"
+  value       String // JSON-encoded
   namespace   String   @default("alert") // alert | report | retention | notification | misc
   moTa        String?
   ngayCapNhat DateTime @updatedAt
-  capNhatBoi  String?                // userName
-}
-
-// UC18: Yêu cầu chứng nhận bắt buộc theo ngành VSIC
-// Compliance dashboard sẽ check DN có đủ cert chưa.
-model YeuCauTuanThuVSIC {
-  id            String   @id @default(uuid())
-  nganhVSIC     String                  // VD: "A01", "A02", "C10", "C20", "G46"
-  tenNganh      String                  // "Thực phẩm", "Mỹ phẩm", "Dược phẩm", ...
-  loaiChungNhan String                  // ISO 9001, HACCP, GMP, CFS, C/O, ...
-  batBuoc       Boolean  @default(true) // true = bắt buộc; false = khuyến nghị
-  ghiChu        String?
-  canCu         String?
-  trangThai     String   @default("active")
-  ngayTao       DateTime @default(now())
+  capNhatBoi  String? // userName
 }
 
 // Phase 10 §III.3: 3 KHO DỮ LIỆU TÁCH BIỆT (Identity / Report / Anonymous)
@@ -263,12 +312,12 @@ model YeuCauTuanThuVSIC {
 // Chỉ Identity Service API mới giải mã được; ánh xạ Hash(UserID) → các ID khác.
 model IdentityVault {
   id             String   @id @default(uuid())
-  userHash       String   @unique           // SHA-256 + salt của userId/email (lookup key)
-  emailEncrypted String?                    // AES-256-GCM encrypted
-  phoneEncrypted String?                    // AES-256-GCM encrypted
-  cccdEncrypted  String?                    // AES-256-GCM encrypted
-  cccdHash       String?                    // SHA-256+salt để check trùng mà không decrypt
-  nguoiDungId    String?                    // FK soft (không enforced để tách biệt)
+  userHash       String   @unique // SHA-256 + salt của userId/email (lookup key)
+  emailEncrypted String? // AES-256-GCM encrypted
+  phoneEncrypted String? // AES-256-GCM encrypted
+  cccdEncrypted  String? // AES-256-GCM encrypted
+  cccdHash       String? // SHA-256+salt để check trùng mà không decrypt
+  nguoiDungId    String? // FK soft (không enforced để tách biệt)
   ngayTao        DateTime @default(now())
   ngayCapNhat    DateTime @updatedAt
 }
@@ -277,52 +326,52 @@ model IdentityVault {
 // KHÔNG join trực tiếp với Identity Vault. Liên kết qua reportRef token mơ hồ.
 model ReportVault {
   id          String   @id @default(uuid())
-  reportRef   String   @unique              // Token random để liên kết với CanhBao
-  noiDung     String                        // Encrypted JSON body
-  hinhAnhUrls String?                       // Encrypted JSON array URLs
-  identityRef String?                       // Optional: link to IdentityVault.userHash (qua channel khác)
+  reportRef   String   @unique // Token random để liên kết với CanhBao
+  noiDung     String // Encrypted JSON body
+  hinhAnhUrls String? // Encrypted JSON array URLs
+  identityRef String? // Optional: link to IdentityVault.userHash (qua channel khác)
   ngayTao     DateTime @default(now())
 }
 
 // Anonymous Session — phiên ẩn danh, token OTP, tự xóa 30 ngày
 model AnonymousSession {
-  id           String   @id @default(uuid())
-  sessionToken String   @unique
-  saltedIpHash String                       // Hash IP với salt — không lưu IP raw
+  id           String    @id @default(uuid())
+  sessionToken String    @unique
+  saltedIpHash String // Hash IP với salt — không lưu IP raw
   userAgent    String?
-  otpHash      String?                      // Hash OTP code
+  otpHash      String? // Hash OTP code
   otpExpires   DateTime?
-  verified     Boolean  @default(false)
-  ngayTao      DateTime @default(now())
-  ngayHetHan   DateTime                      // tự xóa sau 30 ngày
+  verified     Boolean   @default(false)
+  ngayTao      DateTime  @default(now())
+  ngayHetHan   DateTime // tự xóa sau 30 ngày
 }
 
 // Phase 8: Cấu hình webhook ERP outbound
 model WebhookErp {
-  id            String   @id @default(uuid())
-  doanhNghiepId String                       // DN owner config
-  endpointUrl   String                       // POST URL của ERP
-  secret        String                       // HMAC signing secret
-  events        String                       // CSV: "batch.suspend,batch.recall,cert.expire"
-  trangThai     String   @default("active")  // active | paused
-  retryMax      Int      @default(3)
+  id            String    @id @default(uuid())
+  doanhNghiepId String // DN owner config
+  endpointUrl   String // POST URL của ERP
+  secret        String // HMAC signing secret
+  events        String // CSV: "batch.suspend,batch.recall,cert.expire"
+  trangThai     String    @default("active") // active | paused
+  retryMax      Int       @default(3)
   lastTriggered DateTime?
-  lastStatus    Int?                         // HTTP status từ ERP
-  ngayTao       DateTime @default(now())
+  lastStatus    Int? // HTTP status từ ERP
+  ngayTao       DateTime  @default(now())
 }
 
 // FR-HK-RULE: Bảng tiêu chuẩn kiểm nghiệm — để rule engine tự so sánh
 // kết quả hậu kiểm với ngưỡng quy định theo nhóm sản phẩm.
 model TieuChuanKiemNghiem {
   id            String   @id @default(uuid())
-  nhomSanPham   String   // Thực phẩm | Dược phẩm | Mỹ phẩm | Rau củ | Thịt ...
-  tenChiTieu    String   // Tên chỉ tiêu: "Chì", "Cadimi", "Dư lượng thuốc BVTV"
-  donVi         String?  // mg/kg, ppm, CFU/g, %
+  nhomSanPham   String // Thực phẩm | Dược phẩm | Mỹ phẩm | Rau củ | Thịt ...
+  tenChiTieu    String // Tên chỉ tiêu: "Chì", "Cadimi", "Dư lượng thuốc BVTV"
+  donVi         String? // mg/kg, ppm, CFU/g, %
   loaiNguong    String   @default("max") // max | min | range | qualitative
-  nguongMin     Float?   // Cho min hoặc range
-  nguongMax     Float?   // Cho max hoặc range
-  giaTriBatBuoc String?  // Cho qualitative: "negative", "absent" - phải khớp
-  canCu         String?  // VD: "QCVN 8-2:2011/BYT", "TCVN 7596:2007"
+  nguongMin     Float? // Cho min hoặc range
+  nguongMax     Float? // Cho max hoặc range
+  giaTriBatBuoc String? // Cho qualitative: "negative", "absent" - phải khớp
+  canCu         String? // VD: "QCVN 8-2:2011/BYT", "TCVN 7596:2007"
   ghiChu        String?
   trangThai     String   @default("active") // active | deprecated
   ngayTao       DateTime @default(now())
@@ -341,29 +390,130 @@ model NhatKy {
 
 // Thông báo hệ thống — gửi tới người dùng / doanh nghiệp / role
 model ThongBao {
-  id           String   @id @default(uuid())
-  tieuDe       String
-  noiDung      String
-  loai         String   @default("system") // system | kyc | shipment | alert
-  nguoiNhanId  String?  // Gửi tới user cụ thể
+  id            String   @id @default(uuid())
+  tieuDe        String
+  noiDung       String
+  loai          String   @default("system") // system | kyc | shipment | alert
+  nguoiNhanId   String? // Gửi tới user cụ thể
   doanhNghiepId String? // Gửi tới toàn bộ doanh nghiệp
-  roleTarget   String?  // Gửi tới theo role: admin | manufacturer | importer | consumer | all
-  daDoc        Boolean  @default(false)
-  thoiGian     DateTime @default(now())
+  roleTarget    String? // Gửi tới theo role: admin | manufacturer | importer | consumer | all
+  daDoc         Boolean  @default(false)
+  thoiGian      DateTime @default(now())
 }
 
 // Đơn chuyển hàng từ NSX tới NSD
 model DonChuyenHang {
-  id            String   @id @default(uuid())
-  loHangId      String
-  loHang        LoHang   @relation(fields: [loHangId], references: [id])
-  nsxDoanhNghiepId  String   // ID doanh nghiệp NSX
-  nsdDoanhNghiepId  String?  // ID doanh nghiệp NSD (có thể chọn sau)
-  ghiChu        String?
-  hinhAnhUrls   String?  // JSON array URLs ảnh lô hàng
+  id               String   @id @default(uuid())
+  loHangId         String
+  loHang           LoHang   @relation(fields: [loHangId], references: [id])
+  nsxDoanhNghiepId String // ID doanh nghiệp NSX
+  nsdDoanhNghiepId String? // ID doanh nghiệp NSD (có thể chọn sau)
+  ghiChu           String?
+  hinhAnhUrls      String? // JSON array URLs ảnh lô hàng
   // Trạng thái: pending_review | approved | rejected | pending_distributor | ready | distributed
-  trangThai     String   @default("pending_review")
-  adminNote     String?  // Ghi chú khi admin từ chối
-  thoiGian      DateTime @default(now())
-  capNhat       DateTime @updatedAt
+  trangThai        String   @default("pending_review")
+  adminNote        String? // Ghi chú khi admin từ chối
+  thoiGian         DateTime @default(now())
+  capNhat          DateTime @updatedAt
+}
+
+// ===================================================
+// NEW MODELS ADDED FROM WORD REQUIREMENTS
+// ===================================================
+
+// ===================================================
+// MODULE 2 NTD — CÁC BẢNG MỚI (Gap Analysis Phase 1)
+// ===================================================
+
+// Bảng lịch sử kiểm tra của Người tiêu dùng (Mục 14)
+model LichSuKiemTra {
+  id           String   @id @default(uuid())
+  nguoiDungId  String? // FK tới NguoiDung (null nếu là Guest/Anonymous)
+  sessionRef   String? // Ref tới AnonymousSession.sessionToken
+  loaiHanhDong String // quet_qr | chup_anh_ai | bao_cao | tra_cuu
+  uid          String? // UID sản phẩm liên quan
+  ketQua       String? // verified | warning | expired | unknown | blocked
+  riskScore    Int? // Điểm rủi ro AI
+  canhBaoId    String? // FK tới CanhBao nếu có báo cáo
+  lat          Float?
+  lng          Float?
+  thoiGian     DateTime @default(now())
+
+  @@index([nguoiDungId])
+  @@index([sessionRef])
+  @@index([uid])
+}
+
+// Bảng cấu hình luật tính điểm rủi ro AI — admin có thể chỉnh không cần sửa code (Mục 11)
+model RiskScoringRule {
+  id          String   @id @default(uuid())
+  tenLuat     String // VD: "QR không tồn tại"
+  dieuKien    String // qr_not_found | hsd_invalid | bao_bi_khac | gps_bat_thuong | upload_hang_loat
+  diemCong    Int // Số điểm rủi ro cộng thêm khi luật kích hoạt
+  moTa        String? // Mô tả nghiệp vụ
+  trangThai   String   @default("active") // active | inactive
+  ngayTao     DateTime @default(now())
+  ngayCapNhat DateTime @updatedAt
+
+  @@index([dieuKien])
+}
+
+// Bảng lịch sử điểm thưởng cho người dùng báo cáo chính xác (Mục 21)
+model RewardHistory {
+  id          String   @id @default(uuid())
+  nguoiDungId String // FK tới NguoiDung
+  loai        String // bao_cao_chinh_xac | phat_hien_gia | dang_ky_san_pham
+  diemThuong  Int // Điểm thưởng tích lũy
+  moTa        String? // Mô tả lý do thưởng
+  thoiGian    DateTime @default(now())
+
+  @@index([nguoiDungId])
+}
+
+// ===================================================
+// MODULE 3 AI ALGO — CÁC BẢNG MỚI (Gap Analysis)
+// ===================================================
+
+// Bảng lưu kết quả từng hạng mục checklist kiểm tra 3 tầng (Mục 4, 6)
+model VerificationChecklist {
+  id           String   @id @default(uuid())
+  canhBaoId    String? // FK tới CanhBao (báo cáo NTD)
+  loHangId     String? // FK tới LoHang (kiểm tra lô hàng)
+  uid          String? // UID sản phẩm kiểm tra
+  hangMuc      String // Tên hạng mục: "Mã doanh nghiệp", "Logo", "Giá bán"...
+  tangKiemTra  String // tang1_data | tang2_logic | tang3_ai_vision
+  ketQua       String // dat | nghi_van | rui_ro_cao | vi_pham | gia_mao | chua_du_lieu
+  mauHienThi   String // green | yellow | orange | red | black | blue
+  diemRuiRo    Int      @default(0)
+  chiTiet      String? // JSON chi tiết kết quả {similarity, diff, ...}
+  aiModel      String? // levenshtein | mobilenet | tesseract | histogram | rule
+  tuDong       Boolean  @default(true) // true = AI tự động, false = nhân công
+  nguoiXacNhan String? // ID người xác nhận nếu nhân công
+  thoiGian     DateTime @default(now())
+
+  @@index([uid])
+  @@index([canhBaoId])
+  @@index([loHangId])
+  @@index([tangKiemTra, ketQua])
+}
+
+
+// Bảng lịch sử gian lận đã xác nhận — dùng làm training data AI (Mục 16, 18)
+model FraudHistory {
+  id            String   @id @default(uuid())
+  uid           String? // UID bị xác nhận gian lận
+  sanPhamId     String? // FK tới SanPham
+  loaiGianLan   String // hang_gia | hang_nhai | hang_kem_chat_luong | gian_lan_thuong_mai
+  nguonPhatHien String // ai_auto | nhan_cong | co_quan_chuc_nang | nguoi_tieu_dung
+  diemRuiRo     Int // Điểm rủi ro tại thời điểm phát hiện
+  checklistId   String? // FK tới VerificationChecklist
+  xacNhanBoi    String? // Người/cơ quan xác nhận
+  ngayXacNhan   DateTime @default(now())
+  ghiChu        String? // Ghi chú điều tra
+  trainingLabel String? // Label cho AI retraining: fake | genuine | unclear
+
+  @@index([uid])
+  @@index([sanPhamId])
+  @@index([loaiGianLan])
+  @@index([trainingLabel])
 }

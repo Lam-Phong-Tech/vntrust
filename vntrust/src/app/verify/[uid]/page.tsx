@@ -944,7 +944,7 @@ export default function VerificationResult() {
             </button>
 
             {/* Production info — only render if any field exists */}
-            {(loHang.ngaySanXuat || loHang.hanDung || sanPham.xuatXu) && (
+            {(loHang.ngaySanXuat || loHang.hanDung || sanPham.xuatXu || loHang.soToKhaiHQ) && (
               <div className="s-auth-section">
                 <div className="s-auth-section-head">
                   <div className="s-auth-section-icon">
@@ -953,7 +953,7 @@ export default function VerificationResult() {
                     </svg>
                   </div>
                   <div className="s-auth-section-title">
-                    {lang === 'en' ? 'Production' : 'Sản xuất'}
+                    {lang === 'en' ? 'Production & Logistics' : 'Sản xuất & Vận chuyển'}
                   </div>
                 </div>
 
@@ -1000,10 +1000,56 @@ export default function VerificationResult() {
                     <div className="s-auth-row-val">{loHang.maLo}</div>
                   </div>
                 )}
+
+                {/* ── Bổ sung Thông tin hải quan cho nhà nhập khẩu ── */}
+                {(loHang.soToKhaiHQ || doanhNghiep.loai === 'NNK') && (
+                  <div className="s-auth-customs-box" style={{ marginTop: 12, padding: 12, borderRadius: 8, background: 'rgba(57,115,172,0.06)', border: '1px solid rgba(57,115,172,0.2)' }}>
+                    <div style={{ fontSize: 12, fontWeight: 'bold', color: '#5dade2', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                        <line x1="8" y1="21" x2="16" y2="21" />
+                        <line x1="12" y1="17" x2="12" y2="21" />
+                      </svg>
+                      {lang === 'en' ? 'Import Customs Clearance' : 'Thông tin Thông quan Nhập khẩu'}
+                    </div>
+                    {loHang.soToKhaiHQ && (
+                      <div className="s-auth-row" style={{ padding: '2px 0' }}>
+                        <div className="s-auth-row-label" style={{ fontSize: 11 }}>{lang === 'en' ? 'Declaration No.' : 'Số tờ khai HQ'}</div>
+                        <div className="s-auth-row-val" style={{ fontSize: 11 }}>{loHang.soToKhaiHQ}</div>
+                      </div>
+                    )}
+                    {loHang.ngayThongQuan && (
+                      <div className="s-auth-row" style={{ padding: '2px 0' }}>
+                        <div className="s-auth-row-label" style={{ fontSize: 11 }}>{lang === 'en' ? 'Clearance Date' : 'Ngày thông quan'}</div>
+                        <div className="s-auth-row-val" style={{ fontSize: 11 }}>
+                          {new Date(loHang.ngayThongQuan).toLocaleDateString(lang === 'en' ? 'en-US' : 'vi-VN')}
+                        </div>
+                      </div>
+                    )}
+                    {loHang.cuaKhau && (
+                      <div className="s-auth-row" style={{ padding: '2px 0' }}>
+                        <div className="s-auth-row-label" style={{ fontSize: 11 }}>{lang === 'en' ? 'Port of Entry' : 'Cửa khẩu'}</div>
+                        <div className="s-auth-row-val" style={{ fontSize: 11 }}>{loHang.cuaKhau}</div>
+                      </div>
+                    )}
+                    {loHang.hsCode && (
+                      <div className="s-auth-row" style={{ padding: '2px 0' }}>
+                        <div className="s-auth-row-label" style={{ fontSize: 11 }}>{lang === 'en' ? 'HS Code' : 'Mã HS Code'}</div>
+                        <div className="s-auth-row-val" style={{ fontSize: 11 }}>{loHang.hsCode}</div>
+                      </div>
+                    )}
+                    {loHang.nuocXuatXu && (
+                      <div className="s-auth-row" style={{ padding: '2px 0' }}>
+                        <div className="s-auth-row-label" style={{ fontSize: 11 }}>{lang === 'en' ? 'Export Origin' : 'Nước xuất xứ'}</div>
+                        <div className="s-auth-row-val" style={{ fontSize: 11 }}>{loHang.nuocXuatXu}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Certificates — only render if data exists */}
+            {/* Product Certificates — only render if data exists */}
             {sanPham.chungNhans && sanPham.chungNhans.length > 0 && (
               <div className="s-auth-section">
                 <div className="s-auth-section-head">
@@ -1014,7 +1060,7 @@ export default function VerificationResult() {
                     </svg>
                   </div>
                   <div className="s-auth-section-title">
-                    {lang === 'en' ? 'Certificates' : 'Chứng nhận'}
+                    {lang === 'en' ? 'Product Certifications' : 'Chứng nhận Sản phẩm'}
                   </div>
                 </div>
                 <div className="s-auth-certs">
@@ -1029,6 +1075,33 @@ export default function VerificationResult() {
                 </div>
               </div>
             )}
+
+            {/* ── Bổ sung Chứng nhận Doanh nghiệp từ file Word ── */}
+            {doanhNghiep.chungNhans && doanhNghiep.chungNhans.length > 0 && (
+              <div className="s-auth-section">
+                <div className="s-auth-section-head">
+                  <div className="s-auth-section-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                  </div>
+                  <div className="s-auth-section-title">
+                    {lang === 'en' ? 'Enterprise Certifications' : 'Chứng nhận Doanh nghiệp'}
+                  </div>
+                </div>
+                <div className="s-auth-certs">
+                  {doanhNghiep.chungNhans.map((c: any, idx: number) => (
+                    <span key={idx} className="s-auth-cert" style={{ background: 'rgba(200,165,87,0.15)', borderColor: '#C8A557', color: '#C8A557' }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      {c.loai} · #{c.soChungNhan}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
 
           </div>
 

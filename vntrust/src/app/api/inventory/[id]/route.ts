@@ -19,7 +19,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         sanPham: { include: { doanhNghiep: true } },
         uids: {
           orderBy: { ngayTao: "asc" },
-          select: { uid: true, trangThai: true, soLanQuet: true, ngayTao: true }
+          select: { uid: true, serialNumber: true, loai: true, trangThai: true, soLanQuet: true, ngayTao: true }
         }
       }
     });

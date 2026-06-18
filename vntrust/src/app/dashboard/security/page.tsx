@@ -405,7 +405,6 @@ export default function SecurityPage() {
                 <option value="all">{t("sec_all_role")}</option>
                 <option value="admin">Admin</option>
                 <option value="manufacturer">{t("sec_manufacturer")}</option>
-                <option value="importer">{t("sec_importer")}</option>
                 <option value="consumer">{t("sec_consumer")}</option>
               </select>
               <button onClick={handlePurge} disabled={purging}

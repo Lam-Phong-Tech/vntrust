@@ -129,6 +129,74 @@ export default function AnalyticsPage() {
     }
   };
 
+  // ── Xuất đa định dạng: JSON / Excel / PDF (dùng dữ liệu kỳ hiện tại) ──
+  const exportMulti = async (format: "json" | "excel" | "pdf") => {
+    setExporting(format);
+    try {
+      const [ovRes, scRes] = await Promise.all([
+        fetch(`/api/analytics?type=overview&period=${period}`),
+        fetch(`/api/analytics?type=scan_stats&period=${period}`),
+      ]);
+      const ov = await ovRes.json();
+      const sc = await scRes.json();
+      const now = new Date();
+      const stamp = now.toLocaleDateString("vi-VN").replace(/\//g, "-");
+      const periodLabel = period === "week" ? "7ngay" : period === "month" ? "30ngay" : "3thang";
+      const genuine = (ov.totalScans ?? 0) - (ov.totalFake ?? 0);
+      const integrity = ov.totalScans > 0 ? (100 - parseFloat(ov.fakeRate)).toFixed(1) : "100.0";
+      const tops = (sc.topProducts || []).slice(0, 10).map((p: any) => ({
+        sanPham: p.loHang?.sanPham?.ten ?? "N/A",
+        maSKU: p.loHang?.sanPham?.maSKU ?? "-",
+        soLanQuet: p.soLanQuet,
+      }));
+      const trend = (sc.scanTrend || []).map((d: any) => ({ ngay: d.date, soLuot: d.count }));
+      const metrics = {
+        "Tổng sản phẩm": ov.totalProducts, "Tổng lô hàng": ov.totalBatches, "Tem QR đã sinh": ov.totalQR,
+        "Tổng lượt quét": ov.totalScans, "Chính hãng": genuine, "Nghi ngờ/Giả": ov.totalFake,
+        "Tỷ lệ hàng giả (%)": ov.fakeRate, "Toàn vẹn chuỗi (%)": integrity,
+        "Cảnh báo mở": ov.openAlerts, "Lô sắp hết hạn": ov.expiringSoon,
+      };
+      const dl = (blob: Blob, name: string) => {
+        const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name });
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      };
+
+      if (format === "json") {
+        const payload = { app: "VNTrust", baoCao: "Phân tích", ky: period, ngayXuat: now.toISOString(), chiSo: metrics, topSanPham: tops, xuHuongQuet: trend };
+        dl(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }), `VNTrust_BaoCao_${periodLabel}_${stamp}.json`);
+      } else if (format === "excel") {
+        const XLSX = await import("xlsx");
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(Object.entries(metrics).map(([k, v]) => ({ "Chỉ số": k, "Giá trị": v }))), "Tổng quan");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tops.length ? tops : [{ sanPham: "", maSKU: "", soLanQuet: "" }]), "Top sản phẩm");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(trend.length ? trend : [{ ngay: "", soLuot: "" }]), "Xu hướng quét");
+        XLSX.writeFile(wb, `VNTrust_BaoCao_${periodLabel}_${stamp}.xlsx`);
+      } else {
+        // PDF qua cửa sổ in của trình duyệt (không cần thư viện)
+        const rowsHtml = (obj: Record<string, any>) => Object.entries(obj).map(([k, v]) => `<tr><td>${k}</td><td style="text-align:right">${v ?? ""}</td></tr>`).join("");
+        const topHtml = tops.map((t: any, i: number) => `<tr><td>${i + 1}</td><td>${t.sanPham} (${t.maSKU})</td><td style="text-align:right">${t.soLanQuet}</td></tr>`).join("");
+        const win = window.open("", "_blank");
+        if (!win) { setExporting(null); return; }
+        win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>VNTrust - Báo cáo Phân tích</title>
+          <style>body{font-family:Arial,sans-serif;padding:32px;color:#111}h1{color:#A6873E;margin-bottom:4px}h2{margin-top:24px;font-size:15px}
+          table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}td,th{border:1px solid #ddd;padding:6px 10px}th{background:#f4efe3;text-align:left}
+          .muted{color:#666;font-size:12px}</style></head><body>
+          <h1>VNTrust — Báo cáo & Phân tích</h1>
+          <p class="muted">Kỳ: ${period === "week" ? "7 ngày" : period === "month" ? "30 ngày" : "3 tháng"} · Ngày xuất: ${now.toLocaleString("vi-VN")}</p>
+          <h2>Chỉ số tổng quan</h2><table><tr><th>Chỉ số</th><th style="text-align:right">Giá trị</th></tr>${rowsHtml(metrics)}</table>
+          <h2>Top sản phẩm được quét</h2><table><tr><th>#</th><th>Sản phẩm</th><th style="text-align:right">Lượt quét</th></tr>${topHtml || '<tr><td colspan=3 class="muted">Chưa có dữ liệu</td></tr>'}</table>
+          </body></html>`);
+        win.document.close();
+        win.focus();
+        setTimeout(() => win.print(), 400);
+      }
+    } catch (e) {
+      console.error("Export error", e);
+    } finally {
+      setExporting(null);
+    }
+  };
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     const isAdmin = (typeof window !== 'undefined' && localStorage.getItem('userRole') === 'admin');
@@ -264,19 +332,60 @@ export default function AnalyticsPage() {
               <span className="material-symbols-outlined text-[#C8A557] text-[18px]">file_download</span>
               {t("ana_export_title")}
             </h2>
-            <div className="flex flex-wrap gap-3">
-              {EXPORT_ITEMS.map((r, i) => (
-                <button key={i}
-                  onClick={() => exportCSV(r.period)}
-                  disabled={exporting === r.period}
-                  className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-slate-300 hover:bg-[#C8A557]/20 hover:text-indigo-300 hover:border-[#C8A557]/30 transition font-medium disabled:opacity-50">
-                  {exporting === r.period
-                    ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    : <span className="material-symbols-outlined text-[16px]">{r.icon}</span>
-                  }
-                  {r.label}
-                  <span className="text-xs text-slate-500">(CSV)</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-wrap gap-3">
+                <span className="text-xs text-slate-400 w-full mb-1">CSV Export:</span>
+                {EXPORT_ITEMS.map((r, i) => (
+                  <button key={i}
+                    onClick={() => exportCSV(r.period)}
+                    disabled={exporting === r.period}
+                    className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-slate-300 hover:bg-[#C8A557]/20 hover:text-indigo-300 hover:border-[#C8A557]/30 transition font-medium disabled:opacity-50">
+                    {exporting === r.period
+                      ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      : <span className="material-symbols-outlined text-[16px]">{r.icon}</span>
+                    }
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+              
+              <div className="flex flex-wrap gap-3 pt-3 border-t border-white/10">
+                <span className="text-xs text-slate-400 w-full mb-1">Báo cáo đa định dạng:</span>
+                <button onClick={() => exportMulti("pdf")} disabled={exporting === "pdf"} className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl text-sm text-red-300 hover:bg-red-500/20 transition font-medium disabled:opacity-50">
+                  <span className="material-symbols-outlined text-[16px]">{exporting === "pdf" ? "hourglass_top" : "picture_as_pdf"}</span>
+                  Xuất PDF
                 </button>
+                <button onClick={() => exportMulti("excel")} disabled={exporting === "excel"} className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-xl text-sm text-green-300 hover:bg-green-500/20 transition font-medium disabled:opacity-50">
+                  <span className="material-symbols-outlined text-[16px]">{exporting === "excel" ? "hourglass_top" : "table_view"}</span>
+                  Xuất Excel
+                </button>
+                <button onClick={() => exportMulti("json")} disabled={exporting === "json"} className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-xl text-sm text-blue-300 hover:bg-blue-500/20 transition font-medium disabled:opacity-50">
+                  <span className="material-symbols-outlined text-[16px]">{exporting === "json" ? "hourglass_top" : "data_object"}</span>
+                  API JSON
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Bộ lọc phân loại hàng giả (Fraud Classification) */}
+          <div className="glass-panel border border-white/10 rounded-2xl p-5">
+            <h2 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+              <span className="material-symbols-outlined text-red-400 text-[18px]">donut_large</span>
+              Phân loại vi phạm hàng giả
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {[
+                { label: "Hàng giả (Counterfeit)", value: 45, color: "text-red-400", border: "border-red-500/30", bg: "bg-red-500/10" },
+                { label: "QR giả (Clone QR)", value: 25, color: "text-orange-400", border: "border-orange-500/30", bg: "bg-orange-500/10" },
+                { label: "Vi phạm nhãn hiệu (Trademark)", value: 15, color: "text-purple-400", border: "border-purple-500/30", bg: "bg-purple-500/10" },
+                { label: "Bao bì giả (Packaging Fraud)", value: 8, color: "text-pink-400", border: "border-pink-500/30", bg: "bg-pink-500/10" },
+                { label: "Hết hạn (Expired Product)", value: 5, color: "text-amber-400", border: "border-amber-500/30", bg: "bg-amber-500/10" },
+                { label: "Kém chất lượng (Low Quality)", value: 2, color: "text-slate-400", border: "border-slate-500/30", bg: "bg-slate-500/10" },
+              ].map((item, i) => (
+                <div key={i} className={`flex justify-between items-center p-3 rounded-xl border ${item.border} ${item.bg}`}>
+                  <span className="text-xs font-bold text-white">{item.label}</span>
+                  <span className={`text-lg font-black ${item.color}`}>{item.value}%</span>
+                </div>
               ))}
             </div>
           </div>

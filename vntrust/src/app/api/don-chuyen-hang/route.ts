@@ -21,13 +21,16 @@ export async function GET(req: NextRequest) {
     if (role === 'admin') {
       // Admin sees all
     } else if (role === 'manufacturer' && doanhNghiepId) {
-      where.nsxDoanhNghiepId = doanhNghiepId;
+      // Doanh nghiệp (gộp NSX + NK): thấy đơn MÌNH GỬI (nsx) HOẶC đơn GỬI ĐẾN MÌNH (nsd)
+      where.OR = [
+        { nsxDoanhNghiepId: doanhNghiepId },
+        { nsdDoanhNghiepId: doanhNghiepId, trangThai: { not: 'pending_review' } },
+      ];
     } else if (role === 'importer' && doanhNghiepId) {
-      // Importer thấy đơn được gán cho doanhNghiepId của họ, loại pending_review
+      // (Tương thích ngược) Bên nhận thấy đơn gán cho mình, loại pending_review
       where.nsdDoanhNghiepId = doanhNghiepId;
       where.trangThai = { not: 'pending_review' };
     } else if (role === 'importer') {
-      // Importer không có doanhNghiepId: xem tất cả đơn đã duyệt (fallback)
       where.trangThai = { in: ['pending_distributor', 'confirmed', 'distributed'] };
     } else {
       return NextResponse.json({ orders: [] });

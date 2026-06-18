@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, phone, role, password, company, taxCode, address, hotline } = body;
+    const { name, email, phone, role, password, company, taxCode, address, hotline, giayphep_url, cmnd_url } = body;
 
     // ── NFR-SC-07: Password Policy Enforcement ────────────────────────────
     if (!password) {
@@ -49,6 +49,13 @@ export async function POST(req: Request) {
       }
       if (!address?.trim()) {
         return NextResponse.json({ error: 'Địa chỉ nhà máy / kho hàng là bắt buộc' }, { status: 400 });
+      }
+      // ── BẮT BUỘC giấy tờ pháp lý khi đăng ký doanh nghiệp ──
+      if (!giayphep_url) {
+        return NextResponse.json({ error: 'Giấy phép Kinh doanh là bắt buộc' }, { status: 400 });
+      }
+      if (!cmnd_url) {
+        return NextResponse.json({ error: 'CMND/CCCD người đại diện là bắt buộc' }, { status: 400 });
       }
       // Check duplicate tax code
       const existingDN = await prisma.doanhNghiep.findFirst({ where: { maSoThue: taxCode.trim() } });
@@ -110,6 +117,9 @@ export async function POST(req: Request) {
           maSoThue: taxCode?.trim() || '',
           loai: loaiDN,
           diaChi: address?.trim() || null,
+          hotline: hotline?.trim() || null,
+          giayphep_url: giayphep_url || null,
+          cmnd_url: cmnd_url || null,
           trangThai: 'pending',
         },
       });

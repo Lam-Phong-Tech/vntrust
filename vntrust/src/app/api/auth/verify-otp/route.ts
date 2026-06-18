@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOtp, deleteOtp } from '@/lib/otpStore';
+import { otpStore } from '@/lib/otpStore';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,15 +9,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Thiếu thông tin' }, { status: 400 });
     }
 
-    // B-06 Fix: Lấy OTP từ DB thay vì in-memory
-    const record = await getOtp(email.toLowerCase());
+    const record = otpStore.get(email.toLowerCase());
+    console.log(`[OTP-VERIFY] email=${email}, submitted=${otp}, stored=`, record);
 
     if (!record) {
       return NextResponse.json({ error: 'Mã OTP không tồn tại hoặc đã hết hạn. Vui lòng yêu cầu mã mới.' }, { status: 400 });
     }
 
     if (Date.now() > record.expires) {
-      await deleteOtp(email.toLowerCase());
+      otpStore.delete(email.toLowerCase());
       return NextResponse.json({ error: 'Mã OTP đã hết hạn (5 phút). Vui lòng yêu cầu mã mới.' }, { status: 400 });
     }
 
@@ -25,8 +25,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Mã OTP không chính xác' }, { status: 400 });
     }
 
-    await deleteOtp(email.toLowerCase());
+    otpStore.delete(email.toLowerCase());
     const resetToken = Buffer.from(`${email}:${Date.now()}`).toString('base64');
+    console.log(`[OTP-VERIFY] OK for ${email}, resetToken issued`);
 
     return NextResponse.json({ message: 'Xác thực thành công', resetToken });
   } catch (error) {

@@ -13,7 +13,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
           include: {
             sanPham: {
               include: {
-                doanhNghiep: true,
+                doanhNghiep: {
+                  include: {
+                    chungNhans: { where: { trangThaiDuyet: 'approved' } }
+                  }
+                },
                 chungNhans: { where: { trangThaiDuyet: 'approved' } } // Chỉ trả về CN đã được duyệt
               }
             }
@@ -30,7 +34,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
             include: {
               sanPham: {
                 include: {
-                  doanhNghiep: true,
+                  doanhNghiep: {
+                    include: {
+                      chungNhans: { where: { trangThaiDuyet: 'approved' } }
+                    }
+                  },
                   chungNhans: { where: { trangThaiDuyet: 'approved' } }
                 }
               }

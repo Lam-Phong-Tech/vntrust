@@ -1,10 +1,28 @@
 "use client";
 
 import { Toast } from "@/components/Toast";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
+
+// Render barcode (CODE128) bằng jsbarcode
+function BarcodeSVG({ value, height = 90 }: { value: string; height?: number }) {
+  const ref = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const JsBarcode = (await import("jsbarcode")).default;
+        if (!cancelled && ref.current) {
+          JsBarcode(ref.current, value, { format: "CODE128", displayValue: true, height, width: 1.8, margin: 6, fontSize: 13 });
+        }
+      } catch {}
+    })();
+    return () => { cancelled = true; };
+  }, [value, height]);
+  return <svg ref={ref} style={{ maxWidth: "100%" }} />;
+}
 
 interface BatchData {
   id: string;
@@ -18,7 +36,7 @@ interface BatchData {
     maSKU: string;
     doanhNghiep: { ten: string };
   };
-  uids: { uid: string; trangThai: string; soLanQuet: number }[];
+  uids: { uid: string; serialNumber?: string | null; loai?: string; trangThai: string; soLanQuet: number }[];
 }
 
 export default function QRPrintPage() {
@@ -399,14 +417,18 @@ export default function QRPrintPage() {
                   className="block hover:opacity-80 transition cursor-pointer"
                   title="Bấm để phóng to QR (dễ quét bằng mobile)"
                 >
-                  <QRCodeSVG
-                    value={`${baseUrl}/verify/${item.uid}`}
-                    size={140}
-                    bgColor="#ffffff"
-                    fgColor="#000000"
-                    level="H"
-                    marginSize={2}
-                  />
+                  {item.loai === "Barcode" ? (
+                    <BarcodeSVG value={item.serialNumber || item.uid} />
+                  ) : (
+                    <QRCodeSVG
+                      value={`${baseUrl}/verify/${item.uid}`}
+                      size={140}
+                      bgColor="#ffffff"
+                      fgColor="#000000"
+                      level="H"
+                      marginSize={2}
+                    />
+                  )}
                 </button>
               </div>
               {/* Thông tin */}

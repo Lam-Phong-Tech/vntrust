@@ -134,8 +134,8 @@ export async function POST(req: NextRequest) {
     }
 
     if (type === "batch") {
-      const { sanPhamId, ngaySanXuat, hanDung, soLuong } = body;
-      if (!sanPhamId || !ngaySanXuat || !hanDung || !soLuong) {
+      const { sanPhamId, ngaySanXuat, hanDung, soLuong, codeMode, codeType, codes } = body;
+      if (!sanPhamId || !ngaySanXuat || !hanDung) {
         return NextResponse.json({ error: "Thiếu thông tin bắt buộc" }, { status: 400 });
       }
 
@@ -156,12 +156,40 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Forbidden: Bạn không có quyền thêm lô hàng vào sản phẩm này" }, { status: 403 });
       }
 
-      const parsedQty = parseInt(soLuong);
-      if (isNaN(parsedQty) || parsedQty <= 0) {
-        return NextResponse.json({ error: "Số lượng phải là số nguyên dương" }, { status: 400 });
+      // ── Chế độ mã: 'import' (DN đã có mã) hoặc 'generate' (tạo tự động) ──
+      const mode: 'import' | 'generate' = codeMode === 'import' ? 'import' : 'generate';
+      const loai: 'QR' | 'Barcode' = codeType === 'Barcode' ? 'Barcode' : 'QR';
+
+      // Chuẩn bị danh sách mã (chưa gắn loHangId)
+      let records: { uid: string; serialNumber?: string; loai: string }[] = [];
+      let qty = 0;
+
+      if (mode === 'import') {
+        if (!Array.isArray(codes) || codes.length === 0) {
+          return NextResponse.json({ error: "Vui lòng cung cấp danh sách mã (file Excel/CSV)" }, { status: 400 });
+        }
+        // Chuẩn hoá + loại trùng + bỏ rỗng
+        const clean = [...new Set(codes.map((c: any) => String(c ?? "").trim()).filter(Boolean))];
+        if (clean.length === 0) return NextResponse.json({ error: "File không chứa mã hợp lệ" }, { status: 400 });
+        if (clean.length > 10000) return NextResponse.json({ error: "Tối đa 10.000 mã mỗi lô" }, { status: 400 });
+        // Chống trùng với mã đã có trong hệ thống
+        const dup = await prisma.maDinhDanh.findMany({ where: { serialNumber: { in: clean } }, select: { serialNumber: true }, take: 5 });
+        if (dup.length > 0) {
+          return NextResponse.json({ error: `Có mã đã tồn tại trong hệ thống (vd: ${dup.map(d => d.serialNumber).join(', ')})` }, { status: 409 });
+        }
+        qty = clean.length;
+        records = clean.map(code => ({ uid: randomUUID(), serialNumber: code, loai }));
+      } else {
+        const parsedQty = parseInt(soLuong);
+        if (isNaN(parsedQty) || parsedQty <= 0) {
+          return NextResponse.json({ error: "Số lượng phải là số nguyên dương" }, { status: 400 });
+        }
+        qty = Math.min(parsedQty, 10000);
+        const base = Date.now().toString(36).toUpperCase();
+        records = Array.from({ length: qty }, (_, i) => loai === 'Barcode'
+          ? { uid: randomUUID(), serialNumber: `BC${base}${i.toString(36).toUpperCase().padStart(3, '0')}`, loai }
+          : { uid: randomUUID(), loai });
       }
-      // Số UIDs thực tế = min(soLuong, 10000) — đồng bộ với cột "Tem QR" trên UI
-      const qty = Math.min(parsedQty, 10000);
 
       const loHang = await prisma.loHang.create({
         data: {
@@ -179,15 +207,10 @@ export async function POST(req: NextRequest) {
         }
       });
 
-      const uids = Array.from({ length: qty }, () => ({
-        uid: randomUUID(),
-        loai: "QR",
-        loHangId: loHang.id,
-      }));
-
+      const uids = records.map(r => ({ ...r, loHangId: loHang.id }));
       await prisma.maDinhDanh.createMany({ data: uids });
 
-      return NextResponse.json({ loHang, totalUids: uids.length }, { status: 201 });
+      return NextResponse.json({ loHang, totalUids: uids.length, codeMode: mode, codeType: loai }, { status: 201 });
     }
 
     return NextResponse.json({ error: "type phải là 'product' hoặc 'batch'" }, { status: 400 });

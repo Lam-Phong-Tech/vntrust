@@ -26,15 +26,12 @@ interface ListResp {
   };
 }
 
+// Hệ thống còn 4 vai trò: Admin · Doanh nghiệp (gộp NSX + NK) · Người tiêu dùng · Cơ quan chức năng
 const ROLE_META: Record<string, { label: string; en: string; color: string; icon: string }> = {
-  admin:        { label: "Quản trị",      en: "Admin",        color: "text-red-300 bg-red-500/15 border-red-500/30",        icon: "admin_panel_settings" },
-  manufacturer: { label: "Nhà sản xuất",  en: "Manufacturer", color: "text-[#C8A557] bg-[#C8A557]/15 border-[#C8A557]/30",  icon: "precision_manufacturing" },
-  importer:     { label: "Nhà phân phối", en: "Distributor",  color: "text-blue-300 bg-blue-500/15 border-blue-500/30",     icon: "local_shipping" },
-  consumer:     { label: "Người dùng",    en: "Consumer",     color: "text-slate-300 bg-slate-500/15 border-slate-500/30",  icon: "person" },
-  staff:        { label: "Nhân viên",     en: "Staff",        color: "text-emerald-300 bg-emerald-500/15 border-emerald-500/30", icon: "badge" },
-  // 2 role đặc biệt (theo file 3 §III.9 + file 6 audit)
-  consultant:   { label: "Cán bộ tư vấn", en: "Consultant",   color: "text-purple-300 bg-purple-500/15 border-purple-500/30", icon: "support_agent" },
-  authority:    { label: "Cơ quan chức năng", en: "Authority", color: "text-cyan-300 bg-cyan-500/15 border-cyan-500/30",      icon: "gavel" },
+  admin:        { label: "Quản trị",          en: "Admin",      color: "text-red-300 bg-red-500/15 border-red-500/30",        icon: "admin_panel_settings" },
+  manufacturer: { label: "Doanh nghiệp",      en: "Enterprise", color: "text-[#C8A557] bg-[#C8A557]/15 border-[#C8A557]/30",  icon: "domain" },
+  consumer:     { label: "Người tiêu dùng",   en: "Consumer",   color: "text-slate-300 bg-slate-500/15 border-slate-500/30",  icon: "person" },
+  authority:    { label: "Cơ quan chức năng", en: "Authority",  color: "text-cyan-300 bg-cyan-500/15 border-cyan-500/30",      icon: "gavel" },
 };
 
 const STATUS_META: Record<string, { label: string; en: string; color: string; icon: string }> = {

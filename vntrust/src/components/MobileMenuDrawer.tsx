@@ -30,21 +30,22 @@ const ALL_PAGES: MenuItem[] = [
   // Sản phẩm — DN
   { label: "Sản phẩm",        href: "/dashboard/inventory",         icon: "inventory_2",                roles: ["manufacturer","importer","admin"], group: "product" },
   { label: "Phân phối",       href: "/dashboard/distribution",      icon: "local_shipping",             roles: ["manufacturer","importer","admin"], group: "product" },
-  { label: "Kho hàng",        href: "/dashboard/warehouse",         icon: "warehouse",                  roles: ["manufacturer","importer","admin"], group: "product" },
   { label: "Chứng nhận",      href: "/dashboard/certificates",      icon: "workspace_premium",          roles: ["manufacturer","importer","admin"], group: "product" },
 
   // Chất lượng
   { label: "Hậu kiểm",        href: "/dashboard/haukiem",           icon: "science",                    roles: ["manufacturer","importer","admin"], group: "quality" },
   { label: "Cảnh báo",        href: "/dashboard/alerts",            icon: "warning",                    roles: ["*"], group: "quality" },
-  { label: "Tuân thủ",        href: "/dashboard/compliance",        icon: "rule",                       roles: ["manufacturer","importer","admin","consultant","authority"], group: "quality" },
 
   // Phân tích
   { label: "Phân tích",       href: "/dashboard/analytics",         icon: "analytics",                  roles: ["manufacturer","importer","admin","consultant","authority"], group: "analytics" },
+  { label: "Tra cứu thông minh", href: "/dashboard/search",         icon: "manage_search",              roles: ["manufacturer","importer","admin"], group: "analytics" },
   { label: "Báo cáo",         href: "/dashboard/report",            icon: "description",                roles: ["manufacturer","importer","admin","consultant","authority"], group: "analytics" },
   { label: "Lịch sử",         href: "/dashboard/history",           icon: "history",                    roles: ["manufacturer","importer","admin","authority"], group: "analytics" },
   { label: "Tích hợp",        href: "/dashboard/integration",       icon: "integration_instructions",   roles: ["manufacturer","importer","admin"], group: "analytics" },
+  { label: "Rủi ro Doanh nghiệp", href: "/dashboard/enterprise-risk", icon: "domain_disabled",          roles: ["manufacturer","admin"], group: "analytics" },
 
   // Manufacturer + Importer
+  { label: "Thương hiệu",     href: "/dashboard/brand-monitoring",  icon: "verified_user",              roles: ["manufacturer","admin"], group: "product" },
   { label: "Nhân viên DN",    href: "/dashboard/team",              icon: "groups",                     roles: ["manufacturer","importer"], group: "product" },
   { label: "Webhook ERP",     href: "/dashboard/webhook",           icon: "webhook",                    roles: ["manufacturer","importer","admin"], group: "product" },
   { label: "Cấu hình vòng đời", href: "/dashboard/lifecycle-config", icon: "schedule",                  roles: ["manufacturer","importer","admin"], group: "quality" },
@@ -88,9 +89,15 @@ export default function MobileMenuDrawer({
 
   if (!open) return null;
 
-  const visible = ALL_PAGES.filter(
-    (it) => it.roles.includes("*") || (userRole && it.roles.includes(userRole))
-  );
+  // Người tiêu dùng + Doanh nghiệp: chỉ phạm vi bảng điều khiển (Trang chủ + Hồ sơ)
+  const DASHBOARD_ONLY = new Set(["/dashboard", "/dashboard/profile"]);
+  const simpleNav = userRole === "consumer" || userRole === "manufacturer" || userRole === "importer";
+  const visible = ALL_PAGES.filter((it) => {
+    const roleOk = it.roles.includes("*") || (!!userRole && it.roles.includes(userRole));
+    if (!roleOk) return false;
+    if (simpleNav) return DASHBOARD_ONLY.has(it.href);
+    return true;
+  });
 
   // Group items theo group key
   const grouped: Record<string, MenuItem[]> = {};

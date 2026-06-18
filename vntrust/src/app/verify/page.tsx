@@ -5,7 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function VerifyPage() {
   const [mounted, setMounted] = useState(false);
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   useEffect(() => { setMounted(true); }, []);
   if (!mounted) return null;
 

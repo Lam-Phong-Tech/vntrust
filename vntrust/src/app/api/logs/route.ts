@@ -1,20 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
+import { requireAuth, requireRoles, getRole } from "@/lib/auth";
 
+// GET ? d?ng cookie ?? x?c ??nh scope, kh?ng tin query param
 export async function GET(req: NextRequest) {
+  const authErr = requireAuth(req)
+  if (authErr) return authErr
+
   try {
-    const { searchParams } = new URL(req.url);
-    const role = searchParams.get("role") || "";
-    
-    // Admin sees all. Others only see their own logs.
-    const where = role === "admin" ? {} : { role };
-    
+    const role = getRole(req)!
+
+    // Admin xem t?t c?; c?c role kh?c ch? xem log c?a role m?nh
+    const where = role === "admin" ? {} : { role }
+
     const logs = await prisma.nhatKy.findMany({
       where,
       orderBy: { time: "desc" },
       take: 100
     });
-    
+
     return NextResponse.json({ logs });
   } catch (error) {
     console.error(error);
@@ -22,7 +27,11 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// POST ? ch? user ?? ??ng nh?p m?i ???c ghi log
 export async function POST(req: NextRequest) {
+  const authErr = requireAuth(req)
+  if (authErr) return authErr
+
   try {
     const body = await req.json();
     const log = await prisma.nhatKy.create({

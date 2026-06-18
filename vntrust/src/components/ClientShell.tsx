@@ -82,10 +82,12 @@ export default function ClientShell({ children, initialRole = "" }: { children: 
   const pathname = usePathname();
 
   const isVerifySubpath     = pathname.startsWith("/verify/") && pathname !== "/verify";
+  // Khu /admin có shell riêng (sidebar + topbar) → ẩn nav toàn cục để tránh trùng
+  const isAdminArea         = pathname === "/admin" || pathname.startsWith("/admin/");
   // Hide top bar trên login/forgot VÀ trên trang kết quả xác thực /verify/[uid]
   // (vì trang này có header riêng + thanh ngoài làm trùng lặp)
-  const hideDesktopNav      = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifySubpath;
-  const hideMobileBottomNav = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifySubpath;
+  const hideDesktopNav      = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifySubpath || isAdminArea;
+  const hideMobileBottomNav = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifySubpath || isAdminArea;
 
   // Layout mode: mobile-frame chỉ cho consumer + anonymous; role khác → responsive
   // SSR khởi tạo từ cookie (initialRole), CSR có thể re-check on role change

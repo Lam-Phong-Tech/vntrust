@@ -316,24 +316,16 @@ export default function IntegrationPage() {
           </button>
         </form>
 
-        {/* Example helper — bấm để dùng mã mẫu có sẵn trong DB */}
-        <div className="mt-3 flex items-start gap-2 text-xs">
-          <span className="material-symbols-outlined text-[14px] text-[#C8A557] shrink-0 mt-0.5">tips_and_updates</span>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-slate-400">{tr("Mã mẫu để test:", "Sample code:")}</span>
-            <button
-              type="button"
-              onClick={() => setQueryCode(QUERY_OPTIONS.find(o => o.value === activeQuery)?.example || "")}
-              className="font-mono text-[#C8A557] bg-[#C8A557]/10 border border-[#C8A557]/30 px-2 py-0.5 rounded hover:bg-[#C8A557]/20 transition"
-            >
-              {QUERY_OPTIONS.find(o => o.value === activeQuery)?.example}
-            </button>
-            <span className="text-slate-500">
-              {activeQuery === 'check_haiquan'
-                ? tr("(tờ khai mẫu đã seed trong DB · cảng Cát Lái · Việt Nam)", "(seeded sample · port Cát Lái · Vietnam)")
-                : tr("(mã ví dụ — DB chưa seed dữ liệu chứng nhận, sẽ trả not_found)", "(sample code — DB has no cert data yet, will return not_found)")}
-            </span>
-          </div>
+        {/* Hướng dẫn: tra cứu dữ liệu thật do DN khai báo */}
+        <div className="mt-3 flex items-start gap-2 text-xs text-slate-400">
+          <span className="material-symbols-outlined text-[14px] text-[#C8A557] shrink-0 mt-0.5">info</span>
+          <span>
+            {activeQuery === 'check_haiquan'
+              ? tr("Nhập số tờ khai hải quan đã khai trên lô hàng để đối chiếu thông tin thông quan.", "Enter a customs declaration number from your batches to verify clearance info.")
+              : activeQuery === 'check_byt'
+                ? tr("Nhập số/loại chứng nhận (ISO, HACCP, ATTP…) đã tải lên để tra cứu hiệu lực.", "Enter a certificate number/type (ISO, HACCP…) you uploaded to look up its validity.")
+                : tr("Nhập mã giấy phép để đối chiếu. (Đối chiếu trực tuyến với cơ quan sẽ bật khi có API chính thức.)", "Enter a license code to verify. (Live agency lookup activates when official APIs are available.)")}
+          </span>
         </div>
 
         {/* Query Result */}

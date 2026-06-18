@@ -67,7 +67,7 @@ const dict: Record<string, Record<string, string>> = {
   sec_find: { vi: "Tìm", en: "Search", zh: "搜索", ja: "検索", ko: "검색", fr: "Rechercher" },
   sec_all_status: { vi: "Tất cả status", en: "All statuses", zh: "所有状态", ja: "すべてのステータス", ko: "모든 상태", fr: "Tous les statuts" },
   sec_all_role: { vi: "Tất cả role", en: "All roles", zh: "所有角色", ja: "すべてのロール", ko: "모든 역할", fr: "Tous les rôles" },
-  sec_manufacturer: { vi: "Nhà sản xuất", en: "Manufacturer", zh: "制造商", ja: "製造業者", ko: "제조업체", fr: "Fabricant" },
+  sec_manufacturer: { vi: "Doanh nghiệp", en: "Enterprise", zh: "企业", ja: "企業", ko: "기업", fr: "Entreprise" },
   sec_importer: { vi: "Nhập khẩu", en: "Importer", zh: "进口商", ja: "輸入業者", ko: "수입업체", fr: "Importateur" },
   sec_consumer: { vi: "Người dùng", en: "Consumer", zh: "消费者", ja: "消費者", ko: "소비자", fr: "Consommateur" },
   sec_purge: { vi: "Purge cũ", en: "Purge old", zh: "清除旧日志", ja: "古いログを削除", ko: "오래된 로그 삭제", fr: "Purger anciens" },
@@ -329,7 +329,7 @@ const dict: Record<string, Record<string, string>> = {
   hist_col_ip: { vi: "IP", en: "IP", zh: "IP", ja: "IP", ko: "IP", fr: "IP" },
   hist_col_time: { vi: "Thời gian", en: "Time", zh: "时间", ja: "時間", ko: "시간", fr: "Heure" },
   role_admin: { vi: "Quản trị", en: "Admin", zh: "管理员", ja: "管理者", ko: "관리자", fr: "Admin" },
-  role_mfr: { vi: "Nhà sản xuất", en: "Manufacturer", zh: "制造商", ja: "製造業者", ko: "제조업체", fr: "Fabricant" },
+  role_mfr: { vi: "Doanh nghiệp", en: "Enterprise", zh: "企业", ja: "企業", ko: "기업", fr: "Entreprise" },
   role_imp: { vi: "Nhà nhập khẩu", en: "Importer", zh: "进口商", ja: "輸入業者", ko: "수입업체", fr: "Importateur" },
   role_consumer: { vi: "Người tiêu dùng", en: "Consumer", zh: "消费者", ja: "消費者", ko: "소비자", fr: "Consommateur" },
   role_unknown: { vi: "Không xác định", en: "Unknown", zh: "未知", ja: "不明", ko: "알 수 없음", fr: "Inconnu" },
@@ -356,7 +356,7 @@ const dict: Record<string, Record<string, string>> = {
 
   // ── Profile Page ──
   prof_title:         { vi: "Hồ sơ cá nhân",         en: "Personal Profile",        zh: "个人资料",       ja: "個人プロフィール",   ko: "개인 프로필",     fr: "Profil personnel" },
-  prof_role_mfr:      { vi: "Nhà sản xuất",           en: "Manufacturer",            zh: "制造商",         ja: "製造業者",         ko: "제조업체",        fr: "Fabricant" },
+  prof_role_mfr:      { vi: "Doanh nghiệp",           en: "Enterprise",              zh: "企业",           ja: "企業",             ko: "기업",            fr: "Entreprise" },
   prof_fullname:      { vi: "Họ và Tên",              en: "Full Name",               zh: "姓名",           ja: "氏名",             ko: "성명",            fr: "Nom complet" },
   prof_company:       { vi: "Tên Doanh nghiệp",       en: "Company Name",            zh: "企业名称",       ja: "会社名",           ko: "회사명",          fr: "Nom de l'entreprise" },
   prof_phone:         { vi: "Số điện thoại",          en: "Phone Number",            zh: "电话号码",       ja: "電話番号",         ko: "전화번호",        fr: "Numéro de téléphone" },
@@ -709,7 +709,7 @@ const dict: Record<string, Record<string, string>> = {
 
   // ── Demo Accounts ──
   demo_label: { vi: "Tài khoản Demo", en: "Demo Accounts", zh: "演示账号", ja: "デモアカウント", ko: "데모 계정", fr: "Comptes de démonstration" },
-  demo_mfr: { vi: "Nhà sản xuất", en: "Manufacturer", zh: "制造商", ja: "製造業者", ko: "제조업체", fr: "Fabricant" },
+  demo_mfr: { vi: "Doanh nghiệp", en: "Enterprise", zh: "企业", ja: "企業", ko: "기업", fr: "Entreprise" },
   demo_imp: { vi: "Nhà phân phối", en: "Distributor", zh: "分销商", ja: "流通業者", ko: "유통업체", fr: "Distributeur" },
   demo_con: { vi: "Người tiêu dùng", en: "Consumer", zh: "消费者", ja: "消費者", ko: "소비자", fr: "Consommateur" },
   demo_admin: { vi: "Quản trị viên", en: "Administrator", zh: "管理员", ja: "管理者", ko: "관리자", fr: "Administrateur" },

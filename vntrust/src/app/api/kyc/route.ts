@@ -14,12 +14,12 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const listDistributors = searchParams.get('list_distributors');
 
-    // ── list_distributors: trả về danh sách NPP đã xác thực (cả Admin và NSX đều dùng) ──
+    // ── list_distributors: danh sách DN có thể nhận hàng ──
+    // Sau khi gộp vai trò, mọi Doanh nghiệp đều có thể là bên nhận → trả về tất cả DN
+    // (loại trừ DN của chính người gọi để không tự chuyển cho mình).
     if (listDistributors === 'true') {
       const list = await prisma.doanhNghiep.findMany({
-        where: { 
-          loai: 'NNK',    // Chỉ lấy Nhà nhập khẩu/phân phối
-        },
+        where: doanhNghiepId ? { id: { not: doanhNghiepId } } : {},
         select: { id: true, ten: true, maSoThue: true, diaChi: true, trangThai: true },
         orderBy: { ten: 'asc' },
       });
@@ -70,7 +70,14 @@ export async function PATCH(req: NextRequest) {
       }
 
       // P2 — Lấy trạng thái cũ để biết khi nào cần cascade
-      const before = await prisma.doanhNghiep.findUnique({ where: { id }, select: { trangThai: true, ten: true } });
+      const before = await prisma.doanhNghiep.findUnique({ where: { id }, select: { trangThai: true, ten: true, giayphep_url: true, cmnd_url: true } });
+
+      // ── BẮT BUỘC giấy tờ: không cho phê duyệt (verified) nếu thiếu GPKD hoặc CMND/CCCD ──
+      if (trangThai === 'verified' && (!before?.giayphep_url || !before?.cmnd_url)) {
+        const missing = [!before?.giayphep_url ? 'Giấy phép KD' : null, !before?.cmnd_url ? 'CMND/CCCD' : null].filter(Boolean).join(', ');
+        return NextResponse.json({ error: `Không thể phê duyệt: doanh nghiệp chưa nộp đủ giấy tờ (${missing})` }, { status: 400 });
+      }
+
       const updated = await prisma.doanhNghiep.update({ where: { id }, data: { trangThai } });
 
       // P2 CASCADE — DN bị suspended/revoked → vô hiệu hóa toàn bộ UID của DN

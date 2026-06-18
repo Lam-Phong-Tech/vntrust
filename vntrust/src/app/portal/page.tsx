@@ -3,7 +3,6 @@
 // Hợp nhất 4 module thành 1 entry point duy nhất theo §V (file 5)
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -120,14 +119,12 @@ export default function PortalLandingPage() {
       <header className="sticky top-0 z-40 bg-[#0B1623]/85 backdrop-blur-md border-b border-[#C8A557]/20 px-4 sm:px-8 py-3 flex items-center gap-4">
         {/* Logo */}
         <Link href="/portal" className="flex items-center gap-2 shrink-0">
-          <Image
-            src="/logo.png"
-            alt="AI VeriGoods Logo"
-            width={140}
-            height={45}
-            style={{ objectFit: "contain" }}
-            priority
-          />
+          <div className="w-9 h-9 rounded-xl border border-[#C8A557] flex items-center justify-center text-[#C8A557]">
+            <span className="material-symbols-outlined text-[20px]">shield</span>
+          </div>
+          <span className="font-display text-lg sm:text-xl font-bold">
+            VN<span className="text-[#C8A557]">Trust</span>
+          </span>
         </Link>
 
         {/* Global search — hide on mobile */}
@@ -177,9 +174,9 @@ export default function PortalLandingPage() {
           <p className="text-xs sm:text-sm font-bold text-[#C8A557] uppercase tracking-widest mb-2">
             {tr("Nền tảng quốc gia chống hàng giả", "National Anti-Counterfeit Platform")}
           </p>
-          <div className="flex justify-center mb-6">
-            <Image src="/logo.png" alt="AI VeriGoods Logo" width={280} height={90} style={{objectFit: 'contain'}} priority />
-          </div>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-display mb-3 tracking-tight">
+            VN<span className="text-[#C8A557]">Trust</span>
+          </h1>
           <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
             {tr(
               "Unified Anti-Counterfeit Intelligence Platform — Xác thực doanh nghiệp, truy xuất nguồn gốc, giám sát thị trường, chống hàng giả bằng AI",

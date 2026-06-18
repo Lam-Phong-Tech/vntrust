@@ -91,7 +91,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-// DELETE: Delete a specific QR code
+// DELETE: Delete a specific QR code or multiple QR codes
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
@@ -102,11 +102,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     if (!userRole || !['admin', 'manufacturer'].includes(userRole)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-
-    const { searchParams } = new URL(req.url);
-    const uid = searchParams.get('uid');
-    
-    if (!uid) return NextResponse.json({ error: "Thiếu UID" }, { status: 400 });
 
     const loHang = await prisma.loHang.findUnique({
       where: { id },
@@ -119,15 +114,34 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    let uidsToDelete: string[] = [];
+    
+    try {
+      const body = await req.json();
+      if (body && Array.isArray(body.uids) && body.uids.length > 0) {
+        uidsToDelete = body.uids;
+      }
+    } catch (e) {
+      // Ignore empty or invalid JSON body
+    }
+
+    if (uidsToDelete.length === 0) {
+      const { searchParams } = new URL(req.url);
+      const uid = searchParams.get('uid');
+      if (uid) uidsToDelete = [uid];
+    }
+    
+    if (uidsToDelete.length === 0) return NextResponse.json({ error: "Thiếu thông tin UID cần xóa" }, { status: 400 });
+
     await prisma.$transaction([
-      prisma.maDinhDanh.delete({ where: { uid } }),
+      prisma.maDinhDanh.deleteMany({ where: { uid: { in: uidsToDelete } } }),
       prisma.loHang.update({
         where: { id },
-        data: { soLuong: { decrement: 1 } }
+        data: { soLuong: { decrement: uidsToDelete.length } }
       })
     ]);
 
-    return NextResponse.json({ message: "Đã xóa mã QR" });
+    return NextResponse.json({ message: `Đã xóa ${uidsToDelete.length} mã QR` });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

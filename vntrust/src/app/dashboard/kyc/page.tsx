@@ -55,6 +55,7 @@ function DocUploadZone({
   const { lang } = useLanguage();
   const tr = (vi: string, en: string) => (lang === 'en' ? en : vi);
   const inputRef = useRef<HTMLInputElement>(null);
+  const captureRef = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -101,34 +102,54 @@ function DocUploadZone({
         </a>
       )}
 
-      {/* Drop Zone */}
+      {/* Drop Zone + Chụp ảnh */}
       {!disabled && (
-        <div
-          onDragOver={e => { e.preventDefault(); setDrag(true); }}
-          onDragLeave={() => setDrag(false)}
-          onDrop={handleDrop}
-          onClick={() => inputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center gap-2 cursor-pointer transition select-none
-            ${drag ? "border-cyan-400 bg-cyan-500/10" : "border-white/15 bg-white/3 hover:border-white/30 hover:bg-white/5"}`}
-        >
-          {uploading ? (
-            <>
-              <span className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-              <span className="text-xs text-cyan-400">Đang tải lên...</span>
-            </>
-          ) : (
-            <>
-              <span className="material-symbols-outlined text-slate-400 text-[28px]">cloud_upload</span>
-              <span className="text-xs text-slate-400 text-center">
-                {hasDoc ? "Kéo thả để <span class='text-white font-bold'>thay thế</span>" : "Kéo & thả hoặc"} <span className="text-cyan-400 font-bold">chọn file</span>
-              </span>
-              <span className="text-[10px] text-slate-500">PDF, JPG, PNG, WEBP · Tối đa 10MB</span>
-            </>
-          )}
+        <div className="flex flex-col gap-2">
+          <div
+            onDragOver={e => { e.preventDefault(); setDrag(true); }}
+            onDragLeave={() => setDrag(false)}
+            onDrop={handleDrop}
+            onClick={() => inputRef.current?.click()}
+            className={`relative border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center gap-2 cursor-pointer transition select-none
+              ${drag ? "border-cyan-400 bg-cyan-500/10" : "border-white/15 bg-white/3 hover:border-white/30 hover:bg-white/5"}`}
+          >
+            {uploading ? (
+              <>
+                <span className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs text-cyan-400">Đang tải lên...</span>
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined text-slate-400 text-[28px]">cloud_upload</span>
+                <span className="text-xs text-slate-400 text-center">
+                  {hasDoc ? "Kéo thả để thay thế hoặc" : "Kéo & thả hoặc"} <span className="text-cyan-400 font-bold">chọn ảnh</span>
+                </span>
+                <span className="text-[10px] text-slate-500">JPG, PNG, WEBP · Tối đa 5MB</span>
+              </>
+            )}
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) { onFile(f); e.target.value = ''; } }}
+            />
+          </div>
+          {/* Chụp ảnh (mobile mở camera, desktop mở chọn ảnh) */}
+          <button
+            type="button"
+            onClick={() => captureRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center justify-center gap-2 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-bold hover:bg-cyan-500/20 transition disabled:opacity-50"
+          >
+            <span className="material-symbols-outlined text-[16px]">photo_camera</span>
+            {tr("Chụp ảnh", "Take photo")}
+          </button>
           <input
-            ref={inputRef}
+            ref={captureRef}
             type="file"
-            accept=".pdf,.jpg,.jpeg,.png,.webp"
+            accept="image/*"
+            capture="environment"
             className="hidden"
             onChange={e => { const f = e.target.files?.[0]; if (f) { onFile(f); e.target.value = ''; } }}
           />
@@ -407,10 +428,62 @@ export default function KYCPage() {
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast]           = useState<{ msg: string; ok: boolean } | null>(null);
   const [uploading, setUploading]   = useState<Record<string, boolean>>({});
+  // Form thông tin DN (cho DN tự cập nhật + OCR auto-fill)
+  const [form, setForm] = useState({ nguoiDaiDien: "", hotline: "", email: "", diaChi: "", nganh_VSIC: "" });
+  const [savingInfo, setSavingInfo] = useState(false);
+  const [ocrRunning, setOcrRunning] = useState(false);
+  const [ocrHint, setOcrHint] = useState<{ maSoThue?: string; tenDN?: string; sdt?: string } | null>(null);
+
+  // ── Giấy phép lưu hành (gắn vào hồ sơ DN) ──
+  type GiayPhep = { id: string; tenGiayPhep: string; soGiayPhep: string; coQuanCap?: string | null; ngayCap?: string | null; ngayHetHan?: string | null; phamVi?: string | null; fileUrl?: string | null; trangThai: string };
+  const [licenses, setLicenses] = useState<GiayPhep[]>([]);
+  const [licForm, setLicForm] = useState({ tenGiayPhep: "", soGiayPhep: "", coQuanCap: "", ngayCap: "", ngayHetHan: "", phamVi: "" });
+  const [licFile, setLicFile] = useState<File | null>(null);
+  const [licOpen, setLicOpen] = useState(false);
+  const [licSaving, setLicSaving] = useState(false);
 
   const showToast = (msg: string, ok: boolean) => {
     setToast({ msg, ok });
     setTimeout(() => setToast(null), 3500);
+  };
+
+  const fetchLicenses = async () => {
+    try {
+      const r = await fetch("/api/giay-phep-luu-hanh", { cache: "no-store" });
+      if (r.ok) setLicenses((await r.json()).items || []);
+    } catch { /* ignore */ }
+  };
+
+  const addLicense = async () => {
+    if (!licForm.tenGiayPhep.trim() || !licForm.soGiayPhep.trim()) { showToast("Nhập tên giấy phép và số giấy phép", false); return; }
+    setLicSaving(true);
+    try {
+      let fileUrl: string | undefined;
+      if (licFile) {
+        const fd = new FormData(); fd.append("file", licFile); fd.append("type", "kyc");
+        const ur = await fetch("/api/upload", { method: "POST", body: fd });
+        const ud = await ur.json();
+        if (ur.ok && ud.url) fileUrl = ud.url;
+      }
+      const r = await fetch("/api/giay-phep-luu-hanh", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...licForm, fileUrl }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Lưu thất bại");
+      showToast("✅ Đã thêm giấy phép lưu hành", true);
+      setLicForm({ tenGiayPhep: "", soGiayPhep: "", coQuanCap: "", ngayCap: "", ngayHetHan: "", phamVi: "" });
+      setLicFile(null); setLicOpen(false);
+      await fetchLicenses();
+    } catch (e: any) { showToast("❌ " + e.message, false); }
+    finally { setLicSaving(false); }
+  };
+
+  const delLicense = async (id: string) => {
+    try {
+      const r = await fetch(`/api/giay-phep-luu-hanh?id=${id}`, { method: "DELETE" });
+      if (r.ok) { showToast("Đã xóa giấy phép", true); await fetchLicenses(); }
+    } catch { showToast("Lỗi xóa", false); }
   };
 
   const fetchData = async () => {
@@ -431,28 +504,110 @@ export default function KYCPage() {
     setUserRole(role);
     if (!["admin", "manufacturer", "importer"].includes(role)) { router.replace("/dashboard"); return; }
     fetchData();
+    if (role !== "admin") fetchLicenses();
   }, []);
+
+  // Đồng bộ form từ dữ liệu DN
+  useEffect(() => {
+    if (myCompany) setForm({
+      nguoiDaiDien: myCompany.nguoiDaiDien || "",
+      hotline:      myCompany.hotline || "",
+      email:        myCompany.email || "",
+      diaChi:       myCompany.diaChi || "",
+      nganh_VSIC:   myCompany.nganh_VSIC || "",
+    });
+  }, [myCompany]);
+
+  // Chuyển Blob/File → data URL (base64)
+  const toDataUrl = (blob: Blob): Promise<string> => new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result as string);
+    r.onerror = reject;
+    r.readAsDataURL(blob);
+  });
+
+  // ── OCR: quét Giấy phép KD (base64) và tự điền các trường ──────────────────────
+  const runOCR = async (imageBase64: string) => {
+    setOcrRunning(true);
+    try {
+      const res = await fetch("/api/ocr/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.error || "OCR thất bại");
+      const af = data.autoFillSuggestion || {};
+      // Tự điền các trường được phép sửa (địa chỉ, hotline)
+      setForm(prev => ({
+        ...prev,
+        diaChi:  af.diaChi || prev.diaChi,
+        hotline: af.sdt || prev.hotline,
+      }));
+      // Lưu gợi ý MST/Tên DN để đối chiếu (không sửa được vì là định danh)
+      setOcrHint({ maSoThue: af.maSoThue, tenDN: af.tenDN, sdt: af.sdt });
+      const filled = [af.diaChi ? "địa chỉ" : null, af.sdt ? "SĐT" : null].filter(Boolean);
+      showToast(filled.length ? `✅ OCR đã điền: ${filled.join(", ")} (tin cậy ${data.confidence?.toFixed(0)}%)` : "OCR xong nhưng chưa trích được trường nào — kiểm tra ảnh rõ hơn", filled.length > 0);
+    } catch (e: any) {
+      showToast("❌ OCR lỗi: " + e.message + " (lần đầu tải model có thể chậm)", false);
+    } finally {
+      setOcrRunning(false);
+    }
+  };
+
+  // ── DN lưu thông tin đã chỉnh/điền ────────────────────────────────────────────
+  const saveInfo = async () => {
+    setSavingInfo(true);
+    try {
+      const res = await fetch("/api/kyc", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update_info", ...form }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Lưu thất bại");
+      showToast("✅ Đã lưu thông tin doanh nghiệp", true);
+      await fetchData();
+    } catch (e: any) {
+      showToast("❌ " + e.message, false);
+    } finally {
+      setSavingInfo(false);
+    }
+  };
 
   // ── File Upload ─────────────────────────────────────────────────────────────
   const handleUpload = async (fieldName: "giayphep_url" | "cmnd_url", file: File) => {
     const label = fieldName === "giayphep_url" ? "Giấy phép KD" : "CMND/CCCD";
-    const allowed = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
-    if (!allowed.includes(file.type)) { showToast("❌ Chỉ chấp nhận PDF, JPG, PNG, WEBP", false); return; }
-    if (file.size > 10 * 1024 * 1024) { showToast("❌ File không được vượt quá 10MB", false); return; }
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) { showToast("❌ Chỉ chấp nhận ảnh JPG, PNG, WEBP", false); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast("❌ Ảnh không được vượt quá 5MB", false); return; }
 
     setUploading(prev => ({ ...prev, [fieldName]: true }));
     try {
+      // 1) Upload ảnh → lấy URL
       const fd = new FormData();
       fd.append("file", file);
       fd.append("type", "kyc");
       fd.append("kycField", fieldName);
-
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       const data = await res.json();
-      if (!res.ok) { showToast("❌ " + data.error, false); return; }
+      if (!res.ok || !data.url) { showToast("❌ " + (data.error || "Upload thất bại"), false); return; }
 
-      showToast(`✅ Đã tải lên ${label}`, true);
+      // 2) Lưu URL vào hồ sơ DN
+      const patch = await fetch("/api/kyc", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update_info", [fieldName]: data.url }),
+      });
+      if (!patch.ok) { const pd = await patch.json(); showToast("❌ " + (pd.error || "Lưu giấy tờ thất bại"), false); return; }
+
+      showToast(`✅ Đã nộp ${label}`, true);
       await fetchData();
+
+      // 3) Giấy phép KD → tự động OCR + điền trường (dùng base64 của file vừa chọn)
+      if (fieldName === "giayphep_url") {
+        try { runOCR(await toDataUrl(file)); } catch {}
+      }
     } catch {
       showToast("❌ Lỗi kết nối", false);
     } finally {
@@ -712,48 +867,34 @@ export default function KYCPage() {
                   onFile={f => handleUpload("cmnd_url", f)}
                 />
               </div>
-              {/* OCR auto-fill — Phase L: gọi /api/ocr/extract trên Giấy phép KD */}
+              {/* OCR auto-fill — quét Giấy phép KD và điền vào form bên dưới */}
               {myCompany.giayphep_url && !myCompany.giayphep_url.endsWith('.pdf') && myCompany.trangThai !== "verified" && (
                 <div className="px-6 pb-5">
                   <button
                     onClick={async () => {
                       try {
-                        const btn = document.getElementById('ocr-btn') as HTMLButtonElement;
-                        if (btn) { btn.disabled = true; btn.innerText = '⏳ Đang OCR... (5-10s)'; }
-                        const res = await fetch('/api/ocr/extract', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ imageUrl: myCompany.giayphep_url }),
-                        });
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.message || data.error || 'OCR failed');
-                        const af = data.autoFillSuggestion || {};
-                        const msg = [
-                          'Đã trích xuất từ Giấy phép KD:',
-                          af.maSoThue   ? `• MST: ${af.maSoThue}` : '',
-                          af.tenDN      ? `• Tên DN: ${af.tenDN}` : '',
-                          af.diaChi     ? `• Địa chỉ: ${af.diaChi}` : '',
-                          af.sdt        ? `• SĐT: ${af.sdt}` : '',
-                          '',
-                          `Độ tin cậy: ${data.confidence?.toFixed(0)}% — Thời gian: ${(data.elapsedMs/1000).toFixed(1)}s`,
-                          '',
-                          'Bạn có thể đối chiếu với thông tin DN đã đăng ký.',
-                        ].filter(Boolean).join('\n');
-                        alert(msg);
-                      } catch (e: any) {
-                        alert('OCR lỗi: ' + e.message + '\n\n(Lần đầu chạy có thể chậm 10-30s do tải model Vietnamese.)');
-                      } finally {
-                        const btn = document.getElementById('ocr-btn') as HTMLButtonElement;
-                        if (btn) { btn.disabled = false; btn.innerText = '🔍 Quét OCR Giấy phép KD'; }
-                      }
+                        const blob = await (await fetch(myCompany.giayphep_url!)).blob();
+                        runOCR(await toDataUrl(blob));
+                      } catch { showToast("❌ Không tải được ảnh để quét lại", false); }
                     }}
-                    id="ocr-btn"
-                    className="w-full px-4 py-2.5 bg-[#C8A557]/15 hover:bg-[#C8A557]/25 border border-[#C8A557]/40 text-[#C8A557] text-sm font-bold rounded-lg transition flex items-center justify-center gap-2"
+                    disabled={ocrRunning}
+                    className="w-full px-4 py-2.5 bg-[#C8A557]/15 hover:bg-[#C8A557]/25 border border-[#C8A557]/40 text-[#C8A557] text-sm font-bold rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-60"
                   >
-                    🔍 Quét OCR Giấy phép KD
+                    {ocrRunning
+                      ? <><span className="w-4 h-4 border-2 border-[#C8A557] border-t-transparent rounded-full animate-spin" /> Đang quét OCR… (5–10s)</>
+                      : <><span className="material-symbols-outlined text-[18px]">document_scanner</span> Quét OCR &amp; tự điền</>}
                   </button>
                   <p className="text-[10px] text-slate-500 mt-2 text-center">
-                    Tự động trích xuất MST, tên DN, địa chỉ từ ảnh Giấy phép Kinh doanh.
+                    Tự động trích xuất & điền Địa chỉ, SĐT từ ảnh Giấy phép KD vào form bên dưới.
+                  </p>
+                </div>
+              )}
+              {/* Nhắc bắt buộc giấy tờ */}
+              {myCompany.trangThai !== "verified" && (!myCompany.giayphep_url || !myCompany.cmnd_url) && (
+                <div className="mx-6 mb-5 flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                  <span className="material-symbols-outlined text-amber-400 text-[18px] shrink-0">priority_high</span>
+                  <p className="text-xs text-amber-200">
+                    Bắt buộc nộp <b>đủ cả 2 giấy tờ</b> (Giấy phép KD + CMND/CCCD). Admin chỉ phê duyệt khi hồ sơ đầy đủ.
                   </p>
                 </div>
               )}
@@ -765,29 +906,145 @@ export default function KYCPage() {
               )}
             </div>
 
-            {/* Company Info Summary */}
+            {/* Company Info — editable (khi chưa verified) hoặc read-only (đã verified) */}
             <div className="glass-panel border border-white/10 rounded-2xl overflow-hidden">
               <div className="px-6 py-4 border-b border-white/5 flex items-center gap-2">
                 <span className="material-symbols-outlined text-cyan-400 text-[18px]">business</span>
                 <h2 className="text-sm font-bold text-white">{tr("Thông tin doanh nghiệp", "Business information")}</h2>
+                {myCompany.trangThai !== "verified" && <span className="ml-auto text-[10px] text-slate-500">{tr("Có thể chỉnh / OCR tự điền", "Editable / OCR autofill")}</span>}
               </div>
-              <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  { label: "Tên doanh nghiệp", value: myCompany.ten, icon: "apartment" },
-                  { label: "Mã số thuế",        value: myCompany.maSoThue, icon: "tag" },
-                  { label: "Loại hình",          value: myCompany.loai === "NSX" ? "Nhà sản xuất" : "Nhập khẩu / Phân phối", icon: "category" },
-                  { label: "Người đại diện",     value: myCompany.nguoiDaiDien || "Chưa cập nhật", icon: "person" },
-                  { label: "Hotline",            value: myCompany.hotline || "Chưa cập nhật", icon: "phone" },
-                  { label: "Email",              value: myCompany.email || "Chưa cập nhật", icon: "mail" },
-                ].map((row, i) => (
-                  <div key={i} className="flex items-start gap-3 p-3 bg-white/5 rounded-xl border border-white/5">
-                    <span className="material-symbols-outlined text-slate-400 text-[16px] mt-0.5">{row.icon}</span>
-                    <div>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">{row.label}</p>
-                      <p className="text-sm text-white font-medium mt-0.5">{row.value}</p>
+
+              {myCompany.trangThai === "verified" ? (
+                /* Read-only sau khi đã xác thực */
+                <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { label: "Tên doanh nghiệp", value: myCompany.ten, icon: "apartment" },
+                    { label: "Mã số thuế",        value: myCompany.maSoThue, icon: "tag" },
+                    { label: "Loại hình",          value: "Doanh nghiệp", icon: "category" },
+                    { label: "Người đại diện",     value: myCompany.nguoiDaiDien || "—", icon: "person" },
+                    { label: "Hotline",            value: myCompany.hotline || "—", icon: "phone" },
+                    { label: "Địa chỉ",            value: myCompany.diaChi || "—", icon: "location_on" },
+                  ].map((row, i) => (
+                    <div key={i} className="flex items-start gap-3 p-3 bg-white/5 rounded-xl border border-white/5">
+                      <span className="material-symbols-outlined text-slate-400 text-[16px] mt-0.5">{row.icon}</span>
+                      <div>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">{row.label}</p>
+                        <p className="text-sm text-white font-medium mt-0.5">{row.value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-6 space-y-4">
+                  {/* Định danh — không sửa được */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">Tên doanh nghiệp</p>
+                      <p className="text-sm text-white font-medium mt-0.5">{myCompany.ten}</p>
+                      {ocrHint?.tenDN && <p className="text-[10px] text-[#C8A557] mt-1">OCR đọc được: {ocrHint.tenDN}</p>}
+                    </div>
+                    <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">Mã số thuế</p>
+                      <p className="text-sm text-white font-medium mt-0.5 font-mono">{myCompany.maSoThue}</p>
+                      {ocrHint?.maSoThue && <p className="text-[10px] text-[#C8A557] mt-1">OCR đọc được: {ocrHint.maSoThue}</p>}
                     </div>
                   </div>
-                ))}
+                  {/* Các trường có thể sửa / OCR điền */}
+                  {([
+                    { key: "diaChi",       label: "Địa chỉ", ph: "Số nhà, đường, phường/xã, tỉnh/thành", full: true },
+                    { key: "nguoiDaiDien", label: "Người đại diện", ph: "Họ tên người đại diện" },
+                    { key: "hotline",      label: "Hotline / SĐT", ph: "VD: 0901234567" },
+                    { key: "email",        label: "Email", ph: "email@congty.vn" },
+                    { key: "nganh_VSIC",   label: "Ngành nghề (VSIC)", ph: "VD: 1079 - Sản xuất thực phẩm" },
+                  ] as const).map(f => (
+                    <div key={f.key} className={("full" in f) ? "" : "inline-block w-full sm:w-[calc(50%-0.5rem)] sm:mr-2 align-top"}>
+                      <label className="text-[10px] text-slate-500 uppercase tracking-wider">{f.label}</label>
+                      <input
+                        value={(form as any)[f.key]}
+                        onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                        placeholder={f.ph}
+                        className="w-full mt-1 px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50"
+                      />
+                    </div>
+                  ))}
+                  <button
+                    onClick={saveInfo}
+                    disabled={savingInfo}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-white text-sm font-bold rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">{savingInfo ? "progress_activity" : "save"}</span>
+                    {savingInfo ? "Đang lưu…" : "Lưu thông tin"}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* ── Giấy phép lưu hành (gắn vào hồ sơ DN) ── */}
+            <div className="glass-panel border border-white/10 rounded-2xl overflow-hidden">
+              <div className="px-6 py-4 border-b border-white/5 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#C8A557] text-[18px]">verified</span>
+                <h2 className="text-sm font-bold text-white">Giấy phép lưu hành</h2>
+                <span className="ml-auto text-[10px] text-slate-500">{licenses.length} giấy phép</span>
+                <button onClick={() => setLicOpen(o => !o)} className="ml-2 text-xs font-bold text-[#C8A557] hover:underline flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[16px]">{licOpen ? "close" : "add"}</span>{licOpen ? "Đóng" : "Thêm"}
+                </button>
+              </div>
+              <div className="p-6 space-y-3">
+                {licOpen && (
+                  <div className="rounded-xl border border-[#C8A557]/25 bg-[#C8A557]/5 p-4 space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input value={licForm.tenGiayPhep} onChange={e => setLicForm(f => ({ ...f, tenGiayPhep: e.target.value }))} placeholder="Tên/loại giấy phép *" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
+                      <input value={licForm.soGiayPhep} onChange={e => setLicForm(f => ({ ...f, soGiayPhep: e.target.value }))} placeholder="Số giấy phép / số đăng ký *" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
+                      <input value={licForm.coQuanCap} onChange={e => setLicForm(f => ({ ...f, coQuanCap: e.target.value }))} placeholder="Cơ quan cấp (VD: Cục QLD - Bộ Y tế)" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
+                      <input value={licForm.phamVi} onChange={e => setLicForm(f => ({ ...f, phamVi: e.target.value }))} placeholder="Phạm vi lưu hành (VD: Toàn quốc)" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
+                      <div>
+                        <label className="text-[10px] text-slate-500 uppercase tracking-wider">Ngày cấp</label>
+                        <input type="date" value={licForm.ngayCap} onChange={e => setLicForm(f => ({ ...f, ngayCap: e.target.value }))} className="w-full mt-1 px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500/50" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-slate-500 uppercase tracking-wider">Ngày hết hạn</label>
+                        <input type="date" value={licForm.ngayHetHan} onChange={e => setLicForm(f => ({ ...f, ngayHetHan: e.target.value }))} className="w-full mt-1 px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500/50" />
+                      </div>
+                    </div>
+                    <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                      <span className="material-symbols-outlined text-[18px] text-[#C8A557]">image</span>
+                      <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">{licFile ? `✓ ${licFile.name}` : "Chọn ảnh/scan giấy phép (tùy chọn)"}</span>
+                      <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={e => setLicFile(e.target.files?.[0] || null)} />
+                    </label>
+                    <button onClick={addLicense} disabled={licSaving} className="px-5 py-2.5 bg-[#C8A557] text-[#0B1623] text-sm font-bold rounded-xl hover:brightness-110 transition disabled:opacity-50 flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[18px]">{licSaving ? "progress_activity" : "save"}</span>
+                      {licSaving ? "Đang lưu…" : "Lưu giấy phép"}
+                    </button>
+                  </div>
+                )}
+
+                {licenses.length === 0 ? (
+                  <p className="text-center text-slate-500 text-sm py-6">Chưa có giấy phép lưu hành nào. Bấm “Thêm” để khai báo.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {licenses.map(l => {
+                      const expired = l.ngayHetHan && new Date(l.ngayHetHan) < new Date();
+                      return (
+                        <div key={l.id} className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
+                          <span className="material-symbols-outlined text-[#C8A557] text-[20px] mt-0.5 shrink-0">workspace_premium</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white text-sm font-bold truncate">{l.tenGiayPhep}</div>
+                            <div className="text-[11px] text-slate-400 truncate">Số: <span className="font-mono">{l.soGiayPhep}</span>{l.coQuanCap ? ` · ${l.coQuanCap}` : ""}{l.phamVi ? ` · ${l.phamVi}` : ""}</div>
+                            <div className="text-[10px] text-slate-500 mt-0.5">
+                              {l.ngayCap ? `Cấp: ${new Date(l.ngayCap).toLocaleDateString("vi-VN")}` : ""}
+                              {l.ngayHetHan ? ` · HSD: ${new Date(l.ngayHetHan).toLocaleDateString("vi-VN")}` : ""}
+                              {expired && <span className="ml-1 text-red-400 font-bold">(Hết hạn)</span>}
+                              {l.fileUrl && <a href={l.fileUrl} target="_blank" rel="noreferrer" className="ml-2 text-cyan-400 underline">Xem ảnh</a>}
+                            </div>
+                          </div>
+                          <button onClick={() => delLicense(l.id)} className="text-slate-500 hover:text-red-400 transition shrink-0" title="Xóa">
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           </div>

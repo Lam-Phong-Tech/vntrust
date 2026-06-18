@@ -253,13 +253,28 @@ export default function VerifyScanPage() {
               </svg>
               {lang === 'en' ? 'Enter' : 'Nhập mã'}
             </div>
-            <div className="s-scan-option" onClick={() => router.push('/verify/ai-doc')}>
+            <div className="s-scan-option" onClick={() => router.push('/verify/wizard')}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 12V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6" />
                 <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6" />
-                <line x1="2" y1="12" x2="22" y2="12" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              {lang === 'en' ? 'AI' : 'AI'}
+              {lang === 'en' ? 'Report' : 'Báo cáo'}
+            </div>
+            <div className="s-scan-option" onClick={() => router.push('/verify/history')}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              {lang === 'en' ? 'History' : 'Lịch sử'}
+            </div>
+            <div className="s-scan-option" onClick={() => router.push('/verify/rewards')}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 12 20 22 12 17 4 22 4 12" />
+                <rect x="4" y="2" width="16" height="10" rx="2" />
+              </svg>
+              {lang === 'en' ? 'Rewards' : 'Đổi quà'}
             </div>
             <div className={`s-scan-option ${mode === 'gallery' ? 'active' : ''}`} onClick={() => {
               setMode('gallery');

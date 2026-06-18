@@ -80,3 +80,7 @@ next-env.d.ts
 !/vntrust/eslint.config.mjs
 !/vntrust/postcss.config.mjs
 /vntrust/test.ts
+
+# Prisma generated client — build tao lai bang `npx prisma generate`, khong commit
+/vntrust/src/generated/
+**/src/generated/

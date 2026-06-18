@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import { saveOtp } from '@/lib/otpStore';
+import { otpStore } from '@/lib/otpStore';
 
 function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -16,20 +16,17 @@ export async function POST(req: NextRequest) {
     const gmailUser = process.env.GMAIL_USER;
     const gmailPass = process.env.GMAIL_APP_PASSWORD;
 
-    // B-10 Fix: Không log thông tin nhạy cảm
-    const credentialsConfigured = !!(gmailUser && gmailPass && gmailPass !== 'your_app_password_here');
+    console.log('[OTP] GMAIL_USER:', gmailUser ?? 'NOT SET');
+    console.log('[OTP] GMAIL_APP_PASSWORD:', gmailPass ? '***SET***' : 'NOT SET');
 
-    if (!credentialsConfigured) {
+    if (!gmailUser || !gmailPass || gmailPass === 'your_app_password_here') {
       console.error('[OTP] Gmail credentials not configured!');
       return NextResponse.json({ error: 'Hệ thống email chưa được cấu hình.' }, { status: 500 });
     }
 
     const otp = generateOTP();
-    const expiresMs = Date.now() + 5 * 60 * 1000; // 5 phút
-
-    // B-06 Fix: Lưu OTP vào DB thay vì in-memory Map
-    await saveOtp(email.toLowerCase(), otp, expiresMs);
-    console.log(`[OTP] Generated and saved to DB for ${email}`);
+    otpStore.set(email.toLowerCase(), { otp, expires: Date.now() + 5 * 60 * 1000 });
+    console.log(`[OTP] Generated for ${email}: ${otp}`);
 
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -40,6 +37,7 @@ export async function POST(req: NextRequest) {
 
     try {
       await transporter.verify();
+      console.log('[OTP] SMTP verified OK');
     } catch (verifyErr: any) {
       console.error('[OTP] SMTP verify failed:', verifyErr.message);
       return NextResponse.json({ error: `Lỗi kết nối Gmail: ${verifyErr.message}` }, { status: 500 });
@@ -55,6 +53,7 @@ export async function POST(req: NextRequest) {
         'Precedence': 'transactional',
         'X-Entity-Ref-ID': `vntrust-otp-${Date.now()}`,
       },
+      // Plain-text fallback — giảm điểm spam đáng kể
       text: `VNTrust - Mã xác thực tài khoản\n\nMã OTP của bạn là: ${otp}\n\nMã có hiệu lực trong 5 phút.\nKhông chia sẻ mã này với bất kỳ ai.\n\n---\nVNTrust · anticounterfeit.test9.io.vn`,
       html: `
         <!DOCTYPE html><html><head><meta charset="utf-8"></head>

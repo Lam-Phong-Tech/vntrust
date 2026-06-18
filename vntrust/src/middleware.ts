@@ -54,7 +54,7 @@ export function middleware(request: NextRequest) {
   }
 
   // ── Route protection (NFR-SC-06: Least Privilege) ────────────────────────
-  const protectedPaths = ['/dashboard', '/enterprise', '/supply-chain'];
+  const protectedPaths = ['/dashboard', '/enterprise', '/supply-chain', '/admin'];
   const isProtected = protectedPaths.some(p => pathname.startsWith(p));
 
   if (isProtected) {
@@ -65,7 +65,8 @@ export function middleware(request: NextRequest) {
   }
 
   // ── Admin-only routes (B-04 fix: thực sự block tại middleware) ──────────────
-  const adminOnlyPaths = ['/dashboard/security', '/dashboard/kyc', '/dashboard/logs', '/dashboard/risks', '/dashboard/roadmap', '/dashboard/readiness', '/dashboard/users', '/dashboard/geocoding', '/dashboard/system-config'];
+  // Lưu ý: /dashboard/kyc KHÔNG admin-only — trang tự phân quyền (admin: duyệt hồ sơ; DN: tự xác minh + giấy phép lưu hành)
+  const adminOnlyPaths = ['/admin', '/dashboard/security', '/dashboard/logs', '/dashboard/risks', '/dashboard/roadmap', '/dashboard/readiness', '/dashboard/users', '/dashboard/geocoding', '/dashboard/system-config'];
   if (adminOnlyPaths.some(p => pathname.startsWith(p))) {
     const userRole = request.cookies.get('userRole')?.value;
     if (userRole && userRole !== 'admin') {
@@ -111,6 +112,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/dashboard/:path*',
+    '/admin/:path*',
     '/enterprise/:path*',
     '/supply-chain/:path*',
     '/api/auth/:path*',
@@ -119,7 +121,6 @@ export const config = {
     '/api/distribution/:path*',
     '/api/alerts/:path*',
     '/api/certificates/:path*',
-    '/api/warehouse/:path*',
     '/api/bulk-import/:path*',
     '/api/analytics/:path*',
   ],

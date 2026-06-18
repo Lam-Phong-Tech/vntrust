@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLogs } from "@/hooks/useLogs";
 import { useLanguage } from "@/contexts/LanguageContext";
+import DistributionPage from "@/app/dashboard/distribution/page";
 
 interface SanPham {
   id: string;
@@ -36,6 +37,7 @@ export default function InventoryPage() {
   const [data, setData] = useState<InvData | null>(null);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<"product" | "batch" | "edit" | "delete" | "cert" | null>(null);
+  const [mainTab, setMainTab] = useState<"assets" | "dist">("assets"); // gộp Phân phối vào đây
   const [selectedProduct, setSelectedProduct] = useState<string>("");
   const [selectedBatch, setSelectedBatch] = useState<{
     id: string; maLo: string; ngaySanXuat: string; hanDung: string; soLuong: number;
@@ -51,6 +53,41 @@ export default function InventoryPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImg, setUploadingImg] = useState(false);
 
+  // ── Lô hàng: chế độ mã (hỏi DN) ──
+  const [codeMode, setCodeMode] = useState<"generate" | "import">("generate");
+  const [codeType, setCodeType] = useState<"QR" | "Barcode">("QR");
+  const [importedCodes, setImportedCodes] = useState<string[]>([]);
+  const [importFileName, setImportFileName] = useState("");
+  const [parsingFile, setParsingFile] = useState(false);
+
+  // Đọc file Excel/CSV → lấy cột mã (cột đầu tiên, bỏ header nếu có)
+  const handleCodeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setParsingFile(true);
+    setImportFileName(file.name);
+    try {
+      const XLSX = await import("xlsx");
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1, blankrows: false });
+      let cells = rows.map(r => String(r?.[0] ?? "").trim()).filter(Boolean);
+      // Bỏ dòng tiêu đề nếu ô đầu giống nhãn cột
+      if (cells.length && /^(m[ãa]|code|qr|barcode|serial|uid|mã)\b/i.test(cells[0])) cells = cells.slice(1);
+      const uniq = [...new Set(cells)];
+      setImportedCodes(uniq);
+      if (uniq.length === 0) showToast("File không có mã hợp lệ ở cột đầu tiên", false);
+      else showToast(`Đã đọc ${uniq.length} mã từ file`, true);
+    } catch {
+      showToast("Không đọc được file. Chấp nhận .xlsx, .xls, .csv", false);
+      setImportedCodes([]); setImportFileName("");
+    } finally {
+      setParsingFile(false);
+      e.target.value = "";
+    }
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -62,6 +99,46 @@ export default function InventoryPage() {
     }
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
+  };
+
+  // ── OCR chứng nhận: chọn ảnh → tự điền các trường ──
+  const [ocrCert, setOcrCert] = useState(false);
+  const toDataUrl = (b: Blob): Promise<string> => new Promise((res, rej) => {
+    const r = new FileReader(); r.onload = () => res(r.result as string); r.onerror = rej; r.readAsDataURL(b);
+  });
+  const runCertOCR = async (file: File) => {
+    setOcrCert(true);
+    try {
+      const b64 = await toDataUrl(file);
+      const res = await fetch('/api/ocr/extract', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: b64, mode: 'cert' }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.error || 'OCR lỗi');
+      const af = data.autoFillSuggestion || {};
+      setForm(f => ({
+        ...f,
+        loai: af.loai || f.loai,
+        soChungNhan: af.soChungNhan || f.soChungNhan,
+        toChucCap: af.toChucCap || f.toChucCap,
+        ngayCap: af.ngayCap || f.ngayCap,
+        ngayHetHan: af.ngayHetHan || f.ngayHetHan,
+      }));
+      const filled = ['soChungNhan', 'ngayCap', 'ngayHetHan', 'toChucCap'].filter(k => af[k]);
+      showToast(filled.length ? `✓ OCR đã điền ${filled.length} trường (tin cậy ${data.confidence?.toFixed?.(0) ?? '?'}%)` : 'OCR xong nhưng chưa đọc được trường nào — vui lòng nhập tay', filled.length > 0);
+    } catch (e: any) {
+      showToast('OCR lỗi: ' + e.message, false);
+    } finally {
+      setOcrCert(false);
+    }
+  };
+  const handleCertImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    handleImageChange(e);
+    if (file && ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) && file.size <= 5 * 1024 * 1024) {
+      runCertOCR(file);
+    }
   };
 
   const uploadImage = async (): Promise<string | null> => {
@@ -123,6 +200,10 @@ export default function InventoryPage() {
     setImagePreview(null);
     setSelectedProduct("");
     setSelectedBatch(null);
+    setCodeMode("generate");
+    setCodeType("QR");
+    setImportedCodes([]);
+    setImportFileName("");
   };
 
   const handleSubmit = async (type: "product" | "batch" | "cert") => {
@@ -174,8 +255,16 @@ export default function InventoryPage() {
         return;
       }
       const { ngaySanXuat, hanDung, soLuong } = form;
-      if (!ngaySanXuat || !hanDung || !soLuong) {
+      if (!ngaySanXuat || !hanDung) {
         showToast("✗ Vui lòng điền đầy đủ thông tin", false);
+        return;
+      }
+      if (codeMode === "generate" && !soLuong) {
+        showToast("✗ Vui lòng nhập số lượng mã cần tạo", false);
+        return;
+      }
+      if (codeMode === "import" && importedCodes.length === 0) {
+        showToast("✗ Vui lòng tải lên file chứa danh sách mã", false);
         return;
       }
       const sxDate = new Date(ngaySanXuat);
@@ -199,20 +288,27 @@ export default function InventoryPage() {
         showToast("✗ Hạn dùng không được là ngày đã qua trong quá khứ", false);
         return;
       }
-      const qty = Number(soLuong);
-      if (!Number.isInteger(qty) || qty <= 0) {
-        showToast(t("inv_err_qty_positive"), false);
-        return;
-      }
-      if (qty > 10000) {
-        showToast(t("inv_err_qty_max"), false);
-        return;
+      if (codeMode === "generate") {
+        const qty = Number(soLuong);
+        if (!Number.isInteger(qty) || qty <= 0) {
+          showToast(t("inv_err_qty_positive"), false);
+          return;
+        }
+        if (qty > 10000) {
+          showToast(t("inv_err_qty_max"), false);
+          return;
+        }
       }
     }
 
     setSubmitting(true);
-    const body: Record<string, string> = { type, ...form };
-    if (type === "batch") body.sanPhamId = selectedProduct;
+    const body: Record<string, any> = { type, ...form };
+    if (type === "batch") {
+      body.sanPhamId = selectedProduct;
+      body.codeMode = codeMode;
+      body.codeType = codeType;
+      if (codeMode === "import") body.codes = importedCodes;
+    }
 
     // Upload ảnh nếu có (chỉ cho sản phẩm)
     if (type === 'product' && imageFile) {
@@ -229,7 +325,7 @@ export default function InventoryPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Lỗi không xác định");
-      showToast(type === "product" ? `✓ Lưu thành công: Đã thêm sản phẩm ${json.sanPham.ten}` : `✓ Lưu thành công: Đã tạo lô ${json.loHang.maLo} với ${json.totalUids} tem QR`, true);
+      showToast(type === "product" ? `✓ Lưu thành công: Đã thêm sản phẩm ${json.sanPham.ten}` : `✓ Lưu thành công: Đã tạo lô ${json.loHang.maLo} với ${json.totalUids} mã ${json.codeType || ''} (${json.codeMode === 'import' ? 'đã nhập' : 'tạo tự động'})`, true);
       addLog({
         action: type === 'product' ? `Tạo sản phẩm: ${json.sanPham.ten}` : `Tạo lô hàng ${json.loHang.maLo}`,
         user: localStorage.getItem('userName') || 'Người dùng',
@@ -325,10 +421,37 @@ export default function InventoryPage() {
 
 
 
+  const TabBar = (
+    <div className="flex gap-2 mb-8 border-b border-white/10">
+      {([
+        { k: "assets", icon: "inventory_2", label: lang === "en" ? "Products & Batches" : "Sản phẩm & Lô hàng" },
+        { k: "dist",   icon: "local_shipping", label: lang === "en" ? "Distribution & Delivery" : "Phân phối & Giao hàng" },
+      ] as const).map(tb => (
+        <button key={tb.k} onClick={() => setMainTab(tb.k)}
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition ${
+            mainTab === tb.k ? "border-[#C8A557] text-white" : "border-transparent text-slate-400 hover:text-slate-200"
+          }`}>
+          <span className="material-symbols-outlined text-[18px]">{tb.icon}</span>
+          {tb.label}
+        </button>
+      ))}
+    </div>
+  );
+
+  // Tab "Phân phối & Giao hàng" — tái dùng nguyên component Distribution
+  if (mainTab === "dist") {
+    return (
+      <div className="flex flex-col transparent font-body">
+        <div className="mx-auto max-w-7xl w-full px-8 lg:px-12 pt-8">{TabBar}</div>
+        <DistributionPage />
+      </div>
+    );
+  }
+
   return (
     <div className="flex transparent font-body ">
-      
-      
+
+
 
       
       <main className="mx-auto max-w-7xl w-full flex-1 p-8 lg:p-12 overflow-x-hidden min-h-[calc(100vh-80px)] transparent">
@@ -366,6 +489,8 @@ export default function InventoryPage() {
             )}
           </div>
         </header>
+
+        {TabBar}
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
@@ -726,9 +851,9 @@ export default function InventoryPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Ảnh Bản scan Chứng nhận</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Ảnh Bản scan Chứng nhận <span className="text-[#6FB585] normal-case font-normal">· tải lên để OCR tự điền</span></label>
                 <div className="border-2 border-dashed border-[#4A7C5C]/30 rounded-xl p-3 text-center hover:border-[#4A7C5C]/60 transition cursor-pointer relative">
-                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCertImage} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {imagePreview ? (
                     <div className="relative">
                       <img src={imagePreview} alt="preview" className="w-full h-40 object-contain rounded-lg bg-black/20" />
@@ -737,10 +862,17 @@ export default function InventoryPage() {
                   ) : (
                     <div className="py-6">
                       <span className="material-symbols-outlined text-3xl text-[#6FB585]/50 block mb-1">document_scanner</span>
-                      <p className="text-xs text-slate-400">Nhấn để tải lên ảnh scan/chụp</p>
+                      <p className="text-xs text-slate-400">Nhấn để tải lên ảnh scan/chụp — hệ thống tự đọc & điền</p>
                     </div>
                   )}
                 </div>
+                {ocrCert ? (
+                  <p className="text-xs text-[#6FB585] mt-2 flex items-center gap-1.5"><span className="animate-spin rounded-full h-3.5 w-3.5 border-t-2 border-b-2 border-[#6FB585]"></span> Đang quét OCR & tự điền… (5–10s)</p>
+                ) : imageFile ? (
+                  <button type="button" onClick={() => imageFile && runCertOCR(imageFile)} className="mt-2 text-xs font-bold text-[#6FB585] hover:underline flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">document_scanner</span> Quét lại & tự điền
+                  </button>
+                ) : null}
               </div>
             </div>
             <div className="flex gap-3 px-6 py-4 border-t border-white/10 bg-[#142235] shrink-0" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
@@ -848,12 +980,57 @@ export default function InventoryPage() {
                         className="w-full border border-white/20 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition" />
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">{t("inv_field_qty")}</label>
-                    <input type="number" min="1" max="10000" value={form.soLuong || ""} onChange={e => setForm(f => ({ ...f, soLuong: e.target.value }))}
-                      className="w-full border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
-                      placeholder="VD: 500" />
-                    <p className="text-xs text-slate-400 mt-1">{t("inv_auto_qr")}</p>
+                  {/* ── Nguồn mã: hỏi DN đã có mã chưa ── */}
+                  <div className="rounded-xl border border-[#C8A557]/25 bg-[#C8A557]/5 p-4">
+                    <label className="block text-xs font-bold text-[#C8A557] uppercase tracking-wider mb-2">Nguồn mã cho lô hàng</label>
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      <button type="button" onClick={() => setCodeMode("generate")}
+                        className={`flex flex-col items-start gap-0.5 p-3 rounded-xl border text-left transition ${codeMode === "generate" ? "bg-[#C8A557]/15 border-[#C8A557]/50 text-white" : "bg-white/5 border-white/10 text-slate-300 hover:border-white/30"}`}>
+                        <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
+                        <span className="text-sm font-bold">Tạo mã tự động</span>
+                        <span className="text-[10px] text-slate-400">Chưa có mã — hệ thống tạo</span>
+                      </button>
+                      <button type="button" onClick={() => setCodeMode("import")}
+                        className={`flex flex-col items-start gap-0.5 p-3 rounded-xl border text-left transition ${codeMode === "import" ? "bg-[#C8A557]/15 border-[#C8A557]/50 text-white" : "bg-white/5 border-white/10 text-slate-300 hover:border-white/30"}`}>
+                        <span className="material-symbols-outlined text-[20px]">upload_file</span>
+                        <span className="text-sm font-bold">Đã có mã (import)</span>
+                        <span className="text-[10px] text-slate-400">Tải lên Excel/CSV mã</span>
+                      </button>
+                    </div>
+
+                    {/* Loại mã */}
+                    <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">Loại mã</label>
+                    <div className="flex gap-2 mb-3">
+                      {(["QR", "Barcode"] as const).map(tp => (
+                        <button key={tp} type="button" onClick={() => setCodeType(tp)}
+                          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border text-sm font-bold transition ${codeType === tp ? "bg-[#C8A557] text-[#0B1623] border-[#C8A557]" : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"}`}>
+                          <span className="material-symbols-outlined text-[16px]">{tp === "QR" ? "qr_code_2" : "barcode"}</span>
+                          {tp === "QR" ? "QR Code" : "Barcode"}
+                        </button>
+                      ))}
+                    </div>
+
+                    {codeMode === "generate" ? (
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">{t("inv_field_qty")}</label>
+                        <input type="number" min="1" max="10000" value={form.soLuong || ""} onChange={e => setForm(f => ({ ...f, soLuong: e.target.value }))}
+                          className="w-full border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition bg-white/5 text-white"
+                          placeholder="VD: 500" />
+                        <p className="text-xs text-slate-400 mt-1">Hệ thống sẽ tạo đúng số lượng mã {codeType} này.</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">File mã (Excel / CSV)</label>
+                        <label className={`flex items-center gap-3 w-full border rounded-xl py-3 px-4 cursor-pointer transition ${importedCodes.length ? "border-[#4A7C5C]/40 bg-[#4A7C5C]/5" : "border-white/15 bg-white/5 hover:border-[#C8A557]/40"}`}>
+                          <span className={`material-symbols-outlined text-xl ${importedCodes.length ? "text-[#6FB585]" : "text-amber-400"}`}>{parsingFile ? "hourglass_top" : "table_view"}</span>
+                          <span className="text-sm flex-1 truncate text-slate-300">
+                            {parsingFile ? "Đang đọc file..." : importedCodes.length ? `✓ ${importFileName} — ${importedCodes.length} mã` : "Chọn file .xlsx / .xls / .csv"}
+                          </span>
+                          <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={handleCodeFile} />
+                        </label>
+                        <p className="text-xs text-slate-400 mt-1">Mã nằm ở <b>cột đầu tiên</b>. Hệ thống tự bỏ trùng & dòng tiêu đề.</p>
+                      </div>
+                    )}
                   </div>
                 </>
               )}

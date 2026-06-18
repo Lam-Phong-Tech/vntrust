@@ -326,7 +326,7 @@ export default function DistributionPage() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 text-slate-400">
           <span className="material-symbols-outlined text-5xl mb-3 block">inventory_2</span>
-          {tr("Chưa có lô hàng nào trong danh sách phân phối. Vào", "No batches in distribution list. Go to")} <Link href="/dashboard/warehouse" className="text-[#C8A557] underline">{tr("Kho hàng", "Warehouse")}</Link> {tr("để nhập lô và kích hoạt xuất kho.", "to import batches & activate shipping.")}
+          {tr("Chưa có lô hàng nào trong danh sách phân phối. Hãy tạo lô hàng ở tab ", "No batches in distribution list. Create a batch in the ")}<Link href="/dashboard/inventory" className="text-[#C8A557] underline">{tr("Sản phẩm & Lô hàng", "Products & Batches")}</Link>{tr(".", " tab.")}
         </div>
       ) : (
         <div className="flex flex-col gap-4">
@@ -424,7 +424,7 @@ export default function DistributionPage() {
         <div className="mt-10">
           <h2 className="text-lg font-black text-white mb-4 flex items-center gap-2">
             <span className="material-symbols-outlined text-[#C8A557]">swap_horiz</span>
-            {userRole === "manufacturer" ? "Đơn chuyển hàng đã gửi" : userRole === "importer" ? "Lô hàng được chuyển đến" : "Tất cả đơn chuyển hàng"}
+            {userRole === "manufacturer" ? "Đơn chuyển hàng (gửi & nhận)" : userRole === "importer" ? "Lô hàng được chuyển đến" : "Tất cả đơn chuyển hàng"}
           </h2>
           <div className="flex flex-col gap-4">
             {orders.length === 0 ? (
@@ -449,8 +449,10 @@ export default function DistributionPage() {
                 distributed: "Đã hoàn thành",
                 rejected: "Bị từ chối",
               };
+              // Doanh nghiệp đóng vai bên NHẬN khi đơn được gửi đến mình (nsd === DN của mình)
+              const isReceiver = userRole==="importer" || (userRole==="manufacturer" && !!doanhNghiepId && ord.nsdDoanhNghiepId === doanhNghiepId);
               const canAct = (userRole==="admin" && ord.trangThai==="pending_review") ||
-                             (userRole==="importer" && ["pending_distributor","ready","confirmed"].includes(ord.trangThai));
+                             (isReceiver && ["pending_distributor","ready","confirmed"].includes(ord.trangThai));
               return (
                 <div key={ord.id} className="glass-panel border border-white/10 rounded-2xl p-5 hover:border-white/20 transition">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -788,7 +790,7 @@ export default function DistributionPage() {
               </>)}
 
               {/* ── Importer: Nhận đơn hoặc Từ chối (pending_distributor) ── */}
-              {userRole === "importer" && viewOrder.trangThai === "pending_distributor" && (<>
+              {(userRole === "importer" || (userRole === "manufacturer" && !!doanhNghiepId && viewOrder.nsdDoanhNghiepId === doanhNghiepId)) && viewOrder.trangThai ==="pending_distributor" && (<>
                 <button onClick={() => handleOrderAction(viewOrder.id, "confirm_shipment")} disabled={submitting}
                   className="flex-[2] py-3 bg-[#C8A557] hover:bg-[#C8A557] text-white rounded-xl text-sm font-bold transition disabled:opacity-50 flex items-center justify-center gap-2">
                   {submitting ? <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white" /> : null}
@@ -803,7 +805,7 @@ export default function DistributionPage() {
               </>)}
 
               {/* ── Importer: Xác nhận đã giao hàng (confirmed) ── */}
-              {userRole === "importer" && viewOrder.trangThai === "confirmed" && (
+              {(userRole === "importer" || (userRole === "manufacturer" && !!doanhNghiepId && viewOrder.nsdDoanhNghiepId === doanhNghiepId)) && viewOrder.trangThai ==="confirmed" && (
                 <button onClick={() => handleOrderAction(viewOrder.id, "delivered")} disabled={submitting}
                   className="flex-[2] py-3 bg-[#4A7C5C] hover:bg-[#4A7C5C] text-white rounded-xl text-sm font-bold transition disabled:opacity-50 flex items-center justify-center gap-2">
                   {submitting ? <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white" /> : null}
@@ -813,7 +815,7 @@ export default function DistributionPage() {
               )}
 
               {/* ── Importer: ready → delivered (old flow) ── */}
-              {userRole === "importer" && viewOrder.trangThai === "ready" && (
+              {(userRole === "importer" || (userRole === "manufacturer" && !!doanhNghiepId && viewOrder.nsdDoanhNghiepId === doanhNghiepId)) && viewOrder.trangThai ==="ready" && (
                 <button onClick={() => handleOrderAction(viewOrder.id, "delivered")} disabled={submitting}
                   className="flex-[2] py-3 bg-[#4A7C5C] hover:bg-[#4A7C5C] text-white rounded-xl text-sm font-bold transition disabled:opacity-50">
                   ✓ Đã giao hàng
