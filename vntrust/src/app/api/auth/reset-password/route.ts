@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { verifyJWT } from '@/lib/jwt';
 
 // Demo accounts — không reset được (không lưu trong DB)
 const DEMO_EMAILS = [
@@ -22,21 +23,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Mật khẩu phải có ít nhất 6 ký tự' }, { status: 400 });
     }
 
-    // Giải mã token để lấy email
-    let email: string;
-    try {
-      const decoded = Buffer.from(resetToken, 'base64').toString('utf-8');
-      const [emailPart, timestamp] = decoded.split(':');
-      // Token hết hạn sau 10 phút
-      if (Date.now() - Number(timestamp) > 10 * 60 * 1000) {
-        return NextResponse.json({ error: 'Phiên đặt lại mật khẩu đã hết hạn. Vui lòng thực hiện lại.' }, { status: 400 });
-      }
-      email = (emailPart || '').toLowerCase().trim();
-    } catch {
-      return NextResponse.json({ error: 'Token không hợp lệ' }, { status: 400 });
+    // Xác thực token ĐÃ KÝ HMAC (chống giả mạo). verifyJWT trả null nếu chữ ký sai HOẶC hết hạn.
+    // Token phải do server cấp sau khi verify OTP (role='pwd-reset') — kẻ xấu không tự chế được.
+    const payload = verifyJWT(resetToken);
+    if (!payload || payload.role !== 'pwd-reset' || !payload.email) {
+      return NextResponse.json({ error: 'Phiên đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Vui lòng thực hiện lại từ đầu.' }, { status: 400 });
     }
-
-    if (!email) return NextResponse.json({ error: 'Token thiếu email' }, { status: 400 });
+    const email = payload.email.toLowerCase().trim();
 
     // Demo accounts không reset được
     if (DEMO_EMAILS.includes(email)) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { otpStore } from '@/lib/otpStore';
+import { signJWT } from '@/lib/jwt';
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,7 +27,9 @@ export async function POST(req: NextRequest) {
     }
 
     otpStore.delete(email.toLowerCase());
-    const resetToken = Buffer.from(`${email}:${Date.now()}`).toString('base64');
+    // Token ĐÃ KÝ HMAC (role='pwd-reset') — chỉ server cấp được sau khi verify OTP,
+    // hết hạn sau 10 phút. Chống giả mạo token để đổi mật khẩu tài khoản bất kỳ.
+    const resetToken = signJWT({ role: 'pwd-reset', email: email.toLowerCase() }, 600);
     console.log(`[OTP-VERIFY] OK for ${email}, resetToken issued`);
 
     return NextResponse.json({ message: 'Xác thực thành công', resetToken });

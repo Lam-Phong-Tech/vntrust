@@ -28,6 +28,7 @@ function b64urlDecode(s: string): Buffer {
 export interface SessionPayload {
   role: string;
   name?: string;
+  email?: string;         // dùng cho reset-password token (role='pwd-reset')
   doanhNghiepId?: string;
   userId?: string;        // UC03 — NguoiDung.id (cho audit + invite tracking)
   vaiTroCty?: string;     // UC03 — sub-role nội bộ DN
