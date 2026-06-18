@@ -71,3 +71,12 @@ next-env.d.ts
 # Root package.json/lock (chi cho ops scripts da loai khoi repo) — khong commit
 /package.json
 /package-lock.json
+
+# ─── Local VPS ops/dev scripts o vntrust/ root (chay cuc bo, CHUA thong tin may chu — KHONG commit) ───
+# Chi giu cac file config that; moi .js/.cjs/.mjs top-level con lai deu la script van hanh.
+/vntrust/*.js
+/vntrust/*.cjs
+/vntrust/*.mjs
+!/vntrust/eslint.config.mjs
+!/vntrust/postcss.config.mjs
+/vntrust/test.ts
