@@ -1,5 +1,69 @@
+# ─── Dependencies (CI tự cài, không commit) ───
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
 
-# Large files - excluded from GitHub
-*.rar
+# ─── Next.js build ───
+.next/
+**/.next/
+out/
+**/out/
+build/
+**/build/
+
+# ─── Production artifacts ───
 *.tar.gz
+*.rar
 *.zip
+deploy.tar.gz
+dist/
+**/dist/
+
+# ─── Databases (dữ liệu nằm trên VPS) ───
+*.db
+*.db.*
+*.sqlite
+*.sqlite3
+**/dev.db
+**/dev.db*
+
+# ─── Secrets / env ───
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+*.p8
+*.pem
+*.keystore
+*.jks
+
+# ─── Backup / rác ───
+vps_backup/
+_ops/
+temp_repo/
+**/public/uploads/
+*.apk
+*.ipa
+*.docx.backup*
+_*_tmp.js
+_*.sql
+*.localbak
+*.bak
+*.bak.*
+
+# ─── Logs ───
+*.log
+npm-debug.log*
+
+# ─── OS / Editor ───
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ─── Next.js misc ───
+*.tsbuildinfo
+next-env.d.ts
+.vercel

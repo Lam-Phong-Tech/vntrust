@@ -2,12 +2,7 @@ workflows:
   deploy-to-vps:
     name: Deploy to VPS
     max_build_duration: 60
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: main
-          include: true
+    # Auto-trigger TAT: da bo `triggering` → chi chay thu cong tu Codemagic UI.
 
     environment:
       vars:

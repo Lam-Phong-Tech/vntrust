@@ -7,13 +7,8 @@ workflows:
     integrations:
       app_store_connect: "aiverigoods_appstore"
 
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: main
-          include: true
-      cancel_previous_builds: true
+    # Auto-build TAT: da bo block `triggering` → KHONG tu build khi push.
+    # Muon build thi bam "Start new build" thu cong tren Codemagic UI.
 
     environment:
       ios_signing:
