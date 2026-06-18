@@ -107,7 +107,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ type: 'unknown', status: 'not_found', message: 'Không tìm thấy sản phẩm/lô hàng/UID khớp với mã này trên hệ thống VNTrust.' });
+    return NextResponse.json({ type: 'unknown', status: 'not_found', message: 'Không tìm thấy sản phẩm/lô hàng/UID khớp với mã này trên hệ thống AI VeriGoods.' });
   } catch (e: any) {
     console.error('GET /api/product/lookup:', e);
     return NextResponse.json({ error: e.message }, { status: 500 });

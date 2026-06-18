@@ -123,9 +123,9 @@ const RESPONSES: Array<{ match: RegExp; replies: string[] }> = [
   {
     match: /^(xin chào|hello|hi|chào|hey|alo)[\s!]*/i,
     replies: [
-      "Chào bạn! 😊 Rất vui được gặp bạn hôm nay. Mình là AI của VNTrust nha — bạn cần tra serial, kiểm tra lô hàng, hay hỏi gì khác không?",
+      "Chào bạn! 😊 Rất vui được gặp bạn hôm nay. Mình là AI của AI VeriGoods nha — bạn cần tra serial, kiểm tra lô hàng, hay hỏi gì khác không?",
       "Hey! 👋 Mình đây. Có gì cần giúp không bạn? Nhập số serial để mình check ngay, hoặc hỏi thoải mái nhé!",
-      "Chào bạn nhé, mình là AI VNTrust 🤖 Hôm nay bạn muốn mình hỗ trợ gì không?",
+      "Chào bạn nhé, mình là AI AI VeriGoods 🤖 Hôm nay bạn muốn mình hỗ trợ gì không?",
     ],
   },
   {
@@ -170,19 +170,19 @@ const RESPONSES: Array<{ match: RegExp; replies: string[] }> = [
   {
     match: /chuỗi cung ứng|supply chain|phân phối|bản đồ|logistics/i,
     replies: [
-      "Chuỗi cung ứng của VNTrust hiện đang theo dõi **4,821 điểm** trên toàn quốc 🗺️\n\nBạn có thể xem realtime:\n• Luồng hàng từ nhà máy → kho → điểm bán\n• Bản đồ nhiệt cảnh báo vùng hàng giả\n• Thống kê quét theo tỉnh thành\n\nVào **Chuỗi Cung ứng** trên menu để xem nhé! Hoặc bấm vào bản đồ bên phải để chọn tỉnh 😊",
+      "Chuỗi cung ứng của AI VeriGoods hiện đang theo dõi **4,821 điểm** trên toàn quốc 🗺️\n\nBạn có thể xem realtime:\n• Luồng hàng từ nhà máy → kho → điểm bán\n• Bản đồ nhiệt cảnh báo vùng hàng giả\n• Thống kê quét theo tỉnh thành\n\nVào **Chuỗi Cung ứng** trên menu để xem nhé! Hoặc bấm vào bản đồ bên phải để chọn tỉnh 😊",
     ],
   },
   {
     match: /bảo mật|hack|xâm nhập|lộ data|an toàn/i,
     replies: [
-      "Bảo mật là ưu tiên số 1 của VNTrust đó bạn! 🔐\n• Mã hóa AES-256 toàn bộ data\n• 2FA bắt buộc cho tài khoản doanh nghiệp\n• Blockchain không thể giả mạo\n• AI giám sát 24/7, phát hiện xâm nhập < 10 giây\n• Tuân thủ ISO/IEC 27001\n\nBạn muốn biết về chính sách bảo mật cụ thể nào không?",
+      "Bảo mật là ưu tiên số 1 của AI VeriGoods đó bạn! 🔐\n• Mã hóa AES-256 toàn bộ data\n• 2FA bắt buộc cho tài khoản doanh nghiệp\n• Blockchain không thể giả mạo\n• AI giám sát 24/7, phát hiện xâm nhập < 10 giây\n• Tuân thủ ISO/IEC 27001\n\nBạn muốn biết về chính sách bảo mật cụ thể nào không?",
     ],
   },
   {
     match: /app|ứng dụng|mobile|điện thoại|ios|android/i,
     replies: [
-      "À, app VNTrust Mobile thì xịn lắm đó! 📱\n• Quét QR bằng camera mà không cần nhập tay\n• Nhận thông báo ngay khi phát hiện hàng giả\n• Offline mode: cache data để dùng khi mất mạng\n\n**iOS**: App Store → 'VNTrust'\n**Android**: Google Play → 'VNTrust'\n\nHoặc bấm **APP DOWNLOAD** trên thanh đầu, mình sẽ mở link tải cho bạn!",
+      "À, app AI VeriGoods Mobile thì xịn lắm đó! 📱\n• Quét QR bằng camera mà không cần nhập tay\n• Nhận thông báo ngay khi phát hiện hàng giả\n• Offline mode: cache data để dùng khi mất mạng\n\n**iOS**: App Store → 'AI VeriGoods'\n**Android**: Google Play → 'AI VeriGoods'\n\nHoặc bấm **APP DOWNLOAD** trên thanh đầu, mình sẽ mở link tải cho bạn!",
     ],
   },
   {
@@ -212,7 +212,7 @@ function getAIReply(q: string): string {
     const s = serialMatch[1].toUpperCase();
     const found = Math.random() > 0.25;
     if (found) return `🔍 Xong rồi! Mình tìm thấy mã **${s}** trong database nhé!\n\n✅ Kết quả: **Chính hãng**\n📦 Sản phẩm: Nước mắm Phú Quốc 35N\n🏭 NSX: Công ty Thực phẩm Phú Quốc\n📅 SX: 01/03/2026 · HSD: 01/03/2028\n📍 Phân phối: Khu vực Miền Nam\n\nBạn muốn xem trang xác thực đầy đủ tại **/verify/${s}** không?`;
-    return `⚠️ Ồ, mã **${s}** không có trong hệ thống đó bạn!\n\nCó thể là:\n• Sản phẩm chưa được đăng ký với VNTrust\n• Mã bị nhập sai hoặc tem hỏng\n• **Nguy hiểm: Đây có thể là hàng giả!**\n\nBạn muốn mình báo cáo sản phẩm này không? Mình kết nối với đội bảo mật ngay!`;
+    return `⚠️ Ồ, mã **${s}** không có trong hệ thống đó bạn!\n\nCó thể là:\n• Sản phẩm chưa được đăng ký với AI VeriGoods\n• Mã bị nhập sai hoặc tem hỏng\n• **Nguy hiểm: Đây có thể là hàng giả!**\n\nBạn muốn mình báo cáo sản phẩm này không? Mình kết nối với đội bảo mật ngay!`;
   }
 
   for (const rule of RESPONSES) {
@@ -280,7 +280,7 @@ function AiChatModal({ msgs, addMsg, onClose }: {
           const statusText = data.status === "genuine" ? "✅ Chính hãng" : data.status === "expired" ? "⏰ Đã hết hạn" : "⚠️ Nghi ngờ làm giả";
           reply = `🔍 Xong rồi! Mình tìm thấy mã **${serial.toUpperCase()}**\n${statusText}\n📦 Sản phẩm: ${sp?.tenSanPham ?? "N/A"}\n🏭 NSX: ${sp?.doanhNghiep?.tenDoanhNghiep ?? "N/A"}\n📅 SX: ${lo?.ngaySanXuat ? new Date(lo.ngaySanXuat).toLocaleDateString("vi-VN") : "N/A"} · HSD: ${lo?.hanDung ? new Date(lo.hanDung).toLocaleDateString("vi-VN") : "N/A"}\n\nXem chi tiết tại /verify/${serial.toUpperCase()}`;
         } else {
-          reply = `⚠️ Mã **${serial.toUpperCase()}** không có trong hệ thống!\n\nCó thể là:\n• Sản phẩm chưa đăng ký VNTrust\n• Mã bị nhập sai hoặc tem hỏng\n• **Nguy hiểm: Có thể là hàng giả!**`;
+          reply = `⚠️ Mã **${serial.toUpperCase()}** không có trong hệ thống!\n\nCó thể là:\n• Sản phẩm chưa đăng ký AI VeriGoods\n• Mã bị nhập sai hoặc tem hỏng\n• **Nguy hiểm: Có thể là hàng giả!**`;
         }
       } catch {
         reply = "⚠️ Không thể kết nối hệ thống xác thực. Vui lòng thử lại sau.";
@@ -296,7 +296,7 @@ function AiChatModal({ msgs, addMsg, onClose }: {
   const quickBtns = ["Cách tra mã QR?", "Báo cáo hàng giả", "Giá dịch vụ", "Liên hệ hỗ trợ", "Hướng dẫn dùng app"];
 
   return (
-    <ModalWrapper onClose={onClose} title="Trợ lý AI VNTrust" icon="smart_toy" iconColor="bg-[#C8A557]">
+    <ModalWrapper onClose={onClose} title="Trợ lý AI AI VeriGoods" icon="smart_toy" iconColor="bg-[#C8A557]">
       <div className="flex flex-col h-[480px]">
         <div className="flex-1 overflow-y-auto space-y-3 hide-scrollbar pr-1">
           {msgs.map((m, i) => (
@@ -332,7 +332,7 @@ function AiChatModal({ msgs, addMsg, onClose }: {
         <div className="flex gap-2 mt-2">
           <input
             className="flex-1 bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-sm text-white placeholder:text-slate-400 outline-none focus:border-[#C8A557] transition"
-            placeholder="Chat với AI VNTrust..."
+            placeholder="Chat với AI AI VeriGoods..."
             value={input} onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === "Enter" && send()} />
           <button onClick={send} disabled={typing}
@@ -364,7 +364,7 @@ function ExportReportModal({ onClose }: { onClose: () => void }) {
       const integrity = ov.totalScans > 0 ? (100 - parseFloat(ov.fakeRate)).toFixed(1) : "100.0";
 
       const rows = [
-        `BÁO CÁO VNTRUST - AI SUMMARY`,
+        `BÁO CÁO AI VERIGOODS - AI SUMMARY`,
         `Ngày xuất: ${now} · Kỳ báo cáo: ${periodLabel}`,
         ``,
         `Chỉ số,Giá trị`,
@@ -392,7 +392,7 @@ function ExportReportModal({ onClose }: { onClose: () => void }) {
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
       const a = Object.assign(document.createElement("a"), {
         href: URL.createObjectURL(blob),
-        download: `VNTrust_BaoCao_${periodLabel.replace(/ /g, "_")}_${now.replace(/\//g, "-")}.csv`,
+        download: `AIVeriGoods_BaoCao_${periodLabel.replace(/ /g, "_")}_${now.replace(/\//g, "-")}.csv`,
       });
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       setState("done");
@@ -1101,7 +1101,7 @@ export default function Dashboard() {
                 </Link>
               )}
 
-              {/* ── Điểm thưởng VNTrust: Consumer + Admin ── */}
+              {/* ── Điểm thưởng AI VeriGoods: Consumer + Admin ── */}
               {(userRole === 'admin' || userRole === 'consumer') && (
                 <Link href="/verify/rewards" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

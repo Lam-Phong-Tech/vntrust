@@ -92,7 +92,7 @@ const LOAI_PHAN_ANH_FACTORY = (lang: string) => {
     { key: "san_pham_nghi_ngo",  label: tr("Báo cáo sản phẩm nghi ngờ", "Suspected product report"), desc: tr("Hàng giả, kém chất lượng", "Counterfeit, low quality"),      icon: "inventory_2" },
     { key: "nguoi_ban_gian_lan", label: tr("Báo cáo người bán gian lận", "Fraudulent seller"),       desc: tr("Shop / tài khoản TMĐT", "Shop / e-commerce account"),         icon: "storefront" },
     { key: "quang_cao_sai",      label: tr("Quảng cáo sai sự thật", "Misleading advertisement"),     desc: tr("Cam kết không đúng thực tế", "False promises"),               icon: "campaign" },
-    { key: "phan_hoi_xac_thuc",  label: tr("Phản hồi kết quả xác thực", "Feedback on verify result"), desc: tr("Kết quả VNTrust không chính xác", "Inaccurate result"),      icon: "fact_check" },
+    { key: "phan_hoi_xac_thuc",  label: tr("Phản hồi kết quả xác thực", "Feedback on verify result"), desc: tr("Kết quả AI VeriGoods không chính xác", "Inaccurate result"),      icon: "fact_check" },
   ];
 };
 
@@ -350,7 +350,7 @@ export default function ReportFakePage() {
                   <span className="material-symbols-outlined text-6xl text-[#6FB585] block mb-4">task_alt</span>
                   <h3 className="text-2xl font-bold text-white mb-2">{tr("Đã gửi báo cáo thành công!", "Report submitted successfully!")}</h3>
                   <p className="text-slate-400 text-sm mb-1">{tr("Mã theo dõi", "Tracking code")}: <span className="font-mono font-bold text-white text-lg">{success}</span></p>
-                  <p className="text-slate-400 text-sm mb-8">{tr("Đội ngũ VNTrust sẽ điều tra và phản hồi trong vòng 24 giờ.", "The VNTrust team will investigate and respond within 24 hours.")}</p>
+                  <p className="text-slate-400 text-sm mb-8">{tr("Đội ngũ AI VeriGoods sẽ điều tra và phản hồi trong vòng 24 giờ.", "The AI VeriGoods team will investigate and respond within 24 hours.")}</p>
                   <button
                     onClick={() => setSuccess(null)}
                     className="px-8 py-3 bg-[#4A7C5C] text-white rounded-xl font-bold hover:bg-[#4A7C5C] transition"

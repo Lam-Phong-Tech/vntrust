@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
   switch (resource) {
     case 'info':
       return NextResponse.json({
-        service: 'VNTrust Agency Integration API',
+        service: 'AI VeriGoods Agency Integration API',
         version: '1.0.0',
         agency: auth.agency,
         endpoints: {

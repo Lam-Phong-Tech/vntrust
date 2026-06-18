@@ -91,7 +91,7 @@ export default function AnalyticsPage() {
       const integrity = ov.totalScans > 0 ? (100 - parseFloat(ov.fakeRate)).toFixed(1) : "100.0";
 
       const rows = [
-        `VNTrust Report - Period: ${exportPeriod === "week" ? "7 days" : exportPeriod === "month" ? "30 days" : "3 months"}`,
+        `AI VeriGoods Report - Period: ${exportPeriod === "week" ? "7 days" : exportPeriod === "month" ? "30 days" : "3 months"}`,
         `Export date: ${now}`,
         ``,
         `Metric,Value`,
@@ -119,7 +119,7 @@ export default function AnalyticsPage() {
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
       const a = Object.assign(document.createElement("a"), {
         href: URL.createObjectURL(blob),
-        download: `VNTrust_Report_${periodLabel}_${now.replace(/\//g, "-")}.csv`,
+        download: `AIVeriGoods_Report_${periodLabel}_${now.replace(/\//g, "-")}.csv`,
       });
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
     } catch (e) {
@@ -162,26 +162,26 @@ export default function AnalyticsPage() {
       };
 
       if (format === "json") {
-        const payload = { app: "VNTrust", baoCao: "Phân tích", ky: period, ngayXuat: now.toISOString(), chiSo: metrics, topSanPham: tops, xuHuongQuet: trend };
-        dl(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }), `VNTrust_BaoCao_${periodLabel}_${stamp}.json`);
+        const payload = { app: "AI VeriGoods", baoCao: "Phân tích", ky: period, ngayXuat: now.toISOString(), chiSo: metrics, topSanPham: tops, xuHuongQuet: trend };
+        dl(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }), `AIVeriGoods_BaoCao_${periodLabel}_${stamp}.json`);
       } else if (format === "excel") {
         const XLSX = await import("xlsx");
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(Object.entries(metrics).map(([k, v]) => ({ "Chỉ số": k, "Giá trị": v }))), "Tổng quan");
         XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tops.length ? tops : [{ sanPham: "", maSKU: "", soLanQuet: "" }]), "Top sản phẩm");
         XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(trend.length ? trend : [{ ngay: "", soLuot: "" }]), "Xu hướng quét");
-        XLSX.writeFile(wb, `VNTrust_BaoCao_${periodLabel}_${stamp}.xlsx`);
+        XLSX.writeFile(wb, `AIVeriGoods_BaoCao_${periodLabel}_${stamp}.xlsx`);
       } else {
         // PDF qua cửa sổ in của trình duyệt (không cần thư viện)
         const rowsHtml = (obj: Record<string, any>) => Object.entries(obj).map(([k, v]) => `<tr><td>${k}</td><td style="text-align:right">${v ?? ""}</td></tr>`).join("");
         const topHtml = tops.map((t: any, i: number) => `<tr><td>${i + 1}</td><td>${t.sanPham} (${t.maSKU})</td><td style="text-align:right">${t.soLanQuet}</td></tr>`).join("");
         const win = window.open("", "_blank");
         if (!win) { setExporting(null); return; }
-        win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>VNTrust - Báo cáo Phân tích</title>
+        win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>AI VeriGoods - Báo cáo Phân tích</title>
           <style>body{font-family:Arial,sans-serif;padding:32px;color:#111}h1{color:#A6873E;margin-bottom:4px}h2{margin-top:24px;font-size:15px}
           table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}td,th{border:1px solid #ddd;padding:6px 10px}th{background:#f4efe3;text-align:left}
           .muted{color:#666;font-size:12px}</style></head><body>
-          <h1>VNTrust — Báo cáo & Phân tích</h1>
+          <h1>AI VeriGoods — Báo cáo & Phân tích</h1>
           <p class="muted">Kỳ: ${period === "week" ? "7 ngày" : period === "month" ? "30 ngày" : "3 tháng"} · Ngày xuất: ${now.toLocaleString("vi-VN")}</p>
           <h2>Chỉ số tổng quan</h2><table><tr><th>Chỉ số</th><th style="text-align:right">Giá trị</th></tr>${rowsHtml(metrics)}</table>
           <h2>Top sản phẩm được quét</h2><table><tr><th>#</th><th>Sản phẩm</th><th style="text-align:right">Lượt quét</th></tr>${topHtml || '<tr><td colspan=3 class="muted">Chưa có dữ liệu</td></tr>'}</table>

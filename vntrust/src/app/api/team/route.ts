@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
     });
     const { subject, html } = inviteEmailTemplate({
       inviteUrl,
-      dnTen: dn?.ten || 'Doanh nghiệp VNTrust',
+      dnTen: dn?.ten || 'Doanh nghiệp AI VeriGoods',
       vaiTroCty,
       inviterName: userName,
       daysValid: 7,

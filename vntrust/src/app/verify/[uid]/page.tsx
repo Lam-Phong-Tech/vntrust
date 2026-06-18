@@ -266,8 +266,8 @@ export default function VerificationResult() {
               {/* Desktop-only subtitle */}
               <div className="s-report-hero-sub lg:block hidden">
                 {lang === 'en'
-                  ? 'Your detailed report helps VNTrust protect the community and coordinate with authorities to handle fake goods.'
-                  : 'Báo cáo chi tiết của bạn giúp VNTrust bảo vệ cộng đồng và phối hợp với cơ quan chức năng để xử lý hàng giả.'}
+                  ? 'Your detailed report helps AI VeriGoods protect the community and coordinate with authorities to handle fake goods.'
+                  : 'Báo cáo chi tiết của bạn giúp AI VeriGoods bảo vệ cộng đồng và phối hợp với cơ quan chức năng để xử lý hàng giả.'}
               </div>
             </div>
 
@@ -574,7 +574,7 @@ export default function VerificationResult() {
               </div>
               <button className="s-auth-top-btn" onClick={() => {
               const shareUrl = window.location.href;
-              const shareTitle = 'Kết quả xác thực VNTrust';
+              const shareTitle = 'Kết quả xác thực AI VeriGoods';
               const shareText = 'Mã UID: ' + uid;
               if ((navigator as any).share) {
                 (navigator as any).share({ title: shareTitle, text: shareText, url: shareUrl }).catch(() => {});
@@ -776,7 +776,7 @@ export default function VerificationResult() {
             <div className="s-auth-top-brand">VN<span>Trust</span></div>
             <button className="s-auth-top-btn" onClick={() => {
               const shareUrl = window.location.href;
-              const shareTitle = 'Kết quả xác thực VNTrust';
+              const shareTitle = 'Kết quả xác thực AI VeriGoods';
               const shareText = 'Mã UID: ' + uid;
               if ((navigator as any).share) {
                 (navigator as any).share({ title: shareTitle, text: shareText, url: shareUrl }).catch(() => {});

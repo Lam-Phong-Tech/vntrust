@@ -7,8 +7,8 @@ export default function Footer() {
     <footer className="w-full border-t border-slate-200/30 dark:border-slate-800/30 bg-slate-50 dark:bg-slate-950">
       <div className="flex flex-col md:flex-row justify-between items-center px-12 py-8 gap-4">
         <div className="flex flex-col gap-2">
-          <span className="font-display font-bold text-slate-900 dark:text-white text-lg">VNTRUST</span>
-          <p className="font-body text-xs uppercase tracking-widest text-slate-500">© 2026 VNTrust. {t("footer_sub")}</p>
+          <span className="font-display font-bold text-slate-900 dark:text-white text-lg">AI VERIGOODS</span>
+          <p className="font-body text-xs uppercase tracking-widest text-slate-500">© 2026 AI VeriGoods. {t("footer_sub")}</p>
         </div>
         <div className="flex flex-wrap justify-center gap-8">
           <a className="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-[#6FB585] transition-opacity" href="#">{t("footer_link1")}</a>

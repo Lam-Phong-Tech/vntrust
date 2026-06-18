@@ -50,7 +50,7 @@ const GLOSSARY = [
     term: "Computer Vision",
     abbr: "CV",
     category: "AI",
-    definition: "Công nghệ AI phân tích hình ảnh. Trong VNTrust: so sánh bao bì thực tế với mẫu chuẩn để phát hiện hàng giả (YOLOv8).",
+    definition: "Công nghệ AI phân tích hình ảnh. Trong AI VeriGoods: so sánh bao bì thực tế với mẫu chuẩn để phát hiện hàng giả (YOLOv8).",
   },
   {
     term: "OCR",
@@ -104,7 +104,7 @@ const GLOSSARY = [
     term: "MQTT",
     abbr: "Message Queuing Telemetry Transport",
     category: "Kỹ thuật",
-    definition: "Giao thức nhắn tin nhẹ cho IoT. VNTrust dùng để kết nối Camera AI (Edge Gateway) với backend cloud.",
+    definition: "Giao thức nhắn tin nhẹ cho IoT. AI VeriGoods dùng để kết nối Camera AI (Edge Gateway) với backend cloud.",
   },
   {
     term: "mTLS",

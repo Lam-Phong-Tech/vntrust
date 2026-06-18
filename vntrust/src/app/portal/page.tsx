@@ -268,7 +268,7 @@ export default function PortalLandingPage() {
         <footer className="mt-auto pt-6 border-t border-white/10">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
             <div>
-              <p className="text-[#C8A557] font-bold mb-2">{tr("Về VNTrust", "About")}</p>
+              <p className="text-[#C8A557] font-bold mb-2">{tr("Về AI VeriGoods", "About")}</p>
               <ul className="space-y-1 text-slate-400">
                 <li><Link href="/supply-chain" className="hover:text-white">{tr("Chuỗi cung ứng", "Supply chain")}</Link></li>
                 <li><Link href="/dashboard/glossary" className="hover:text-white">{tr("Thuật ngữ", "Glossary")}</Link></li>
@@ -298,7 +298,7 @@ export default function PortalLandingPage() {
           </div>
 
           <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] text-slate-500">
-            <p>© 2026 VNTrust — National Anti-Counterfeit Platform · Tuân thủ Luật BVDLCN 2025</p>
+            <p>© 2026 AI VeriGoods — National Anti-Counterfeit Platform · Tuân thủ Luật BVDLCN 2025</p>
             <div className="flex gap-3">
               <span>ISO 27001</span>
               <span>·</span>

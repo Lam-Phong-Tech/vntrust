@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
         valid: true,
         registered: false,
         reason: 'not_registered_in_vntrust',
-        message: 'Checksum hợp lệ nhưng GTIN chưa đăng ký trên hệ thống VNTrust. Có thể là sản phẩm nước ngoài hoặc chưa onboard.',
+        message: 'Checksum hợp lệ nhưng GTIN chưa đăng ký trên hệ thống AI VeriGoods. Có thể là sản phẩm nước ngoài hoặc chưa onboard.',
         checksum,
       });
     }
@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
       valid: true,
       registered: true,
       ownership_mismatch: false,
-      message: 'GTIN hợp lệ và đã đăng ký trên VNTrust.',
+      message: 'GTIN hợp lệ và đã đăng ký trên AI VeriGoods.',
       product: { maSKU: sp.maSKU, ten: sp.ten, nhomSanPham: sp.nhomSanPham },
       manufacturer: sp.doanhNghiep ? { id: sp.doanhNghiep.id, ten: sp.doanhNghiep.ten, maSoThue: sp.doanhNghiep.maSoThue, trangThai: sp.doanhNghiep.trangThai } : null,
       checksum,

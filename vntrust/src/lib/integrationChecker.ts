@@ -153,7 +153,7 @@ async function checkCameraAI(): Promise<HealthResult> {
 // ─── Full health check ───────────────────────────────────────────
 
 async function runFullHealthCheck() {
-  console.log('[VNTrust] Running integration health check...');
+  console.log('[AI VeriGoods] Running integration health check...');
   const now = Date.now();
 
   const checks = await Promise.allSettled([
@@ -190,7 +190,7 @@ async function runFullHealthCheck() {
   }
 
   lastFullCheck = now;
-  console.log('[VNTrust] Health check done:', summary);
+  console.log('[AI VeriGoods] Health check done:', summary);
   return results;
 }
 
@@ -210,7 +210,7 @@ export function startIntegrationHealthChecker() {
     runFullHealthCheck().catch(console.error);
   }, CHECK_INTERVAL_MS);
 
-  console.log('[VNTrust] Integration health checker started (every 5 min)');
+  console.log('[AI VeriGoods] Integration health checker started (every 5 min)');
 }
 
 // ─── Public API ───────────────────────────────────────────────────

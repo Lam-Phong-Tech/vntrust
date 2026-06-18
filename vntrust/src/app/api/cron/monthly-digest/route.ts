@@ -70,9 +70,9 @@ export async function GET(req: NextRequest) {
             auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD },
           });
           await transporter.sendMail({
-            from: `"VNTrust" <${process.env.GMAIL_USER}>`,
+            from: `"AI VeriGoods" <${process.env.GMAIL_USER}>`,
             to: emails.join(','),
-            subject: `[VNTrust] Báo cáo THÁNG — ${now.getMonth() + 1}/${now.getFullYear()} | Fake rate ${fakeRate}`,
+            subject: `[AI VeriGoods] Báo cáo THÁNG — ${now.getMonth() + 1}/${now.getFullYear()} | Fake rate ${fakeRate}`,
             text: `Báo cáo tháng ${now.getMonth() + 1}/${now.getFullYear()}\n\n` +
               `📈 SO SÁNH 30 NGÀY:\n` +
               `  Lượt quét:        ${curScans} (${digest.summary.scans.trend} vs tháng trước)\n` +

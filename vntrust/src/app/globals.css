@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════
-   MOBILE APP DESIGN TOKENS — VNTrust Mobile
+   MOBILE APP DESIGN TOKENS — AI VeriGoods Mobile
    Theo thiết kế vntrust_mobile.html
    ═══════════════════════════════════════════════════════════ */
 :root {
@@ -936,6 +936,13 @@ html.light-mode [class*="bg-[#101d2e]"] {
 /* 3) Phân quyền: panel sub-nav bên trái (bg-white/[0.03] gần trong suốt) → card sáng rõ */
 html.light-mode [class*="bg-white/[0.03]"] {
   background: rgba(255,255,255,0.7) !important;
+}
+/* 4) Card nền tối #1a2235 (Quên mật khẩu) + #142235 (trang khác) — bắt đầu #1 nên rule
+   bg-[#0 bỏ sót → đổi sang nền trắng để chữ tối đọc được trong light-mode */
+html.light-mode [class*="bg-[#1a2235]"],
+html.light-mode [class*="bg-[#142235]"] {
+  background: #ffffff !important;
+  border-color: rgba(31,111,235,0.15) !important;
 }
 /* Nút primary gradient vàng cũ còn sót (Tailwind) → xanh đặc trên nền sáng */
 html.light-mode [style*="135deg,#E4D2A1"] { background: #1F6FEB !important; }

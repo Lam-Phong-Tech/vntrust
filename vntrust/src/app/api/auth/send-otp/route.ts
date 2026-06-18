@@ -45,23 +45,23 @@ export async function POST(req: NextRequest) {
     // catch bên dưới và trả về thông báo rõ ràng thay vì để request treo vô hạn.
 
     const info = await transporter.sendMail({
-      from: `"VNTrust" <${gmailUser}>`,
+      from: `"AI VeriGoods" <${gmailUser}>`,
       replyTo: gmailUser,
       to: email,
-      subject: `Mã xác thực VNTrust của bạn`,
+      subject: `Mã xác thực AI VeriGoods của bạn`,
       headers: {
-        'X-Mailer': 'VNTrust Mailer 1.0',
+        'X-Mailer': 'AI VeriGoods Mailer 1.0',
         'Precedence': 'transactional',
         'X-Entity-Ref-ID': `vntrust-otp-${Date.now()}`,
       },
       // Plain-text fallback — giảm điểm spam đáng kể
-      text: `VNTrust - Mã xác thực tài khoản\n\nMã OTP của bạn là: ${otp}\n\nMã có hiệu lực trong 5 phút.\nKhông chia sẻ mã này với bất kỳ ai.\n\n---\nVNTrust · anticounterfeit.test9.io.vn`,
+      text: `AI VeriGoods - Mã xác thực tài khoản\n\nMã OTP của bạn là: ${otp}\n\nMã có hiệu lực trong 5 phút.\nKhông chia sẻ mã này với bất kỳ ai.\n\n---\nAI VeriGoods · anticounterfeit.test9.io.vn`,
       html: `
         <!DOCTYPE html><html><head><meta charset="utf-8"></head>
         <body style="margin:0;padding:0;background:#f4f6f9;font-family:Arial,sans-serif;">
           <div style="max-width:480px;margin:40px auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 4px 24px rgba(0,0,0,0.07);">
             <div style="background:#0a3352;padding:28px 32px;text-align:center;">
-              <h1 style="color:#3cdada;margin:0;font-size:22px;font-weight:800;letter-spacing:-0.5px;">VNTrust</h1>
+              <h1 style="color:#3cdada;margin:0;font-size:22px;font-weight:800;letter-spacing:-0.5px;">AI VeriGoods</h1>
               <p style="color:rgba(255,255,255,0.6);margin:4px 0 0;font-size:12px;">Hệ thống chống hàng giả toàn quốc</p>
             </div>
             <div style="padding:32px;">
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
               </div>
             </div>
             <div style="background:#f8fafc;padding:16px;border-top:1px solid #e2e8f0;text-align:center;">
-              <p style="color:#94a3b8;font-size:11px;margin:0;">© 2024 VNTrust &middot; <a href="https://anticounterfeit.test9.io.vn" style="color:#94a3b8;">anticounterfeit.test9.io.vn</a></p>
+              <p style="color:#94a3b8;font-size:11px;margin:0;">© 2024 AI VeriGoods &middot; <a href="https://anticounterfeit.test9.io.vn" style="color:#94a3b8;">anticounterfeit.test9.io.vn</a></p>
             </div>
           </div>
         </body></html>

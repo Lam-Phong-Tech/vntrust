@@ -60,9 +60,9 @@ export async function GET(req: NextRequest) {
             auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD },
           });
           await transporter.sendMail({
-            from: `"VNTrust" <${process.env.GMAIL_USER}>`,
+            from: `"AI VeriGoods" <${process.env.GMAIL_USER}>`,
             to: emails.join(','),
-            subject: `[VNTrust] Báo cáo TUẦN — ${newAlerts} cảnh báo mới, ${resolved} đã xử lý`,
+            subject: `[AI VeriGoods] Báo cáo TUẦN — ${newAlerts} cảnh báo mới, ${resolved} đã xử lý`,
             text: `Báo cáo tuần — ${now.toLocaleDateString('vi-VN')}\n\n` +
               `Cảnh báo mới: ${newAlerts}\n` +
               `Đã xử lý: ${resolved}\n` +

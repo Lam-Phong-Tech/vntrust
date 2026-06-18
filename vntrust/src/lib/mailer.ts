@@ -40,7 +40,7 @@ export async function sendMail(opts: SendMailOptions): Promise<SendMailResult> {
   }
   try {
     const info = await t.sendMail({
-      from: `"VNTrust" <${GMAIL_USER}>`,
+      from: `"AI VeriGoods" <${GMAIL_USER}>`,
       to: opts.to,
       subject: opts.subject,
       html: opts.html,
@@ -73,7 +73,7 @@ export function inviteEmailTemplate(opts: {
     viewer:        'Chỉ xem',
   };
   const role = roleLabel[opts.vaiTroCty] || opts.vaiTroCty;
-  const subject = `Lời mời gia nhập ${opts.dnTen} trên VNTrust`;
+  const subject = `Lời mời gia nhập ${opts.dnTen} trên AI VeriGoods`;
   const html = `
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"></head>
@@ -89,7 +89,7 @@ export function inviteEmailTemplate(opts: {
 
     <p style="color: rgba(246,241,232,0.7); line-height: 1.6; margin: 0 0 20px;">
       <strong style="color: #fff;">${escapeHtml(opts.inviterName)}</strong> đã mời bạn tham gia
-      hệ thống chống hàng giả VNTrust với vai trò:
+      hệ thống chống hàng giả AI VeriGoods với vai trò:
     </p>
 
     <div style="background: rgba(200,165,87,0.1); border: 1px solid rgba(200,165,87,0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 24px;">

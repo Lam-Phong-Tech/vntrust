@@ -55,7 +55,7 @@ export default function AdminOverview() {
       <div className="mb-6 flex flex-wrap items-end justify-between gap-2">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black text-white font-display">{tr("Tổng quan quản trị", "Admin overview")}</h1>
-          <p className="text-sm text-slate-400 mt-1">{tr("Tình hình hệ thống VNTrust", "VNTrust system status")}</p>
+          <p className="text-sm text-slate-400 mt-1">{tr("Tình hình hệ thống AI VeriGoods", "AI VeriGoods system status")}</p>
         </div>
         <p className="text-xs text-slate-500">
           {ov && ov.expiringSoon > 0

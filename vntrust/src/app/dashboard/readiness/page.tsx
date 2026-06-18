@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-// 27 Use Cases across 4 actors (from TL_USECASE.pdf + VNTrust_v1.docx Section 10)
+// 27 Use Cases across 4 actors (from TL_USECASE.pdf + AIVeriGoods_v1.docx Section 10)
 const USE_CASES = [
   // Actor: Nhà sản xuất (NSX)
   { id: "UC-01", actor: "NSX", title: "Đăng ký & KYC tài khoản", br: "BR-01", status: "done" },
@@ -93,7 +93,7 @@ const GATES = [
       { text: "Scalability: ≥10,000 req/giây",               pass: true },
       { text: "SLA 99.5% signed với khách hàng",             pass: true },
     ],
-    decision: "Hệ thống VNTrust sẵn sàng phát hành toàn cầu",
+    decision: "Hệ thống AI VeriGoods sẵn sàng phát hành toàn cầu",
     status: "done",
   },
 ];

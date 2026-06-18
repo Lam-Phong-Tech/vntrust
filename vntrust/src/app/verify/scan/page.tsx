@@ -311,8 +311,8 @@ export default function VerifyScanPage() {
                 <div className="s-scan-modal-body">
                   <p className="s-scan-modal-desc">
                     {lang === 'en' 
-                      ? 'VNTrust needs camera permission to scan and verify QR codes on products. Please follow the instructions below to enable camera:' 
-                      : 'Để quét mã QR xác thực hàng thật/giả, VNTrust cần được cấp quyền truy cập camera. Vui lòng làm theo hướng dẫn sau:'}
+                      ? 'AI VeriGoods needs camera permission to scan and verify QR codes on products. Please follow the instructions below to enable camera:' 
+                      : 'Để quét mã QR xác thực hàng thật/giả, AI VeriGoods cần được cấp quyền truy cập camera. Vui lòng làm theo hướng dẫn sau:'}
                   </p>
                   
                   <div className="s-scan-instruction-tabs">

@@ -433,7 +433,7 @@ export default function QRPrintPage() {
               </div>
               {/* Thông tin */}
               <div className="text-center w-full">
-                <p className="text-[9px] font-bold text-primary uppercase tracking-wider">VNTRUST</p>
+                <p className="text-[9px] font-bold text-primary uppercase tracking-wider">AI VERIGOODS</p>
                 <a href={`/verify/${item.uid}`} target="_blank" rel="noopener noreferrer" className="hover:underline text-[8px] text-slate-500 w-full text-center font-mono overflow-hidden block" title={item.uid}>
                   {item.uid.substring(0, 8)}…
                 </a>
@@ -566,7 +566,7 @@ export default function QRPrintPage() {
           onClick={() => setZoomedUid(null)}
         >
           <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center" onClick={e => e.stopPropagation()}>
-            <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">VNTRUST · Quét bằng camera</p>
+            <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">AI VERIGOODS · Quét bằng camera</p>
             <p className="text-[10px] text-slate-400 font-mono mb-4 break-all">{zoomedUid.substring(0, 24)}…</p>
             <div className="flex justify-center bg-white p-4 rounded-2xl border-2 border-slate-200">
               <QRCodeSVG
@@ -580,7 +580,7 @@ export default function QRPrintPage() {
             </div>
             <p className="text-xs text-slate-500 mt-4 leading-relaxed">
               Đưa camera điện thoại cách QR khoảng <strong>15-25cm</strong> để tự động lấy nét.<br />
-              Hoặc tải app VNTrust để quét nhanh hơn.
+              Hoặc tải app AI VeriGoods để quét nhanh hơn.
             </p>
             <button
               onClick={() => setZoomedUid(null)}

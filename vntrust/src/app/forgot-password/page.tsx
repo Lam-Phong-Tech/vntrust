@@ -147,7 +147,7 @@ export default function ForgotPasswordPage() {
         <div className="w-16 h-16 bg-gradient-to-br from-[#C8A557]/20 to-[#E4D2A1]/10 rounded-3xl flex items-center justify-center mb-4 border border-[#C8A557]/20 shadow-lg shadow-blue-900/20">
           <span className="material-symbols-outlined text-4xl text-[#C8A557]">shield_person</span>
         </div>
-        <h1 className="text-3xl font-display font-bold text-white tracking-tight">VNTrust</h1>
+        <h1 className="text-3xl font-display font-bold text-white tracking-tight">AI VeriGoods</h1>
         <p className="text-slate-400 mt-2 text-sm text-center">Nền tảng xác thực hàng hóa chống giả mạo toàn quốc</p>
       </div>
 

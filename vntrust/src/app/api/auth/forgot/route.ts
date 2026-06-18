@@ -54,10 +54,10 @@ export async function POST(req: NextRequest) {
     }
 
     const info = await transporter.sendMail({
-      from: '"Hệ thống VNTrust" <no-reply@vntrust.vn>',
+      from: '"Hệ thống AI VeriGoods" <no-reply@vntrust.vn>',
       to: user.email,
-      subject: "Khôi phục mật khẩu tài khoản VNTrust",
-      text: `Xin chào ${user.ten || user.email},\n\nMật khẩu mới của bạn là: ${newPassword}\n\nVui lòng đăng nhập và đổi lại mật khẩu ngay.\n\nTrân trọng,\nĐội ngũ hỗ trợ VNTrust`
+      subject: "Khôi phục mật khẩu tài khoản AI VeriGoods",
+      text: `Xin chào ${user.ten || user.email},\n\nMật khẩu mới của bạn là: ${newPassword}\n\nVui lòng đăng nhập và đổi lại mật khẩu ngay.\n\nTrân trọng,\nĐội ngũ hỗ trợ AI VeriGoods`
     });
 
     if (!process.env.EMAIL_USER) {

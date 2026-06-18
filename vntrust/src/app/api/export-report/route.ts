@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="VNTrust_Report_${new Date().toISOString().slice(0,10)}.csv"`
+        'Content-Disposition': `attachment; filename="AIVeriGoods_Report_${new Date().toISOString().slice(0,10)}.csv"`
       }
     });
 

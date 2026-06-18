@@ -216,7 +216,7 @@ export async function GET(req: NextRequest) {
             cuaKhau: lo.cuaKhau,
             hsCode: lo.hsCode,
             nuocXuatXu: lo.nuocXuatXu,
-            source: 'Dữ liệu khai báo trên VNTrust',
+            source: 'Dữ liệu khai báo trên AI VeriGoods',
           };
         }
       } else if (type === 'check_byt') {
@@ -237,7 +237,7 @@ export async function GET(req: NextRequest) {
             ngayCap: cert.ngayCap?.toISOString().split('T')[0],
             ngayHetHan: cert.ngayHetHan?.toISOString().split('T')[0],
             toChucCap: cert.toChucCap,
-            source: 'Dữ liệu khai báo trên VNTrust',
+            source: 'Dữ liệu khai báo trên AI VeriGoods',
           };
         }
       }

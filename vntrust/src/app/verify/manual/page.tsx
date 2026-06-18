@@ -37,7 +37,7 @@ export default function VerifyManualPage() {
           </div>
           
           <h2 className="text-3xl font-black font-display text-on-surface mb-4">Tra cứu Mã Serial</h2>
-          <p className="text-on-surface-variant mb-10 mx-auto max-w-sm">Nhập chuỗi định danh duy nhất (UUID/Serial) in chìm dưới lớp phủ tem VNTrust chống giả.</p>
+          <p className="text-on-surface-variant mb-10 mx-auto max-w-sm">Nhập chuỗi định danh duy nhất (UUID/Serial) in chìm dưới lớp phủ tem AI VeriGoods chống giả.</p>
 
           <form onSubmit={handleVerify} className="space-y-8 w-full max-w-md mx-auto">
             <div className="relative text-left">
@@ -93,7 +93,7 @@ export default function VerifyManualPage() {
             <span className="material-symbols-outlined text-tertiary text-2xl">shield_lock</span>
             <div className="text-xs leading-relaxed text-on-surface-variant">
               <strong className="text-on-surface block mb-1">Mã hóa Cấp Ngân hàng</strong> 
-              Giao dịch truy vấn của bạn được mã hóa hoàn toàn. VNTrust ẩn danh địa chỉ mạng để đảm bảo tính riêng tư trong đối soát.
+              Giao dịch truy vấn của bạn được mã hóa hoàn toàn. AI VeriGoods ẩn danh địa chỉ mạng để đảm bảo tính riêng tư trong đối soát.
             </div>
           </div>
         </div>

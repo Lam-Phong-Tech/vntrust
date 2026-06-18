@@ -57,7 +57,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
           uid: uid,
         }
       });
-      return NextResponse.json({ status: "fake", message: "Mã không tồn tại trên hệ thống VNTrust. Đây có thể là hàng giả." });
+      return NextResponse.json({ status: "fake", message: "Mã không tồn tại trên hệ thống AI VeriGoods. Đây có thể là hàng giả." });
     }
 
     if (maDinhDanh.trangThai === "fake") {
@@ -70,7 +70,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
       return NextResponse.json({
         status: "suspect",
         message: dn?.trangThai === 'revoked'
-          ? `Doanh nghiệp "${dn?.ten}" đã bị thu hồi giấy phép trên VNTrust. Sản phẩm tạm thời không xác thực được.`
+          ? `Doanh nghiệp "${dn?.ten}" đã bị thu hồi giấy phép trên AI VeriGoods. Sản phẩm tạm thời không xác thực được.`
           : `Doanh nghiệp "${dn?.ten || ''}" đang tạm khóa trên hệ thống. Vui lòng liên hệ cơ quan có thẩm quyền nếu nghi vấn.`,
         data: maDinhDanh,
       });

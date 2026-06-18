@@ -18,7 +18,7 @@ export default function EnterprisePage() {
         <div className="text-center mt-4">
           <span className="px-4 py-1.5 bg-[#C8A557]/20 text-[#C8A557] text-[10px] font-bold rounded-full border border-[#C8A557]/30 uppercase tracking-[0.2em] mb-6 inline-block">{t("ent_badge")}</span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black font-display text-white mb-8 tracking-tight drop-shadow-lg">
-            {t("ent_title")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C8A557] to-[#E4D2A1]">VNTrust Enterprise</span>
+            {t("ent_title")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C8A557] to-[#E4D2A1]">AI VeriGoods Enterprise</span>
           </h1>
           <p className="text-slate-300 text-lg md:text-xl max-w-4xl mx-auto leading-relaxed border-l-4 border-[#C8A557] pl-6 text-left md:text-center md:border-l-0 md:pl-0">{t("ent_sub")}</p>
         </div>

@@ -19,7 +19,7 @@ export async function GET() {
     const doanhNghiep = await prisma.doanhNghiep.create({
       data: {
         maSoThue: "0123456789",
-        ten: "Tổng Công ty Dược phẩm và Y tế VNTrust Phú Mỹ",
+        ten: "Tổng Công ty Dược phẩm và Y tế AI VeriGoods Phú Mỹ",
         diaChi: "Tòa nhà Bitexco, Q1, TP.HCM",
         loai: "NSX",
         trangThai: "verified",

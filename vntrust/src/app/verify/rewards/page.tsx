@@ -94,7 +94,7 @@ export default function VerifyRewardsPage() {
           
           <span className="material-symbols-outlined text-6xl text-[#C8A557] mb-4">stars</span>
           <div className="text-xs text-[#C8A557] font-bold uppercase tracking-wider mb-2">{lang === 'en' ? 'Current Balance' : 'Số dư hiện tại'}</div>
-          <div className="text-5xl font-black text-white mb-6">{tongDiem} <span className="text-2xl text-slate-400 font-bold tracking-normal">VNTrust Points</span></div>
+          <div className="text-5xl font-black text-white mb-6">{tongDiem} <span className="text-2xl text-slate-400 font-bold tracking-normal">AI VeriGoods Points</span></div>
           
           <div className="flex gap-4">
             <button 

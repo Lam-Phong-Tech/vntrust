@@ -16,13 +16,13 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "VNTrust | Anti-Counterfeit",
-  description: "Bảo vệ Di sản Thương hiệu với VNTrust.",
+  title: "AI VeriGoods | Anti-Counterfeit",
+  description: "Bảo vệ Di sản Thương hiệu với AI VeriGoods.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "VNTrust",
+    title: "AI VeriGoods",
   },
 };
 

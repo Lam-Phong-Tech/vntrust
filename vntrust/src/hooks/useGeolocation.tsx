@@ -133,11 +133,11 @@ export function GeolocationPrompt({ onResult }: { onResult?: (granted: boolean) 
           </div>
           <div>
             <h3 className="text-white font-bold text-base">Cho phép truy cập vị trí?</h3>
-            <p className="text-xs text-slate-400">VNTrust muốn biết vị trí của bạn</p>
+            <p className="text-xs text-slate-400">AI VeriGoods muốn biết vị trí của bạn</p>
           </div>
         </div>
         <p className="text-sm text-slate-300 mb-5 leading-relaxed">
-          VNTrust dùng vị trí GPS thực để cung cấp dữ liệu xác thực hàng hóa chính xác theo khu vực địa lý của bạn, thay vì ước tính từ địa chỉ IP.
+          AI VeriGoods dùng vị trí GPS thực để cung cấp dữ liệu xác thực hàng hóa chính xác theo khu vực địa lý của bạn, thay vì ước tính từ địa chỉ IP.
         </p>
         <div className="flex gap-3">
           <button

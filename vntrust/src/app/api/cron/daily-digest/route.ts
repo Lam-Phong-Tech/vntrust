@@ -93,8 +93,8 @@ export async function GET(req: NextRequest) {
             service: 'gmail',
             auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD },
           });
-          const subject = `[VNTrust] Digest 24h — ${digest.summary.openAlerts.high} cảnh báo Cao, ${digest.summary.escalated24h} escalate`;
-          const text = `Báo cáo VNTrust hàng ngày — ${now.toLocaleString('vi-VN')}\n\n` +
+          const subject = `[AI VeriGoods] Digest 24h — ${digest.summary.openAlerts.high} cảnh báo Cao, ${digest.summary.escalated24h} escalate`;
+          const text = `Báo cáo AI VeriGoods hàng ngày — ${now.toLocaleString('vi-VN')}\n\n` +
             `🔴 Cảnh báo CAO: ${digest.summary.openAlerts.high}\n` +
             `🟠 Cảnh báo Trung: ${digest.summary.openAlerts.medium}\n` +
             `🟡 Cảnh báo Thấp: ${digest.summary.openAlerts.low}\n` +
@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
             `\n\nDashboard: https://anticounterfeit.test9.io.vn/dashboard/alerts\n`;
 
           await transporter.sendMail({
-            from: `"VNTrust System" <${process.env.GMAIL_USER}>`,
+            from: `"AI VeriGoods System" <${process.env.GMAIL_USER}>`,
             to: adminEmails.join(','),
             subject, text,
           });

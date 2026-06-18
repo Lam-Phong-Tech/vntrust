@@ -36,10 +36,10 @@ function getCurrentUserId(): string {
 
 // ─── Old greeting patterns (for migration) ────────────────────────────────────
 const OLD_GREETINGS = [
-  "Chào! Tôi là AI VNTrust",
-  "Mình là AI VNTrust. Bạn cần phân tích",
+  "Chào! Tôi là AI AI VeriGoods",
+  "Mình là AI AI VeriGoods. Bạn cần phân tích",
   "ở đây để giúp bạn",
-  "Chào bạn! 👋 Mình là AI VNTrust",
+  "Chào bạn! 👋 Mình là AI AI VeriGoods",
 ];
 function isOldGreeting(text: string) {
   return OLD_GREETINGS.some(g => text.includes(g));

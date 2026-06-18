@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     await triggerWebhook(event, dnId, {
       test: true,
-      message: 'Test webhook từ VNTrust',
+      message: 'Test webhook từ AI VeriGoods',
       timestamp: new Date().toISOString(),
     });
 
