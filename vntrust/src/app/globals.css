@@ -921,6 +921,22 @@ html.light-mode [class*="bg-[#131b2c"] {
   background: #f1f5fb !important;
   border-color: rgba(31,111,235,0.2) !important;
 }
+
+/* ─── Fix 2 trang admin (Doanh nghiệp/KYC + Phân quyền): ốc đảo nền tối còn sót ─── */
+/* 1) Hero KYC: gradient navy from/via/to (#0a1628…#0d2040) — KHÔNG khớp rule bg-[#0
+   vì dùng from-/via-/to-. Đổi sang nền sáng; tiêu đề tự thành chữ tối qua .text-white. */
+html.light-mode [class*="from-[#0a1628]"] {
+  background: linear-gradient(to right, #e9f1fb, #ffffff 50%, #e9f1fb) !important;
+  border-bottom-color: rgba(31,111,235,0.15) !important;
+}
+/* 2) Phân quyền: ô header "NHÓM QUYỀN" #101d2e (bắt đầu #1 → KHÔNG khớp rule bg-[#0) → nền sáng */
+html.light-mode [class*="bg-[#101d2e]"] {
+  background: #eef4fb !important;
+}
+/* 3) Phân quyền: panel sub-nav bên trái (bg-white/[0.03] gần trong suốt) → card sáng rõ */
+html.light-mode [class*="bg-white/[0.03]"] {
+  background: rgba(255,255,255,0.7) !important;
+}
 /* Nút primary gradient vàng cũ còn sót (Tailwind) → xanh đặc trên nền sáng */
 html.light-mode [style*="135deg,#E4D2A1"] { background: #1F6FEB !important; }
 
