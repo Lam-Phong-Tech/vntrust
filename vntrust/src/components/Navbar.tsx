@@ -289,7 +289,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { t, lang, setLang } = useLanguage();
   const [modal, setModal] = useState<"ai" | "app" | null>(null);
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [scrollOpacity, setScrollOpacity] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -370,12 +370,11 @@ export default function Navbar() {
   const allNavLinks = [
     { key: "nav_verify", href: "/verify" },
     { key: "nav_supply", href: "/supply-chain" },
-    { key: "nav_dashboard", href: "/dashboard" },
     { key: "nav_enterprise", href: "/enterprise" },
   ];
-  // Người tiêu dùng + Doanh nghiệp: chỉ hiển thị Bảng điều khiển
+  // Ẩn nút "Bảng điều khiển": NTD/DN không hiển thị link nav trên navbar
   const navLinks = (userRole === "consumer" || userRole === "manufacturer" || userRole === "importer")
-    ? allNavLinks.filter(l => l.href === "/dashboard")
+    ? []
     : allNavLinks;
 
   const isActive = (href: string) =>
@@ -403,8 +402,12 @@ export default function Navbar() {
 
           {/* Left: Logo + nav */}
           <div className="flex items-center gap-10">
-            <Link href="/" className="flex items-center gap-2">
-              <Image src="/logo.png" alt="AI VeriGoods Logo" width={140} height={45} style={{objectFit: 'contain'}} priority />
+            <Link href="/" className="flex items-center gap-2.5">
+              <span style={{ background:'#ffffff', borderRadius:10, padding:'5px', display:'inline-flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(0,0,0,0.14)' }}>
+                <Image src="/logo-icon.png" alt="AI VeriGoods" width={30} height={30} style={{objectFit: 'contain', display:'block'}} priority />
+              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/verigoods-wordmark.png" alt="VeriGoods" style={{ height:16, width:'auto', objectFit:'contain', display:'block' }} />
             </Link>
 
             <div className="hidden lg:flex items-center gap-7 pt-0.5">

@@ -155,8 +155,8 @@ html.light-mode {
   --color-surface:             #ffffff;
   --color-on-surface:          #0d1b2e;
   --color-on-surface-variant:  #2d4a6e;
-  --color-primary:             #0369a1;
-  --color-outline:             rgba(3,105,161,0.2);
+  --color-primary:             #1F6FEB;
+  --color-outline:             rgba(31,111,235,0.2);
 }
 
 /* Body background */
@@ -182,11 +182,11 @@ html.light-mode .text-slate-500   { color: #5e8fa8 !important; }
 html.light-mode .text-slate-600   { color: #4a7a9b !important; }
 
 /* Cyan/teal accent → ocean blue */
-html.light-mode .text-cyan-400    { color: #0369a1 !important; }
-html.light-mode .text-cyan-300    { color: #0284c7 !important; }
-html.light-mode .text-cyan-200    { color: #0369a1 !important; }
+html.light-mode .text-cyan-400    { color: #1F6FEB !important; }
+html.light-mode .text-cyan-300    { color: #1F6FEB !important; }
+html.light-mode .text-cyan-200    { color: #1F6FEB !important; }
 html.light-mode .text-cyan-100    { color: #0e7490 !important; }
-html.light-mode .text-sky-400     { color: #0369a1 !important; }
+html.light-mode .text-sky-400     { color: #1F6FEB !important; }
 html.light-mode .text-blue-300    { color: #1d4ed8 !important; }
 html.light-mode .text-blue-400    { color: #1d4ed8 !important; }
 
@@ -214,24 +214,24 @@ html.light-mode [class*="bg-gradient"][class*="text-transparent"] {
 /* ─── Glass panels & cards ─────────────────────── */
 html.light-mode .glass-panel {
   background: linear-gradient(160deg, rgba(255,255,255,0.92) 0%, rgba(240,248,255,0.85) 100%) !important;
-  border: 1px solid rgba(3,105,161,0.18) !important;
+  border: 1px solid rgba(31,111,235,0.18) !important;
   box-shadow: 0 4px 20px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.9) !important;
 }
 
 html.light-mode .glass-card {
   background: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(237,247,255,0.88) 100%) !important;
-  border: 1px solid rgba(3,105,161,0.2) !important;
+  border: 1px solid rgba(31,111,235,0.2) !important;
   box-shadow: 0 6px 24px rgba(0,30,80,0.08), inset 0 1px 0 rgba(255,255,255,1) !important;
 }
 html.light-mode .glass-card:hover {
   background: linear-gradient(145deg, #ffffff 0%, rgba(224,242,254,0.95) 100%) !important;
-  border-color: rgba(3,105,161,0.35) !important;
+  border-color: rgba(31,111,235,0.35) !important;
   box-shadow: 0 10px 32px rgba(0,30,80,0.12) !important;
 }
 
 html.light-mode .glass-effect {
   background: rgba(255,255,255,0.82) !important;
-  border: 1px solid rgba(3,105,161,0.2) !important;
+  border: 1px solid rgba(31,111,235,0.2) !important;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
 }
 
@@ -244,13 +244,13 @@ html.light-mode .bg-white\/10   { background: rgba(255,255,255,0.7)  !important;
 html.light-mode .bg-white\/20   { background: rgba(255,255,255,0.8)  !important; }
 html.light-mode .bg-black\/50   { background: rgba(0,0,0,0.15)       !important; }
 html.light-mode .bg-black\/40   { background: rgba(0,0,0,0.12)       !important; }
-html.light-mode .border-white\/10 { border-color: rgba(3,105,161,0.15) !important; }
-html.light-mode .border-white\/20 { border-color: rgba(3,105,161,0.22) !important; }
+html.light-mode .border-white\/10 { border-color: rgba(31,111,235,0.15) !important; }
+html.light-mode .border-white\/20 { border-color: rgba(31,111,235,0.22) !important; }
 
 /* ─── Navbar ────────────────────────────────────── */
 html.light-mode nav {
   background: rgba(230,245,255,0.92) !important;
-  border-bottom: 1px solid rgba(3,105,161,0.15) !important;
+  border-bottom: 1px solid rgba(31,111,235,0.15) !important;
   backdrop-filter: blur(20px);
 }
 html.light-mode nav a,
@@ -259,7 +259,7 @@ html.light-mode nav button { color: #0d1b2e !important; }
 html.light-mode nav a.text-blue-100\/70 { color: #1e4976 !important; }
 
 /* ─── Badge & pill tinted backgrounds ──────────── */
-html.light-mode .bg-cyan-500\/20    { background: rgba(3,105,161,0.12)  !important; }
+html.light-mode .bg-cyan-500\/20    { background: rgba(31,111,235,0.12)  !important; }
 html.light-mode .bg-emerald-500\/20 { background: rgba(6,95,70,0.1)     !important; }
 html.light-mode .bg-amber-500\/20   { background: rgba(146,64,14,0.1)   !important; }
 html.light-mode .bg-red-500\/20     { background: rgba(153,27,27,0.1)   !important; }
@@ -268,7 +268,7 @@ html.light-mode .bg-blue-500\/20    { background: rgba(29,78,216,0.1)   !importa
 
 /* ─── Buttons ───────────────────────────────────── */
 html.light-mode button.bg-white\/10 {
-  background: rgba(3,105,161,0.1) !important;
+  background: rgba(31,111,235,0.1) !important;
   color: #0d1b2e !important;
 }
 
@@ -284,7 +284,7 @@ html.light-mode textarea,
 html.light-mode select {
   background: rgba(255,255,255,0.9) !important;
   color: #0d1b2e !important;
-  border-color: rgba(3,105,161,0.3) !important;
+  border-color: rgba(31,111,235,0.3) !important;
 }
 html.light-mode input::placeholder,
 html.light-mode textarea::placeholder { color: #6b97b5 !important; }
@@ -295,12 +295,12 @@ html.light-mode select option {
 
 /* ─── Scrollbar ──────────────────────────────────── */
 html.light-mode ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
-html.light-mode ::-webkit-scrollbar-thumb { background: rgba(3,105,161,0.25); }
-html.light-mode ::-webkit-scrollbar-thumb:hover { background: rgba(3,105,161,0.45); }
+html.light-mode ::-webkit-scrollbar-thumb { background: rgba(31,111,235,0.25); }
+html.light-mode ::-webkit-scrollbar-thumb:hover { background: rgba(31,111,235,0.45); }
 
 /* ─── Dividers ───────────────────────────────────── */
 html.light-mode .divide-white\/10 > * + *,
-html.light-mode [class*="border-white"] { border-color: rgba(3,105,161,0.15) !important; }
+html.light-mode [class*="border-white"] { border-color: rgba(31,111,235,0.15) !important; }
 
 /* ═══════════════════════════════════════════════════════════
    DESIGN TOKEN CLASS OVERRIDES — @theme inline compiles
@@ -314,7 +314,7 @@ html.light-mode .text-on-surface           { color: #0d1b2e !important; }
 html.light-mode .text-on-surface-variant   { color: #2d4a6e !important; }
 
 /* text-primary  →  was #52c2c2 (cyan), override to ocean blue */
-html.light-mode .text-primary              { color: #0369a1 !important; }
+html.light-mode .text-primary              { color: #1F6FEB !important; }
 
 /* text-secondary  →  was #a3b8cc (light blue-gray), too faint */
 html.light-mode .text-secondary            { color: #4a7a9b !important; }
@@ -332,14 +332,14 @@ html.light-mode .bg-surface-container-high {
 }
 
 /* bg-primary, bg-secondary, bg-tertiary tinted */
-html.light-mode .bg-primary\/10   { background: rgba(3,105,161,0.1) !important; }
+html.light-mode .bg-primary\/10   { background: rgba(31,111,235,0.1) !important; }
 html.light-mode .bg-tertiary\/10  { background: rgba(14,116,144,0.1) !important; }
 html.light-mode .bg-secondary\/10 { background: rgba(74,122,155,0.1) !important; }
 
 /* border-outline-variant → override to light blue */
 html.light-mode .border-outline-variant\/20,
 html.light-mode [class*="border-outline-variant"] {
-  border-color: rgba(3,105,161,0.18) !important;
+  border-color: rgba(31,111,235,0.18) !important;
 }
 
 /* opacity-60 wrapper text on light bg is still too faint — boost */
@@ -357,7 +357,7 @@ html.light-mode select,
 html.light-mode textarea {
   color: #0d1b2e !important;
   background-color: rgba(255,255,255,0.85) !important;
-  border-color: rgba(3,105,161,0.25) !important;
+  border-color: rgba(31,111,235,0.25) !important;
 }
 
 html.light-mode input::placeholder,
@@ -861,4 +861,163 @@ body [class*="fixed"] {
 
   /* H. Mobile bottom nav clearance */
   main { padding-bottom: 80px !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   XANH TIN CẬY — light theme mặc định (#1F6FEB)
+   Override các rule nền tối !important phía trên để light-mode
+   thắng cascade trên mọi viewport. Nav xanh đặc, chữ trắng.
+   ═══════════════════════════════════════════════════════════ */
+html.light-mode { --color-primary: #1F6FEB; --color-on-primary: #ffffff; }
+
+html.light-mode body,
+html.light-mode body:has(.vntrust-responsive-app) {
+  background-color: #eef5fb !important;
+  background-image:
+    radial-gradient(circle 600px at 12% 0%,   rgba(31,111,235,0.07) 0%, transparent 45%),
+    radial-gradient(circle 700px at 90% 8%,    rgba(31,111,235,0.05) 0%, transparent 40%),
+    radial-gradient(circle 800px at 50% 100%,  rgba(31,111,235,0.04) 0%, transparent 55%) !important;
+  color: #0d1b2e !important;
+}
+@media (min-width: 600px) {
+  html.light-mode body,
+  html.light-mode body:has(.vntrust-responsive-app) {
+    background-color: #eef5fb !important;
+    background-image:
+      radial-gradient(circle 600px at 12% 0%, rgba(31,111,235,0.07) 0%, transparent 45%),
+      radial-gradient(circle 700px at 90% 8%, rgba(31,111,235,0.05) 0%, transparent 40%) !important;
+  }
+}
+
+/* Thanh điều hướng xanh đặc + chữ trắng */
+html.light-mode nav {
+  background: #1F6FEB !important;
+  border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+  box-shadow: 0 2px 12px rgba(31,111,235,0.18) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* TOÀN BỘ chữ + icon trên thanh nav → TRẮNG
+   nav [class*="text-"] có 2 class → THẮNG rule gốc light-mode `.text-white`/`.text-slate-*` (cũng 2 class) nhờ đứng sau */
+html.light-mode nav,
+html.light-mode nav *,
+html.light-mode nav a,
+html.light-mode nav span,
+html.light-mode nav button,
+html.light-mode nav [class*="text-"] { color: #ffffff !important; }
+/* TRỪ nút APP DOWNLOAD — giữ nguyên nền vàng + chữ/icon tối */
+html.light-mode nav a[class*="from-[#e7d188]"],
+html.light-mode nav a[class*="from-[#e7d188]"] *,
+html.light-mode nav button[class*="from-[#e7d188]"],
+html.light-mode nav button[class*="from-[#e7d188]"] * { color: #2c2003 !important; }
+
+/* Mobile top bar (nếu hiện <lg) cũng xanh đặc */
+html.light-mode .mobile-top-bar { background: #1F6FEB !important; }
+html.light-mode .mobile-top-bar,
+html.light-mode .mobile-top-bar * { color: #ffffff !important; }
+
+/* Hộp/ô nền tối #131b2c (vd: upload KYC trong đăng ký) → nền sáng */
+html.light-mode [class*="bg-[#131b2c"] {
+  background: #f1f5fb !important;
+  border-color: rgba(31,111,235,0.2) !important;
+}
+/* Nút primary gradient vàng cũ còn sót (Tailwind) → xanh đặc trên nền sáng */
+html.light-mode [style*="135deg,#E4D2A1"] { background: #1F6FEB !important; }
+
+/* ═══ NÚT BẤM → NỀN XANH (toàn web) ═══
+   Đổi các NÚT (button/a) primary vàng cũ (#C8A557 / gradient vàng) → nền xanh + chữ trắng.
+   KHÔNG đụng: nút APP DOWNLOAD vàng trên nav (from-[#e7d188]), logo/avatar vàng (div). */
+html.light-mode button[class*="from-[#C8A557]"], html.light-mode a[class*="from-[#C8A557]"],
+html.light-mode button[class*="from-[#E4D2A1]"], html.light-mode a[class*="from-[#E4D2A1]"],
+html.light-mode button[class~="bg-[#C8A557]"],  html.light-mode a[class~="bg-[#C8A557]"],
+html.light-mode button[style*="135deg,#E4D2A1"], html.light-mode a[style*="135deg,#E4D2A1"],
+html.light-mode button[style*="135deg, #E4D2A1"] {
+  background: #1F6FEB !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border-color: #1F6FEB !important;
+  box-shadow: 0 4px 14px rgba(31,111,235,0.22) !important;
+}
+html.light-mode button[class*="from-[#C8A557]"] *, html.light-mode a[class*="from-[#C8A557]"] *,
+html.light-mode button[class*="from-[#E4D2A1]"] *, html.light-mode a[class*="from-[#E4D2A1]"] *,
+html.light-mode button[class~="bg-[#C8A557]"] *,  html.light-mode a[class~="bg-[#C8A557]"] *,
+html.light-mode button[style*="135deg,#E4D2A1"] * {
+  color: #ffffff !important;
+}
+
+/* Wordmark VeriGoods cạnh logo — giữ "Veri" trắng + "Goods" xanh lá
+   (ghi đè rule nav span màu trắng để chữ Goods không bị mất màu) */
+html.light-mode nav .brand-veri,
+html.light-mode .mobile-top-bar .brand-veri  { color: #ffffff !important; }
+html.light-mode nav .brand-goods,
+html.light-mode .mobile-top-bar .brand-goods { color: #4ade80 !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   QUY TẮC TƯƠNG PHẢN TOÀN WEB:
+   - Nền XANH ĐẶC (#1F6FEB / blue-500..900 / indigo / .bg-primary / inline)
+     → chữ TRẮNG cho cả element và text con.
+   - Nền trắng/sáng → chữ đậm (đã xử lý bởi light-mode phía trên).
+   Dùng [class~="..."] (khớp class CHÍNH XÁC) để KHÔNG đụng nền xanh-nhạt
+   kiểu bg-blue-600/10, bg-[#1F6FEB]/15 (vốn là nền sáng, cần chữ đậm).
+   Đặt SAU rule .text-white→đậm để thắng cascade.
+   ═══════════════════════════════════════════════════════════ */
+html.light-mode [class~="bg-[#1F6FEB]"], html.light-mode [class~="bg-[#1F6FEB]"] *,
+html.light-mode [class~="bg-[#1f6feb]"], html.light-mode [class~="bg-[#1f6feb]"] *,
+html.light-mode [class~="bg-[#1d4ed8]"], html.light-mode [class~="bg-[#1d4ed8]"] *,
+html.light-mode [class~="bg-[#2563eb]"], html.light-mode [class~="bg-[#2563eb]"] *,
+html.light-mode [class~="bg-blue-500"], html.light-mode [class~="bg-blue-500"] *,
+html.light-mode [class~="bg-blue-600"], html.light-mode [class~="bg-blue-600"] *,
+html.light-mode [class~="bg-blue-700"], html.light-mode [class~="bg-blue-700"] *,
+html.light-mode [class~="bg-blue-800"], html.light-mode [class~="bg-blue-800"] *,
+html.light-mode [class~="bg-blue-900"], html.light-mode [class~="bg-blue-900"] *,
+html.light-mode [class~="bg-indigo-600"], html.light-mode [class~="bg-indigo-600"] *,
+html.light-mode [class~="bg-indigo-700"], html.light-mode [class~="bg-indigo-700"] *,
+html.light-mode [class~="bg-primary"], html.light-mode [class~="bg-primary"] *,
+html.light-mode [style*="background:#1F6FEB"], html.light-mode [style*="background:#1F6FEB"] *,
+html.light-mode [style*="background: #1F6FEB"], html.light-mode [style*="background: #1F6FEB"] *,
+html.light-mode [style*="background-color:#1F6FEB"], html.light-mode [style*="background-color:#1F6FEB"] *,
+html.light-mode [style*="background:#1f6feb"], html.light-mode [style*="background:#1f6feb"] * {
+  color: #ffffff !important;
+}
+/* SVG icon trên nền xanh → trắng theo */
+html.light-mode [class~="bg-[#1F6FEB]"] svg, html.light-mode [class~="bg-blue-600"] svg,
+html.light-mode [class~="bg-blue-700"] svg, html.light-mode [style*="background:#1F6FEB"] svg {
+  color: #ffffff !important;
+}
+/* An toàn: ô nhập (input/textarea/select) trên nền xanh vẫn chữ ĐẬM
+   (vì ô nhập nền trắng → tránh chữ trắng trên nền trắng) */
+html.light-mode [class~="bg-[#1F6FEB]"] input,   html.light-mode [class~="bg-[#1F6FEB]"] textarea,   html.light-mode [class~="bg-[#1F6FEB]"] select,
+html.light-mode [class~="bg-blue-600"] input,    html.light-mode [class~="bg-blue-600"] textarea,    html.light-mode [class~="bg-blue-600"] select,
+html.light-mode [class~="bg-blue-700"] input,    html.light-mode [class~="bg-blue-700"] textarea,    html.light-mode [class~="bg-blue-700"] select {
+  color: #0d1b2e !important;
+}
+/* An toàn 2: phần tử NỀN TRẮNG nằm BÊN TRONG nền xanh (nút/thẻ trắng trên card xanh)
+   → chữ vẫn ĐẬM (đặc hiệu cao hơn nên thắng rule ép-trắng ở trên). */
+html.light-mode [class~="bg-[#1F6FEB]"] [class~="bg-white"],   html.light-mode [class~="bg-[#1F6FEB]"] [class~="bg-white"] *,
+html.light-mode [class~="bg-[#1F6FEB]"] [class~="bg-[#ffffff]"], html.light-mode [class~="bg-[#1F6FEB]"] [class~="bg-[#ffffff]"] *,
+html.light-mode [class~="bg-[#1F6FEB]"] [class~="bg-[#fff]"],   html.light-mode [class~="bg-[#1F6FEB]"] [class~="bg-[#fff]"] *,
+html.light-mode [class~="bg-blue-600"] [class~="bg-white"],    html.light-mode [class~="bg-blue-600"] [class~="bg-white"] *,
+html.light-mode [class~="bg-blue-700"] [class~="bg-white"],    html.light-mode [class~="bg-blue-700"] [class~="bg-white"] *,
+html.light-mode [class~="bg-blue-800"] [class~="bg-white"],    html.light-mode [class~="bg-blue-800"] [class~="bg-white"] * {
+  color: #0d1b2e !important;
+}
+/* An toàn 3: dropdown/popover NỀN SÁNG bên trong NAV (vd menu avatar bg-[#0d1b2e])
+   — rule nav→trắng làm chữ trắng-trên-trắng; ép lại chữ đậm cho dễ đọc. */
+html.light-mode nav [class*="bg-[#0d1b2e"] a,
+html.light-mode nav [class*="bg-[#0d1b2e"] button,
+html.light-mode nav [class*="bg-[#0d1b2e"] p,
+html.light-mode nav [class*="bg-[#0d1b2e"] span,
+html.light-mode nav [class*="bg-[#0d1726"] a,
+html.light-mode nav [class*="bg-[#0d1726"] button,
+html.light-mode nav [class*="bg-[#0d1726"] p,
+html.light-mode nav [class*="bg-[#0d1726"] span { color: #1e3a5f !important; }
+html.light-mode nav [class*="bg-[#0d1b2e"] .text-rose-400,
+html.light-mode nav [class*="bg-[#0d1b2e"] button.text-rose-400 { color: #e11d48 !important; }
+
+/* ═══ TRANG ADMIN (nền sáng): icon minh hoạ → ĐEN ĐẬM + tô đầy ═══
+   Khu admin giờ nền trắng → chữ đậm (light-mode tự lo), icon minh hoạ làm
+   đen đậm cho rõ; chừa icon CÓ MÀU Ý NGHĨA (đỏ/cam/vàng/xanh lá/gold/accent). */
+html.light-mode .admin-content .material-symbols-outlined:not([class*="text-red"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-orange"]):not([class*="text-yellow"]):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-lime"]):not([class*="text-teal"]):not([class*="text-cyan"]):not([class*="text-sky"]):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-violet"]):not([class*="text-purple"]):not([class*="text-pink"]):not([class*="text-[#C8A557]"]):not([class*="text-[#1F6FEB]"]) {
+  color: #0d1b2e !important;
+  font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
 }

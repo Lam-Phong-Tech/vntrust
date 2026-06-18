@@ -566,10 +566,36 @@ export default function Dashboard() {
   const { toasts, show: showToast, dismiss: dismissToast } = useToast();
 
   useEffect(() => {
-    const role = localStorage.getItem("userRole");
-    const name = localStorage.getItem("userName");
+    const readCookie = (n: string) =>
+      document.cookie.split("; ").find(r => r.startsWith(n + "="))?.split("=")[1];
+
+    let role = localStorage.getItem("userRole");
+    let name = localStorage.getItem("userName");
+
+    // Fallback sang cookie (nguồn xác thực thật — khớp middleware) khi localStorage trống
+    // nhưng cookie phiên vẫn còn. Nếu thiếu bước này sẽ xảy ra vòng lặp redirect
+    // /login ↔ /dashboard gây "nháy màn hình liên tục": trang login điều hướng dựa trên
+    // cookie, còn dashboard lại dựa trên localStorage (vd: đăng nhập VNeID chỉ set cookie
+    // phía server, hoặc localStorage bị xoá nhưng cookie phiên chưa hết hạn).
+    if (!role) {
+      const cookieRole = readCookie("userRole");
+      if (cookieRole) {
+        role = decodeURIComponent(cookieRole);
+        const cookieName = readCookie("userName");
+        name = cookieName ? decodeURIComponent(cookieName) : name;
+        // Hydrate lại localStorage để các trang khác hoạt động bình thường
+        localStorage.setItem("userRole", role);
+        if (name) localStorage.setItem("userName", name);
+        const dnId = readCookie("doanhNghiepId");
+        if (dnId) localStorage.setItem("doanhNghiepId", decodeURIComponent(dnId));
+      }
+    }
+
     if (!role) {
       router.replace("/login");
+    } else if (role === "admin") {
+      // Admin dùng Admin Console riêng (/admin)
+      router.replace("/admin");
     } else {
       setUserRole(role);
       if (name) setUserName(name);
@@ -715,7 +741,7 @@ export default function Dashboard() {
 
   if (!mounted || !userRole) return null;
 
-  const roleLabel = userRole === "admin" ? t("role_admin") : userRole === "manufacturer" ? t("role_mfr") : userRole === "importer" ? t("role_imp") : t("role_consumer");
+  const roleLabel = userRole === "admin" ? t("role_admin") : (userRole === "manufacturer" || userRole === "importer") ? t("role_mfr") : userRole === "authority" ? "Cơ quan chức năng" : t("role_consumer");
 
   return (
     <>
@@ -949,6 +975,21 @@ export default function Dashboard() {
                 </Link>
               )}
 
+              {/* ── Hồ sơ doanh nghiệp: Manufacturer + Importer (xem hồ sơ của chính DN) ── */}
+              {(userRole === 'manufacturer' || userRole === 'importer') && (
+                <Link href="/dashboard/ho-so" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#C8A557]/20">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A557]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="material-symbols-outlined text-3xl text-cyan-300">business_center</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#C8A557]/20 text-amber-300 rounded-full border border-[#C8A557]/30">KYC</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{lang === 'en' ? 'Info · documents · licenses' : 'Thông tin · giấy tờ · giấy phép'}</p>
+                    <h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Business profile' : 'Hồ sơ doanh nghiệp'}</h3>
+                  </div>
+                </Link>
+              )}
+
               {/* ── Quản lý người dùng: Admin only ── */}
               {(userRole === 'admin') && (
                 <Link href="/dashboard/users" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#C8A557]/20">
@@ -968,6 +1009,25 @@ export default function Dashboard() {
                 </Link>
               )}
 
+              {/* ── Phân quyền hệ thống: Admin only ── */}
+              {(userRole === 'admin') && (
+                <Link href="/dashboard/phan-quyen" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#C8A557]/20">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A557]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="material-symbols-outlined text-3xl text-[#C8A557]">key</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#C8A557]/20 text-amber-300 rounded-full border border-[#C8A557]/30">ADMIN</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">
+                      {lang === 'en' ? 'Grant access by role' : 'Cấp quyền theo vai trò'}
+                    </p>
+                    <h3 className="text-sm font-bold text-white">
+                      {lang === 'en' ? 'Role permissions' : 'Phân quyền hệ thống'}
+                    </h3>
+                  </div>
+                </Link>
+              )}
+
               {/* ── Kho hàng: Manufacturer + Admin ── */}
               {(userRole === 'manufacturer') && (
                 <Link href="/dashboard/inventory" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden">
@@ -976,72 +1036,6 @@ export default function Dashboard() {
                   <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{t("app_inv_sub")}</p><h3 className="text-sm font-bold text-white">{t("app_inv")}</h3></div>
                 </Link>
               )}
-
-              {/* ── UC03 — Nhân viên DN: NSX + NNK ── */}
-              {(userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/dashboard/team" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#C8A557]/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A557]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-amber-300">groups</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#C8A557]/20 text-amber-300 rounded-full border border-[#C8A557]/30">UC03</span>
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">
-                      {lang === 'en' ? 'Invite + assign internal roles' : 'Mời + phân quyền nội bộ DN'}
-                    </p>
-                    <h3 className="text-sm font-bold text-white">
-                      {lang === 'en' ? 'Team management' : 'Nhân viên DN'}
-                    </h3>
-                  </div>
-                </Link>
-              )}
-
-              {/* ── Phân phối: Manufacturer + Importer + Admin ── */}
-              {(userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/dashboard/distribution" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#C8A557]/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A557]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-purple-300">local_shipping</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#C8A557]/20 text-purple-300 rounded-full border border-[#C8A557]/30">{t("app_export_tag")}</span>
-                  </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{userRole === 'admin' ? 'Duyệt Đơn chuyển hàng' : t("app_dist_sub")}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Distribution & Delivery' : 'Phân phối & Giao hàng'}</h3></div>
-                </Link>
-              )}
-
-              {/* ── Bảo mật & Giám sát: Admin only (NFR-SC) ── */}
-              {userRole === 'admin' && (
-                <Link href="/dashboard/security" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#C8A557]/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A557]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-[#C8A557]">security</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#C8A557]/20 text-violet-300 rounded-full border border-[#C8A557]/30">NFR-SC</span>
-                  </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{t("app_sec_sub")}</p><h3 className="text-sm font-bold text-white">{t("app_sec")}</h3></div>
-                </Link>
-              )}
-
-
-              {/* ── Bảng Điều Khiển Tuân Thủ: Admin + Manufacturer + Importer ── */}
-              {(userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/dashboard/compliance" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#4A7C5C]/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#6FB585]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-[#6FB585]">fact_check</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#4A7C5C]/20 text-emerald-300 rounded-full border border-[#4A7C5C]/30">{lang === 'en' ? 'RULE ENGINE' : 'QUY TẮC TỰ ĐỘNG'}</span>
-                  </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{t("app_comp_sub")}</p><h3 className="text-sm font-bold text-white">{t("app_comp")}</h3></div>
-                </Link>
-              )}
-
-              {/* ── Lộ trình: Admin only (Phần 12) ── */}
-              {userRole === 'admin' && (
-                <Link href="/dashboard/roadmap" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-32 group relative overflow-hidden border border-[#C8A557]/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A557]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="material-symbols-outlined text-4xl text-[#C8A557]">map</span>
-                  <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_road")}</h3>
-                </Link>
-              )}
-
 
               {/* ── Cảnh báo Real-time: CHỈ Admin ── */}
               {userRole === 'admin' && (
@@ -1067,17 +1061,6 @@ export default function Dashboard() {
                 </Link>
               )}
 
-              {/* ── Chứng nhận: Manufacturer + Admin ── */}
-              {(userRole === 'manufacturer') && (
-                <Link href="/dashboard/certificates" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#4A7C5C]/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#6FB585]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-[#6FB585]">workspace_premium</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#4A7C5C]/20 text-green-300 rounded-full border border-[#4A7C5C]/30">ISO/HACCP</span>
-                  </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">ISO, HACCP, GMP, CFS, FDA</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Certificates' : 'Chứng nhận SP'}</h3></div>
-                </Link>
-              )}
               {(userRole === 'admin' || userRole === 'consumer' || userRole === 'importer' || userRole === 'manufacturer') && (
                 <Link href="/verify" className="glass-card rounded-3xl p-5 flex flex-col h-40 group border border-amber-300/30 bg-amber-900/20">
                   <div className="flex justify-between items-start mb-2">
@@ -1094,15 +1077,39 @@ export default function Dashboard() {
                 </Link>
               )}
 
-              {/* ── Báo cáo hàng giả: Consumer + Admin ── */}
+              {/* ── Báo cáo hàng giả bằng Wizard: Consumer + Admin ── */}
               {(userRole === 'admin' || userRole === 'consumer') && (
-                <Link href="/dashboard/report" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-red-500/20">
+                <Link href="/verify/wizard" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-red-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-red-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="material-symbols-outlined text-3xl text-red-400">report</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-red-500/20 text-red-300 rounded-full border border-red-500/30">{lang === 'en' ? 'ANONYMOUS' : 'ẨN DANH'}</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-red-500/20 text-red-300 rounded-full border border-red-500/30">{lang === 'en' ? 'WIZARD' : 'TỪNG BƯỚC'}</span>
                   </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{userRole === 'admin' ? (lang === 'en' ? 'Process reports' : 'Xử lý báo cáo') : (lang === 'en' ? 'Suspicious report' : 'Báo cáo nghi vấn')}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Fake Goods Report' : 'Báo cáo Hàng giả'}</h3></div>
+                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{lang === 'en' ? 'Step-by-step reporting' : 'Báo cáo từng bước'}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Report Fake Goods' : 'Báo Cáo Hàng Giả'}</h3></div>
+                </Link>
+              )}
+
+              {/* ── Lịch sử cá nhân: Consumer + Admin ── */}
+              {(userRole === 'admin' || userRole === 'consumer') && (
+                <Link href="/verify/history" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-cyan-500/20">
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="material-symbols-outlined text-3xl text-cyan-400">history</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 rounded-full border border-cyan-500/30">{lang === 'en' ? 'ACTIVITY' : 'HOẠT ĐỘNG'}</span>
+                  </div>
+                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{lang === 'en' ? 'Scan & report history' : 'Lịch sử quét và báo cáo'}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'My History' : 'Lịch Sử Cá Nhân'}</h3></div>
+                </Link>
+              )}
+
+              {/* ── Điểm thưởng VNTrust: Consumer + Admin ── */}
+              {(userRole === 'admin' || userRole === 'consumer') && (
+                <Link href="/verify/rewards" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="material-symbols-outlined text-3xl text-emerald-400">redeem</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">{lang === 'en' ? 'VOUCHERS' : 'ĐỔI QUÀ'}</span>
+                  </div>
+                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{lang === 'en' ? 'Earn & spend points' : 'Tích điểm và đổi quà'}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Rewards' : 'Điểm Thưởng'}</h3></div>
                 </Link>
               )}
 
@@ -1115,12 +1122,18 @@ export default function Dashboard() {
                 </Link>
               )}
 
-              {/* ── Kho hàng Nhập/Xuất: Manufacturer + Importer + Admin (FR-BAT-05) ── */}
-              {(userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/dashboard/warehouse" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-32 group relative overflow-hidden border border-[#4A7C5C]/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#6FB585]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="material-symbols-outlined text-4xl text-[#6FB585]">warehouse</span>
-                  <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_inv")}</h3>
+              {/* ── Thư viện Tiêu chuẩn: Manufacturer + Importer + Admin ── */}
+              {(userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
+                <Link href="/dashboard/standards" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#C8A557]/20">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A557]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="material-symbols-outlined text-3xl text-[#C8A557]">menu_book</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#C8A557]/20 text-amber-300 rounded-full border border-[#C8A557]/30">QCVN/TCVN</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{lang === 'en' ? 'Test thresholds by product group' : 'Ngưỡng kiểm nghiệm theo nhóm SP'}</p>
+                    <h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Standards Library' : 'Thư viện Tiêu chuẩn'}</h3>
+                  </div>
                 </Link>
               )}
 
@@ -1155,8 +1168,8 @@ export default function Dashboard() {
             </div>
 
 
-            {/* Recent */}
-            <div className="mt-2">
+            {/* Recent — ẩn theo yêu cầu */}
+            <div className="mt-2 hidden">
               <h2 className="text-lg font-display font-bold text-white mb-4 tracking-widest uppercase">{t("recent")}</h2>
               <div className="flex gap-4 overflow-x-auto snap-x hide-scrollbar pb-4">
                 {logs.slice(0, 2).map((log, i) => (

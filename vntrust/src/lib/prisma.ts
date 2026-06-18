@@ -13,7 +13,13 @@ function createPrismaClient() {
   const adapter = new PrismaLibSql({
     url: `file:${dbPath}`
   });
-  return new PrismaClient({ adapter });
+  const client = new PrismaClient({ adapter });
+  // Concurrency hardening: WAL cho phép đọc–ghi đồng thời (reader không chặn writer),
+  // busy_timeout để chờ thay vì ném lỗi SQLITE_BUSY khi nhiều người truy cập cùng lúc.
+  // Khắc phục lỗi "khi đông người truy cập hay bị lỗi". Best-effort — nuốt lỗi nếu có.
+  client.$executeRawUnsafe("PRAGMA journal_mode=WAL;").catch(() => {});
+  client.$executeRawUnsafe("PRAGMA busy_timeout=5000;").catch(() => {});
+  return client;
 }
 
 export const prisma =

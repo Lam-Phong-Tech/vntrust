@@ -135,7 +135,18 @@ export default function VietMapView({
   const { lang } = useLanguage();
   const tr = (vi: string, en: string) => (lang === "en" ? en : vi);
   const mapRef = useRef<MapRef>(null);
-  const [styleKey, setStyleKey] = useState<StyleKey>("dark");
+  // Mặc định theo theme: nền sáng → map sáng, nền tối → map tối
+  const [styleKey, setStyleKey] = useState<StyleKey>(() =>
+    (typeof document !== "undefined" && document.documentElement.classList.contains("light-mode")) ? "light" : "dark"
+  );
+  // Theo dõi class light-mode trên <html> → bấm sáng/tối thì map đổi theo (giữ nguyên nếu đang vệ tinh)
+  useEffect(() => {
+    const html = document.documentElement;
+    const sync = () => setStyleKey(prev => prev === "satellite" ? prev : (html.classList.contains("light-mode") ? "light" : "dark"));
+    const obs = new MutationObserver(sync);
+    obs.observe(html, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   // Markers
   const [locations, setLocations] = useState<ScanLocation[]>([]);

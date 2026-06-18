@@ -335,14 +335,15 @@ export function MobileHeader({
 /* ── Mobile Global Top Bar (logo + utility icons) ── */
 export function MobileTopBar() {
   const { lang, setLang } = useLanguage();
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [geoEnabled, setGeoEnabled] = useState(true);
   const [geoToast, setGeoToast] = useState<string | null>(null);
   const geoToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Restore state from localStorage on mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem("vntrust_theme") || "dark";
+    // v2: bỏ qua giá trị "dark" cũ đã lưu từ code mặc-định-tối trước đây → mặc định sáng
+    const savedTheme = localStorage.getItem("vntrust_theme_v2") || "light";
     setTheme(savedTheme);
     if (savedTheme === "light") {
       document.documentElement.classList.add("light-mode");
@@ -358,7 +359,7 @@ export function MobileTopBar() {
     } else {
       document.documentElement.classList.remove("light-mode");
     }
-    localStorage.setItem("vntrust_theme", theme);
+    localStorage.setItem("vntrust_theme_v2", theme);
   }, [theme]);
 
   const toggleTheme = () => setTheme(t => t === "dark" ? "light" : "dark");
@@ -430,15 +431,19 @@ export function MobileTopBar() {
         paddingTop: "env(safe-area-inset-top, 0px)",
       }}>
         {/* Left: Logo */}
-        <Link href="/dashboard" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-          <Image
-            src="/logo.png"
-            alt="AI VeriGoods Logo"
-            width={110}
-            height={36}
-            style={{ objectFit: "contain" }}
-            priority
-          />
+        <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+          <span style={{ background: "#ffffff", borderRadius: 9, padding: 4, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.14)" }}>
+            <Image
+              src="/logo-icon.png"
+              alt="AI VeriGoods"
+              width={28}
+              height={28}
+              style={{ objectFit: "contain", display: "block" }}
+              priority
+            />
+          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/verigoods-wordmark.png" alt="VeriGoods" style={{ height: 14, width: "auto", objectFit: "contain", display: "block" }} />
         </Link>
 
         {/* Right: utility icons */}

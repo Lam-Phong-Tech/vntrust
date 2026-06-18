@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -11,7 +12,7 @@ function Toast({ msg, type, onClose }: { msg: string; type: TType; onClose: () =
   const cls = {
     error:   "bg-red-500/15 border-red-500/40 text-red-300",
     success: "bg-[#4A7C5C]/15 border-[#4A7C5C]/40 text-emerald-300",
-    info:    "bg-[#C8A557]/15 border-[#C8A557]/40 text-cyan-300",
+    info:    "bg-[#1F6FEB]/15 border-[#1F6FEB]/40 text-cyan-300",
   }[type];
   const icon = { error: "error", success: "check_circle", info: "info" }[type];
   return (
@@ -78,7 +79,7 @@ function validatePasswordStrict(pwd: string): string | null {
 }
 
 export default function LoginPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -117,7 +118,11 @@ export default function LoginPage() {
   const [regAddress, setRegAddress] = useState("");
   const [regHotline, setRegHotline] = useState("");
   
-  const isBusiness = pageRole === "manufacturer" || pageRole === "importer";
+  // Vai trò chọn khi đăng ký (cho phép đổi giữa Người tiêu dùng / Doanh nghiệp)
+  const [regRole, setRegRole] = useState<string>(pageRole === "consumer" ? "consumer" : pageRole === "admin" ? "admin" : "manufacturer");
+  const isBusiness = regRole === "manufacturer";
+  // Đăng ký DN tách 2 bước: 1 = thông tin, 2 = giấy tờ
+  const [regStep, setRegStep] = useState<1 | 2>(1);
   // KYC document states
   const [regGiayphep, setRegGiayphep] = useState<File | null>(null);
   const [regCmnd, setRegCmnd] = useState<File | null>(null);
@@ -128,6 +133,7 @@ export default function LoginPage() {
     setRegName(""); setRegEmail(""); setRegPhone(""); setRegPhoneError(""); setRegPassword("");
     setRegCompany(""); setRegTaxCode(""); setRegAddress(""); setRegHotline("");
     setRegGiayphep(null); setRegCmnd(null); setUploadingKyc({}); setUploadedKycUrls({});
+    setRegStep(1);
   };
 
   const handleTestRegister = () => {
@@ -179,6 +185,16 @@ export default function LoginPage() {
         if (!regAddress.trim()) { showToast("Vui lòng nhập địa chỉ nhà máy / kho hàng", "error"); return; }
         // Removed corporate email validation for easier testing
       }
+
+      // 2 bước (Doanh nghiệp): xong bước 1 → sang bước 2 nộp giấy tờ, chưa tạo tài khoản
+      if (isBusiness && regStep === 1) { setRegStep(2); return; }
+
+      // Bước 2 — BẮT BUỘC nộp đủ giấy tờ trước khi tạo tài khoản
+      if (isBusiness) {
+        if (uploadingKyc['giayphep'] || uploadingKyc['cmnd']) { showToast("Đang tải giấy tờ, vui lòng đợi…", "error"); return; }
+        if (!uploadedKycUrls['giayphep']) { showToast("Vui lòng tải lên Giấy phép Kinh doanh", "error"); return; }
+        if (!uploadedKycUrls['cmnd']) { showToast("Vui lòng tải lên CMND/CCCD người đại diện", "error"); return; }
+      }
     }
 
     setLoading(true);
@@ -223,7 +239,7 @@ export default function LoginPage() {
             name: regName,
             email: regEmail,
             phone: regPhone,
-            role: pageRole,
+            role: regRole,
             password: regPassword,
             // Business fields
             company: regCompany,
@@ -415,7 +431,7 @@ export default function LoginPage() {
   };
 
   // Role label map
-  const roleLabels: Record<string,string> = { admin: 'Quản trị viên', manufacturer: 'Nhà sản xuất', importer: 'Nhà phân phối', consumer: 'Người tiêu dùng' };
+  const roleLabels: Record<string,string> = { admin: 'Quản trị viên', manufacturer: 'Doanh nghiệp', importer: 'Doanh nghiệp', consumer: 'Người tiêu dùng', authority: 'Cơ quan chức năng' };
   const roleIconsSvg: Record<string, React.ReactNode> = {
     consumer: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full">
@@ -448,34 +464,35 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'#0B1623', display:'flex', flexDirection:'column', alignItems:'center', zIndex:100, overflowY:'auto' }}>
+    <div style={{ position:'fixed', inset:0, background:'#eef5fb', display:'flex', flexDirection:'column', alignItems:'center', zIndex:100, overflowY:'auto' }}>
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={dismiss} />}
 
       {/* Background glow */}
-      <div style={{ position:'fixed', inset:0, pointerEvents:'none', background:'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(200,165,87,0.12) 0%, transparent 60%)' }} />
+      <div style={{ position:'fixed', inset:0, pointerEvents:'none', background:'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(31,111,235,0.12) 0%, transparent 60%)' }} />
 
       <div style={{ position:'relative', zIndex:1, width:'100%', maxWidth:440, margin:'auto', padding:'32px 20px 40px' }}>
 
         {/* Top bar: back + brand (decorative role icon removed — no function) */}
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:28 }}>
-          <button onClick={() => router.back()} style={{ width:36, height:36, borderRadius:'50%', background:'rgba(246,241,232,0.08)', border:'1px solid rgba(246,241,232,0.12)', display:'flex', alignItems:'center', justifyContent:'center', color:'#F6F1E8', cursor:'pointer' }}>
+          <button onClick={() => router.back()} style={{ width:36, height:36, borderRadius:'50%', background:'rgba(13,27,46,0.08)', border:'1px solid rgba(13,27,46,0.12)', display:'flex', alignItems:'center', justifyContent:'center', color:'#0d1b2e', cursor:'pointer' }}>
             <span className="material-symbols-outlined" style={{ fontSize:18 }}>arrow_back_ios_new</span>
           </button>
-          <div style={{ fontFamily:"'Fraunces',serif", fontWeight:600, fontSize:16, color:'#F6F1E8' }}>VN<span style={{ color:'#C8A557' }}>Trust</span></div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/verigoods-logo.png" alt="AI VeriGoods" width={116} height={38} style={{ objectFit: 'contain', display: 'block' }} />
           {/* spacer giữ layout cân — bằng width back button */}
           <div style={{ width:36, height:36 }} aria-hidden="true" />
         </div>
 
         {/* Hero */}
         <div style={{ marginBottom:24 }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 12px 5px 8px', background:'rgba(200,165,87,0.1)', border:'1px solid rgba(200,165,87,0.25)', borderRadius:100, marginBottom:14 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 12px 5px 8px', background:'rgba(31,111,235,0.1)', border:'1px solid rgba(31,111,235,0.25)', borderRadius:100, marginBottom:14 }}>
             <span className="gold-pulse-dot" />
-            <span style={{ fontSize:10, fontWeight:600, letterSpacing:'0.15em', textTransform:'uppercase', color:'#C8A557' }}>{roleLabels[pageRole] || pageRole}</span>
+            <span style={{ fontSize:10, fontWeight:600, letterSpacing:'0.15em', textTransform:'uppercase', color:'#1F6FEB' }}>{view === "register" ? (roleLabels[regRole] || regRole) : (roleLabels[pageRole] || pageRole)}</span>
           </div>
-          <h1 style={{ fontFamily:"'Fraunces',serif", fontWeight:400, fontSize:26, letterSpacing:'-0.02em', lineHeight:1.15, color:'#F6F1E8', marginBottom:6 }}>
-            {view === 'login' ? <>{t('login_title')}</> : view === 'register' ? <>Tạo <em style={{ fontStyle:'italic', color:'#C8A557', fontWeight:300 }}>tài khoản</em></> : <>Quên <em style={{ fontStyle:'italic', color:'#C8A557', fontWeight:300 }}>mật khẩu</em></>}
+          <h1 style={{ fontFamily:"'Fraunces',serif", fontWeight:400, fontSize:26, letterSpacing:'-0.02em', lineHeight:1.15, color:'#0d1b2e', marginBottom:6 }}>
+            {view === 'login' ? <>{t('login_title')}</> : view === 'register' ? <>Tạo <em style={{ fontStyle:'italic', color:'#1F6FEB', fontWeight:300 }}>tài khoản</em></> : <>Quên <em style={{ fontStyle:'italic', color:'#1F6FEB', fontWeight:300 }}>mật khẩu</em></>}
           </h1>
-          <p style={{ fontSize:12, color:'rgba(246,241,232,0.5)', lineHeight:1.5 }}>
+          <p style={{ fontSize:12, color:'rgba(13,27,46,0.5)', lineHeight:1.5 }}>
             {view === 'login' ? t('login_enter_info') : view === 'register' ? t('reg_sub') : 'Khôi phục quyền truy cập tài khoản'}
           </p>
         </div>
@@ -494,40 +511,40 @@ export default function LoginPage() {
         )}
 
         {/* Main Card */}
-        <div style={{ background:'linear-gradient(180deg,rgba(246,241,232,0.05) 0%,rgba(246,241,232,0.02) 100%)', border:'1px solid rgba(200,165,87,0.15)', borderRadius:20, padding:'24px 20px', marginBottom:16 }}>
+        <div style={{ background:'#ffffff', border:'1px solid rgba(31,111,235,0.15)', borderRadius:20, padding:'24px 20px', marginBottom:16, boxShadow:'0 10px 30px rgba(31,111,235,0.08)' }}>
           {view === "login" && (
             <div>
               <form onSubmit={handleAction} style={{ display:'flex', flexDirection:'column', gap:16 }}>
                 <div>
-                  <label style={{ display:'block', fontSize:10, fontWeight:600, color:'rgba(246,241,232,0.5)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:8 }}>{t('login_email_phone')}</label>
+                  <label style={{ display:'block', fontSize:10, fontWeight:600, color:'rgba(13,27,46,0.5)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:8 }}>{t('login_email_phone')}</label>
                   <div style={{ position:'relative' }}>
-                    <span className="material-symbols-outlined" style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', fontSize:20, color:'rgba(200,165,87,0.7)' }}>person</span>
+                    <span className="material-symbols-outlined" style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', fontSize:20, color:'rgba(31,111,235,0.7)' }}>person</span>
                     <input required value={username} onChange={e => setUsername(e.target.value)} type="text"
-                      style={{ width:'100%', padding:'12px 14px 12px 44px', background:'rgba(246,241,232,0.06)', border:'1px solid rgba(200,165,87,0.2)', borderRadius:12, fontSize:14, color:'#F6F1E8', outline:'none', fontFamily:'Outfit,sans-serif', boxSizing:'border-box' }}
+                      style={{ width:'100%', padding:'12px 14px 12px 44px', background:'rgba(13,27,46,0.06)', border:'1px solid rgba(31,111,235,0.2)', borderRadius:12, fontSize:14, color:'#0d1b2e', outline:'none', fontFamily:'Outfit,sans-serif', boxSizing:'border-box' }}
                       placeholder={t('login_ph_email')} />
                   </div>
                 </div>
                 <div>
-                  <label style={{ display:'block', fontSize:10, fontWeight:600, color:'rgba(246,241,232,0.5)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:8 }}>{t('login_pass')}</label>
+                  <label style={{ display:'block', fontSize:10, fontWeight:600, color:'rgba(13,27,46,0.5)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:8 }}>{t('login_pass')}</label>
                   <div style={{ position:'relative' }}>
-                    <span className="material-symbols-outlined" style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', fontSize:20, color:'rgba(200,165,87,0.7)' }}>lock</span>
+                    <span className="material-symbols-outlined" style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', fontSize:20, color:'rgba(31,111,235,0.7)' }}>lock</span>
                     <input required value={password} onChange={e => setPassword(e.target.value)} type={showPassword ? 'text' : 'password'}
-                      style={{ width:'100%', padding:'12px 44px 12px 44px', background:'rgba(246,241,232,0.06)', border:'1px solid rgba(200,165,87,0.2)', borderRadius:12, fontSize:14, color:'#F6F1E8', outline:'none', fontFamily:'Outfit,sans-serif', boxSizing:'border-box' }}
+                      style={{ width:'100%', padding:'12px 44px 12px 44px', background:'rgba(13,27,46,0.06)', border:'1px solid rgba(31,111,235,0.2)', borderRadius:12, fontSize:14, color:'#0d1b2e', outline:'none', fontFamily:'Outfit,sans-serif', boxSizing:'border-box' }}
                       placeholder={t('login_ph_pass')} />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'rgba(246,241,232,0.4)' }}>
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'rgba(13,27,46,0.4)' }}>
                       <span className="material-symbols-outlined" style={{ fontSize:20 }}>{showPassword ? 'visibility_off' : 'visibility'}</span>
                     </button>
                   </div>
                 </div>
-                <button type="submit" disabled={loading} style={{ width:'100%', padding:'14px', background:'linear-gradient(135deg,#E4D2A1,#C8A557)', color:'#0B1623', border:'none', borderRadius:14, fontFamily:'Outfit,sans-serif', fontSize:14, fontWeight:700, cursor:loading?'not-allowed':'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:loading?0.7:1, marginTop:4 }}>
-                  {loading ? <span style={{ width:20, height:20, border:'2px solid rgba(11,22,35,0.3)', borderTopColor:'#0B1623', borderRadius:'50%', animation:'spin 0.8s linear infinite', display:'inline-block' }} /> : <>{t('login_btn_login')} <span className="material-symbols-outlined" style={{ fontSize:18 }}>arrow_forward</span></>}
+                <button type="submit" disabled={loading} style={{ width:'100%', padding:'14px', background:'#1F6FEB', color:'#ffffff', border:'none', borderRadius:14, fontFamily:'Outfit,sans-serif', fontSize:14, fontWeight:700, cursor:loading?'not-allowed':'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:loading?0.7:1, marginTop:4 }}>
+                  {loading ? <span style={{ width:20, height:20, border:'2px solid rgba(255,255,255,0.3)', borderTopColor:'#ffffff', borderRadius:'50%', animation:'spin 0.8s linear infinite', display:'inline-block' }} /> : <>{t('login_btn_login')} <span className="material-symbols-outlined" style={{ fontSize:18 }}>arrow_forward</span></>}
                 </button>
               </form>
 
               {/* ── VNeID Divider & Button ── */}
               <div style={{ position:'relative', margin:'20px 0 16px', textAlign:'center' }}>
-                <span style={{ position:'absolute', top:'50%', left:0, right:0, height:1, background:'rgba(246,241,232,0.1)' }} />
-                <span style={{ position:'relative', zIndex:1, background:'linear-gradient(180deg,rgba(246,241,232,0.05) 0%,rgba(246,241,232,0.02) 100%)', padding:'0 12px', fontSize:10, color:'rgba(246,241,232,0.4)', letterSpacing:'0.14em', textTransform:'uppercase' }}>Hoặc</span>
+                <span style={{ position:'absolute', top:'50%', left:0, right:0, height:1, background:'rgba(13,27,46,0.1)' }} />
+                <span style={{ position:'relative', zIndex:1, background:'#ffffff', padding:'0 12px', fontSize:10, color:'rgba(13,27,46,0.4)', letterSpacing:'0.14em', textTransform:'uppercase' }}>Hoặc</span>
               </div>
 
               <button
@@ -536,8 +553,8 @@ export default function LoginPage() {
                   showToast('Đang chuyển hướng tới VNeID...', 'info');
                   window.location.href = `/api/auth/vneid/start?role=${encodeURIComponent(pageRole)}`;
                 }}
-                style={{ width:'100%', padding:'13px 16px', background:'transparent', color:'#F6F1E8', border:'1px solid rgba(246,241,232,0.2)', borderRadius:14, fontFamily:'Outfit,sans-serif', fontSize:13, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:10, transition:'all 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(246,241,232,0.06)')}
+                style={{ width:'100%', padding:'13px 16px', background:'transparent', color:'#0d1b2e', border:'1px solid rgba(13,27,46,0.2)', borderRadius:14, fontFamily:'Outfit,sans-serif', fontSize:13, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:10, transition:'all 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(13,27,46,0.06)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 {/* VNeID Logo SVG */}
@@ -551,12 +568,12 @@ export default function LoginPage() {
               </button>
 
               <div style={{ marginTop:16, display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
-                <button onClick={() => router.push('/forgot-password')} style={{ fontSize:12, color:'rgba(246,241,232,0.45)', background:'none', border:'none', cursor:'pointer', fontFamily:'Outfit,sans-serif' }}>
+                <button onClick={() => router.push('/forgot-password')} style={{ fontSize:12, color:'rgba(13,27,46,0.45)', background:'none', border:'none', cursor:'pointer', fontFamily:'Outfit,sans-serif' }}>
                   {t('login_forgot')}
                 </button>
                 {pageRole !== 'admin' && (
-                  <div style={{ fontSize:12, color:'rgba(246,241,232,0.4)' }}>
-                    {t('login_no_account')} <button onClick={() => setView('register')} style={{ color:'#C8A557', fontWeight:600, background:'none', border:'none', cursor:'pointer', fontFamily:'Outfit,sans-serif', fontSize:12 }}>{t('login_register_now')}</button>
+                  <div style={{ fontSize:12, color:'rgba(13,27,46,0.4)' }}>
+                    {t('login_no_account')} <button onClick={() => setView('register')} style={{ color:'#1F6FEB', fontWeight:600, background:'none', border:'none', cursor:'pointer', fontFamily:'Outfit,sans-serif', fontSize:12 }}>{t('login_register_now')}</button>
                   </div>
                 )}
               </div>
@@ -577,12 +594,25 @@ export default function LoginPage() {
               </div>
 
               <form onSubmit={handleAction} className="space-y-4">
+                {/* Chỉ báo bước (chỉ Doanh nghiệp) */}
+                {isBusiness && (
+                  <div className="flex items-center gap-1 mb-1">
+                    {[{ n: 1, l: lang === "en" ? "Info" : "Thông tin" }, { n: 2, l: lang === "en" ? "Documents" : "Giấy tờ" }].map((s, i) => (
+                      <div key={s.n} className="flex items-center gap-2">
+                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black ${regStep >= s.n ? "bg-[#1F6FEB] text-[#ffffff]" : "bg-white/10 text-slate-400"}`}>{s.n}</span>
+                        <span className={`text-xs font-bold ${regStep >= s.n ? "text-white" : "text-slate-500"}`}>{s.l}</span>
+                        {i === 0 && <span className="w-5 h-px bg-white/15 mx-1" />}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {regStep === 1 && (<>
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                     {t("reg_name")} <span className="ml-1 text-[10px] font-normal text-slate-500 normal-case">(tối đa 20 ký tự, chỉ chữ)</span>
                   </label>
                   <div className="relative">
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">person</span>
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">person</span>
                     <input required type="text" value={regName}
                       onChange={(e) => {
                         // Lọc realtime: bỏ số + ký tự đặc biệt, chỉ giữ chữ Latin + chữ có dấu VN + space
@@ -590,7 +620,7 @@ export default function LoginPage() {
                         setRegName(filtered);
                       }}
                       maxLength={20}
-                      className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-[#C8A557]/50 focus:ring-1 focus:ring-[#C8A557]/50 transition-all placeholder:text-slate-600"
+                      className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
                       placeholder={t("reg_ph_name")} />
                   </div>
                 </div>
@@ -598,9 +628,9 @@ export default function LoginPage() {
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email</label>
                   <div className="relative">
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">mail</span>
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">mail</span>
                     <input required type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)}
-                      className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-[#C8A557]/50 focus:ring-1 focus:ring-[#C8A557]/50 transition-all placeholder:text-slate-600"
+                      className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
                       placeholder={t("reg_ph_email")} />
                   </div>
                 </div>
@@ -612,7 +642,7 @@ export default function LoginPage() {
                     <input required type="tel" value={regPhone} onChange={(e) => handlePhoneChange(e.target.value)}
                       maxLength={11}
                       className={`w-full bg-[#131b2c] border rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white ${
-                        regPhoneError ? "border-red-500/60 focus:border-red-500 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#C8A557]/50 focus:ring-[#C8A557]/50"
+                        regPhoneError ? "border-red-500/60 focus:border-red-500 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
                       }`}
                       placeholder="0xxxxxxxxx" />
                   </div>
@@ -624,10 +654,36 @@ export default function LoginPage() {
                   )}
                 </div>
 
-                  {/* Role is automatically set from the URL parameter */}
+                {/* ── Chọn loại tài khoản: Người tiêu dùng / Doanh nghiệp ── */}
+                {pageRole !== "admin" && (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">{lang === "en" ? "Account type" : "Loại tài khoản"}</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {([
+                        { key: "consumer",     icon: "person", label: lang === "en" ? "Consumer" : "Người tiêu dùng" },
+                        { key: "manufacturer", icon: "domain", label: lang === "en" ? "Enterprise" : "Doanh nghiệp" },
+                      ] as const).map(opt => (
+                        <button
+                          key={opt.key}
+                          type="button"
+                          onClick={() => { setRegRole(opt.key); setRegStep(1); }}
+                          className={`flex items-center gap-2 px-3 py-3 rounded-xl border text-sm font-bold transition ${
+                            regRole === opt.key
+                              ? "bg-[#1F6FEB]/15 border-[#1F6FEB]/50 text-white"
+                              : "bg-[#131b2c] border-slate-700/50 text-slate-400 hover:border-slate-500"
+                          }`}
+                        >
+                          <span className={`material-symbols-outlined text-[20px] ${regRole === opt.key ? "text-[#1F6FEB]" : ""}`}>{opt.icon}</span>
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                </>)}
 
-                {/* ── Business fields: chỉ hiện khi chọn NSX / NNK ── */}
-                {isBusiness && (
+                {/* ── Bước 1: Thông tin doanh nghiệp ── */}
+                {isBusiness && regStep === 1 && (
                   <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-xl">
                       <span className="material-symbols-outlined text-amber-400 text-[16px] shrink-0">business_center</span>
@@ -640,10 +696,10 @@ export default function LoginPage() {
                         Tên công ty / Doanh nghiệp <span className="text-red-400">*</span>
                       </label>
                       <div className="relative">
-                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">apartment</span>
+                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">apartment</span>
                         <input required={isBusiness} type="text" value={regCompany} onChange={e => setRegCompany(e.target.value)}
                           className={`w-full bg-[#131b2c] border rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white ${
-                            !regCompany && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#C8A557]/50 focus:ring-[#C8A557]/50"
+                            !regCompany && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
                           }`}
                           placeholder="VD: Công ty TNHH ABC Việt Nam" />
                       </div>
@@ -659,7 +715,7 @@ export default function LoginPage() {
                         <input required={isBusiness} type="text" value={regTaxCode} onChange={e => setRegTaxCode(e.target.value.replace(/[^0-9-]/g,""))}
                           maxLength={14}
                           className={`w-full bg-[#131b2c] border rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white font-mono ${
-                            regTaxCode && !/^\d{10}(\d{3})?$/.test(regTaxCode.replace(/-/g,"")) ? "border-red-500/60 focus:ring-red-500/30" : !regTaxCode && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#C8A557]/50 focus:ring-[#C8A557]/50"
+                            regTaxCode && !/^\d{10}(\d{3})?$/.test(regTaxCode.replace(/-/g,"")) ? "border-red-500/60 focus:ring-red-500/30" : !regTaxCode && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
                           }`}
                           placeholder="VD: 0123456789" />
                       </div>
@@ -677,11 +733,11 @@ export default function LoginPage() {
                         Địa chỉ nhà máy / kho hàng <span className="text-red-400">*</span>
                       </label>
                       <div className="relative">
-                        <span className="material-symbols-outlined absolute left-4 top-3.5 text-[#C8A557] text-xl">location_on</span>
+                        <span className="material-symbols-outlined absolute left-4 top-3.5 text-[#1F6FEB] text-xl">location_on</span>
                         <textarea required={isBusiness} value={regAddress} onChange={e => setRegAddress(e.target.value)}
                           rows={2}
                           className={`w-full bg-[#131b2c] border rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white resize-none ${
-                            !regAddress && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#C8A557]/50 focus:ring-[#C8A557]/50"
+                            !regAddress && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
                           }`}
                           placeholder="VD: Số 10 Lý Thái Tổ, Quận 1, TP.HCM" />
                       </div>
@@ -694,31 +750,37 @@ export default function LoginPage() {
                         <span className="ml-2 text-[10px] font-normal text-slate-500 normal-case">(không bắt buộc)</span>
                       </label>
                       <div className="relative">
-                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">support_agent</span>
+                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">support_agent</span>
                         <input type="tel" value={regHotline} onChange={e => setRegHotline(e.target.value)}
-                          className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-[#C8A557]/50 focus:ring-1 focus:ring-[#C8A557]/50 transition-all placeholder:text-slate-600"
+                          className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
                           placeholder="VD: 1800 xxxx" />
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* ── Bước 2: Cung cấp giấy tờ (chỉ Doanh nghiệp) ── */}
+                {isBusiness && regStep === 2 && (
+                  <div className="space-y-3 animate-in fade-in slide-in-from-right-4 duration-300">
                     {/* ── KYC Document Upload Section ── */}
                     <div className="pt-2">
-                      <div className="flex items-center gap-2 px-3 py-2 bg-[#C8A557]/10 border border-[#C8A557]/20 rounded-xl mb-3">
-                        <span className="material-symbols-outlined text-[#C8A557] text-[16px] shrink-0">folder_open</span>
-                        <p className="text-xs text-cyan-300 font-medium">Tải lên tài liệu pháp lý (BR-01) để Admin xét duyệt nhanh hơn</p>
+                      <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-xl mb-3">
+                        <span className="material-symbols-outlined text-amber-400 text-[16px] shrink-0">priority_high</span>
+                        <p className="text-xs text-amber-300 font-medium">Bắt buộc nộp đủ cả 2 giấy tờ pháp lý (BR-01) để hoàn tất đăng ký</p>
                       </div>
 
                       {/* Giấy phép Kinh doanh */}
                       <div className="mb-3">
                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                          Giấy phép Kinh doanh <span className="text-slate-500 text-[10px] font-normal normal-case">(PDF, JPG, PNG · max 10MB)</span>
+                          Giấy phép Kinh doanh <span className="text-red-400">*</span> <span className="text-slate-500 text-[10px] font-normal normal-case">(PDF, JPG, PNG · max 10MB)</span>
                         </label>
                         <label className={`flex items-center gap-3 w-full bg-[#131b2c] border rounded-xl py-3 px-4 cursor-pointer transition-all
-                          ${uploadedKycUrls['giayphep'] ? 'border-[#4A7C5C]/40 bg-[#4A7C5C]/5' : 'border-slate-700/50 hover:border-[#C8A557]/40'}`}>
+                          ${uploadedKycUrls['giayphep'] ? 'border-[#4A7C5C]/40 bg-[#4A7C5C]/5' : 'border-slate-700/50 hover:border-[#1F6FEB]/40'}`}>
                           <span className={`material-symbols-outlined text-xl ${uploadedKycUrls['giayphep'] ? 'text-[#6FB585]' : 'text-amber-400'}`}>description</span>
                           <span className="text-sm flex-1 truncate text-slate-300">
                             {uploadingKyc['giayphep'] ? 'Đang tải lên...' : uploadedKycUrls['giayphep'] ? `✓ ${regGiayphep?.name}` : 'Chọn hoặc kéo thả file vào đây'}
                           </span>
-                          {uploadingKyc['giayphep'] && <span className="w-4 h-4 border-2 border-[#C8A557] border-t-transparent rounded-full animate-spin shrink-0" />}
+                          {uploadingKyc['giayphep'] && <span className="w-4 h-4 border-2 border-[#1F6FEB] border-t-transparent rounded-full animate-spin shrink-0" />}
                           <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden"
                             onChange={async (e) => {
                               const f = e.target.files?.[0];
@@ -745,15 +807,15 @@ export default function LoginPage() {
                       {/* CMND / CCCD */}
                       <div>
                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                          CMND / CCCD Người đại diện <span className="text-slate-500 text-[10px] font-normal normal-case">(PDF, JPG, PNG · max 10MB)</span>
+                          CMND / CCCD Người đại diện <span className="text-red-400">*</span> <span className="text-slate-500 text-[10px] font-normal normal-case">(PDF, JPG, PNG · max 10MB)</span>
                         </label>
                         <label className={`flex items-center gap-3 w-full bg-[#131b2c] border rounded-xl py-3 px-4 cursor-pointer transition-all
-                          ${uploadedKycUrls['cmnd'] ? 'border-[#4A7C5C]/40 bg-[#4A7C5C]/5' : 'border-slate-700/50 hover:border-[#C8A557]/40'}`}>
+                          ${uploadedKycUrls['cmnd'] ? 'border-[#4A7C5C]/40 bg-[#4A7C5C]/5' : 'border-slate-700/50 hover:border-[#1F6FEB]/40'}`}>
                           <span className={`material-symbols-outlined text-xl ${uploadedKycUrls['cmnd'] ? 'text-[#6FB585]' : 'text-amber-400'}`}>badge</span>
                           <span className="text-sm flex-1 truncate text-slate-300">
                             {uploadingKyc['cmnd'] ? 'Đang tải lên...' : uploadedKycUrls['cmnd'] ? `✓ ${regCmnd?.name}` : 'Chọn hoặc kéo thả file vào đây'}
                           </span>
-                          {uploadingKyc['cmnd'] && <span className="w-4 h-4 border-2 border-[#C8A557] border-t-transparent rounded-full animate-spin shrink-0" />}
+                          {uploadingKyc['cmnd'] && <span className="w-4 h-4 border-2 border-[#1F6FEB] border-t-transparent rounded-full animate-spin shrink-0" />}
                           <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden"
                             onChange={async (e) => {
                               const f = e.target.files?.[0];
@@ -781,17 +843,18 @@ export default function LoginPage() {
                   </div>
                 )}
 
+                {regStep === 1 && (
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                     Mật khẩu <span className="text-red-400">*</span>
                     <span className="ml-2 text-[10px] font-normal text-slate-500 normal-case">(8–20 ký tự · hoa + thường + số + ký tự đặc biệt)</span>
                   </label>
                   <div className="relative">
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">lock</span>
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">lock</span>
                     <input required type={showPassword ? "text" : "password"} value={regPassword}
                       onChange={(e) => setRegPassword(e.target.value.slice(0, 20))}
                       maxLength={20} minLength={8}
-                      className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-12 focus:outline-none focus:border-[#C8A557]/50 focus:ring-1 focus:ring-[#C8A557]/50 transition-all placeholder:text-slate-600"
+                      className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-12 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
                       placeholder="VD: Abc@1234" />
                     <button type="button" onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
@@ -832,16 +895,29 @@ export default function LoginPage() {
                     );
                   })()}
                 </div>
+                )}
 
-                <button type="submit" disabled={loading || !!regPhoneError}
-                  style={{ background: 'linear-gradient(135deg,#E4D2A1,#C8A557)' }}
-                  className="w-full mt-6 text-[#0B1623] font-bold py-3.5 rounded-xl shadow-lg shadow-[#C8A557]/20 transition-all flex items-center justify-center gap-2 group relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-105">
-                  {loading ? (
-                    <span className="animate-spin w-5 h-5 border-2 border-[#0B1623]/30 border-t-[#0B1623] rounded-full"></span>
-                  ) : (
-                    <>{t("reg_btn")} <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">person_add</span></>
+                {/* Footer — điều hướng 2 bước */}
+                <div className="flex gap-2 mt-6">
+                  {isBusiness && regStep === 2 && (
+                    <button type="button" onClick={() => setRegStep(1)}
+                      className="px-4 py-3.5 rounded-xl border border-white/15 text-slate-300 font-bold hover:bg-white/5 transition flex items-center gap-1 shrink-0">
+                      <span className="material-symbols-outlined text-xl">arrow_back</span>
+                      {lang === "en" ? "Back" : "Quay lại"}
+                    </button>
                   )}
-                </button>
+                  <button type="submit" disabled={loading || !!regPhoneError}
+                    style={{ background: '#1F6FEB' }}
+                    className="flex-1 text-[#ffffff] font-bold py-3.5 rounded-xl shadow-lg shadow-[#1F6FEB]/20 transition-all flex items-center justify-center gap-2 group relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-105">
+                    {loading ? (
+                      <span className="animate-spin w-5 h-5 border-2 border-[#ffffff]/30 border-t-[#ffffff] rounded-full"></span>
+                    ) : isBusiness && regStep === 1 ? (
+                      <>{lang === "en" ? "Continue" : "Tiếp tục"} <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span></>
+                    ) : (
+                      <>{t("reg_btn")} <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">person_add</span></>
+                    )}
+                  </button>
+                </div>
               </form>
             </div>
           )}
@@ -868,30 +944,30 @@ export default function LoginPage() {
                 {/* Bước 1 */}
                 <div className="flex flex-col items-center gap-1 shrink-0">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-                    ${otpStep >= 1 ? "bg-[#C8A557] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
+                    ${otpStep >= 1 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
                     {otpStep > 1 ? <span className="material-symbols-outlined text-[15px]">check</span> : "1"}
                   </div>
-                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 1 ? "text-[#C8A557]" : "text-slate-600"}`}>Email</span>
+                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 1 ? "text-[#1F6FEB]" : "text-slate-600"}`}>Email</span>
                 </div>
                 {/* Line 1→2 */}
-                <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${otpStep > 1 ? "bg-[#C8A557]" : "bg-white/10"}`} />
+                <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${otpStep > 1 ? "bg-[#1F6FEB]" : "bg-white/10"}`} />
                 {/* Bước 2 */}
                 <div className="flex flex-col items-center gap-1 shrink-0">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-                    ${otpStep >= 2 ? "bg-[#C8A557] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
+                    ${otpStep >= 2 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
                     {otpStep > 2 ? <span className="material-symbols-outlined text-[15px]">check</span> : "2"}
                   </div>
-                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 2 ? "text-[#C8A557]" : "text-slate-600"}`}>OTP</span>
+                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 2 ? "text-[#1F6FEB]" : "text-slate-600"}`}>OTP</span>
                 </div>
                 {/* Line 2→3 */}
-                <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${otpStep > 2 ? "bg-[#C8A557]" : "bg-white/10"}`} />
+                <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${otpStep > 2 ? "bg-[#1F6FEB]" : "bg-white/10"}`} />
                 {/* Bước 3 */}
                 <div className="flex flex-col items-center gap-1 shrink-0">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-                    ${otpStep >= 3 ? "bg-[#C8A557] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
+                    ${otpStep >= 3 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
                     {otpStep > 3 ? <span className="material-symbols-outlined text-[15px]">check</span> : "3"}
                   </div>
-                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 3 ? "text-[#C8A557]" : "text-slate-600"}`}>Mật khẩu</span>
+                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 3 ? "text-[#1F6FEB]" : "text-slate-600"}`}>Mật khẩu</span>
                 </div>
               </div>
 
@@ -901,26 +977,26 @@ export default function LoginPage() {
                   <div>
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Địa chỉ Email</label>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">contact_mail</span>
+                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">contact_mail</span>
                       <input
                         type="email" value={otpEmail}
                         onChange={e => setOtpEmail(e.target.value)}
                         onKeyDown={e => e.key === "Enter" && sendOtp()}
-                        className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:border-[#C8A557]/50 focus:ring-1 focus:ring-[#C8A557]/50 transition-all placeholder:text-slate-600"
+                        className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
                         placeholder="example@gmail.com"
                         autoFocus
                       />
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 p-3 bg-[#C8A557]/10 border border-[#C8A557]/20 rounded-xl">
-                    <span className="material-symbols-outlined text-[#C8A557] text-[18px] shrink-0">mail</span>
+                  <div className="flex items-center gap-2 p-3 bg-[#1F6FEB]/10 border border-[#1F6FEB]/20 rounded-xl">
+                    <span className="material-symbols-outlined text-[#1F6FEB] text-[18px] shrink-0">mail</span>
                     <p className="text-xs text-slate-300">Mã OTP 6 chữ số sẽ được gửi qua <strong className="text-white">Gmail</strong>. Kiểm tra cả thư mục Spam nếu không thấy.</p>
                   </div>
                   <button onClick={sendOtp} disabled={loading}
-                    style={{ background: 'linear-gradient(135deg,#E4D2A1,#C8A557)' }}
-                    className="w-full text-[#0B1623] font-bold py-3.5 rounded-xl shadow-lg shadow-[#C8A557]/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 hover:brightness-105">
+                    style={{ background: '#1F6FEB' }}
+                    className="w-full text-[#ffffff] font-bold py-3.5 rounded-xl shadow-lg shadow-[#1F6FEB]/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 hover:brightness-105">
                     {loading
-                      ? <span className="animate-spin w-5 h-5 border-2 border-[#0B1623]/30 border-t-[#0B1623] rounded-full" />
+                      ? <span className="animate-spin w-5 h-5 border-2 border-[#ffffff]/30 border-t-[#ffffff] rounded-full" />
                       : <><span className="material-symbols-outlined text-xl">send</span> Gửi mã OTP</>
                     }
                   </button>
@@ -942,8 +1018,8 @@ export default function LoginPage() {
                           onKeyDown={e => handleOtpKey(e, idx)}
                           onChange={() => {}}
                           className={`w-12 h-14 text-center text-2xl font-bold rounded-xl border transition-all outline-none
-                            ${digit ? "border-[#C8A557] bg-[#C8A557]/10 text-cyan-300" : "border-slate-700/50 bg-[#131b2c] text-white"}
-                            focus:border-[#C8A557] focus:ring-2 focus:ring-[#C8A557]/30`}
+                            ${digit ? "border-[#1F6FEB] bg-[#1F6FEB]/10 text-cyan-300" : "border-slate-700/50 bg-[#131b2c] text-white"}
+                            focus:border-[#1F6FEB] focus:ring-2 focus:ring-[#1F6FEB]/30`}
                           autoFocus={idx === 0}
                         />
                       ))}
@@ -955,7 +1031,7 @@ export default function LoginPage() {
                     {otpCountdown > 0 ? (
                       <p className="text-sm text-slate-400">
                         Mã hết hạn sau{" "}
-                        <span className="font-bold text-[#C8A557]">
+                        <span className="font-bold text-[#1F6FEB]">
                           {Math.floor(otpCountdown / 60).toString().padStart(2, "0")}:{(otpCountdown % 60).toString().padStart(2, "0")}
                         </span>
                       </p>
@@ -965,10 +1041,10 @@ export default function LoginPage() {
                   </div>
 
                   <button onClick={verifyOtp} disabled={loading || otpCode.join("").length < 6}
-                    style={{ background: 'linear-gradient(135deg,#E4D2A1,#C8A557)' }}
-                    className="w-full text-[#0B1623] font-bold py-3.5 rounded-xl shadow-lg shadow-[#C8A557]/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 hover:brightness-105">
+                    style={{ background: '#1F6FEB' }}
+                    className="w-full text-[#ffffff] font-bold py-3.5 rounded-xl shadow-lg shadow-[#1F6FEB]/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 hover:brightness-105">
                     {loading
-                      ? <span className="animate-spin w-5 h-5 border-2 border-[#0B1623]/30 border-t-[#0B1623] rounded-full" />
+                      ? <span className="animate-spin w-5 h-5 border-2 border-[#ffffff]/30 border-t-[#ffffff] rounded-full" />
                       : <><span className="material-symbols-outlined text-xl">verified</span> Xác nhận OTP</>
                     }
                   </button>
@@ -977,7 +1053,7 @@ export default function LoginPage() {
                   <div className="text-center">
                     <button
                       onClick={() => { setOtpStep(1); setOtpCode(["","","","","",""]); }}
-                      className="text-sm text-slate-500 hover:text-[#C8A557] transition-colors">
+                      className="text-sm text-slate-500 hover:text-[#1F6FEB] transition-colors">
                       Không nhận được mã? <span className="underline font-medium">Gửi lại</span>
                     </button>
                   </div>
@@ -996,11 +1072,11 @@ export default function LoginPage() {
                       Mật khẩu mới <span className="ml-1 text-[10px] font-normal text-slate-500 normal-case">(8–20 ký tự · hoa + thường + số + ký tự đặc biệt)</span>
                     </label>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">lock</span>
+                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">lock</span>
                       <input type={showPassword ? "text" : "password"} value={newPassword}
                         onChange={e => setNewPassword(e.target.value.slice(0, 20))}
                         minLength={8} maxLength={20}
-                        className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-12 focus:outline-none focus:border-[#C8A557]/50 focus:ring-1 focus:ring-[#C8A557]/50 transition-all placeholder:text-slate-600"
+                        className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-12 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
                         placeholder="VD: Abc@1234" autoFocus />
                       <button type="button" onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
@@ -1011,11 +1087,11 @@ export default function LoginPage() {
                   <div>
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Xác nhận mật khẩu</label>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">lock_reset</span>
+                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">lock_reset</span>
                       <input type={showPassword ? "text" : "password"} value={confirmPassword}
                         onChange={e => setConfirmPassword(e.target.value)}
                         className={`w-full bg-[#131b2c] border rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white
-                          ${confirmPassword && confirmPassword !== newPassword ? "border-red-500/60 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#C8A557]/50 focus:ring-[#C8A557]/50"}`}
+                          ${confirmPassword && confirmPassword !== newPassword ? "border-red-500/60 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"}`}
                         placeholder="Nhập lại mật khẩu" />
                       {confirmPassword && confirmPassword !== newPassword && (
                         <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
@@ -1025,10 +1101,10 @@ export default function LoginPage() {
                     </div>
                   </div>
                   <button onClick={resetPassword} disabled={loading || !newPassword || !confirmPassword}
-                    style={{ background: 'linear-gradient(135deg,#E4D2A1,#C8A557)' }}
-                    className="w-full text-[#0B1623] font-bold py-3.5 rounded-xl shadow-lg shadow-[#C8A557]/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 mt-2 hover:brightness-105">
+                    style={{ background: '#1F6FEB' }}
+                    className="w-full text-[#ffffff] font-bold py-3.5 rounded-xl shadow-lg shadow-[#1F6FEB]/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 mt-2 hover:brightness-105">
                     {loading
-                      ? <span className="animate-spin w-5 h-5 border-2 border-[#0B1623]/30 border-t-[#0B1623] rounded-full" />
+                      ? <span className="animate-spin w-5 h-5 border-2 border-[#ffffff]/30 border-t-[#ffffff] rounded-full" />
                       : <><span className="material-symbols-outlined text-xl">key</span> Đặt lại mật khẩu</>
                     }
                   </button>
@@ -1042,22 +1118,21 @@ export default function LoginPage() {
         {view === 'login' && (
           <div style={{ marginTop:16 }}>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
-              <div style={{ flex:1, height:1, background:'rgba(200,165,87,0.15)' }} />
-              <span style={{ fontSize:10, fontWeight:600, color:'rgba(246,241,232,0.35)', letterSpacing:'0.15em', textTransform:'uppercase' }}>{t('demo_label')}</span>
-              <div style={{ flex:1, height:1, background:'rgba(200,165,87,0.15)' }} />
+              <div style={{ flex:1, height:1, background:'rgba(31,111,235,0.15)' }} />
+              <span style={{ fontSize:10, fontWeight:600, color:'rgba(13,27,46,0.35)', letterSpacing:'0.15em', textTransform:'uppercase' }}>{t('demo_label')}</span>
+              <div style={{ flex:1, height:1, background:'rgba(31,111,235,0.15)' }} />
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
               {[
-                { role:'manufacturer', user:'nsx@vntrust.vn', label:t('demo_mfr'), color:'#C8A557' },
-                { role:'importer', user:'nhapkhau@vntrust.vn', label:t('demo_imp'), color:'#6FB585' },
+                { role:'manufacturer', user:'nsx@vntrust.vn', label:t('demo_mfr'), color:'#1F6FEB' },
                 { role:'consumer', user:'nguoitieudung@vntrust.vn', label:t('demo_con'), color:'#52c2c2' },
                 { role:'admin', user:'admin@vntrust.vn', label:t('demo_admin'), color:'#C8893A' },
               ].map(d => (
-                <button key={d.role} onClick={() => handleDemoLogin(d.role, d.user)} style={{ background:'rgba(246,241,232,0.04)', border:'1px solid rgba(200,165,87,0.12)', borderRadius:12, padding:'12px 8px', display:'flex', flexDirection:'column', alignItems:'center', gap:6, cursor:'pointer', transition:'all 0.2s' }}>
+                <button key={d.role} onClick={() => handleDemoLogin(d.role, d.user)} style={{ background:'rgba(13,27,46,0.04)', border:'1px solid rgba(31,111,235,0.12)', borderRadius:12, padding:'12px 8px', display:'flex', flexDirection:'column', alignItems:'center', gap:6, cursor:'pointer', transition:'all 0.2s' }}>
                   <div style={{ width: 22, height: 22, color: d.color }}>
                     {roleIconsSvg[d.role]}
                   </div>
-                  <span style={{ fontSize:11, fontWeight:600, color:'#F6F1E8', fontFamily:'Outfit,sans-serif' }}>{d.label}</span>
+                  <span style={{ fontSize:11, fontWeight:600, color:'#0d1b2e', fontFamily:'Outfit,sans-serif' }}>{d.label}</span>
                 </button>
               ))}
             </div>

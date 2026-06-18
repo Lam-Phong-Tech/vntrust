@@ -31,14 +31,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const cookieStore = await cookies();
   const userRole = cookieStore.get('userRole')?.value || '';
   return (
-    <html lang="vi" className={`${fontManrope.variable} ${fontInter.variable} h-full antialiased`}>
+    <html lang="vi" className={`light-mode ${fontManrope.variable} ${fontInter.variable} h-full antialiased`}>
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="theme-color" content="#0B1623" />
+        <meta name="theme-color" content="#1F6FEB" />
       </head>
       <body className="min-h-full flex flex-col font-body selection:bg-[#C8A557]/30 overflow-x-hidden">
         <ClientShell initialRole={userRole}>
