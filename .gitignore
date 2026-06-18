@@ -67,3 +67,7 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# Root package.json/lock (chi cho ops scripts da loai khoi repo) — khong commit
+/package.json
+/package-lock.json
