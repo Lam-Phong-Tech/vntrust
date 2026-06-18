@@ -144,11 +144,8 @@ export default function ForgotPasswordPage() {
 
       {/* Logo */}
       <div className="flex flex-col items-center mb-8 z-10">
-        <div className="w-16 h-16 bg-gradient-to-br from-[#C8A557]/20 to-[#E4D2A1]/10 rounded-3xl flex items-center justify-center mb-4 border border-[#C8A557]/20 shadow-lg shadow-blue-900/20">
-          <span className="material-symbols-outlined text-4xl text-[#C8A557]">shield_person</span>
-        </div>
-        <h1 className="text-3xl font-display font-bold text-white tracking-tight">AI VeriGoods</h1>
-        <p className="text-slate-400 mt-2 text-sm text-center">Nền tảng xác thực hàng hóa chống giả mạo toàn quốc</p>
+        <img src="/verigoods-logo.png" alt="AI VeriGoods" className="w-28 h-28 object-contain mb-2" />
+        <p className="text-slate-400 mt-1 text-sm text-center">Nền tảng xác thực hàng hóa chống giả mạo toàn quốc</p>
       </div>
 
       {/* Card */}
@@ -175,26 +172,26 @@ export default function ForgotPasswordPage() {
         <div className="flex items-center mb-7">
           <div className="flex flex-col items-center gap-1 shrink-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-              ${step >= 1 ? "bg-[#C8A557] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
+              ${step >= 1 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
               {step > 1 ? <span className="material-symbols-outlined text-[15px]">check</span> : "1"}
             </div>
-            <span className={`text-[9px] font-bold tracking-wider uppercase ${step >= 1 ? "text-[#C8A557]" : "text-slate-600"}`}>Email</span>
+            <span className={`text-[9px] font-bold tracking-wider uppercase ${step >= 1 ? "text-[#1F6FEB]" : "text-slate-600"}`}>Email</span>
           </div>
-          <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${step > 1 ? "bg-[#C8A557]" : "bg-white/10"}`} />
+          <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${step > 1 ? "bg-[#1F6FEB]" : "bg-white/10"}`} />
           <div className="flex flex-col items-center gap-1 shrink-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-              ${step >= 2 ? "bg-[#C8A557] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
+              ${step >= 2 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
               {step > 2 ? <span className="material-symbols-outlined text-[15px]">check</span> : "2"}
             </div>
-            <span className={`text-[9px] font-bold tracking-wider uppercase ${step >= 2 ? "text-[#C8A557]" : "text-slate-600"}`}>OTP</span>
+            <span className={`text-[9px] font-bold tracking-wider uppercase ${step >= 2 ? "text-[#1F6FEB]" : "text-slate-600"}`}>OTP</span>
           </div>
-          <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${step > 2 ? "bg-[#C8A557]" : "bg-white/10"}`} />
+          <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${step > 2 ? "bg-[#1F6FEB]" : "bg-white/10"}`} />
           <div className="flex flex-col items-center gap-1 shrink-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-              ${step >= 3 ? "bg-[#C8A557] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
+              ${step >= 3 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
               3
             </div>
-            <span className={`text-[9px] font-bold tracking-wider uppercase ${step >= 3 ? "text-[#C8A557]" : "text-slate-600"}`}>Mật khẩu</span>
+            <span className={`text-[9px] font-bold tracking-wider uppercase ${step >= 3 ? "text-[#1F6FEB]" : "text-slate-600"}`}>Mật khẩu</span>
           </div>
         </div>
 
@@ -204,20 +201,20 @@ export default function ForgotPasswordPage() {
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Địa chỉ Email</label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">contact_mail</span>
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">contact_mail</span>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && sendOtp()}
-                  className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:border-[#C8A557]/50 focus:ring-1 focus:ring-[#C8A557]/50 transition-all placeholder:text-slate-600"
+                  className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
                   placeholder="example@gmail.com" autoFocus />
               </div>
             </div>
-            <div className="flex items-center gap-2 p-3 bg-[#C8A557]/10 border border-[#C8A557]/20 rounded-xl">
-              <span className="material-symbols-outlined text-[#C8A557] text-[18px] shrink-0">mail</span>
+            <div className="flex items-center gap-2 p-3 bg-[#1F6FEB]/10 border border-[#1F6FEB]/20 rounded-xl">
+              <span className="material-symbols-outlined text-[#1F6FEB] text-[18px] shrink-0">mail</span>
               <p className="text-xs text-slate-300">Mã OTP 6 chữ số sẽ được gửi đến <strong className="text-white">email bạn nhập</strong> qua Gmail.</p>
             </div>
             <button onClick={sendOtp} disabled={loading}
-              className="w-full bg-gradient-to-r from-[#E4D2A1] to-[#C8A557] hover:from-[#C8A557] hover:to-[#A6873E] text-[#0B1623] font-bold py-3.5 rounded-xl shadow-lg shadow-[#C8A557]/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-              {loading ? <span className="animate-spin w-5 h-5 border-2 border-[#0b1320]/30 border-t-[#0b1320] rounded-full" />
+              className="w-full bg-gradient-to-r from-[#60A5FA] to-[#1F6FEB] hover:from-[#1F6FEB] hover:to-[#1D4ED8] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-[#1F6FEB]/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+              {loading ? <span className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full" />
                 : <><span className="material-symbols-outlined text-xl">send</span> Gửi mã OTP</>}
             </button>
           </div>
@@ -235,25 +232,25 @@ export default function ForgotPasswordPage() {
                     onKeyDown={e => handleOtpKey(e, idx)}
                     onChange={() => {}}
                     className={`w-12 h-14 text-center text-2xl font-bold rounded-xl border transition-all outline-none
-                      ${digit ? "border-[#C8A557] bg-[#C8A557]/10 text-[#C8A557]" : "border-slate-700/50 bg-[#131b2c] text-white"}
-                      focus:border-[#C8A557] focus:ring-2 focus:ring-[#C8A557]/30`}
+                      ${digit ? "border-[#1F6FEB] bg-[#1F6FEB]/10 text-[#1F6FEB]" : "border-slate-700/50 bg-[#131b2c] text-white"}
+                      focus:border-[#1F6FEB] focus:ring-2 focus:ring-[#1F6FEB]/30`}
                     autoFocus={idx === 0} />
                 ))}
               </div>
             </div>
             <div className="text-center">
               {countdown > 0
-                ? <p className="text-sm text-slate-400">Hết hạn sau <span className="font-bold text-[#C8A557]">{Math.floor(countdown / 60).toString().padStart(2, "0")}:{(countdown % 60).toString().padStart(2, "0")}</span></p>
+                ? <p className="text-sm text-slate-400">Hết hạn sau <span className="font-bold text-[#1F6FEB]">{Math.floor(countdown / 60).toString().padStart(2, "0")}:{(countdown % 60).toString().padStart(2, "0")}</span></p>
                 : <p className="text-sm text-red-400 font-medium">Mã đã hết hạn</p>}
             </div>
             <button onClick={verifyOtp} disabled={loading || otpCode.join("").length < 6}
-              className="w-full bg-gradient-to-r from-[#E4D2A1] to-[#C8A557] hover:from-[#C8A557] hover:to-[#A6873E] text-[#0B1623] font-bold py-3.5 rounded-xl shadow-lg shadow-[#C8A557]/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-              {loading ? <span className="animate-spin w-5 h-5 border-2 border-[#0b1320]/30 border-t-[#0b1320] rounded-full" />
+              className="w-full bg-gradient-to-r from-[#60A5FA] to-[#1F6FEB] hover:from-[#1F6FEB] hover:to-[#1D4ED8] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-[#1F6FEB]/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+              {loading ? <span className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full" />
                 : <><span className="material-symbols-outlined text-xl">verified</span> Xác nhận OTP</>}
             </button>
             <div className="text-center">
               <button onClick={() => { setStep(1); setOtpCode(["", "", "", "", "", ""]); }}
-                className="text-sm text-slate-500 hover:text-[#C8A557] transition-colors">
+                className="text-sm text-slate-500 hover:text-[#1F6FEB] transition-colors">
                 Không nhận được? <span className="underline font-medium">Gửi lại</span>
               </button>
             </div>
@@ -272,11 +269,11 @@ export default function ForgotPasswordPage() {
                 Mật khẩu mới <span className="ml-1 text-[10px] font-normal text-slate-500 normal-case">(8–20 ký tự · hoa + thường + số + ký tự đặc biệt)</span>
               </label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">lock</span>
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">lock</span>
                 <input type={showPassword ? "text" : "password"} value={newPassword}
                   onChange={e => setNewPassword(e.target.value.slice(0, 20))}
                   minLength={8} maxLength={20}
-                  className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-12 focus:outline-none focus:border-[#C8A557]/50 focus:ring-1 focus:ring-[#C8A557]/50 transition-all placeholder:text-slate-600"
+                  className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-12 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
                   placeholder="VD: Abc@1234" autoFocus />
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
@@ -318,12 +315,12 @@ export default function ForgotPasswordPage() {
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Xác nhận mật khẩu</label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#C8A557] text-xl">lock_reset</span>
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">lock_reset</span>
                 <input type={showPassword ? "text" : "password"} value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value.slice(0, 20))}
                   maxLength={20}
                   className={`w-full bg-[#131b2c] border rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white
-                    ${confirmPassword && confirmPassword !== newPassword ? "border-red-500/60 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#C8A557]/50 focus:ring-[#C8A557]/50"}`}
+                    ${confirmPassword && confirmPassword !== newPassword ? "border-red-500/60 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"}`}
                   placeholder="Nhập lại mật khẩu" />
                 {confirmPassword && confirmPassword !== newPassword && (
                   <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
@@ -333,8 +330,8 @@ export default function ForgotPasswordPage() {
               </div>
             </div>
             <button onClick={resetPassword} disabled={loading || !newPassword || !confirmPassword}
-              className="w-full bg-gradient-to-r from-[#E4D2A1] to-[#C8A557] hover:from-[#C8A557] hover:to-[#A6873E] text-[#0B1623] font-bold py-3.5 rounded-xl shadow-lg shadow-[#C8A557]/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2">
-              {loading ? <span className="animate-spin w-5 h-5 border-2 border-[#0b1320]/30 border-t-[#0b1320] rounded-full" />
+              className="w-full bg-gradient-to-r from-[#60A5FA] to-[#1F6FEB] hover:from-[#1F6FEB] hover:to-[#1D4ED8] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-[#1F6FEB]/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2">
+              {loading ? <span className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full" />
                 : <><span className="material-symbols-outlined text-xl">key</span> Đặt lại mật khẩu</>}
             </button>
           </div>
