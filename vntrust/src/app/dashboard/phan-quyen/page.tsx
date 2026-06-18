@@ -3,8 +3,7 @@
 // Bố cục: sidebar quản trị + thẻ thống kê + ma trận quyền (toggle).
 // Lưu thật vào /api/system-config (key=roles_permissions, namespace=permission).
 import { useEffect, useState, useCallback, useMemo } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 // ─── Vai trò (đồng bộ với /dashboard/users) — 4 vai trò ──────────────────────
@@ -48,50 +47,6 @@ function defaultMatrix(): Matrix {
   ["canh_bao", "bao_cao", "doanh_nghiep"].forEach(k => (m.authority[k] = true));
   // consumer: không có quyền backend
   return m;
-}
-
-// ─── Sidebar quản trị ────────────────────────────────────────────────────────
-const NAV: Array<{ href: string; label: string; en: string; icon: string }> = [
-  { href: "/dashboard",               label: "Tổng quan",      en: "Overview",     icon: "dashboard" },
-  { href: "/dashboard/users",         label: "Người dùng",     en: "Users",        icon: "group" },
-  { href: "/dashboard/kyc",           label: "Doanh nghiệp",   en: "Enterprises",  icon: "domain" },
-  { href: "/dashboard/rewards",       label: "Điểm thưởng",    en: "Rewards",      icon: "stars" },
-  { href: "/dashboard/alerts",        label: "Cảnh báo",       en: "Alerts",       icon: "notifications_active" },
-  { href: "/dashboard/security",      label: "Bảo mật",        en: "Security",     icon: "security" },
-  { href: "/dashboard/system-config", label: "Cấu hình",       en: "Config",       icon: "settings" },
-  { href: "/dashboard/phan-quyen",    label: "Phân quyền",     en: "Permissions",  icon: "key" },
-];
-
-function Sidebar({ tr }: { tr: (vi: string, en: string) => string }) {
-  const pathname = usePathname();
-  return (
-    <aside className="hidden lg:flex flex-col w-60 shrink-0">
-      <div className="sticky top-24 rounded-3xl bg-white/[0.03] border border-white/10 p-3 backdrop-blur-sm">
-        <p className="px-3 pt-2 pb-3 text-[10px] font-bold text-[#C8A557] uppercase tracking-widest">
-          {tr("Quản trị hệ thống", "System admin")}
-        </p>
-        <nav className="flex flex-col gap-1">
-          {NAV.map(item => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
-                  active
-                    ? "bg-gradient-to-r from-[#C8A557]/25 to-[#C8A557]/5 text-white border border-[#C8A557]/30 shadow-[0_0_20px_-6px_rgba(200,165,87,0.4)]"
-                    : "text-slate-300 hover:bg-white/5 hover:text-white border border-transparent"
-                }`}
-              >
-                <span className={`material-symbols-outlined text-[20px] ${active ? "text-[#C8A557]" : ""}`}>{item.icon}</span>
-                {tr(item.label, item.en)}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-    </aside>
-  );
 }
 
 // ─── Toggle switch ───────────────────────────────────────────────────────────
@@ -214,8 +169,6 @@ export default function PhanQuyenPage() {
   return (
     <div className="min-h-screen w-full p-4 sm:p-6 lg:p-8 pb-[100px] md:pb-8 max-w-[1500px] mx-auto">
       <div className="flex gap-6">
-        <Sidebar tr={tr} />
-
         {/* ── Nội dung ── */}
         <div className="flex-1 min-w-0">
           {/* Header */}
