@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
     }
 
     const gmailUser = process.env.GMAIL_USER;
-    const gmailPass = process.env.GMAIL_APP_PASSWORD;
+    // App password Gmail là 16 ký tự; Google hiển thị kèm dấu cách — strip để auth chắc chắn đúng
+    const gmailPass = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s+/g, '');
 
     console.log('[OTP] GMAIL_USER:', gmailUser ?? 'NOT SET');
     console.log('[OTP] GMAIL_APP_PASSWORD:', gmailPass ? '***SET***' : 'NOT SET');
@@ -33,15 +34,15 @@ export async function POST(req: NextRequest) {
       port: 465,
       secure: true,
       auth: { user: gmailUser, pass: gmailPass },
+      // Fail-fast thay vì treo vô hạn — nguyên nhân bug "Quên mật khẩu": verify() treo, email không bao giờ gửi
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     });
 
-    try {
-      await transporter.verify();
-      console.log('[OTP] SMTP verified OK');
-    } catch (verifyErr: any) {
-      console.error('[OTP] SMTP verify failed:', verifyErr.message);
-      return NextResponse.json({ error: `Lỗi kết nối Gmail: ${verifyErr.message}` }, { status: 500 });
-    }
+    // ĐÃ BỎ transporter.verify(): đây là bước thừa và chính là chỗ bị TREO
+    // (log dừng ngay trước "SMTP verified OK"). sendMail tự mở kết nối; lỗi sẽ được
+    // catch bên dưới và trả về thông báo rõ ràng thay vì để request treo vô hạn.
 
     const info = await transporter.sendMail({
       from: `"VNTrust" <${gmailUser}>`,
