@@ -84,3 +84,9 @@ next-env.d.ts
 # Prisma generated client — build tao lai bang `npx prisma generate`, khong commit
 /vntrust/src/generated/
 **/src/generated/
+
+# ─── Local ops/dev/patch scripts o GOC repo (chay cuc bo, chua thong tin VPS — KHONG commit) ───
+# App that nam o /vntrust va /mobile_app; goc chi giu config + tai lieu.
+/*.js
+/*.py
+/check*.html
