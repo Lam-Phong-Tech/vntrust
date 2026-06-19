@@ -424,6 +424,7 @@ export default function KYCPage() {
   const [myCompany, setMyCompany]   = useState<Company | null>(null);
   const [loading, setLoading]       = useState(true);
   const [filter, setFilter]         = useState<"all" | "pending" | "verified" | "suspended" | "revoked">("all");
+  const [search, setSearch]         = useState("");
   const [detailModal, setDetailModal] = useState<{ company: Company; defaultTab?: "info" | "docs" | "action"; defaultLyDo?: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast]           = useState<{ msg: string; ok: boolean } | null>(null);
@@ -657,7 +658,11 @@ export default function KYCPage() {
 
   if (!userRole) return null;
 
-  const filtered = companies.filter(c => filter === "all" || c.trangThai === filter);
+  const q = search.trim().toLowerCase();
+  const filtered = companies.filter(c =>
+    (filter === "all" || c.trangThai === filter) &&
+    (!q || (c.ten || "").toLowerCase().includes(q) || (c.maSoThue || "").toLowerCase().includes(q) || (c.email || "").toLowerCase().includes(q))
+  );
   const counts = {
     all: companies.length,
     pending: companies.filter(c => c.trangThai === "pending").length,
@@ -731,10 +736,23 @@ export default function KYCPage() {
           </div>
         ) : userRole === "admin" ? (
           /* ── ADMIN VIEW ──────────────────────────────────────────────────── */
-          filtered.length === 0 ? (
+          <>
+            {/* #22: Thanh tìm kiếm doanh nghiệp (tên / MST / email) */}
+            <div className="mb-5 relative max-w-md">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+              <input value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="Tìm theo tên doanh nghiệp, MST hoặc email…"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-9 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-cyan-400/50 transition" />
+              {search && (
+                <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                  <span className="material-symbols-outlined text-[18px]">close</span>
+                </button>
+              )}
+            </div>
+            {filtered.length === 0 ? (
             <div className="text-center py-20 text-slate-500">
               <span className="material-symbols-outlined text-5xl mb-3 block">inbox</span>
-              Không có hồ sơ nào
+              {search || filter !== "all" ? "Không tìm thấy doanh nghiệp phù hợp" : "Không có hồ sơ nào"}
             </div>
           ) : (
             <div className="space-y-3">
@@ -803,7 +821,8 @@ export default function KYCPage() {
                 </div>
               ))}
             </div>
-          )
+          )}
+          </>
         ) : myCompany ? (
           /* ── MANUFACTURER / IMPORTER VIEW ───────────────────────────────── */
           <div className="space-y-6 max-w-3xl">
