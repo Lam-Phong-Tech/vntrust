@@ -54,7 +54,7 @@ export default function QRPrintPage() {
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const [confirmModal, setConfirmModal] = useState<{ type: 'regenerate' | 'delete', uid: string | string[] } | null>(null);
   const [selectedUids, setSelectedUids] = useState<Set<string>>(new Set());
-  const [sortBy, setSortBy] = useState<'default' | 'scans-desc' | 'scans-asc'>('default');
+  const [sortBy, setSortBy] = useState<'default' | 'serial-asc' | 'status' | 'scans-desc' | 'scans-asc'>('default');
   // QR zoom — bấm thumbnail để phóng to dễ scan bằng mobile
   const [zoomedUid, setZoomedUid] = useState<string | null>(null);
 
@@ -197,14 +197,17 @@ export default function QRPrintPage() {
   const ngaySX = new Date(batch.ngaySanXuat).toLocaleDateString("vi-VN");
 
   const uidsWithIndex = batch ? batch.uids.map((item, index) => ({ ...item, originalIdx: index })) : [];
+  const statusOrder: Record<string, number> = { fake: 0, flagged: 1, expired: 2, active: 3 };
+  const maOf = (x: { serialNumber?: string | null; uid: string }) => (x.serialNumber || x.uid || '');
   const sortedUids = [...uidsWithIndex].sort((a, b) => {
-    if (sortBy === 'scans-desc') {
-      return b.soLanQuet - a.soLanQuet;
+    if (sortBy === 'scans-desc') return (b.soLanQuet || 0) - (a.soLanQuet || 0);
+    if (sortBy === 'scans-asc')  return (a.soLanQuet || 0) - (b.soLanQuet || 0);
+    if (sortBy === 'serial-asc') return maOf(a).localeCompare(maOf(b), 'vi', { numeric: true });
+    if (sortBy === 'status') {
+      const oa = statusOrder[a.trangThai] ?? 9, ob = statusOrder[b.trangThai] ?? 9;
+      return oa !== ob ? oa - ob : maOf(a).localeCompare(maOf(b), 'vi', { numeric: true });
     }
-    if (sortBy === 'scans-asc') {
-      return a.soLanQuet - b.soLanQuet;
-    }
-    return 0;
+    return 0; // Mặc định: giữ thứ tự gốc
   });
 
   return (
@@ -294,6 +297,8 @@ export default function QRPrintPage() {
                 className="bg-transparent text-sm text-slate-800 font-bold focus:outline-none cursor-pointer"
               >
                 <option value="default">Mặc định</option>
+                <option value="serial-asc">Mã / Serial (A→Z)</option>
+                <option value="status">Trạng thái</option>
                 <option value="scans-desc">Quét nhiều nhất</option>
                 <option value="scans-asc">Quét ít nhất</option>
               </select>
