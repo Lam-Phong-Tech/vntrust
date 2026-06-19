@@ -37,6 +37,7 @@ export default function InventoryPage() {
   const [data, setData] = useState<InvData | null>(null);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<"product" | "batch" | "edit" | "delete" | "cert" | null>(null);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null); // null = thêm mới, có id = sửa
   const [mainTab, setMainTab] = useState<"assets" | "dist">("assets"); // gộp Phân phối vào đây
   const [selectedProduct, setSelectedProduct] = useState<string>("");
   const [selectedBatch, setSelectedBatch] = useState<{
@@ -195,6 +196,7 @@ export default function InventoryPage() {
 
   const closeModal = () => {
     setModal(null);
+    setEditingProductId(null);
     setForm({});
     setImageFile(null);
     setImagePreview(null);
@@ -206,6 +208,34 @@ export default function InventoryPage() {
     setImportFileName("");
   };
 
+  // ── Sửa sản phẩm: mở modal "product" với dữ liệu có sẵn ──
+  const openEditProduct = (sp: any) => {
+    setEditingProductId(sp.id);
+    setForm({ ten: sp.ten || "", moTa: sp.moTa || "", GTIN: sp.GTIN || "", nuocSanXuat: sp.nuocSanXuat || "" });
+    setImageFile(null);
+    setImagePreview((sp as any).hinhAnhUrl || null);
+    setModal("product");
+  };
+
+  // ── Xóa sản phẩm (chặn nếu còn lô hàng) ──
+  const handleDeleteProduct = async (sp: any) => {
+    const soLo = sp._count?.loHangs || 0;
+    if (soLo > 0) {
+      showToast(`Sản phẩm "${sp.ten}" còn ${soLo} lô hàng — hãy xóa hết lô hàng trước.`, false);
+      return;
+    }
+    if (!confirm(`Xóa sản phẩm "${sp.ten}"?\nHành động này không thể hoàn tác.`)) return;
+    try {
+      const res = await fetch(`/api/inventory/product/${sp.id}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Lỗi xóa sản phẩm");
+      showToast(`✓ Đã xóa sản phẩm ${sp.ten}`, true);
+      fetchData();
+    } catch (e: any) {
+      showToast("✗ " + e.message, false);
+    }
+  };
+
   const handleSubmit = async (type: "product" | "batch" | "cert") => {
     if (type === "product") {
       const { ten } = form;
@@ -213,7 +243,8 @@ export default function InventoryPage() {
         showToast(t("inv_err_fill_all"), false);
         return;
       }
-      if (!imageFile) {
+      // Khi SỬA, ảnh không bắt buộc (giữ ảnh cũ nếu không chọn ảnh mới)
+      if (!editingProductId && !imageFile) {
         showToast("Vui lòng tải lên ảnh sản phẩm", false);
         return;
       }
@@ -315,6 +346,30 @@ export default function InventoryPage() {
       const url = await uploadImage();
       if (url) body.hinhAnhUrl = url;
       else { setSubmitting(false); return; }
+    }
+
+    // ── SỬA sản phẩm (PATCH) thay vì tạo mới ──
+    if (type === 'product' && editingProductId) {
+      try {
+        const res = await fetch(`/api/inventory/product/${editingProductId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ten: form.ten, moTa: form.moTa ?? "", GTIN: form.GTIN ?? "", nuocSanXuat: form.nuocSanXuat ?? "",
+            ...(body.hinhAnhUrl ? { hinhAnhUrl: body.hinhAnhUrl } : {}),
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || "Lỗi sửa sản phẩm");
+        showToast(`✓ Đã cập nhật sản phẩm ${json.sanPham.ten}`, true);
+        closeModal();
+        fetchData();
+      } catch (e: any) {
+        showToast("✗ " + e.message, false);
+      } finally {
+        setSubmitting(false);
+      }
+      return;
     }
 
     try {
@@ -588,6 +643,21 @@ export default function InventoryPage() {
                             Upload Chứng nhận
                           </button>
                         )
+                      )}
+                      {/* #6: Sửa + Xóa sản phẩm */}
+                      {userRole !== 'admin' && canEdit && (
+                        <button onClick={() => openEditProduct(sp)}
+                          className="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold text-white transition flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                          <span className="material-symbols-outlined text-sm">edit</span>
+                          {t("common_edit") || "Sửa"}
+                        </button>
+                      )}
+                      {userRole !== 'admin' && canDelete && (
+                        <button onClick={() => handleDeleteProduct(sp)}
+                          className="px-3 py-1.5 bg-red-500/15 hover:bg-red-500/30 border border-red-500/25 rounded-lg text-xs font-bold text-red-400 transition flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                          <span className="material-symbols-outlined text-sm">delete</span>
+                          {t("common_delete") || "Xóa"}
+                        </button>
                       )}
                     </div>
                   </div>
@@ -892,7 +962,7 @@ export default function InventoryPage() {
             {/* Header — fixed */}
             <div className="flex justify-between items-center p-6 pb-3 border-b border-white/10 shrink-0">
               <h2 className="text-xl font-bold font-display">
-                {modal === "product" ? t("inv_modal_add_product") : t("inv_modal_add_batch")}
+                {modal === "product" ? (editingProductId ? "Sửa sản phẩm" : t("inv_modal_add_product")) : t("inv_modal_add_batch")}
               </h2>
               <button onClick={closeModal} className="text-slate-400 hover:text-slate-200">
                 <span className="material-symbols-outlined">close</span>
@@ -1044,7 +1114,7 @@ export default function InventoryPage() {
               <button onClick={() => handleSubmit(modal as "product" | "batch")} disabled={submitting}
                 className="flex-1 py-3 bg-primary text-white rounded-xl text-sm font-bold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2">
                 {submitting && <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>}
-                {modal === "product" ? t("inv_create_product") : t("inv_create_batch_print")}
+                {modal === "product" ? (editingProductId ? "Lưu thay đổi" : t("inv_create_product")) : t("inv_create_batch_print")}
               </button>
             </div>
           </div>
