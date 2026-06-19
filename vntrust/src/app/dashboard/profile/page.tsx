@@ -280,6 +280,7 @@ export default function ProfilePage() {
           ten: editName, soDienThoai: editPhone, email: editEmail,
           avatar: editAvatar, diaChi: editAddress,
           ngaySinh: editBirthday || null, gioiTinh: editGender, cccd: editCccd,
+          tenDoanhNghiep: editCompany,
         }),
       });
       const data = await res.json();

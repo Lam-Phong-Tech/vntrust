@@ -205,7 +205,10 @@ export async function PATCH(req: NextRequest) {
   if (data.avatar && !data.avatar.startsWith('/uploads/') && !data.avatar.startsWith('http')) {
     return NextResponse.json({ error: 'URL ảnh đại diện không hợp lệ' }, { status: 400 });
   }
-  if (Object.keys(data).length === 0) {
+  // Tên công ty (DoanhNghiep) — cập nhật riêng vì nằm ở model khác NguoiDung
+  const tenDoanhNghiep = typeof body.tenDoanhNghiep === 'string' ? body.tenDoanhNghiep.trim() : null;
+
+  if (Object.keys(data).length === 0 && !tenDoanhNghiep) {
     return NextResponse.json({ error: 'Không có dữ liệu cập nhật' }, { status: 400 });
   }
 
@@ -221,13 +224,22 @@ export async function PATCH(req: NextRequest) {
     if (dup) return NextResponse.json({ error: 'Email này đã được dùng' }, { status: 409 });
   }
 
-  const updated: any = await prisma.nguoiDung.update({
-    where: { id: existing.id },
-    data,
-  });
+  const updated: any = Object.keys(data).length > 0
+    ? await prisma.nguoiDung.update({ where: { id: existing.id }, data })
+    : existing;
+
+  // Cập nhật tên công ty nếu user thuộc một DN (sửa bug "không đổi được tên công ty")
+  let tenDNUpdated: string | null = null;
+  if (tenDoanhNghiep && existing.doanhNghiepId) {
+    const cty = await prisma.doanhNghiep.update({
+      where: { id: existing.doanhNghiepId },
+      data: { ten: tenDoanhNghiep },
+    });
+    tenDNUpdated = cty.ten;
+  }
 
   // Update userName cookie nếu đổi tên
-  const response = NextResponse.json({ ok: true, ten: updated.ten, email: updated.email });
+  const response = NextResponse.json({ ok: true, ten: updated.ten, email: updated.email, tenDoanhNghiep: tenDNUpdated });
   if (data.ten) {
     response.cookies.set('userName', data.ten, {
       path: '/', maxAge: SESSION_TTL_SEC, sameSite: 'lax',
