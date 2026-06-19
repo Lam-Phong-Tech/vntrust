@@ -29,8 +29,10 @@ export async function POST(req: NextRequest) {
     //             (An toàn: chỉ nhận ảnh/PDF, giới hạn dung lượng, tên file ngẫu nhiên.)
     // - 'avatar': mọi role đã đăng nhập.
     // - khác    : chỉ admin/manufacturer.
-    if (uploadType === 'kyc') {
-      // cho phép upload không cần đăng nhập (đăng ký doanh nghiệp)
+    if (uploadType === 'kyc' || uploadType === 'report') {
+      // 'kyc'    : hồ sơ đăng ký DN (diễn ra trước khi đăng nhập)
+      // 'report' : ảnh bằng chứng khi người tiêu dùng/ẩn danh báo cáo hàng giả
+      // → KHÔNG yêu cầu session (an toàn: chỉ ảnh/PDF, giới hạn dung lượng, tên ngẫu nhiên)
     } else if (uploadType === 'avatar') {
       if (!userRole) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     } else if (!userRole || (userRole !== 'admin' && userRole !== 'manufacturer')) {
@@ -58,6 +60,7 @@ export async function POST(req: NextRequest) {
     const folder = uploadType === 'certificate' ? 'certificates'
                  : uploadType === 'avatar'      ? 'avatars'
                  : uploadType === 'kyc'         ? 'kyc'
+                 : uploadType === 'report'      ? 'reports'
                  : 'products';
 
     // Lưu vào thư mục public/uploads
