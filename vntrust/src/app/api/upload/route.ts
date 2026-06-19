@@ -7,9 +7,11 @@ import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
-// Giới hạn: tối đa 5MB, chỉ chấp nhận ảnh
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+// Ảnh (product/avatar): tối đa 5MB. Tài liệu KYC/chứng nhận (cho phép PDF): tối đa 10MB.
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;   // 5MB
+const MAX_DOC_SIZE = 10 * 1024 * 1024;    // 10MB
+const ALLOWED_IMAGE = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_DOC = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,9 +24,14 @@ export async function POST(req: NextRequest) {
     const file = formData.get('file') as File | null;
     const uploadType = formData.get('type') as string; // 'product' | 'certificate' | 'avatar'
 
-    // Avatar: tất cả role login đều được upload ảnh cá nhân
-    // Khác: chỉ admin/manufacturer
-    if (uploadType === 'avatar') {
+    // Phân quyền theo loại upload:
+    // - 'kyc'   : hồ sơ đăng ký DN diễn ra TRƯỚC khi đăng nhập → KHÔNG yêu cầu session.
+    //             (An toàn: chỉ nhận ảnh/PDF, giới hạn dung lượng, tên file ngẫu nhiên.)
+    // - 'avatar': mọi role đã đăng nhập.
+    // - khác    : chỉ admin/manufacturer.
+    if (uploadType === 'kyc') {
+      // cho phép upload không cần đăng nhập (đăng ký doanh nghiệp)
+    } else if (uploadType === 'avatar') {
       if (!userRole) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     } else if (!userRole || (userRole !== 'admin' && userRole !== 'manufacturer')) {
       return NextResponse.json({ error: 'Forbidden: Chỉ Nhà sản xuất hoặc Admin mới có thể upload ảnh' }, { status: 403 });
@@ -34,21 +41,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Không tìm thấy file trong request' }, { status: 400 });
     }
 
-    // Kiểm tra định dạng file
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json({ error: 'Chỉ chấp nhận file JPG, PNG, WebP' }, { status: 400 });
+    // KYC + chứng nhận: cho phép PDF, tối đa 10MB. Ảnh (product/avatar): chỉ ảnh, tối đa 5MB.
+    const isDoc = uploadType === 'kyc' || uploadType === 'certificate';
+    const allowed = isDoc ? ALLOWED_DOC : ALLOWED_IMAGE;
+    const maxSize = isDoc ? MAX_DOC_SIZE : MAX_IMAGE_SIZE;
+    if (!allowed.includes(file.type)) {
+      return NextResponse.json({ error: isDoc ? 'Chỉ chấp nhận PDF, JPG, PNG, WebP' : 'Chỉ chấp nhận file JPG, PNG, WebP' }, { status: 400 });
     }
-
-    // Kiểm tra kích thước file
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: 'File quá lớn. Tối đa 5MB' }, { status: 400 });
+    if (file.size > maxSize) {
+      return NextResponse.json({ error: `File quá lớn. Tối đa ${Math.round(maxSize / 1024 / 1024)}MB` }, { status: 400 });
     }
 
     // Tạo tên file an toàn (không dùng tên gốc để tránh path traversal)
-    const ext = file.type.split('/')[1].replace('jpeg', 'jpg');
+    const ext = file.type === 'application/pdf' ? 'pdf' : file.type.split('/')[1].replace('jpeg', 'jpg');
     const safeName = `${randomUUID()}.${ext}`;
     const folder = uploadType === 'certificate' ? 'certificates'
                  : uploadType === 'avatar'      ? 'avatars'
+                 : uploadType === 'kyc'         ? 'kyc'
                  : 'products';
 
     // Lưu vào thư mục public/uploads
