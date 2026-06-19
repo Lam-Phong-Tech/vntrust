@@ -246,6 +246,10 @@ export default function QRPrintPage() {
         .qr-page-scope [data-qr-tile="1"] .text-slate-900,
         .qr-page-scope [data-qr-tile="1"] .text-slate-800,
         .qr-page-scope [data-qr-tile="1"] .text-slate-700 { color: #0B1623 !important; }
+        /* #10: thông tin tem (slate-400/500/600) tren tile TRANG bi mo (cream nhat) → ep chu toi de doc */
+        .qr-page-scope [data-qr-tile="1"] .text-slate-600 { color: #1e293b !important; }
+        .qr-page-scope [data-qr-tile="1"] .text-slate-500,
+        .qr-page-scope [data-qr-tile="1"] .text-slate-400 { color: #475569 !important; }
 
         /* ── @media print: revert hoàn toàn về trắng đen để in ─────── */
         @media print {
