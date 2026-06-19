@@ -614,11 +614,7 @@ export default function LoginPage() {
                   <div className="relative">
                     <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">person</span>
                     <input required type="text" value={regName}
-                      onChange={(e) => {
-                        // Lọc realtime: bỏ số + ký tự đặc biệt, chỉ giữ chữ Latin + chữ có dấu VN + space
-                        const filtered = e.target.value.replace(/[^\p{L}\s]/gu, "").slice(0, 20);
-                        setRegName(filtered);
-                      }}
+                      onChange={(e) => setRegName(e.target.value.slice(0, 20))}
                       maxLength={20}
                       className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
                       placeholder={t("reg_ph_name")} />
