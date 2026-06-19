@@ -102,7 +102,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const userRole = cookieStore.get('userRole')?.value;
     const userDoanhNghiepId = cookieStore.get('doanhNghiepId')?.value;
 
-    if (!userRole || (userRole !== 'admin' && userRole !== 'manufacturer')) {
+    if (!userRole || !['admin', 'manufacturer', 'importer'].includes(userRole)) {
       return NextResponse.json({ error: "Forbidden: Không có quyền xóa lô hàng" }, { status: 403 });
     }
 
@@ -124,7 +124,20 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     const totalUids = existing._count.uids;
 
+    // Schema KHÔNG có onDelete: Cascade → phải xóa bảng con theo đúng thứ tự khóa ngoại,
+    // nếu không sẽ vỡ ràng buộc FK (đây là lý do "không xóa được lô hàng" khi lô đã có
+    // tem được quét / nhập kho / phân phối).
     await prisma.$transaction([
+      // 1) Lịch sử quét của các tem trong lô (LuotQuet tham chiếu MaDinhDanh.uid)
+      prisma.luotQuet.deleteMany({ where: { maDinhDanh: { loHangId: id } } }),
+      // 2) FK bắt buộc tới lô → phải xóa: tồn kho + đơn chuyển hàng
+      prisma.khoHang.deleteMany({ where: { loHangId: id } }),
+      prisma.donChuyenHang.deleteMany({ where: { loHangId: id } }),
+      // 3) FK optional → gỡ liên kết, GIỮ bản ghi (chứng nhận, hậu kiểm, checklist)
+      prisma.chungNhan.updateMany({ where: { loHangId: id }, data: { loHangId: null } }),
+      prisma.ketQuaHauKiem.updateMany({ where: { loHangId: id }, data: { loHangId: null } }),
+      prisma.verificationChecklist.updateMany({ where: { loHangId: id }, data: { loHangId: null } }),
+      // 4) Tem QR rồi tới lô hàng
       prisma.maDinhDanh.deleteMany({ where: { loHangId: id } }),
       prisma.loHang.delete({ where: { id } }),
     ]);
