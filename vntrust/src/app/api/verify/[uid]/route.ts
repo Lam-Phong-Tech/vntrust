@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ uid: string }> }) {
   const resolvedParams = await params;
@@ -138,10 +139,45 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
       });
     }
 
+    // ── #15: Ghi LỊCH SỬ CÁ NHÂN (LichSuKiemTra) — để trang "Lịch sử kiểm tra của tôi"
+    //         hiển thị đúng (trước đây verify chỉ ghi LuotQuet nên history đếm = 0). ──
+    const cookieStore = await cookies();
+    const nguoiDungId = cookieStore.get('userId')?.value || null;
+    const sessionRef = cookieStore.get('sessionToken')?.value || null;
+    if (nguoiDungId || sessionRef) {
+      const ketQuaMap: Record<string, string> = { genuine: 'verified', suspect: 'warning', expired: 'expired', fake: 'blocked' };
+      await prisma.lichSuKiemTra.create({
+        data: {
+          nguoiDungId: nguoiDungId || null,
+          sessionRef: nguoiDungId ? null : sessionRef,
+          loaiHanhDong: 'quet_qr',
+          uid: maDinhDanh.uid,
+          ketQua: ketQuaMap[currentStatus] || 'unknown',
+          lat, lng,
+        },
+      }).catch(() => { /* best-effort, không chặn kết quả quét */ });
+    }
+
+    // ── #16: Thông tin lần quét ĐẦU TIÊN để cảnh báo "Mã đã được quét trước đó". ──
+    // priorCount = số lần quét TRƯỚC lần này (maDinhDanh.soLanQuet lấy lúc fetch, chưa tăng).
+    const priorCount = maDinhDanh.soLanQuet || 0;
+    const isRepeat = priorCount > 0;
+    let firstScan: { thoiGian: Date; diaChi: string | null } | null = null;
+    if (isRepeat) {
+      const first = await prisma.luotQuet.findFirst({
+        where: { uid: maDinhDanh.uid },
+        orderBy: { thoiGian: 'asc' },
+        select: { thoiGian: true, diaChi_IP: true },
+      });
+      if (first) firstScan = { thoiGian: first.thoiGian, diaChi: first.diaChi_IP };
+    }
+
     return NextResponse.json({
       status: currentStatus,
       data: { ...maDinhDanh, soLanQuet: updatedMa.soLanQuet },
-      scanCount: updatedMa.soLanQuet
+      scanCount: updatedMa.soLanQuet,
+      isRepeat,
+      firstScan,
     });
   } catch (error: any) {
     console.error("Verification Error:", error);

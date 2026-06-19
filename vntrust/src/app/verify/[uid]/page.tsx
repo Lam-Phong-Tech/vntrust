@@ -885,6 +885,32 @@ export default function VerificationResult() {
           {/* Body — scrollable, flex:1 */}
           <div className="s-auth-body">
 
+            {/* ── #16: Cảnh báo "Mã đã được quét trước đó" + lần quét đầu + số lần quét ── */}
+            {result?.isRepeat && (
+              <div style={{ margin: '0 0 14px', padding: '12px 14px', borderRadius: 12, background: 'rgba(200,137,58,0.12)', border: '1px solid rgba(200,137,58,0.4)', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span className="material-symbols-outlined" style={{ color: '#C8893A', fontSize: 22, flexShrink: 0 }}>history</span>
+                <div style={{ fontSize: 13, lineHeight: 1.5, color: '#F6F1E8' }}>
+                  <div style={{ fontWeight: 800, color: '#E0A75A', marginBottom: 2 }}>
+                    {lang === 'en' ? 'This code was scanned before' : 'Mã này đã được quét trước đó'}
+                  </div>
+                  <div style={{ opacity: 0.92 }}>
+                    {lang === 'en' ? 'Total scans: ' : 'Tổng số lần quét: '}<b>{result.scanCount}</b>
+                    {result.firstScan && (
+                      <>{lang === 'en' ? ' · First scan: ' : ' · Lần đầu: '}
+                        <b>{new Date(result.firstScan.thoiGian).toLocaleString(lang === 'en' ? 'en-US' : 'vi-VN')}</b>
+                        {result.firstScan.diaChi ? ` (${result.firstScan.diaChi})` : ''}
+                      </>
+                    )}
+                  </div>
+                  <div style={{ opacity: 0.75, marginTop: 4, fontSize: 12 }}>
+                    {lang === 'en'
+                      ? 'If you are the first buyer, repeated scans may indicate copied/counterfeit goods.'
+                      : 'Nếu bạn là người mua đầu tiên, mã bị quét nhiều lần có thể là dấu hiệu hàng bị sao chép/làm giả.'}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* ── Product 3D image showcase — Sprint 13 ── */}
             {/* hinhAnhUrl: field upload mới (NSX); hinhAnh: legacy fallback */}
             {(() => {
