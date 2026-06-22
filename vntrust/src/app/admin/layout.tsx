@@ -28,6 +28,7 @@ const NAV: NavGroup[] = [
   {
     title: "Vận hành", en: "Operations",
     items: [
+      { href: "/admin/duyet-sp",      label: "Duyệt SP & Lô", en: "Approvals",    icon: "fact_check" },
       { href: "/admin/alerts",        label: "Cảnh báo",     en: "Alerts",        icon: "notifications_active" },
       { href: "/admin/investigation", label: "Điều tra",     en: "Investigation", icon: "policy" },
       { href: "/admin/distribution",  label: "Phân phối",    en: "Distribution",  icon: "local_shipping" },
