@@ -1074,3 +1074,9 @@ html.light-mode [class*="from-[#0B1623]"] {
 html.light-mode [class*="bg-slate-950"] { background: #eaf0f9 !important; }
 html.light-mode [class*="bg-slate-900"] { background: #f1f5fb !important; }
 html.light-mode [class*="bg-slate-800"] { background: #e9eff7 !important; }
+
+/* 5) Chữ kem hardcode text-[#F6F1E8] dùng làm MÀU CHỮ CHÍNH vài trang (portal,
+   accept-invite, verify/manual, verify/photo, report) trên nền tối đã lighten
+   -> kem trên nền sáng = tàng hình. Ép đậm. (text-[#ffffff] đều trên nút brand-blue
+   nên rule brand-blue đã giữ trắng đúng, không đụng tới.) */
+html.light-mode [class*="text-[#F6F1E8]"] { color: #0d1b2e !important; }
