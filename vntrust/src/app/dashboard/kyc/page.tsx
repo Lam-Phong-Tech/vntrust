@@ -204,7 +204,7 @@ function KycProgressBar({ company }: { company: Company }) {
 
 // ─── Admin Detail Modal ───────────────────────────────────────────────────────
 function AdminDetailModal({
-  company, onClose, onApprove, onReject, submitting, defaultTab, defaultLyDo
+  company, onClose, onApprove, onReject, submitting, defaultTab, defaultLyDo, onSupplemented
 }: {
   company: Company;
   onClose: () => void;
@@ -213,11 +213,42 @@ function AdminDetailModal({
   submitting: boolean;
   defaultTab?: "info" | "docs" | "action";
   defaultLyDo?: string;
+  onSupplemented?: () => void;
 }) {
   const { lang } = useLanguage();
   const tr = (vi: string, en: string) => (lang === 'en' ? en : vi);
   const [lyDo, setLyDo] = useState(defaultLyDo || "");
   const [tab, setTab] = useState<"info" | "docs" | "action">(defaultTab || "info");
+  // #25: Admin bổ sung giấy tờ hộ DN
+  const [docs, setDocs] = useState<{ giayphep_url?: string; cmnd_url?: string }>({ giayphep_url: company.giayphep_url, cmnd_url: company.cmnd_url });
+  const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
+  const [docMsg, setDocMsg] = useState<{ text: string; ok: boolean } | null>(null);
+
+  const supplementDoc = async (field: 'giayphep_url' | 'cmnd_url', file: File) => {
+    setUploadingDoc(field);
+    setDocMsg(null);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('type', 'kyc');
+      const up = await fetch('/api/upload', { method: 'POST', body: fd });
+      const ud = await up.json();
+      if (!up.ok || !ud.url) throw new Error(ud.error || 'Upload thất bại');
+      const patch = await fetch('/api/kyc', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'admin_update', id: company.id, [field]: ud.url }),
+      });
+      if (!patch.ok) { const pd = await patch.json(); throw new Error(pd.error || 'Lưu thất bại'); }
+      setDocs(prev => ({ ...prev, [field]: ud.url }));
+      setDocMsg({ text: 'Đã bổ sung tài liệu. Giờ có thể phê duyệt doanh nghiệp.', ok: true });
+      onSupplemented?.();
+    } catch (e: any) {
+      setDocMsg({ text: e.message, ok: false });
+    } finally {
+      setUploadingDoc(null);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
@@ -279,6 +310,13 @@ function AdminDetailModal({
           {/* Tab: Docs */}
           {tab === "docs" && (
             <div className="space-y-6">
+              {/* #25: thông báo kết quả bổ sung giấy tờ */}
+              {docMsg && (
+                <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm ${docMsg.ok ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300' : 'bg-red-500/10 border border-red-500/30 text-red-300'}`}>
+                  <span className="material-symbols-outlined text-[16px]">{docMsg.ok ? 'check_circle' : 'error'}</span>
+                  {docMsg.text}
+                </div>
+              )}
               {/* Giấy phép KD */}
               <div>
                 <div className="flex items-center justify-between mb-3">
@@ -286,14 +324,14 @@ function AdminDetailModal({
                     <span className="material-symbols-outlined text-amber-400 text-[18px]">description</span>
                     <span className="text-sm font-bold text-white">Giấy phép Kinh doanh</span>
                   </div>
-                  {company.giayphep_url
+                  {docs.giayphep_url
                     ? <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/30">✓ Đã nộp</span>
                     : <span className="px-2 py-0.5 bg-red-500/10 text-red-400 text-[10px] font-bold rounded-full border border-red-500/30">{tr("Thiếu", "Missing")}</span>
                   }
                 </div>
-                {company.giayphep_url ? (
-                  company.giayphep_url.endsWith('.pdf') ? (
-                    <a href={company.giayphep_url} target="_blank" rel="noreferrer"
+                {docs.giayphep_url ? (
+                  docs.giayphep_url.endsWith('.pdf') ? (
+                    <a href={docs.giayphep_url} target="_blank" rel="noreferrer"
                       className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/8 transition">
                       <span className="material-symbols-outlined text-red-400 text-[28px]">picture_as_pdf</span>
                       <div>
@@ -304,9 +342,9 @@ function AdminDetailModal({
                     </a>
                   ) : (
                     <div className="rounded-xl overflow-hidden border border-white/10 bg-black/30">
-                      <img src={company.giayphep_url} alt="Giấy phép KD" className="w-full max-h-64 object-contain" />
+                      <img src={docs.giayphep_url} alt="Giấy phép KD" className="w-full max-h-64 object-contain" />
                       <div className="p-2 flex justify-end">
-                        <a href={company.giayphep_url} target="_blank" rel="noreferrer"
+                        <a href={docs.giayphep_url} target="_blank" rel="noreferrer"
                           className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-cyan-500/30 transition">
                           <span className="material-symbols-outlined text-[14px]">open_in_new</span> Phóng to
                         </a>
@@ -319,6 +357,14 @@ function AdminDetailModal({
                     <span className="text-sm">{tr("Doanh nghiệp chưa nộp tài liệu này", "Business has not submitted this document")}</span>
                   </div>
                 )}
+                {/* #25: Admin bổ sung / thay Giấy phép KD hộ DN */}
+                <label className={`mt-2 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed text-xs font-bold cursor-pointer transition border-cyan-500/40 bg-cyan-500/5 text-cyan-300 hover:bg-cyan-500/10 ${uploadingDoc ? 'opacity-60 pointer-events-none' : ''}`}>
+                  {uploadingDoc === 'giayphep_url'
+                    ? <><span className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" /> Đang tải lên…</>
+                    : <><span className="material-symbols-outlined text-[16px]">upload</span> {docs.giayphep_url ? "Thay Giấy phép KD (hộ DN)" : "Bổ sung Giấy phép KD (hộ DN)"}</>}
+                  <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden" disabled={!!uploadingDoc}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) supplementDoc('giayphep_url', f); e.target.value = ''; }} />
+                </label>
               </div>
 
               {/* CMND/CCCD */}
@@ -328,14 +374,14 @@ function AdminDetailModal({
                     <span className="material-symbols-outlined text-amber-400 text-[18px]">badge</span>
                     <span className="text-sm font-bold text-white">CMND / CCCD Người đại diện</span>
                   </div>
-                  {company.cmnd_url
+                  {docs.cmnd_url
                     ? <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/30">✓ Đã nộp</span>
                     : <span className="px-2 py-0.5 bg-red-500/10 text-red-400 text-[10px] font-bold rounded-full border border-red-500/30">{tr("Thiếu", "Missing")}</span>
                   }
                 </div>
-                {company.cmnd_url ? (
-                  company.cmnd_url.endsWith('.pdf') ? (
-                    <a href={company.cmnd_url} target="_blank" rel="noreferrer"
+                {docs.cmnd_url ? (
+                  docs.cmnd_url.endsWith('.pdf') ? (
+                    <a href={docs.cmnd_url} target="_blank" rel="noreferrer"
                       className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/8 transition">
                       <span className="material-symbols-outlined text-red-400 text-[28px]">picture_as_pdf</span>
                       <div>
@@ -346,9 +392,9 @@ function AdminDetailModal({
                     </a>
                   ) : (
                     <div className="rounded-xl overflow-hidden border border-white/10 bg-black/30">
-                      <img src={company.cmnd_url} alt="CMND/CCCD" className="w-full max-h-64 object-contain" />
+                      <img src={docs.cmnd_url} alt="CMND/CCCD" className="w-full max-h-64 object-contain" />
                       <div className="p-2 flex justify-end">
-                        <a href={company.cmnd_url} target="_blank" rel="noreferrer"
+                        <a href={docs.cmnd_url} target="_blank" rel="noreferrer"
                           className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-cyan-500/30 transition">
                           <span className="material-symbols-outlined text-[14px]">open_in_new</span> Phóng to
                         </a>
@@ -361,6 +407,14 @@ function AdminDetailModal({
                     <span className="text-sm">{tr("Doanh nghiệp chưa nộp tài liệu này", "Business has not submitted this document")}</span>
                   </div>
                 )}
+                {/* #25: Admin bổ sung / thay CMND/CCCD hộ DN */}
+                <label className={`mt-2 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed text-xs font-bold cursor-pointer transition border-cyan-500/40 bg-cyan-500/5 text-cyan-300 hover:bg-cyan-500/10 ${uploadingDoc ? 'opacity-60 pointer-events-none' : ''}`}>
+                  {uploadingDoc === 'cmnd_url'
+                    ? <><span className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" /> Đang tải lên…</>
+                    : <><span className="material-symbols-outlined text-[16px]">upload</span> {docs.cmnd_url ? "Thay CMND/CCCD (hộ DN)" : "Bổ sung CMND/CCCD (hộ DN)"}</>}
+                  <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden" disabled={!!uploadingDoc}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) supplementDoc('cmnd_url', f); e.target.value = ''; }} />
+                </label>
               </div>
             </div>
           )}
@@ -700,6 +754,7 @@ export default function KYCPage() {
           submitting={submitting}
           defaultTab={detailModal.defaultTab}
           defaultLyDo={detailModal.defaultLyDo}
+          onSupplemented={fetchData}
         />
       )}
 

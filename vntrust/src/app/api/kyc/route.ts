@@ -140,6 +140,32 @@ export async function PATCH(req: NextRequest) {
       });
     }
 
+    // ── Admin bổ sung / cập nhật giấy tờ + thông tin cho 1 DN bất kỳ (#25) ──
+    // Cho phép admin nộp hộ Giấy phép KD / CMND-CCCD khi DN tự tạo chưa có giấy tờ,
+    // để sau đó có thể phê duyệt (mở khoá) được.
+    if (action === 'admin_update') {
+      if (userRole !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 });
+      if (!id) return NextResponse.json({ error: 'Thiếu id doanh nghiệp' }, { status: 400 });
+      const allowed = ['nganh_VSIC', 'email', 'hotline', 'nguoiDaiDien', 'giayphep_url', 'cmnd_url', 'diaChi'];
+      const updateData: Record<string, any> = {};
+      for (const key of allowed) {
+        if (kycFields[key] !== undefined) updateData[key] = kycFields[key];
+      }
+      if (Object.keys(updateData).length === 0) {
+        return NextResponse.json({ error: 'Không có dữ liệu cập nhật' }, { status: 400 });
+      }
+      const updated = await prisma.doanhNghiep.update({ where: { id }, data: updateData });
+      await prisma.nhatKy.create({
+        data: {
+          action: `KYC Admin bổ sung giấy tờ/thông tin DN "${updated.ten}": ${Object.keys(updateData).join(', ')}`,
+          user: cookieStore.get('userName')?.value || 'Admin',
+          role: 'admin', ip: req.headers.get('x-forwarded-for') || '127.0.0.1',
+          status: 'success',
+        },
+      }).catch(() => {});
+      return NextResponse.json({ company: updated });
+    }
+
     // ── Doanh nghiệp tự cập nhật thông tin KYC ──────────────────────────────
     if (action === 'update_info') {
       if (!doanhNghiepId) return NextResponse.json({ error: 'No enterprise assigned' }, { status: 403 });
