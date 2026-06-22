@@ -1044,3 +1044,33 @@ html.light-mode .admin-content .material-symbols-outlined:not([class*="text-red"
   color: #0d1b2e !important;
   font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   #30 — RÀ SOÁT SÁNG/TỐI: ốc đảo nền tối còn sót sau khi đối chiếu
+   toàn bộ class với các rule override hiện có. Chỉ đụng SURFACE nền
+   tối; chừa brand-blue (#1F6FEB…) và backdrop bg-black/NN.
+   ═══════════════════════════════════════════════════════════ */
+/* 1) Navbar: item nền tối #24384e + hover #2a4059 → sáng */
+html.light-mode [class*="bg-[#24384e]"] {
+  background: #eef4fb !important;
+  border-color: rgba(31,111,235,0.15) !important;
+}
+html.light-mode [class*="bg-[#2a4059]"]:hover { background: #e3edfa !important; }
+
+/* 2) Card cảnh báo nguy hiểm #1a0a0a (trang Phân phối) → nền đỏ nhạt, viền đỏ giữ nguyên */
+html.light-mode [class*="bg-[#1a0a0a]"] { background: #fef2f2 !important; }
+
+/* 3) Gradient navy tối (verify/rewards card, profile header) — from-[#142235] /
+   from-[#0B1623] không khớp rule bg-[#0 / from-[#0a1628] → đổi sang gradient sáng */
+html.light-mode [class*="from-[#142235]"],
+html.light-mode [class*="from-[#0B1623]"] {
+  background: linear-gradient(135deg, #eef4fb, #ffffff 50%, #eef4fb) !important;
+  border-color: rgba(31,111,235,0.12) !important;
+}
+
+/* 4) Nền SLATE tối solid (bg-slate-800/900/950) — KHÔNG có rule phủ; các chỗ dùng
+   dark:bg-slate-* không sao (variant dark không áp dụng ở light-mode, vẫn light→light).
+   Lighten luôn sửa cả overlay bg-slate-900/90 (text-white đã bị ép tối → dark-on-light). */
+html.light-mode [class*="bg-slate-950"] { background: #eaf0f9 !important; }
+html.light-mode [class*="bg-slate-900"] { background: #f1f5fb !important; }
+html.light-mode [class*="bg-slate-800"] { background: #e9eff7 !important; }
