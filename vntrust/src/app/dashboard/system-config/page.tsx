@@ -48,7 +48,8 @@ export default function SystemConfigPage() {
       const r = await fetch("/api/system-config", { cache: "no-store" });
       const json = await r.json();
       if (!r.ok) throw new Error(json.error || "Fetch failed");
-      setData(json);
+      // API trả { config: { alert, notification, retention } } — phải đọc json.config
+      setData(json.config ?? json);
     } catch (e: any) { setToast({ msg: e.message, ok: false }); }
     finally { setLoading(false); }
   }, []);
@@ -59,7 +60,7 @@ export default function SystemConfigPage() {
     setSaving(key);
     try {
       const r = await fetch("/api/system-config", {
-        method: "PATCH",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ namespace, key, value }),
       });

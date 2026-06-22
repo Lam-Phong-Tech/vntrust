@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { getConfigInt } from "@/lib/config";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ uid: string }> }) {
   const resolvedParams = await params;
@@ -99,10 +100,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
       // Fallback - không có geo thì để null
     }
 
+    // #27: ngưỡng "quét nhiều → nghi ngờ" đọc từ Cấu hình hệ thống (admin chỉnh được), default 10
+    const fakeThreshold = await getConfigInt('scan_threshold_fake', 10);
     let currentStatus: string;
     if (isExpired) {
       currentStatus = "expired";
-    } else if (maDinhDanh.soLanQuet >= 5) {
+    } else if (maDinhDanh.soLanQuet >= fakeThreshold) {
       currentStatus = "suspect";
     } else {
       currentStatus = "genuine";
@@ -127,7 +130,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
     });
 
     // Tạo cảnh báo nếu bị quét quá nhiều
-    if (updatedMa.soLanQuet >= 5 && currentStatus === "genuine") {
+    if (updatedMa.soLanQuet >= fakeThreshold && currentStatus === "genuine") {
       currentStatus = "suspect";
       await prisma.canhBao.create({
         data: {

@@ -114,3 +114,19 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
+
+// DELETE ?key=X — xoá override DB của key (trở về giá trị default). Chỉ admin.
+export async function DELETE(req: NextRequest) {
+  try {
+    const cookieStore = await cookies();
+    if (cookieStore.get('userRole')?.value !== 'admin') {
+      return NextResponse.json({ error: 'Chỉ admin được sửa cấu hình' }, { status: 403 });
+    }
+    const key = new URL(req.url).searchParams.get('key');
+    if (!key) return NextResponse.json({ error: 'missing_key' }, { status: 400 });
+    await prisma.cauHinhHeThong.deleteMany({ where: { key } });
+    return NextResponse.json({ success: true });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 500 });
+  }
+}

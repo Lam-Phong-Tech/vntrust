@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
+import { getConfigInt } from '@/lib/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -106,7 +107,9 @@ export async function POST(req: NextRequest) {
           trangThai: 'open',
         }
       });
-      if (sameUidReports >= 3) {
+      // #27: ngưỡng escalate đọc từ Cấu hình hệ thống (admin chỉnh được), default 3
+      const reportThreshold = await getConfigInt('consumer_report_threshold', 3);
+      if (sameUidReports >= reportThreshold) {
         // Kiểm tra đã có cảnh báo escalated cho UID này chưa
         const existingEscalated = await prisma.canhBao.findFirst({
           where: { uid: serial, loai: 'NGUOI_DUNG_BAO_CAO_ESCALATED', trangThai: 'open' }
