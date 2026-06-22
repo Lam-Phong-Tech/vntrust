@@ -447,8 +447,8 @@ export default function ProfilePage() {
           </div>
         ) : (
           <div className="max-w-6xl mx-auto px-4 lg:px-12 py-8">
-            {/* 2-col grid: left = thông tin cá nhân | right = doanh nghiệp */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* 2-col grid: left = thông tin cá nhân | right = doanh nghiệp (#21: NTD chỉ 1 cột) */}
+            <div className={`grid grid-cols-1 gap-6 ${role !== "consumer" ? "lg:grid-cols-2" : "max-w-2xl"}`}>
 
               {/* ── LEFT: Thông tin cá nhân ── */}
               <div className="glass-panel rounded-2xl border border-white/10 overflow-hidden">
@@ -508,7 +508,8 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* ── RIGHT: Thông tin doanh nghiệp ── */}
+              {/* ── RIGHT: Thông tin doanh nghiệp — #21: ẩn với người tiêu dùng (vô nghĩa) ── */}
+              {role !== "consumer" && (
               <div className="glass-panel rounded-2xl border border-white/10 overflow-hidden">
                 <div className="px-6 py-4 border-b border-white/5 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[#C8A557] text-[18px]">apartment</span>
@@ -529,6 +530,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
               </div>
+              )}
 
             </div>
 
