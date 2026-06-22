@@ -30,12 +30,20 @@ export async function GET(req: NextRequest) {
     const userName = payload.name || cookieStore.get('userName')?.value;
     if (userName && payload.role !== 'admin') {
       try {
-        const user = await prisma.nguoiDung.findFirst({
+        const user: any = await prisma.nguoiDung.findFirst({
           where: { OR: [{ email: userName }, { ten: userName }] },
+          include: { doanhNghiep: { select: { trangThai: true } } },
         });
         if (user && (user.trangThai === 'suspended' || user.trangThai === 'revoked')) {
           return NextResponse.json(
             { error: 'account_suspended', reason: 'suspended' },
+            { status: 403 }
+          );
+        }
+        // #26: DN của user bị khoá/thu hồi → kick khỏi phiên ngay (dù JWT còn hạn)
+        if (user?.doanhNghiep && ['suspended', 'revoked'].includes(user.doanhNghiep.trangThai)) {
+          return NextResponse.json(
+            { error: 'account_suspended', reason: 'enterprise_locked' },
             { status: 403 }
           );
         }

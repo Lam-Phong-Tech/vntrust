@@ -50,11 +50,16 @@ export async function POST(req: NextRequest) {
           : user.matKhau === password;
 
         if (passwordMatch) {
-          if (user.trangThai === 'pending' || user.trangThai === 'suspended') {
-            return NextResponse.json({ error: 'Tài khoản của bạn chưa được phê duyệt hoặc đã bị khóa.' }, { status: 403 });
+          if (['pending', 'suspended', 'revoked'].includes(user.trangThai)) {
+            return NextResponse.json({ error: 'Tài khoản của bạn chưa được phê duyệt hoặc đã bị khóa/thu hồi.' }, { status: 403 });
           }
-          if (user.doanhNghiep && (user.doanhNghiep.trangThai === 'pending' || user.doanhNghiep.trangThai === 'suspended')) {
-            return NextResponse.json({ error: 'Hồ sơ đang chờ phê duyệt. Vui lòng quay lại sau.' }, { status: 403 });
+          // #26: DN bị khoá/thu hồi → KHÔNG cho đăng nhập (trước đây thiếu 'revoked')
+          if (user.doanhNghiep && ['pending', 'suspended', 'revoked'].includes(user.doanhNghiep.trangThai)) {
+            return NextResponse.json({
+              error: user.doanhNghiep.trangThai === 'pending'
+                ? 'Hồ sơ doanh nghiệp đang chờ phê duyệt. Vui lòng quay lại sau.'
+                : 'Doanh nghiệp đã bị khoá/thu hồi trên hệ thống. Vui lòng liên hệ quản trị viên.'
+            }, { status: 403 });
           }
 
           foundRole = user.vaiTro;
