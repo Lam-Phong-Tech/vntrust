@@ -96,6 +96,28 @@ export async function POST(req: NextRequest) {
       }
     });
 
+    // #28: Thưởng +5 điểm khi NGƯỜI DÙNG ĐĂNG NHẬP gửi báo cáo. Chống farm: mỗi (user, uid)
+    //      chỉ thưởng 1 lần (báo cáo ẩn danh / chưa đăng nhập không có điểm). Best-effort.
+    const reporterId = cookieStore.get('userId')?.value || null;
+    if (reporterId) {
+      const daThuong = serial
+        ? await prisma.rewardHistory.findFirst({
+            where: { nguoiDungId: reporterId, loai: 'gui_bao_cao', moTa: { contains: serial } },
+            select: { id: true },
+          }).catch(() => null)
+        : null;
+      if (!daThuong) {
+        await prisma.rewardHistory.create({
+          data: {
+            nguoiDungId: reporterId,
+            loai: 'gui_bao_cao',
+            diemThuong: 5,
+            moTa: `Gửi báo cáo nghi ngờ${serial ? ` (${serial})` : ''}`,
+          },
+        }).catch(() => { /* best-effort */ });
+      }
+    }
+
     // UC11: Auto-aggregate — nếu ≥3 báo cáo cùng UID còn open → tạo cảnh báo mức Cao
     // (theo tài liệu nghiệp vụ §IV-V: ngưỡng `consumer_report_threshold` = 3)
     let escalated = false;

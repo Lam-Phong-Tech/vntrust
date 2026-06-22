@@ -175,6 +175,25 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
       if (first) firstScan = { thoiGian: first.thoiGian, diaChi: first.diaChi_IP };
     }
 
+    // ── #28: Thưởng +10 điểm cho lần quét XÁC THỰC sản phẩm chính hãng — mỗi (user, uid)
+    //         chỉ 1 lần (chống farm quét lại). Best-effort, không chặn kết quả quét. ──
+    if (nguoiDungId && currentStatus === 'genuine') {
+      const daThuong = await prisma.rewardHistory.findFirst({
+        where: { nguoiDungId, loai: 'quet_ma', moTa: { contains: maDinhDanh.uid } },
+        select: { id: true },
+      }).catch(() => null);
+      if (!daThuong) {
+        await prisma.rewardHistory.create({
+          data: {
+            nguoiDungId,
+            loai: 'quet_ma',
+            diemThuong: 10,
+            moTa: `Quét xác thực sản phẩm chính hãng (${maDinhDanh.uid})`,
+          },
+        }).catch(() => { /* best-effort */ });
+      }
+    }
+
     return NextResponse.json({
       status: currentStatus,
       data: { ...maDinhDanh, soLanQuet: updatedMa.soLanQuet },

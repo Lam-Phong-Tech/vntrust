@@ -209,7 +209,7 @@ export default function VerifyRewardsPage() {
                 </div>
                 <div>
                   <h4 className="font-bold text-white mb-1">{lang === 'en' ? 'Report Suspicious Items' : 'Báo Cáo Hàng Giả'}</h4>
-                  <p className="text-sm text-slate-400">{lang === 'en' ? 'Earn up to +1000 points if your fake product report is accurate and verified by admins.' : 'Nhận lên tới +1000 điểm nếu báo cáo hàng giả của bạn chính xác và được admin xác nhận.'}</p>
+                  <p className="text-sm text-slate-400">{lang === 'en' ? 'Earn +5 points when you submit a report, plus +50 more when admins confirm it is accurate.' : 'Nhận +5 điểm khi gửi báo cáo, và +50 điểm khi được admin xác nhận báo cáo chính xác.'}</p>
                 </div>
               </div>
               
