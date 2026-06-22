@@ -46,6 +46,7 @@ export default function InventoryPage() {
   const [submitting, setSubmitting] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [searchSp, setSearchSp] = useState("");
+  const [spPage, setSpPage] = useState(1);
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const { addLog } = useLogs();
 
@@ -512,6 +513,12 @@ export default function InventoryPage() {
     sp.maSKU.toLowerCase().includes(searchSpQuery)
   );
 
+  // ── TC-MFR-004: phân trang danh sách sản phẩm (card lớn → 6/trang) ──
+  const SP_PER_PAGE = 6;
+  const spPageCount = Math.max(1, Math.ceil(filteredSanPhams.length / SP_PER_PAGE));
+  const safeSpPage = Math.min(spPage, spPageCount);
+  const pagedSanPhams = filteredSanPhams.slice((safeSpPage - 1) * SP_PER_PAGE, safeSpPage * SP_PER_PAGE);
+
   return (
     <div className="flex transparent font-body ">
 
@@ -581,14 +588,14 @@ export default function InventoryPage() {
               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] pointer-events-none">search</span>
               <input
                 value={searchSp}
-                onChange={e => setSearchSp(e.target.value)}
+                onChange={e => { setSearchSp(e.target.value); setSpPage(1); }}
                 placeholder="Tìm sản phẩm theo tên hoặc SKU..."
                 className="w-full rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-400 pl-11 pr-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition"
               />
               {searchSp && (
                 <button
                   type="button"
-                  onClick={() => setSearchSp("")}
+                  onClick={() => { setSearchSp(""); setSpPage(1); }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition"
                   aria-label="Xóa tìm kiếm"
                 >
@@ -604,7 +611,7 @@ export default function InventoryPage() {
                 <p className="text-sm text-slate-400">Thử từ khóa khác hoặc xóa bộ lọc.</p>
               </div>
             ) : (
-            filteredSanPhams.map(sp => (
+            pagedSanPhams.map(sp => (
               <div key={sp.id} className="bg-white/5 glass-panel text-white rounded-3xl shadow-sm border border-white/10 overflow-hidden">
                 {/* Product header */}
                 <div className="p-4 sm:p-6 border-b border-white/10">
@@ -825,6 +832,24 @@ export default function InventoryPage() {
                 )}
               </div>
             ))
+            )}
+
+            {/* ── TC-MFR-004: phân trang danh sách sản phẩm ── */}
+            {filteredSanPhams.length > SP_PER_PAGE && (
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <button type="button" onClick={() => setSpPage(p => Math.max(1, p - 1))} disabled={safeSpPage <= 1}
+                  className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[18px]">chevron_left</span>{lang === 'en' ? 'Prev' : 'Trước'}
+                </button>
+                <span className="text-sm text-slate-300 font-medium">
+                  {lang === 'en' ? 'Page' : 'Trang'} {safeSpPage}/{spPageCount}
+                  <span className="text-slate-500"> · {filteredSanPhams.length} {lang === 'en' ? 'products' : 'SP'}</span>
+                </span>
+                <button type="button" onClick={() => setSpPage(p => Math.min(spPageCount, p + 1))} disabled={safeSpPage >= spPageCount}
+                  className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1">
+                  {lang === 'en' ? 'Next' : 'Sau'}<span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
+              </div>
             )}
           </div>
         )}
