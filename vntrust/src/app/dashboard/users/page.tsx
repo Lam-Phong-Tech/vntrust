@@ -54,6 +54,8 @@ export default function AdminUsersPage() {
   const [acting, setActing] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: "ok" | "err" } | null>(null);
   const [confirmDel, setConfirmDel] = useState<User | null>(null);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 12;
 
   // Guard: only admin
   useEffect(() => {
@@ -83,6 +85,9 @@ export default function AdminUsersPage() {
   }, [userRole, search, roleFilter, statusFilter]);
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+  // Reset to page 1 whenever the search/filter changes
+  useEffect(() => { setPage(1); }, [search, roleFilter, statusFilter]);
 
   const showToast = (msg: string, type: "ok" | "err" = "ok") => {
     setToast({ msg, type });
@@ -152,6 +157,12 @@ export default function AdminUsersPage() {
   if (!userRole) return null;
 
   const stats = data?.stats || { byRole: {}, byStatus: {} };
+
+  // Pagination over the already-filtered list returned by the API
+  const filtered = data?.users || [];
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount);
+  const pagedUsers = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   return (
     <div className="min-h-screen w-full p-4 sm:p-6 lg:p-8 pb-[100px] md:pb-8">
@@ -248,7 +259,7 @@ export default function AdminUsersPage() {
             {!loading && (data?.users.length || 0) === 0 && (
               <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-400">{tr("Không có người dùng nào", "No users")}</td></tr>
             )}
-            {!loading && data?.users.map((u) => {
+            {!loading && pagedUsers.map((u) => {
               const role = ROLE_META[u.vaiTro] || ROLE_META.consumer;
               const status = STATUS_META[u.trangThai] || STATUS_META.active;
               const isAct = acting === u.id;
@@ -331,7 +342,7 @@ export default function AdminUsersPage() {
       {/* Card list — mobile */}
       <div className="md:hidden space-y-3">
         {loading && <div className="text-center text-slate-400 py-6">{tr("Đang tải…", "Loading…")}</div>}
-        {!loading && data?.users.map((u) => {
+        {!loading && pagedUsers.map((u) => {
           const role = ROLE_META[u.vaiTro] || ROLE_META.consumer;
           const status = STATUS_META[u.trangThai] || STATUS_META.active;
           const isAct = acting === u.id;
@@ -386,6 +397,32 @@ export default function AdminUsersPage() {
           );
         })}
       </div>
+
+      {/* Pagination controls */}
+      {!loading && pageCount > 1 && (
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={safePage <= 1}
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+          >
+            <span className="material-symbols-outlined text-[16px]">chevron_left</span>
+            {tr("Trước", "Prev")}
+          </button>
+          <span className="text-sm text-slate-300 font-bold">
+            {tr("Trang", "Page")} {safePage}/{pageCount}
+            <span className="text-slate-500 font-medium"> · {filtered.length} {tr("tài khoản", "accounts")}</span>
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+            disabled={safePage >= pageCount}
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+          >
+            {tr("Sau", "Next")}
+            <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          </button>
+        </div>
+      )}
 
       {/* Delete confirm modal */}
       {confirmDel && (

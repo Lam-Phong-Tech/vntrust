@@ -135,6 +135,8 @@ export default function ReportFakePage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loadingReports, setLoadingReports] = useState(false);
   const [statusFilter, setStatusFilter] = useState("open");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [investigateModal, setInvestigateModal] = useState<Report | null>(null);
   const [investigateNote, setInvestigateNote] = useState("");
@@ -162,6 +164,11 @@ export default function ReportFakePage() {
   useEffect(() => {
     if (tab === "list") fetchReports();
   }, [tab, statusFilter]);
+
+  // Reset pagination khi doi bo loc / chuyen tab
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter, tab]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -744,8 +751,9 @@ export default function ReportFakePage() {
                 <p className="text-sm">Chưa có báo cáo nào với trạng thái này</p>
               </div>
             ) : (
+              <>
               <div className="space-y-3">
-                {reports.map(r => {
+                {reports.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(r => {
                   const mucDo = MUC_DO_MAP[r.mucDo] || MUC_DO_MAP.medium;
                   return (
                     <div key={r.id} 
@@ -855,6 +863,32 @@ export default function ReportFakePage() {
                   );
                 })}
               </div>
+
+              {/* Pagination — chi hien khi co nhieu hon 1 trang */}
+              {Math.ceil(reports.length / PAGE_SIZE) > 1 && (
+                <div className="flex items-center justify-center gap-3 mt-6">
+                  <button
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                    className="px-4 py-2 rounded-xl text-xs font-bold border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">chevron_left</span>
+                    {tr("Trước", "Prev")}
+                  </button>
+                  <span className="text-xs font-bold text-slate-300">
+                    {tr("Trang", "Page")} {page}/{Math.ceil(reports.length / PAGE_SIZE)}
+                  </span>
+                  <button
+                    onClick={() => setPage(p => Math.min(Math.ceil(reports.length / PAGE_SIZE), p + 1))}
+                    disabled={page >= Math.ceil(reports.length / PAGE_SIZE)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                  >
+                    {tr("Sau", "Next")}
+                    <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                  </button>
+                </div>
+              )}
+              </>
             )}
           </div>
         )}

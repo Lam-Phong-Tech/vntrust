@@ -56,6 +56,7 @@ export default function DistributionPage() {
   const [batches, setBatches] = useState<LoHang[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [searchDist, setSearchDist] = useState("");
   const [actionBatch, setActionBatch] = useState<LoHang | null>(null);
   const [newStatus, setNewStatus] = useState<string>("distributed");
   const [khuVuc, setKhuVuc] = useState("");
@@ -255,12 +256,26 @@ export default function DistributionPage() {
     setSubmitting(false);
   };
 
-  const filtered = batches.filter(b => filterStatus === "all"
-    || b.trangThai === filterStatus
-    || (filterStatus === "active" && b.trangThai === "approved"));
+  const filtered = batches
+    .filter(b => filterStatus === "all"
+      || b.trangThai === filterStatus
+      || (filterStatus === "active" && b.trangThai === "approved"))
+    .filter(b => {
+      const q = searchDist.trim().toLowerCase();
+      if (!q) return true;
+      return [
+        b.maLo,
+        b.sanPham?.ten,
+        b.sanPham?.maSKU,
+        b.sanPham?.doanhNghiep?.ten,
+      ].some(v => (v || "").toLowerCase().includes(q));
+    });
 
   const paginatedFiltered = filtered.slice((pageBatch - 1) * ITEMS_PER_PAGE, pageBatch * ITEMS_PER_PAGE);
   const paginatedOrders = orders.slice((pageOrder - 1) * ITEMS_PER_PAGE, pageOrder * ITEMS_PER_PAGE);
+
+  // Reset về trang 1 khi tìm kiếm thay đổi
+  useEffect(() => { setPageBatch(1); }, [searchDist]);
 
   if (!userRole) return null;
 
@@ -316,6 +331,27 @@ export default function DistributionPage() {
             <p className="text-xs text-slate-400 mt-0.5">{s.label}</p>
           </div>
         ))}
+      </div>
+
+      {/* Search */}
+      <div className="relative mb-6">
+        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] pointer-events-none">search</span>
+        <input
+          type="text"
+          value={searchDist}
+          onChange={e => setSearchDist(e.target.value)}
+          placeholder={tr("Tìm đơn chuyển hàng...", "Search shipping orders...")}
+          className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-12 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C8A557] transition"
+        />
+        {searchDist && (
+          <button
+            onClick={() => setSearchDist("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition"
+            aria-label={tr("Xoá tìm kiếm", "Clear search")}
+          >
+            <span className="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        )}
       </div>
 
       {/* Batch list */}

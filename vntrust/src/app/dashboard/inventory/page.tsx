@@ -45,6 +45,7 @@ export default function InventoryPage() {
   } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [searchSp, setSearchSp] = useState("");
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const { addLog } = useLogs();
 
@@ -503,12 +504,20 @@ export default function InventoryPage() {
     );
   }
 
+  // ── Lọc sản phẩm theo tên hoặc mã SKU (client-side, không phân biệt hoa thường) ──
+  const searchSpQuery = searchSp.trim().toLowerCase();
+  const filteredSanPhams = (data?.sanPhams ?? []).filter(sp =>
+    !searchSpQuery ||
+    sp.ten.toLowerCase().includes(searchSpQuery) ||
+    sp.maSKU.toLowerCase().includes(searchSpQuery)
+  );
+
   return (
     <div className="flex transparent font-body ">
 
 
 
-      
+
       <main className="mx-auto max-w-7xl w-full flex-1 p-8 lg:p-12 overflow-x-hidden min-h-[calc(100vh-80px)] transparent">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
           <div>
@@ -567,7 +576,35 @@ export default function InventoryPage() {
           </div>
         ) : (
           <div className="space-y-8">
-            {data.sanPhams.map(sp => (
+            {/* ── Tìm kiếm sản phẩm theo tên hoặc SKU ── */}
+            <div className="relative">
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] pointer-events-none">search</span>
+              <input
+                value={searchSp}
+                onChange={e => setSearchSp(e.target.value)}
+                placeholder="Tìm sản phẩm theo tên hoặc SKU..."
+                className="w-full rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-400 pl-11 pr-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition"
+              />
+              {searchSp && (
+                <button
+                  type="button"
+                  onClick={() => setSearchSp("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition"
+                  aria-label="Xóa tìm kiếm"
+                >
+                  <span className="material-symbols-outlined text-[18px]">close</span>
+                </button>
+              )}
+            </div>
+
+            {filteredSanPhams.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-60 bg-white/5 glass-panel text-white rounded-3xl border border-dashed border-white/20 gap-3">
+                <span className="material-symbols-outlined text-4xl text-slate-300">search_off</span>
+                <p className="text-slate-300 font-bold">Không tìm thấy sản phẩm phù hợp</p>
+                <p className="text-sm text-slate-400">Thử từ khóa khác hoặc xóa bộ lọc.</p>
+              </div>
+            ) : (
+            filteredSanPhams.map(sp => (
               <div key={sp.id} className="bg-white/5 glass-panel text-white rounded-3xl shadow-sm border border-white/10 overflow-hidden">
                 {/* Product header */}
                 <div className="p-4 sm:p-6 border-b border-white/10">
@@ -787,7 +824,8 @@ export default function InventoryPage() {
                   </div>
                 )}
               </div>
-            ))}
+            ))
+            )}
           </div>
         )}
       </main>

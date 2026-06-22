@@ -77,6 +77,8 @@ export default function AlertsPage() {
   const [form, setForm] = useState({ loai: "MANUAL", mucDo: "medium", moTa: "", uid: "" });
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 12;
 
   const showToast = (msg: string, ok: boolean) => {
     setToast({ msg, ok });
@@ -114,6 +116,12 @@ export default function AlertsPage() {
   }, []);
 
   useEffect(() => { if (userRole) fetchData(); }, [userRole, filterStatus, filterMucDo]);
+
+  // Reset về trang 1 khi đổi bộ lọc hoặc danh sách thay đổi
+  useEffect(() => { setPage(1); }, [filterStatus, filterMucDo, alerts.length]);
+
+  const pageCount = Math.ceil(alerts.length / PAGE_SIZE);
+  const pagedAlerts = alerts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleUpdateStatus = async (id: string, trangThai: string, ghiChu?: string) => {
     setUpdatingId(id);
@@ -261,7 +269,7 @@ export default function AlertsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {alerts.map(alert => {
+          {pagedAlerts.map(alert => {
             const muc = MUC_DO[alert.mucDo as keyof typeof MUC_DO] || MUC_DO.medium;
             const status = STATUS_MAP[alert.trangThai as keyof typeof STATUS_MAP] || STATUS_MAP.open;
             return (
@@ -370,6 +378,29 @@ export default function AlertsPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!loading && pageCount > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-8">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold border bg-white/5 text-slate-300 border-white/10 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">
+            <span className="material-symbols-outlined text-[16px]">chevron_left</span>
+            {tr("Trước", "Prev")}
+          </button>
+          <span className="text-xs font-bold text-slate-400">
+            {tr("Trang", "Page")} {page}/{pageCount}
+          </span>
+          <button
+            onClick={() => setPage(p => Math.min(pageCount, p + 1))}
+            disabled={page >= pageCount}
+            className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold border bg-white/5 text-slate-300 border-white/10 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">
+            {tr("Sau", "Next")}
+            <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          </button>
         </div>
       )}
 
