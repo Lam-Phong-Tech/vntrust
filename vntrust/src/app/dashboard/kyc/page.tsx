@@ -20,6 +20,7 @@ interface Company {
   loai: string;
   ngayDangKy: string;
   trangThai: string;
+  lyDoKhoa?: string | null;
   _count?: { sanPhams: number; nguoiDungs: number };
 }
 
@@ -371,6 +372,17 @@ function AdminDetailModal({
                 <p className="text-xs text-slate-400 mb-1">{tr("Trạng thái hiện tại", "Current status")}</p>
                 <StatusBadge status={company.trangThai} />
               </div>
+
+              {/* #24: Lý do đã khoá — để admin xem khi cân nhắc mở khoá */}
+              {(company.trangThai === "suspended" || company.trangThai === "revoked") && company.lyDoKhoa && (
+                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+                  <p className="text-xs font-bold text-red-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[16px]">lock</span>
+                    {tr("Lý do đã khoá", "Lock reason")}
+                  </p>
+                  <p className="text-sm text-white whitespace-pre-wrap">{company.lyDoKhoa}</p>
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">

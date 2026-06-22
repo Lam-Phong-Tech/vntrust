@@ -23,7 +23,8 @@ model DoanhNghiep {
   cmnd_url       String? // URL/tên file CMND/CCCD người đại diện
   loai           String // NSX | NNK
   ngayDangKy     DateTime         @default(now())
-  trangThai      String           @default("pending") // pending | verified | suspended
+  trangThai      String           @default("pending") // pending | verified | suspended | revoked
+  lyDoKhoa       String?          // #24: Lý do khoá/từ chối gần nhất (admin nhập khi thu hồi/tạm khóa) — xem lại khi cân nhắc mở khoá
   sanPhams       SanPham[]
   nguoiDungs     NguoiDung[]
   loiMoiNhanVien LoiMoiNhanVien[]

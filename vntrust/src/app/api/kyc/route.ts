@@ -78,7 +78,11 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: `Không thể phê duyệt: doanh nghiệp chưa nộp đủ giấy tờ (${missing})` }, { status: 400 });
       }
 
-      const updated = await prisma.doanhNghiep.update({ where: { id }, data: { trangThai } });
+      // #24: lưu lý do khoá để admin xem lại khi cân nhắc mở khoá; mở khoá (verified) → xoá lý do
+      const updateData: any = { trangThai };
+      if (trangThai === 'suspended' || trangThai === 'revoked') updateData.lyDoKhoa = lyDo || null;
+      else if (trangThai === 'verified') updateData.lyDoKhoa = null;
+      const updated = await prisma.doanhNghiep.update({ where: { id }, data: updateData });
 
       // P2 CASCADE — DN bị suspended/revoked → vô hiệu hóa toàn bộ UID của DN
       const wasActive = before?.trangThai === 'verified';
