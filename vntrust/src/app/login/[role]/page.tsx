@@ -550,8 +550,9 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => {
-                  showToast('Đang chuyển hướng tới VNeID...', 'info');
-                  window.location.href = `/api/auth/vneid/start?role=${encodeURIComponent(pageRole)}`;
+                  // TC-AUTH-009: VNeID chưa tích hợp xong (mock provider /_vneid chưa có) →
+                  // báo "đang phát triển" thay vì redirect tới trang 404.
+                  showToast('Đăng nhập VNeID đang được tích hợp. Vui lòng dùng email & mật khẩu.', 'info');
                 }}
                 style={{ width:'100%', padding:'13px 16px', background:'transparent', color:'#0d1b2e', border:'1px solid rgba(13,27,46,0.2)', borderRadius:14, fontFamily:'Outfit,sans-serif', fontSize:13, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:10, transition:'all 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(13,27,46,0.06)')}

@@ -276,7 +276,7 @@ export default function LoginPortal() {
           </div>
 
           <button
-            onClick={() => alert('Tính năng VNeID đang được tích hợp')}
+            onClick={() => alert('Đăng nhập VNeID đang được tích hợp. Vui lòng chọn vai trò và dùng email & mật khẩu.')}
             style={{ width:'100%', padding:'14px 18px', background:'transparent', color:'#F6F1E8', border:'1px solid rgba(246,241,232,0.2)', borderRadius:16, fontFamily:'Outfit,sans-serif', fontSize:14, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:12, transition:'background 0.2s' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'rgba(246,241,232,0.05)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
