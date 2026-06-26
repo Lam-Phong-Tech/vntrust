@@ -21,7 +21,7 @@ jobs:
           cache-dependency-path: 'vntrust/package-lock.json'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
         working-directory: ./vntrust
 
       - name: Build Next.js App
@@ -48,6 +48,6 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /var/www/vntrust
-            npm ci --production
+            npm ci --production --legacy-peer-deps
             pm2 restart vntrust || pm2 start npm --name "vntrust" -- start
             pm2 save
