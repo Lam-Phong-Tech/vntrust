@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 
+const MAX_QR_AMOUNT = 10000;
+
 // Render barcode (CODE128) bằng jsbarcode
 function BarcodeSVG({ value, height = 90 }: { value: string; height?: number }) {
   const ref = useRef<SVGSVGElement>(null);
@@ -111,7 +113,7 @@ export default function QRPrintPage() {
   }, [id]);
 
   const handleAddQR = async () => {
-    if (addAmount < 1) return showToast("Số lượng phải lớn hơn 0", false);
+    if (!Number.isInteger(addAmount) || addAmount < 1 || addAmount > MAX_QR_AMOUNT) return showToast(`Số lượng phải từ 1 đến ${MAX_QR_AMOUNT.toLocaleString("vi-VN")}`, false);
     setAdding(true);
     try {
       const res = await fetch(`/api/inventory/${id}/qr`, {
@@ -123,7 +125,7 @@ export default function QRPrintPage() {
       showToast(`✓ Đã thêm ${addAmount} tem thành công`, true);
       fetchBatch();
     } catch (e: any) {
-      showToast("✗ Lỗi: " + e.message, false);
+      showToast("✕ Lỗi: " + e.message, false);
     } finally {
       setAdding(false);
     }
@@ -156,7 +158,7 @@ export default function QRPrintPage() {
       }
       fetchBatch();
     } catch (e: any) {
-      showToast("✗ Lỗi: " + e.message, false);
+      showToast("✕ Lỗi: " + e.message, false);
     } finally {
       setActionLoading(null);
     }
@@ -209,6 +211,8 @@ export default function QRPrintPage() {
     }
     return 0; // Mặc định: giữ thứ tự gốc
   });
+
+  const zoomedItem = zoomedUid ? batch.uids.find(item => item.uid === zoomedUid) : null;
 
   return (
     <>
@@ -314,7 +318,7 @@ export default function QRPrintPage() {
             
             <div className="flex items-center gap-1 bg-emerald-50 border border-emerald-200 p-1 rounded-lg">
                <input 
-                 type="number" min="1" max="1000"
+                 type="number" min="1" max={MAX_QR_AMOUNT}
                  value={addAmountStr}
                  onChange={e => {
                    const raw = e.target.value;
@@ -324,7 +328,7 @@ export default function QRPrintPage() {
                  }}
                  onBlur={() => {
                    const num = parseInt(addAmountStr, 10);
-                   const clamped = isNaN(num) ? 1 : Math.min(1000, Math.max(1, num));
+                   const clamped = isNaN(num) ? 1 : Math.min(MAX_QR_AMOUNT, Math.max(1, num));
                    setAddAmount(clamped);
                    setAddAmountStr(String(clamped));
                  }}
@@ -341,18 +345,20 @@ export default function QRPrintPage() {
             <button
               onClick={() => {
                 // Lấy tất cả <svg> trong tiles, gói thành SVG sprite + download
-                const tiles = document.querySelectorAll('[data-qr-tile="1"] svg');
-                if (tiles.length === 0) return alert('Không có QR để tải.');
+                const tiles = Array.from(document.querySelectorAll('[data-code-value] svg'));
+                if (tiles.length === 0) return alert('Không có mã để tải.');
                 const xmlNs = 'http://www.w3.org/2000/svg';
-                // Tạo 1 SVG lớn chứa nhiều symbol — hoặc download từng file
                 tiles.forEach((svg, idx) => {
+                  const owner = (svg as SVGElement).closest('[data-code-value]') as HTMLElement | null;
+                  const codeValue = owner?.dataset.codeValue || String(idx + 1);
+                  const codeKind = owner?.dataset.codeKind || 'QR';
                   const clone = svg.cloneNode(true) as SVGElement;
                   clone.setAttribute('xmlns', xmlNs);
                   const blob = new Blob([new XMLSerializer().serializeToString(clone)], { type: 'image/svg+xml' });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement('a');
                   a.href = url;
-                  a.download = `qr-${batch.maLo}-${(sortedUids[idx]?.uid || idx).toString().substring(0, 8)}.svg`;
+                  a.download = `${codeKind.toLowerCase()}-${batch.maLo}-${codeValue.toString().substring(0, 12)}.svg`;
                   document.body.appendChild(a);
                   a.click();
                   document.body.removeChild(a);
@@ -400,6 +406,8 @@ export default function QRPrintPage() {
           {sortedUids.slice(0, printCount).map((item, idx) => (
             <div key={item.uid}
               data-qr-tile="1"
+              data-code-value={item.loai === "Barcode" ? (item.serialNumber || item.uid) : item.uid}
+              data-code-kind={item.loai === "Barcode" ? "Barcode" : "QR"}
               className={`bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center gap-2 relative print:rounded-md print:border print:break-inside-avoid ${printSingleId && printSingleId !== item.uid ? 'print:hidden' : ''} ${selectedUids.has(item.uid) ? 'ring-2 ring-primary border-primary' : ''}`}>
               
               {/* Checkbox for bulk select */}
@@ -545,23 +553,23 @@ export default function QRPrintPage() {
               </span>
               <h2 className="text-lg font-bold text-slate-800">Bạn có chắc chắn?</h2>
               <p className="text-sm text-slate-500 mt-2">
-                {confirmModal.type === 'delete' 
+                {confirmModal.type === 'delete'
                   ? (Array.isArray(confirmModal.uid) ? `Bạn chuẩn bị xóa vĩnh viễn ${confirmModal.uid.length} tem đã chọn khỏi hệ thống.` : 'Mã QR này sẽ bị xóa vĩnh viễn khỏi hệ thống.')
-                  : 'Bạn muốn tạo lại mã QR này? (mã cũ sẽ bị vô hiệu hóa và không thể quét được nữa)'}
+                  : 'Bạn muốn tạo lại mã QR này? Mã cũ sẽ không thể quét được nữa.'}
               </p>
             </div>
             <div className="p-4 bg-slate-50 flex justify-center gap-3 border-t border-slate-100">
-              <button 
-                onClick={() => setConfirmModal(null)} 
+              <button
+                onClick={() => setConfirmModal(null)}
                 className="px-5 py-2 rounded-lg font-bold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50"
               >
                 Không
               </button>
-              <button 
-                onClick={executeAction} 
+              <button
+                onClick={executeAction}
                 className={`px-5 py-2 rounded-lg font-bold text-white ${confirmModal.type === 'delete' ? 'bg-red-500 hover:bg-red-600' : 'bg-amber-500 hover:bg-amber-600'}`}
               >
-                Có, tạo lại mã
+                {confirmModal.type === 'delete' ? 'Có, xóa tem' : 'Có, tạo lại mã'}
               </button>
             </div>
           </div>
@@ -578,14 +586,18 @@ export default function QRPrintPage() {
             <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">AI VERIGOODS · Quét bằng camera</p>
             <p className="text-[10px] text-slate-400 font-mono mb-4 break-all">{zoomedUid.substring(0, 24)}…</p>
             <div className="flex justify-center bg-white p-4 rounded-2xl border-2 border-slate-200">
-              <QRCodeSVG
-                value={`${baseUrl}/verify/${zoomedUid}`}
-                size={320}
-                bgColor="#ffffff"
-                fgColor="#000000"
-                level="H"
-                marginSize={2}
-              />
+              {zoomedItem?.loai === "Barcode" ? (
+                <BarcodeSVG value={zoomedItem.serialNumber || zoomedItem.uid} height={180} />
+              ) : (
+                <QRCodeSVG
+                  value={`${baseUrl}/verify/${zoomedUid}`}
+                  size={320}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                  level="H"
+                  marginSize={2}
+                />
+              )}
             </div>
             <p className="text-xs text-slate-500 mt-4 leading-relaxed">
               Đưa camera điện thoại cách QR khoảng <strong>15-25cm</strong> để tự động lấy nét.<br />

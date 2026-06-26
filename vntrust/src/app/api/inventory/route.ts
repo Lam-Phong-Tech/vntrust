@@ -184,7 +184,10 @@ export async function POST(req: NextRequest) {
         if (isNaN(parsedQty) || parsedQty <= 0) {
           return NextResponse.json({ error: "Số lượng phải là số nguyên dương" }, { status: 400 });
         }
-        qty = Math.min(parsedQty, 10000);
+        if (parsedQty > 10000) {
+          return NextResponse.json({ error: "Tối đa 10.000 mã mỗi lô" }, { status: 400 });
+        }
+        qty = parsedQty;
         const base = Date.now().toString(36).toUpperCase();
         records = Array.from({ length: qty }, (_, i) => loai === 'Barcode'
           ? { uid: randomUUID(), serialNumber: `BC${base}${i.toString(36).toUpperCase().padStart(3, '0')}`, loai }
