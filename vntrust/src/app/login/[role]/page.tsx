@@ -844,28 +844,28 @@ export default function LoginPage() {
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                     Mật khẩu <span className="text-red-400">*</span>
-                    <span className="ml-2 text-[10px] font-normal text-slate-500 normal-case">(8–20 ký tự · hoa + thường + số + ký tự đặc biệt)</span>
+                    <span className="ml-2 text-[10px] font-normal text-slate-500 normal-case">(12–20 ký tự · hoa + thường + số + ký tự đặc biệt)</span>
                   </label>
                   <div className="relative">
                     <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">lock</span>
                     <input required type={showPassword ? "text" : "password"} value={regPassword}
                       onChange={(e) => setRegPassword(e.target.value.slice(0, 20))}
-                      maxLength={20} minLength={8}
+                      maxLength={20} minLength={12}
                       className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-12 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
-                      placeholder="VD: Abc@1234" />
+                      placeholder="VD: Abc@12345678" />
                     <button type="button" onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
                       <span className="material-symbols-outlined text-xl">{showPassword ? "visibility_off" : "visibility"}</span>
                     </button>
                   </div>
-                  {/* NFR-SC-07: Password Strength Meter — sync rule mới (≥8, ≤20) */}
+                  {/* NFR-SC-07: Password Strength Meter — synced với server: ≥12, ≤20 */}
                   {regPassword.length > 0 && (() => {
                     const checks = [
-                      regPassword.length >= 8 && regPassword.length <= 20,
-                      /[A-Z]/.test(regPassword),
-                      /[a-z]/.test(regPassword),
-                      /\d/.test(regPassword),
-                      /[^A-Za-z0-9]/.test(regPassword),
+                      regPassword.length >= 12 && regPassword.length <= 20, // Rule 1: 12–20 ký tự (NFR-SC-07)
+                      /[A-Z]/.test(regPassword),                            // Rule 2: chữ HOA
+                      /[a-z]/.test(regPassword),                            // Rule 3: chữ thường
+                      /\d/.test(regPassword),                               // Rule 4: chữ số
+                      /[^A-Za-z0-9]/.test(regPassword),                    // Rule 5: ký tự đặc biệt
                     ];
                     const score = checks.filter(Boolean).length;
                     const colors = ['bg-red-500','bg-red-400','bg-amber-500','bg-amber-400','bg-[#4A7C5C]'];
@@ -883,7 +883,7 @@ export default function LoginPage() {
                             {score > 0 ? labels[score-1] : ''}
                           </span>
                           <div className="flex gap-1 flex-wrap">
-                            {[['8-20', checks[0]], ['HOA', checks[1]], ['thường', checks[2]], ['số', checks[3]], ['!@#', checks[4]]].map(([l, ok], i) => (
+                            {[['12-20', checks[0]], ['HOA', checks[1]], ['thường', checks[2]], ['số', checks[3]], ['!@#', checks[4]]].map(([l, ok], i) => (
                               <span key={i} className={`text-[9px] px-1 py-0.5 rounded font-bold ${ok ? 'bg-[#4A7C5C]/20 text-[#6FB585]' : 'bg-white/5 text-slate-600'}`}>{l as string}</span>
                             ))}
                           </div>
