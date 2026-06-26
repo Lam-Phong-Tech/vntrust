@@ -24,6 +24,10 @@ jobs:
         run: npm ci --legacy-peer-deps
         working-directory: ./vntrust
 
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        working-directory: ./vntrust
+
       - name: Build Next.js App
         run: npm run build
         working-directory: ./vntrust
@@ -35,7 +39,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT }}
-          source: "vntrust/.next,vntrust/public,vntrust/package.json,vntrust/package-lock.json,vntrust/next.config.ts,vntrust/next-env.d.ts,vntrust/tsconfig.json,vntrust/prisma,vntrust/postcss.config.mjs,vntrust/eslint.config.mjs"
+          source: "vntrust/.next,vntrust/public,vntrust/package.json,vntrust/package-lock.json,vntrust/next.config.ts,vntrust/next-env.d.ts,vntrust/tsconfig.json,vntrust/prisma,vntrust/postcss.config.mjs,vntrust/eslint.config.mjs,vntrust/src/generated"
           target: "/var/www/vntrust"
           strip_components: 1
 
@@ -49,5 +53,6 @@ jobs:
           script: |
             cd /var/www/vntrust
             npm ci --production --legacy-peer-deps
+            npx prisma generate
             pm2 restart vntrust || pm2 start npm --name "vntrust" -- start
             pm2 save
