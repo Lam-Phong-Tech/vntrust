@@ -18,12 +18,15 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
+          cache-dependency-path: 'vntrust/package-lock.json'
 
       - name: Install Dependencies
         run: npm ci
+        working-directory: ./vntrust
 
       - name: Build Next.js App
         run: npm run build
+        working-directory: ./vntrust
 
       - name: Copy Files to VPS
         uses: appleboy/scp-action@master
@@ -32,8 +35,9 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT }}
-          source: ".next,public,package.json,package-lock.json,next.config.ts,next-env.d.ts,tsconfig.json,prisma,postcss.config.mjs,eslint.config.mjs"
+          source: "vntrust/.next,vntrust/public,vntrust/package.json,vntrust/package-lock.json,vntrust/next.config.ts,vntrust/next-env.d.ts,vntrust/tsconfig.json,vntrust/prisma,vntrust/postcss.config.mjs,vntrust/eslint.config.mjs"
           target: "/var/www/vntrust"
+          strip_components: 1
 
       - name: Restart PM2
         uses: appleboy/ssh-action@master
@@ -44,6 +48,6 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /var/www/vntrust
-            npm install --production
+            npm ci --production
             pm2 restart vntrust || pm2 start npm --name "vntrust" -- start
             pm2 save
