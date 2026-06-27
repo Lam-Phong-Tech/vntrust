@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { upsertSystemApproval } from "@/lib/systemApproval";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: "Không có dữ liệu cập nhật" }, { status: 400 });
     }
     const updated = await prisma.sanPham.update({ where: { id }, data });
-    return NextResponse.json({ sanPham: updated });
+    const approval = await upsertSystemApproval({
+      target: "product",
+      id,
+      status: "pending",
+      note: "Sản phẩm đã cập nhật thông tin, cần admin duyệt lại.",
+    });
+    return NextResponse.json({ sanPham: updated, approvalStatus: approval.trangThaiDuyet });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { getConfigInt } from "@/lib/config";
+import { SYSTEM_APPROVAL_CERT_TYPES } from "@/lib/systemApproval";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ uid: string }> }) {
   const resolvedParams = await params;
@@ -22,7 +23,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
                     chungNhans: { where: { trangThaiDuyet: 'approved' } }
                   }
                 },
-                chungNhans: { where: { trangThaiDuyet: 'approved' } } // Chỉ trả về CN đã được duyệt
+                chungNhans: { where: { OR: [{ trangThaiDuyet: 'approved' }, { loai: SYSTEM_APPROVAL_CERT_TYPES.product }] }, orderBy: { ngayDuyet: 'desc' } }
               }
             }
           }
@@ -44,7 +45,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
                       chungNhans: { where: { trangThaiDuyet: 'approved' } }
                     }
                   },
-                  chungNhans: { where: { trangThaiDuyet: 'approved' } }
+                  chungNhans: { where: { OR: [{ trangThaiDuyet: 'approved' }, { loai: SYSTEM_APPROVAL_CERT_TYPES.product }] }, orderBy: { ngayDuyet: 'desc' } }
                 }
               }
             }
@@ -118,6 +119,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
 
     // #27: ngưỡng "quét nhiều → nghi ngờ" đọc từ Cấu hình hệ thống (admin chỉnh được), default 10
     const fakeThreshold = await getConfigInt('scan_threshold_fake', 10);
+    const productApproval = maDinhDanh.loHang.sanPham.chungNhans?.find(
+      (item) => item.loai === SYSTEM_APPROVAL_CERT_TYPES.product
+    );
+    const productApprovalStatus = productApproval?.trangThaiDuyet || "pending";
     const batchApproval = maDinhDanh.loHang.chungNhans?.[0];
     const batchApprovalStatus = batchApproval?.trangThaiDuyet || "pending";
 
@@ -126,6 +131,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
       currentStatus = "wrong_enterprise";
     } else if (isExpired) {
       currentStatus = "expired";
+    } else if (productApprovalStatus !== "approved") {
+      currentStatus = "suspect";
     } else if (batchApprovalStatus !== "approved") {
       currentStatus = "suspect";
     } else if (maDinhDanh.soLanQuet >= fakeThreshold) {
@@ -224,6 +231,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
       isRepeat,
       firstScan,
       approval: {
+        productStatus: productApprovalStatus,
+        productNote: productApproval?.ghiChuAdmin || null,
         batchStatus: batchApprovalStatus,
         note: batchApproval?.ghiChuAdmin || null,
       },

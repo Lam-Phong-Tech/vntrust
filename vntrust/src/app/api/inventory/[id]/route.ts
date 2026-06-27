@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { upsertSystemApproval } from "@/lib/systemApproval";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -85,10 +86,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const updated = await prisma.loHang.update({
       where: { id },
-      data: { ngaySanXuat: sxDate, hanDung: hdDate },
+      data: { ngaySanXuat: sxDate, hanDung: hdDate, trangThai: "pending_review" },
+    });
+    const approval = await upsertSystemApproval({
+      target: "batch",
+      id,
+      status: "pending",
+      note: "Lô hàng đã cập nhật thông tin, cần admin duyệt lại.",
     });
 
-    return NextResponse.json({ loHang: updated, message: "Cập nhật lô hàng thành công" });
+    return NextResponse.json({ loHang: updated, approvalStatus: approval.trangThaiDuyet, message: "Cập nhật lô hàng thành công, đang chờ admin duyệt lại." });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

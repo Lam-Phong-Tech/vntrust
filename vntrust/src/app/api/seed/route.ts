@@ -1,7 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { upsertSystemApproval } from "@/lib/systemApproval";
 
-export async function GET() {
+const FAKE_TEST_UID = "VNTRUST-FAKE-UID-TEST";
+
+export async function GET(req: NextRequest) {
   try {
     const existing = await prisma.doanhNghiep.findFirst();
     if (existing) {
@@ -72,8 +75,55 @@ export async function GET() {
         loHangId: loHang.id,
       }
     });
+    const productApproval = await upsertSystemApproval({
+      target: "product",
+      id: sanPham.id,
+      status: "approved",
+      note: "Seed test product approved.",
+      reviewer: "VNTrust Seed",
+    });
+    const batchApproval = await upsertSystemApproval({
+      target: "batch",
+      id: loHang.id,
+      status: "approved",
+      note: "Seed test batch approved.",
+      reviewer: "VNTrust Seed",
+    });
 
-    return NextResponse.json({ message: "Seed successful with Certificates & Barcode", data: { doanhNghiep, sanPham, loHang, ma1 } });
+    const fakeTest = {
+      uid: FAKE_TEST_UID,
+      expectedStatus: "fake",
+      verifyUrl: `/api/verify/${encodeURIComponent(FAKE_TEST_UID)}`,
+      checked: false,
+      status: null as string | null,
+      alertCreated: false,
+    };
+
+    if (req.nextUrl.searchParams.get("selfTest") === "1") {
+      const res = await fetch(new URL(fakeTest.verifyUrl, req.url), { cache: "no-store" });
+      const data = await res.json().catch(() => ({}));
+      fakeTest.checked = true;
+      fakeTest.status = data?.status || null;
+      fakeTest.alertCreated = Boolean(await prisma.canhBao.findFirst({
+        where: { uid: FAKE_TEST_UID, loai: "FAKE_QR_SCANNED" },
+        select: { id: true },
+      }));
+    }
+
+    return NextResponse.json({
+      message: "Seed successful with approved product/batch, barcode and fake UID test data",
+      data: { doanhNghiep, sanPham, loHang, ma1, productApproval, batchApproval },
+      tests: {
+        genuine: {
+          uid: ma1.uid,
+          serialNumber: ma1.serialNumber,
+          expectedStatus: "genuine",
+          verifyUrl: `/api/verify/${ma1.uid}`,
+          barcodeVerifyUrl: `/api/verify/${ma1.serialNumber}`,
+        },
+        fake: fakeTest,
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

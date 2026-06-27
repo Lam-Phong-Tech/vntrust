@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { upsertSystemApproval } from "@/lib/systemApproval";
 
 export async function GET() {
   try {
@@ -130,7 +131,13 @@ export async function POST(req: NextRequest) {
           doanhNghiepId: targetDoanhNghiepId,
         }
       });
-      return NextResponse.json({ sanPham }, { status: 201 });
+      const approval = await upsertSystemApproval({
+        target: "product",
+        id: sanPham.id,
+        status: "pending",
+        note: "Sản phẩm mới tạo, chờ admin duyệt.",
+      });
+      return NextResponse.json({ sanPham, approvalStatus: approval.trangThaiDuyet }, { status: 201 });
     }
 
     if (type === "batch") {
@@ -206,14 +213,21 @@ export async function POST(req: NextRequest) {
           cuaKhau: body.cuaKhau || null,
           hsCode: body.hsCode || null,
           nuocXuatXu: body.nuocXuatXu || null,
+          trangThai: "pending_review",
           sanPhamId,
         }
       });
 
       const uids = records.map(r => ({ ...r, loHangId: loHang.id }));
       await prisma.maDinhDanh.createMany({ data: uids });
+      const approval = await upsertSystemApproval({
+        target: "batch",
+        id: loHang.id,
+        status: "pending",
+        note: "Lô hàng mới tạo, chờ admin duyệt trước khi xác thực là chính hãng.",
+      });
 
-      return NextResponse.json({ loHang, totalUids: uids.length, codeMode: mode, codeType: loai }, { status: 201 });
+      return NextResponse.json({ loHang, totalUids: uids.length, codeMode: mode, codeType: loai, approvalStatus: approval.trangThaiDuyet }, { status: 201 });
     }
 
     return NextResponse.json({ error: "type phải là 'product' hoặc 'batch'" }, { status: 400 });

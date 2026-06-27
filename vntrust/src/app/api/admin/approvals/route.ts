@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { SYSTEM_APPROVAL_CERT_TYPES, upsertSystemApproval } from "@/lib/systemApproval";
 
 export const dynamic = "force-dynamic";
 
-const APPROVAL_CERT_TYPES = {
-  product: "SYSTEM_PRODUCT_APPROVAL",
-  batch: "SYSTEM_BATCH_APPROVAL",
-} as const;
-
-type ApprovalTarget = keyof typeof APPROVAL_CERT_TYPES;
+type ApprovalTarget = keyof typeof SYSTEM_APPROVAL_CERT_TYPES;
 
 function isTarget(value: string | null): value is ApprovalTarget {
   return value === "product" || value === "batch";
@@ -50,7 +46,7 @@ export async function GET(req: NextRequest) {
       include: {
         doanhNghiep: { select: { ten: true, maSoThue: true } },
         chungNhans: {
-          where: { loai: APPROVAL_CERT_TYPES.product },
+          where: { loai: SYSTEM_APPROVAL_CERT_TYPES.product },
           orderBy: { ngayDuyet: "desc" },
           take: 1,
         },
@@ -93,7 +89,7 @@ export async function GET(req: NextRequest) {
         },
       },
       chungNhans: {
-        where: { loai: APPROVAL_CERT_TYPES.batch },
+        where: { loai: SYSTEM_APPROVAL_CERT_TYPES.batch },
         orderBy: { ngayDuyet: "desc" },
         take: 1,
       },
@@ -145,10 +141,6 @@ export async function PATCH(req: NextRequest) {
   }
 
   const target = parsedTarget;
-  const now = new Date();
-  const farFuture = new Date(now);
-  farFuture.setFullYear(farFuture.getFullYear() + 100);
-  const certType = APPROVAL_CERT_TYPES[target];
   const status = action === "approve" ? "approved" : "rejected";
 
   const targetRecord = target === "product"
@@ -159,33 +151,20 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Approval target not found" }, { status: 404 });
   }
 
-  const existing = await prisma.chungNhan.findFirst({
-    where: target === "product"
-      ? { loai: certType, sanPhamId: id }
-      : { loai: certType, loHangId: id },
-    orderBy: { ngayDuyet: "desc" },
+  const approval = await upsertSystemApproval({
+    target,
+    id,
+    status,
+    note: note || null,
+    reviewer: "VNTrust Admin",
   });
 
-  const data = {
-    trangThaiDuyet: status,
-    ghiChuAdmin: note?.trim() || null,
-    ngayDuyet: now,
-    ngayCap: now,
-    ngayHetHan: farFuture,
-    toChucCap: "VNTrust Admin",
-  };
-
-  const approval = existing
-    ? await prisma.chungNhan.update({ where: { id: existing.id }, data })
-    : await prisma.chungNhan.create({
-        data: {
-          loai: certType,
-          soChungNhan: `${target.toUpperCase()}-${id.slice(0, 8).toUpperCase()}`,
-          ...data,
-          sanPhamId: target === "product" ? id : null,
-          loHangId: target === "batch" ? id : null,
-        },
-      });
+  if (target === "batch") {
+    await prisma.loHang.update({
+      where: { id },
+      data: { trangThai: status === "approved" ? "active" : "rejected" },
+    });
+  }
 
   await prisma.nhatKy.create({
     data: {

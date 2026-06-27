@@ -206,8 +206,11 @@ export default function VerificationResult() {
   const isGenuine  = result?.status === "genuine";
   const isCounterfeit = isFake || !isGenuine;
   const batchApprovalStatus = result?.approval?.batchStatus;
+  const productApprovalStatus = result?.approval?.productStatus;
+  const isProductApprovalIssue =
+    result?.status === "suspect" && productApprovalStatus && productApprovalStatus !== "approved";
   const isBatchApprovalIssue =
-    result?.status === "suspect" && batchApprovalStatus && batchApprovalStatus !== "approved";
+    result?.status === "suspect" && !isProductApprovalIssue && batchApprovalStatus && batchApprovalStatus !== "approved";
   const isEnterpriseMismatch = result?.status === "wrong_enterprise";
 
   const pData   = result?.data || {};
@@ -622,6 +625,10 @@ export default function VerificationResult() {
                   ? (lang === 'en'
                     ? 'This code is valid, but it does not belong to the selected enterprise.'
                     : 'Mã có tồn tại, nhưng không thuộc doanh nghiệp đã chọn.')
+                  : isProductApprovalIssue
+                  ? (lang === 'en'
+                    ? 'This QR exists, but the product has not been approved by admin yet.'
+                    : 'Mã QR có tồn tại, nhưng sản phẩm chưa được admin phê duyệt.')
                   : isBatchApprovalIssue
                   ? (lang === 'en'
                     ? 'This QR exists, but the batch has not been approved by admin yet.'
