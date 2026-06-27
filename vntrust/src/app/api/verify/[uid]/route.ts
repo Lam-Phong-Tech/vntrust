@@ -6,6 +6,7 @@ import { getConfigInt } from "@/lib/config";
 export async function GET(req: NextRequest, { params }: { params: Promise<{ uid: string }> }) {
   const resolvedParams = await params;
   const uid = resolvedParams.uid;
+  const selectedDoanhNghiepId = req.nextUrl.searchParams.get("doanhNghiepId") || null;
 
   try {
     let maDinhDanh = await prisma.maDinhDanh.findUnique({
@@ -69,8 +70,21 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
     }
 
     // P2 — UID bị vô hiệu vì DN bị tạm khóa (cascade từ KYC suspended/revoked)
+    const actualEnterprise = maDinhDanh.loHang?.sanPham?.doanhNghiep || null;
+    const selectedEnterprise = selectedDoanhNghiepId
+      ? await prisma.doanhNghiep.findUnique({
+          where: { id: selectedDoanhNghiepId },
+          select: { id: true, ten: true, maSoThue: true },
+        })
+      : null;
+    const enterpriseMismatch = Boolean(
+      selectedDoanhNghiepId &&
+      actualEnterprise?.id &&
+      selectedDoanhNghiepId !== actualEnterprise.id
+    );
+
     if (maDinhDanh.trangThai === "suspended") {
-      const dn = maDinhDanh.loHang?.sanPham?.doanhNghiep;
+      const dn = actualEnterprise;
       return NextResponse.json({
         status: "suspect",
         message: dn?.trangThai === 'revoked'
@@ -108,7 +122,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
     const batchApprovalStatus = batchApproval?.trangThaiDuyet || "pending";
 
     let currentStatus: string;
-    if (isExpired) {
+    if (enterpriseMismatch) {
+      currentStatus = "wrong_enterprise";
+    } else if (isExpired) {
       currentStatus = "expired";
     } else if (batchApprovalStatus !== "approved") {
       currentStatus = "suspect";
@@ -155,7 +171,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
     const nguoiDungId = cookieStore.get('userId')?.value || null;
     const sessionRef = cookieStore.get('sessionToken')?.value || null;
     if (nguoiDungId || sessionRef) {
-      const ketQuaMap: Record<string, string> = { genuine: 'verified', suspect: 'warning', expired: 'expired', fake: 'blocked' };
+      const ketQuaMap: Record<string, string> = { genuine: 'verified', suspect: 'warning', expired: 'expired', fake: 'blocked', wrong_enterprise: 'warning' };
       await prisma.lichSuKiemTra.create({
         data: {
           nguoiDungId: nguoiDungId || null,
@@ -210,6 +226,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
       approval: {
         batchStatus: batchApprovalStatus,
         note: batchApproval?.ghiChuAdmin || null,
+      },
+      enterpriseCheck: {
+        selectedId: selectedDoanhNghiepId,
+        selectedName: selectedEnterprise?.ten || null,
+        actualId: actualEnterprise?.id || null,
+        actualName: actualEnterprise?.ten || null,
+        matched: !enterpriseMismatch,
       },
     });
   } catch (error: unknown) {

@@ -175,7 +175,10 @@ export default function VerificationResult() {
   };
 
   useEffect(() => {
-    fetch(`/api/verify/${uid}`)
+    const searchParams = new URLSearchParams(window.location.search);
+    const doanhNghiepId = searchParams.get("doanhNghiepId");
+    const query = doanhNghiepId ? `?doanhNghiepId=${encodeURIComponent(doanhNghiepId)}` : "";
+    fetch(`/api/verify/${uid}${query}`)
       .then(res => res.json())
       .then(data => { setResult(data); setLoading(false); })
       .catch(() => setLoading(false));
@@ -199,12 +202,13 @@ export default function VerificationResult() {
     );
   }
 
-  const isFake     = result?.status === "fake" || result?.status === "suspect" || result?.status === "expired";
+  const isFake     = result?.status === "fake" || result?.status === "suspect" || result?.status === "expired" || result?.status === "wrong_enterprise";
   const isGenuine  = result?.status === "genuine";
   const isCounterfeit = isFake || !isGenuine;
   const batchApprovalStatus = result?.approval?.batchStatus;
   const isBatchApprovalIssue =
     result?.status === "suspect" && batchApprovalStatus && batchApprovalStatus !== "approved";
+  const isEnterpriseMismatch = result?.status === "wrong_enterprise";
 
   const pData   = result?.data || {};
   const loHang  = pData.loHang  || {};
@@ -605,14 +609,20 @@ export default function VerificationResult() {
               </div>
               <div className="s-fake-status-label">
                 <span className="s-fake-status-label-dot" />
-                {lang === 'en' ? 'Counterfeit suspected' : 'Có dấu hiệu giả mạo'}
+                {isEnterpriseMismatch
+                  ? (lang === 'en' ? 'Enterprise mismatch' : 'Sai doanh nghiệp')
+                  : (lang === 'en' ? 'Counterfeit suspected' : 'Có dấu hiệu giả mạo')}
               </div>
               <div className="s-fake-hero-title">
                 {lang === 'en' ? 'Product not' : 'Sản phẩm không'}<br />
                 {lang === 'en' ? 'authenticated' : 'được xác thực'}
               </div>
               <div className="s-fake-hero-sub">
-                {isBatchApprovalIssue
+                {isEnterpriseMismatch
+                  ? (lang === 'en'
+                    ? 'This code is valid, but it does not belong to the selected enterprise.'
+                    : 'Mã có tồn tại, nhưng không thuộc doanh nghiệp đã chọn.')
+                  : isBatchApprovalIssue
                   ? (lang === 'en'
                     ? 'This QR exists, but the batch has not been approved by admin yet.'
                     : 'Mã QR có tồn tại, nhưng lô hàng chưa được admin phê duyệt.')
@@ -667,12 +677,18 @@ export default function VerificationResult() {
                   </div>
                   <div className="s-fake-issue-text">
                     <div className="s-fake-issue-label">
-                      {isBatchApprovalIssue
+                      {isEnterpriseMismatch
+                        ? (lang === 'en' ? 'Enterprise mismatch' : 'Sai doanh nghiệp đã chọn')
+                        : isBatchApprovalIssue
                         ? (lang === 'en' ? 'Batch approval pending' : 'Lô hàng chưa được duyệt')
                         : (lang === 'en' ? 'UID not found in database' : 'UID không tồn tại trong CSDL')}
                     </div>
                     <div className="s-fake-issue-desc">
-                      {isBatchApprovalIssue
+                      {isEnterpriseMismatch
+                        ? (lang === 'en'
+                          ? `Selected: ${result.enterpriseCheck?.selectedName || 'Unknown'} · Actual: ${result.enterpriseCheck?.actualName || 'Unknown'}`
+                          : `Đã chọn: ${result.enterpriseCheck?.selectedName || 'Không rõ'} · Thực tế: ${result.enterpriseCheck?.actualName || 'Không rõ'}`)
+                        : isBatchApprovalIssue
                         ? (lang === 'en' ? 'Admin must approve this batch before it is marked genuine' : 'Admin cần duyệt lô trước khi xác thực chính hãng')
                         : (lang === 'en' ? 'Identifier was never issued' : 'Mã định danh chưa từng được phát hành')}
                     </div>

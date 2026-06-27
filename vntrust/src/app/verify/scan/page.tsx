@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
+import EnterpriseSelect, { buildVerifyHref, getStoredVerifyEnterprise } from "@/components/EnterpriseSelect";
 import "./scan.css";
 
 export default function VerifyScanPage() {
@@ -13,6 +14,7 @@ export default function VerifyScanPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   // qr = chỉ QR code · barcode = 1D barcode (EAN/UPC/Code128…) · gallery = upload ảnh
   const [mode, setMode] = useState<"qr" | "barcode" | "gallery">("qr");
+  const [enterpriseId, setEnterpriseId] = useState("");
   // Camera switching support — danh sách + current index
   const [cameras, setCameras] = useState<Array<{ id: string; label: string }>>([]);
   const [activeCameraIdx, setActiveCameraIdx] = useState(0);
@@ -37,7 +39,7 @@ export default function VerifyScanPage() {
       const uid = text.includes("/verify/")
         ? text.split("/verify/")[1]
         : text;
-      router.push(`/verify/${uid}`);
+      router.push(buildVerifyHref(uid, enterpriseId));
     } catch (err) {
       setCameraError(lang === 'en' ? "Could not find a QR code in the image" : "Không tìm thấy mã QR trong ảnh");
     }
@@ -136,7 +138,7 @@ export default function VerifyScanPage() {
                 const uid = decodedText.includes("/verify/")
                   ? decodedText.split("/verify/")[1]
                   : decodedText;
-                router.push(`/verify/${uid}`);
+                router.push(buildVerifyHref(uid, enterpriseId));
               }).catch(() => { });
             }
           },
@@ -165,7 +167,11 @@ export default function VerifyScanPage() {
         html5QrCodeRef.current.stop().catch(() => { });
       }
     };
-  }, [router, mode, activeCameraIdx]);
+  }, [router, mode, activeCameraIdx, enterpriseId]);
+
+  useEffect(() => {
+    setEnterpriseId(getStoredVerifyEnterprise());
+  }, []);
 
   // Xoay cam — chuyển sang camera tiếp theo trong danh sách
   const switchCamera = () => {
@@ -223,6 +229,14 @@ export default function VerifyScanPage() {
         </div>
 
         <div className="s-scan-hint">
+          <div style={{ width: "min(92vw, 420px)", margin: "0 auto 12px" }}>
+            <EnterpriseSelect
+              lang={lang}
+              value={enterpriseId}
+              onChange={setEnterpriseId}
+              compact
+            />
+          </div>
           <div className="s-scan-hint-text">
             {mode === 'barcode'
               ? (lang === 'en' ? 'Align barcode within frame' : 'Đưa mã vạch vào khung')

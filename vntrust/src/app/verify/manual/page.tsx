@@ -1,18 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import VoiceSearchButton from "@/components/VoiceSearchButton";
+import EnterpriseSelect, { buildVerifyHref, getStoredVerifyEnterprise } from "@/components/EnterpriseSelect";
 
 export default function VerifyManualPage() {
   const [serial, setSerial] = useState("");
+  const [enterpriseId, setEnterpriseId] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    setEnterpriseId(getStoredVerifyEnterprise());
+  }, []);
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
     if (serial.trim()) {
-      router.push(`/verify/${serial.trim()}`);
+      router.push(buildVerifyHref(serial.trim(), enterpriseId));
     }
   };
 
@@ -40,6 +46,8 @@ export default function VerifyManualPage() {
           <p className="text-on-surface-variant mb-10 mx-auto max-w-sm">Nhập chuỗi định danh duy nhất (UUID/Serial) in chìm dưới lớp phủ tem AI VeriGoods chống giả.</p>
 
           <form onSubmit={handleVerify} className="space-y-8 w-full max-w-md mx-auto">
+            <EnterpriseSelect value={enterpriseId} onChange={setEnterpriseId} />
+
             <div className="relative text-left">
               <label className="block text-[11px] font-black text-outline uppercase tracking-[0.2em] mb-3 ml-2">Mã định danh (UID)</label>
               <div className="relative group">
