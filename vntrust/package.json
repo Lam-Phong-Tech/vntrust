@@ -6,9 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cap:add:ios": "cap add ios",
+    "cap:sync:ios": "cap sync ios",
+    "cap:add:android": "cap add android",
+    "cap:sync:android": "cap sync android"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/camera": "^8.2.0",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/geolocation": "^8.2.0",
+    "@capacitor/ios": "^8.4.1",
     "@libsql/client": "^0.17.2",
     "@prisma/adapter-better-sqlite3": "^7.7.0",
     "@prisma/adapter-libsql": "^7.7.0",
@@ -37,6 +46,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.4.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

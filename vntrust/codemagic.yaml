@@ -1,11 +1,74 @@
 workflows:
-  deployment-disabled:
-    name: Deployment disabled
-    max_build_duration: 5
+  ios-testflight:
+    name: iOS TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    integrations:
+      app_store_connect: codemagic
+
     environment:
       node: 20.19.1
+      xcode: latest
+      vars:
+        CAPACITOR_APP_ID: com.vntrust.verigoods
+        CAPACITOR_APP_NAME: AI VeriGoods
+        CAPACITOR_SERVER_URL: https://anticounterfeit.test9.io.vn
+        XCODE_WORKSPACE: ios/App/App.xcworkspace
+        XCODE_SCHEME: App
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.vntrust.verigoods
+
     scripts:
-      - name: Skip VPS deployment
+      - name: Install dependencies
         script: |
-          echo "Codemagic VPS deployment is disabled."
-          echo "Use the external VPS deployment pipeline instead."
+          cd vntrust
+          npm ci --legacy-peer-deps
+
+      - name: Generate Prisma client
+        script: |
+          cd vntrust
+          npx prisma generate
+
+      - name: Prepare Capacitor iOS project
+        script: |
+          cd vntrust
+          if [ ! -d ios ]; then
+            npx cap add ios
+          fi
+          npx cap sync ios
+
+      - name: Configure iOS permissions
+        script: |
+          cd vntrust
+          PLIST="ios/App/App/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription AI VeriGoods needs camera access to scan QR codes and barcodes." "$PLIST" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string AI VeriGoods needs camera access to scan QR codes and barcodes." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :NSLocationWhenInUseUsageDescription AI VeriGoods uses location to record verification and report context." "$PLIST" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string AI VeriGoods uses location to record verification and report context." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription AI VeriGoods needs photo library access to scan QR codes from product images." "$PLIST" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string AI VeriGoods needs photo library access to scan QR codes from product images." "$PLIST"
+
+      - name: Set up code signing
+        script: |
+          cd vntrust
+          xcode-project use-profiles
+
+      - name: Build IPA
+        script: |
+          cd vntrust
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - vntrust/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - vntrust/ios/App/build/Build/Products/**/*.app
+      - vntrust/ios/App/build/Build/Products/**/*.dSYM
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
