@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status'); // pending | approved | rejected | all
 
-    let whereClause: any = {};
+    const whereClause: any = {};
     // Filter theo trạng thái duyệt nếu có
     if (status && status !== 'all') {
       whereClause.trangThaiDuyet = status;

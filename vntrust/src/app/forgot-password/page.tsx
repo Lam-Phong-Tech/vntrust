@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // ─── Validation chuẩn hoá (đồng bộ với /login/[role]) ─────────────────────────
 // Email: cấu trúc chuẩn local@domain.tld
@@ -339,9 +340,9 @@ export default function ForgotPasswordPage() {
       </div>
 
       {/* Link về đăng nhập */}
-      <a href="/login" className="mt-6 text-sm text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-2 z-10">
+      <Link href="/login" className="mt-6 text-sm text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-2 z-10">
         <span className="material-symbols-outlined text-base">home</span> Về trang chủ
-      </a>
+      </Link>
 
       {/* Toast */}
       {msg && (

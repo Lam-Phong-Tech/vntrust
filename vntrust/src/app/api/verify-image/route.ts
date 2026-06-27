@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
     // Default response (no reference available)
     let status: 'genuine' | 'suspect' | 'fake' | 'unknown' = 'unknown';
     let confidence = 0.5;
-    let reasoning: string[] = [];
+    const reasoning: string[] = [];
     const details: any = { uploadedHash, uploadedDim };
 
     if (referenceUrl) {

@@ -37,7 +37,8 @@ function parseViDate(raw: string): Date | null {
   // DD/MM/YYYY or DD/MM/YY
   const parts = s.split(/[\/\-\.]/);
   if (parts.length === 3) {
-    let [dd, mm, yy] = parts.map(Number);
+    const [dd, mm, yyRaw] = parts.map(Number);
+    let yy = yyRaw;
     if (yy < 100) yy += 2000;
     const d = new Date(yy, mm - 1, dd);
     return isNaN(d.getTime()) ? null : d;

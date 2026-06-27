@@ -45,7 +45,8 @@ function toISODate(s?: string): string | undefined {
   if (!s) return undefined;
   const m = s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
   if (!m) return undefined;
-  let [, d, mo, y] = m;
+  const [, d, mo, rawYear] = m;
+  let y = rawYear;
   if (y.length === 2) y = '20' + y;
   const dd = d.padStart(2, '0'), mm = mo.padStart(2, '0');
   if (+mm > 12 || +dd > 31) return undefined;

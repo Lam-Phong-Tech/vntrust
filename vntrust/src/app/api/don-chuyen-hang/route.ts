@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const role = searchParams.get('role') || '';
     const doanhNghiepId = searchParams.get('doanhNghiepId') || '';
 
-    let where: any = {};
+    const where: any = {};
     if (role === 'admin') {
       // Admin sees all
     } else if (role === 'manufacturer' && doanhNghiepId) {

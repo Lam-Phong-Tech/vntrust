@@ -49,7 +49,7 @@ function blurGps(lat: number | null | undefined, lng: number | null | undefined)
 export function anonymize(raw: RawReport): AnonymizedReport {
   const allRedacted: string[] = [];
   let moTa = raw.moTa;
-  let metadata = raw.metadata ? { ...raw.metadata } : undefined;
+  const metadata = raw.metadata ? { ...raw.metadata } : undefined;
 
   if (moTa) {
     const r = redactPII(moTa);
