@@ -257,6 +257,18 @@ html.light-mode nav a,
 html.light-mode nav span,
 html.light-mode nav button { color: #0d1b2e !important; }
 html.light-mode nav a.text-blue-100\/70 { color: #1e4976 !important; }
+html.light-mode .mobile-top-bar,
+html.light-mode .mobile-bottom-nav {
+  background: rgba(238, 248, 255, 0.94) !important;
+  border-color: rgba(31,111,235,0.16) !important;
+  box-shadow: 0 -4px 24px rgba(31,111,235,0.08) !important;
+}
+html.light-mode .mobile-top-bar span,
+html.light-mode .mobile-top-bar button,
+html.light-mode .mobile-bottom-nav span,
+html.light-mode .mobile-bottom-nav button {
+  color: #0d1b2e !important;
+}
 
 /* ─── Badge & pill tinted backgrounds ──────────── */
 html.light-mode .bg-cyan-500\/20    { background: rgba(31,111,235,0.12)  !important; }

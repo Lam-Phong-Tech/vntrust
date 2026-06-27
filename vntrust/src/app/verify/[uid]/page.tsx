@@ -202,6 +202,9 @@ export default function VerificationResult() {
   const isFake     = result?.status === "fake" || result?.status === "suspect" || result?.status === "expired";
   const isGenuine  = result?.status === "genuine";
   const isCounterfeit = isFake || !isGenuine;
+  const batchApprovalStatus = result?.approval?.batchStatus;
+  const isBatchApprovalIssue =
+    result?.status === "suspect" && batchApprovalStatus && batchApprovalStatus !== "approved";
 
   const pData   = result?.data || {};
   const loHang  = pData.loHang  || {};
@@ -609,9 +612,13 @@ export default function VerificationResult() {
                 {lang === 'en' ? 'authenticated' : 'được xác thực'}
               </div>
               <div className="s-fake-hero-sub">
-                {lang === 'en'
-                  ? 'UID does not match any genuine product in our database'
-                  : 'Mã UID không khớp với bất kỳ sản phẩm chính hãng nào trong cơ sở dữ liệu'}
+                {isBatchApprovalIssue
+                  ? (lang === 'en'
+                    ? 'This QR exists, but the batch has not been approved by admin yet.'
+                    : 'Mã QR có tồn tại, nhưng lô hàng chưa được admin phê duyệt.')
+                  : (lang === 'en'
+                    ? 'UID does not match any genuine product in our database'
+                    : 'Mã UID không khớp với bất kỳ sản phẩm chính hãng nào trong cơ sở dữ liệu')}
               </div>
               {/* UID row */}
               <div className="s-fake-uid">
@@ -660,10 +667,14 @@ export default function VerificationResult() {
                   </div>
                   <div className="s-fake-issue-text">
                     <div className="s-fake-issue-label">
-                      {lang === 'en' ? 'UID not found in database' : 'UID không tồn tại trong CSDL'}
+                      {isBatchApprovalIssue
+                        ? (lang === 'en' ? 'Batch approval pending' : 'Lô hàng chưa được duyệt')
+                        : (lang === 'en' ? 'UID not found in database' : 'UID không tồn tại trong CSDL')}
                     </div>
                     <div className="s-fake-issue-desc">
-                      {lang === 'en' ? 'Identifier was never issued' : 'Mã định danh chưa từng được phát hành'}
+                      {isBatchApprovalIssue
+                        ? (lang === 'en' ? 'Admin must approve this batch before it is marked genuine' : 'Admin cần duyệt lô trước khi xác thực chính hãng')
+                        : (lang === 'en' ? 'Identifier was never issued' : 'Mã định danh chưa từng được phát hành')}
                     </div>
                   </div>
                 </div>

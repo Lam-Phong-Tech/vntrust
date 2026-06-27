@@ -402,12 +402,12 @@ export default function Navbar() {
 
           {/* Left: Logo + nav */}
           <div className="flex items-center gap-10">
-            <Link href="/" className="flex items-center gap-2.5">
+            <Link href="/" className="flex items-center gap-2.5 min-w-0 max-w-[190px] overflow-hidden">
               <span style={{ background:'#ffffff', borderRadius:10, padding:'5px', display:'inline-flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(0,0,0,0.14)' }}>
                 <Image src="/logo-icon.png" alt="AI VeriGoods" width={30} height={30} style={{objectFit: 'contain', display:'block'}} priority />
               </span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/verigoods-wordmark.png" alt="VeriGoods" style={{ height:16, width:'auto', objectFit:'contain', display:'block' }} />
+              <img src="/verigoods-wordmark.png" alt="VeriGoods" style={{ height:16, width:'auto', maxWidth:140, objectFit:'contain', display:'block', flexShrink:1 }} />
             </Link>
 
             <div className="hidden lg:flex items-center gap-7 pt-0.5">

@@ -13,6 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
       include: {
         loHang: {
           include: {
+            chungNhans: { where: { loai: 'SYSTEM_BATCH_APPROVAL' }, orderBy: { ngayDuyet: 'desc' }, take: 1 },
             sanPham: {
               include: {
                 doanhNghiep: {
@@ -32,10 +33,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
       maDinhDanh = await prisma.maDinhDanh.findUnique({
         where: { serialNumber: uid },
         include: {
-          loHang: {
-            include: {
-              sanPham: {
-                include: {
+        loHang: {
+          include: {
+            chungNhans: { where: { loai: 'SYSTEM_BATCH_APPROVAL' }, orderBy: { ngayDuyet: 'desc' }, take: 1 },
+            sanPham: {
+              include: {
                   doanhNghiep: {
                     include: {
                       chungNhans: { where: { trangThaiDuyet: 'approved' } }
@@ -102,9 +104,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
 
     // #27: ngưỡng "quét nhiều → nghi ngờ" đọc từ Cấu hình hệ thống (admin chỉnh được), default 10
     const fakeThreshold = await getConfigInt('scan_threshold_fake', 10);
+    const batchApproval = maDinhDanh.loHang.chungNhans?.[0];
+    const batchApprovalStatus = batchApproval?.trangThaiDuyet || "pending";
+
     let currentStatus: string;
     if (isExpired) {
       currentStatus = "expired";
+    } else if (batchApprovalStatus !== "approved") {
+      currentStatus = "suspect";
     } else if (maDinhDanh.soLanQuet >= fakeThreshold) {
       currentStatus = "suspect";
     } else {
@@ -200,8 +207,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
       scanCount: updatedMa.soLanQuet,
       isRepeat,
       firstScan,
+      approval: {
+        batchStatus: batchApprovalStatus,
+        note: batchApproval?.ghiChuAdmin || null,
+      },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Verification Error:", error);
     return NextResponse.json({ status: "fake", message: "Lỗi hệ thống xác thực. Vui lòng thử lại." }, { status: 500 });
   }

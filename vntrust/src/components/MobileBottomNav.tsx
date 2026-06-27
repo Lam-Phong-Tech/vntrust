@@ -431,7 +431,7 @@ export function MobileTopBar() {
         paddingTop: "env(safe-area-inset-top, 0px)",
       }}>
         {/* Left: Logo */}
-        <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+        <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", minWidth: 0, maxWidth: 170, overflow: "hidden" }}>
           <span style={{ background: "#ffffff", borderRadius: 9, padding: 4, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.14)" }}>
             <Image
               src="/logo-icon.png"
@@ -443,7 +443,7 @@ export function MobileTopBar() {
             />
           </span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/verigoods-wordmark.png" alt="VeriGoods" style={{ height: 14, width: "auto", objectFit: "contain", display: "block" }} />
+          <img src="/verigoods-wordmark.png" alt="VeriGoods" style={{ height: 14, width: "auto", maxWidth: 118, objectFit: "contain", display: "block", flexShrink: 1 }} />
         </Link>
 
         {/* Right: utility icons */}
