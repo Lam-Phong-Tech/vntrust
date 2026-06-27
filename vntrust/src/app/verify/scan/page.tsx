@@ -229,7 +229,7 @@ export default function VerifyScanPage() {
         </div>
 
         <div className="s-scan-hint">
-          <div style={{ width: "min(92vw, 420px)", margin: "0 auto 12px" }}>
+          <div className="s-scan-enterprise">
             <EnterpriseSelect
               lang={lang}
               value={enterpriseId}
