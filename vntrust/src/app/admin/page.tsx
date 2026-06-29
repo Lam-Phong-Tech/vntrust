@@ -9,6 +9,25 @@ interface UsersResp { total: number; stats: { byRole: Record<string, number>; by
 interface LogItem { id: string; action: string; user: string; role: string; time: string; status: string; }
 
 const fmt = (n: number | undefined) => (n ?? 0).toLocaleString("vi-VN");
+const formatLogAction = (action: string) => {
+  const bracketMatch = action.match(/^\[([^\]]+)\]\s*(.*)$/);
+  if (bracketMatch) {
+    return {
+      title: bracketMatch[1].replace(/[_-]+/g, " ").trim(),
+      detail: bracketMatch[2].trim(),
+    };
+  }
+
+  const colonMatch = action.match(/^([^:]{1,56}):\s+(.+)$/);
+  if (colonMatch) {
+    return {
+      title: colonMatch[1].trim(),
+      detail: colonMatch[2].trim(),
+    };
+  }
+
+  return { title: action, detail: "" };
+};
 
 export default function AdminOverview() {
   const { lang } = useLanguage();
@@ -120,19 +139,27 @@ export default function AdminOverview() {
             <p className="text-center text-slate-500 py-10 text-sm">{tr("Chưa có nhật ký", "No activity yet")}</p>
           ) : (
             <div className="divide-y divide-white/5">
-              {logs.map(l => (
-                <div key={l.id} className="flex items-start gap-3 py-3">
+              {logs.map(l => {
+                const action = formatLogAction(l.action);
+                return (
+                <div key={l.id} className="flex items-start gap-3 py-3 px-2 rounded-xl hover:bg-white/[0.03] transition">
                   <span className={`material-symbols-outlined text-[18px] mt-0.5 shrink-0 ${
                     l.status === "error" ? "text-red-400" : l.status === "warning" ? "text-amber-400" : "text-emerald-400"
                   }`}>
                     {l.status === "error" ? "error" : l.status === "warning" ? "warning" : "check_circle"}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="text-white text-sm font-semibold truncate">{l.action}</div>
-                    <div className="text-[11px] text-slate-500 truncate">{l.user} · {l.time}</div>
+                    <div className="text-white text-sm font-semibold leading-snug break-words">{action.title}</div>
+                    {action.detail && (
+                      <div className="mt-1 text-[11px] text-slate-400 leading-relaxed break-all sm:break-words">
+                        {action.detail}
+                      </div>
+                    )}
+                    <div className="mt-1 text-[10px] text-slate-500 break-words">{l.user || "System"} - {l.time}</div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
