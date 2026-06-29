@@ -1057,6 +1057,37 @@ html.light-mode .admin-content .material-symbols-outlined:not([class*="text-red"
   font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
 }
 
+/* Admin sidebar has its own blue rail; keep hover/active readable despite global nav light-mode rules. */
+html.light-mode .admin-sidebar,
+html.light-mode .admin-sidebar nav {
+  background: #1F6FEB !important;
+}
+
+html.light-mode .admin-sidebar .admin-sidebar-link,
+html.light-mode .admin-sidebar .admin-sidebar-link * {
+  color: rgba(255,255,255,0.92) !important;
+}
+
+html.light-mode .admin-sidebar .admin-sidebar-link:hover,
+html.light-mode .admin-sidebar .admin-sidebar-link:hover * {
+  color: #0d1b2e !important;
+}
+
+html.light-mode .admin-sidebar .admin-sidebar-link:hover {
+  background: rgba(255,255,255,0.95) !important;
+  border-color: rgba(255,255,255,0.95) !important;
+}
+
+html.light-mode .admin-sidebar .admin-sidebar-link[aria-current="page"],
+html.light-mode .admin-sidebar .admin-sidebar-link[aria-current="page"] * {
+  color: #1F6FEB !important;
+}
+
+html.light-mode .admin-sidebar .admin-sidebar-link[aria-current="page"] {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
 /* ═══════════════════════════════════════════════════════════
    #30 — RÀ SOÁT SÁNG/TỐI: ốc đảo nền tối còn sót sau khi đối chiếu
    toàn bộ class với các rule override hiện có. Chỉ đụng SURFACE nền

@@ -112,7 +112,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     key={item.href}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
+                    className={`admin-sidebar-link group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
                       active
                         ? "bg-white text-[#1F6FEB] border border-white shadow-sm"
                         : "text-white/90 hover:bg-white/95 hover:text-[#0d1b2e] border border-transparent"
@@ -156,7 +156,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen w-full flex bg-[#eef5fb]">
       {/* ── Sidebar desktop ── */}
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col sticky top-0 h-screen shadow-[2px_0_10px_rgba(0,0,0,0.05)]" style={{ background: '#1F6FEB' }}>
+      <aside className="admin-sidebar hidden lg:flex w-64 shrink-0 flex-col sticky top-0 h-screen shadow-[2px_0_10px_rgba(0,0,0,0.05)]" style={{ background: '#1F6FEB' }}>
         {SidebarInner}
       </aside>
 
@@ -164,7 +164,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {open && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <aside className="relative w-64 max-w-[80vw] border-r border-white/20 h-full animate-in slide-in-from-left duration-200" style={{ background: '#1F6FEB' }}>
+          <aside className="admin-sidebar relative w-64 max-w-[80vw] border-r border-white/20 h-full animate-in slide-in-from-left duration-200" style={{ background: '#1F6FEB' }}>
             {SidebarInner}
           </aside>
         </div>
