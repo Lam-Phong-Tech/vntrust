@@ -1070,22 +1070,22 @@ html.light-mode .admin-sidebar .admin-sidebar-link * {
 
 html.light-mode .admin-sidebar .admin-sidebar-link:hover,
 html.light-mode .admin-sidebar .admin-sidebar-link:hover * {
-  color: #0d1b2e !important;
+  color: #ffffff !important;
 }
 
 html.light-mode .admin-sidebar .admin-sidebar-link:hover {
-  background: rgba(255,255,255,0.95) !important;
-  border-color: rgba(255,255,255,0.95) !important;
+  background: #155EDB !important;
+  border-color: rgba(255,255,255,0.22) !important;
 }
 
 html.light-mode .admin-sidebar .admin-sidebar-link[aria-current="page"],
 html.light-mode .admin-sidebar .admin-sidebar-link[aria-current="page"] * {
-  color: #1F6FEB !important;
+  color: #ffffff !important;
 }
 
 html.light-mode .admin-sidebar .admin-sidebar-link[aria-current="page"] {
-  background: #ffffff !important;
-  border-color: #ffffff !important;
+  background: #0B4FC7 !important;
+  border-color: rgba(255,255,255,0.28) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════

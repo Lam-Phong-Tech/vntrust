@@ -114,13 +114,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     aria-current={active ? "page" : undefined}
                     className={`admin-sidebar-link group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
                       active
-                        ? "bg-white text-[#1F6FEB] border border-white shadow-sm"
-                        : "text-white/90 hover:bg-white/95 hover:text-[#0d1b2e] border border-transparent"
+                        ? "bg-[#0B4FC7] text-white border border-white/25 shadow-sm"
+                        : "text-white/90 hover:bg-[#155EDB] hover:text-white border border-transparent"
                     }`}
                   >
-                    {active && <span className="absolute left-1 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-[#1F6FEB]" />}
+                    {active && <span className="absolute left-1 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-white" />}
                     <span className={`material-symbols-outlined text-[20px] transition ${
-                      active ? "text-[#1F6FEB]" : "text-white/90 group-hover:text-[#0d1b2e]"
+                      active ? "text-white" : "text-white/90 group-hover:text-white"
                     }`} style={{ fontVariationSettings: active ? "'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24" : "'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24" }}>{item.icon}</span>
                     <span className="min-w-0 truncate">{tr(item.label, item.en)}</span>
                   </Link>
