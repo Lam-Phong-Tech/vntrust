@@ -158,6 +158,7 @@ export default function AdminUsersPage() {
 
   const stats = data?.stats || { byRole: {}, byStatus: {} };
   const adminCount = Number(stats.byRole.admin || 0);
+  const isLastAdminUser = (u: User) => u.vaiTro === "admin" && adminCount <= 1;
 
   // Pagination over the already-filtered list returned by the API
   const filtered = data?.users || [];
@@ -264,7 +265,7 @@ export default function AdminUsersPage() {
               const role = ROLE_META[u.vaiTro] || ROLE_META.consumer;
               const status = STATUS_META[u.trangThai] || STATUS_META.active;
               const isAct = acting === u.id;
-              const isLastAdmin = u.vaiTro === "admin" && adminCount <= 1;
+              const isLastAdmin = isLastAdminUser(u);
               return (
                 <tr key={u.id} className="border-b border-white/5 hover:bg-white/5 transition">
                   <td className="px-4 py-3">
@@ -326,8 +327,8 @@ export default function AdminUsersPage() {
                       </button>
                       <button
                         onClick={() => setConfirmDel(u)}
-                        disabled={isAct}
-                        className="px-3 py-1.5 rounded-lg text-xs font-bold border border-red-500/30 text-red-400 hover:bg-red-500/15 transition disabled:opacity-50"
+                        disabled={isAct || isLastAdmin}
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold border border-red-500/30 text-red-400 hover:bg-red-500/15 transition disabled:cursor-not-allowed disabled:opacity-50"
                         title={tr("Xóa tài khoản", "Delete")}
                       >
                         <span className="material-symbols-outlined text-[14px] align-middle mr-1">delete</span>
@@ -349,6 +350,7 @@ export default function AdminUsersPage() {
           const role = ROLE_META[u.vaiTro] || ROLE_META.consumer;
           const status = STATUS_META[u.trangThai] || STATUS_META.active;
           const isAct = acting === u.id;
+          const isLastAdmin = isLastAdminUser(u);
           return (
             <div key={u.id} className="rounded-2xl bg-white/5 border border-white/10 p-4">
               <div className="flex items-start gap-3 mb-3">
@@ -390,8 +392,8 @@ export default function AdminUsersPage() {
                 </button>
                 <button
                   onClick={() => setConfirmDel(u)}
-                  disabled={isAct}
-                  className="flex-1 py-2 rounded-lg text-xs font-bold border border-red-500/30 text-red-400 bg-red-500/5 disabled:opacity-50"
+                  disabled={isAct || isLastAdmin}
+                  className="flex-1 py-2 rounded-lg text-xs font-bold border border-red-500/30 text-red-400 bg-red-500/5 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {tr("Xóa", "Delete")}
                 </button>
@@ -429,21 +431,25 @@ export default function AdminUsersPage() {
 
       {/* Delete confirm modal */}
       {confirmDel && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setConfirmDel(null)}>
-          <div className="bg-[#0B1623] border border-red-500/30 rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[2147483646] bg-black/70 flex items-center justify-center p-3 sm:p-4 backdrop-blur-sm" onClick={() => setConfirmDel(null)}>
+          <div
+            className="w-full rounded-2xl border border-red-500/30 bg-[#0B1623] p-4 shadow-2xl sm:p-6"
+            style={{ maxWidth: 448 }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-start gap-3 mb-4">
               <div className="w-11 h-11 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined">warning</span>
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white">{tr("Xác nhận xóa", "Confirm delete")}</h3>
-                <p className="text-sm text-slate-400 mt-1">
+                <p className="text-sm text-slate-400 mt-1 break-words">
                   {tr(`Xóa vĩnh viễn tài khoản ${confirmDel.email}? Hành động không thể hoàn tác.`,
                       `Permanently delete ${confirmDel.email}? This cannot be undone.`)}
                 </p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col-reverse gap-2 sm:flex-row">
               <button
                 onClick={() => setConfirmDel(null)}
                 className="flex-1 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10"
