@@ -154,9 +154,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   );
 
   return (
-    <div className="min-h-screen w-full flex bg-[#eef5fb]">
+    <div className="min-h-screen w-full bg-[#eef5fb]">
       {/* ── Sidebar desktop ── */}
-      <aside className="admin-sidebar hidden lg:flex w-64 shrink-0 flex-col sticky top-0 h-screen shadow-[2px_0_10px_rgba(0,0,0,0.05)]" style={{ background: '#1F6FEB' }}>
+      <aside className="admin-sidebar fixed left-0 top-0 z-50 hidden h-screen w-64 shrink-0 flex-col shadow-[2px_0_10px_rgba(0,0,0,0.05)] lg:flex" style={{ background: '#1F6FEB' }}>
         {SidebarInner}
       </aside>
 
@@ -171,7 +171,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       )}
 
       {/* ── Main column ── */}
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="flex min-h-screen min-w-0 flex-col lg:pl-64">
         {/* Topbar */}
         <header className="sticky top-0 z-40 h-[68px] shrink-0 flex items-center gap-3 px-4 sm:px-6 border-b border-black/10" style={{ background: '#1F6FEB' }}>
           <button onClick={() => setOpen(true)} className="lg:hidden w-10 h-10 rounded-xl bg-white/15 border border-white/30 flex items-center justify-center text-white">
