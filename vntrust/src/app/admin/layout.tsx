@@ -103,7 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <nav className="flex-1 overflow-y-auto px-3 py-4 hide-scrollbar">
         {NAV.map(group => (
           <div key={group.title} className="mb-5">
-            <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">{tr(group.title, group.en)}</p>
+            <p className="px-3 mb-2 text-[10px] font-bold text-white/75 uppercase tracking-widest">{tr(group.title, group.en)}</p>
             <div className="flex flex-col gap-1">
               {group.items.map(item => {
                 const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
@@ -111,14 +111,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
+                    aria-current={active ? "page" : undefined}
+                    className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
                       active
-                        ? "bg-[#1F6FEB]/10 text-[#1F6FEB] border border-[#1F6FEB]/30"
-                        : "text-slate-700 hover:bg-slate-100 hover:text-[#0d1b2e] border border-transparent"
+                        ? "bg-white text-[#1F6FEB] border border-white shadow-sm"
+                        : "text-white/90 hover:bg-white/95 hover:text-[#0d1b2e] border border-transparent"
                     }`}
                   >
-                    <span className={`material-symbols-outlined text-[20px] ${active ? "text-[#1F6FEB]" : "text-slate-700"}`} style={{ fontVariationSettings: active ? "'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24" : "'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24" }}>{item.icon}</span>
-                    {tr(item.label, item.en)}
+                    {active && <span className="absolute left-1 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-[#1F6FEB]" />}
+                    <span className={`material-symbols-outlined text-[20px] transition ${
+                      active ? "text-[#1F6FEB]" : "text-white/90 group-hover:text-[#0d1b2e]"
+                    }`} style={{ fontVariationSettings: active ? "'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24" : "'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24" }}>{item.icon}</span>
+                    <span className="min-w-0 truncate">{tr(item.label, item.en)}</span>
                   </Link>
                 );
               })}
@@ -129,19 +133,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* User card */}
       <div className="shrink-0 p-3 border-t border-white/5">
-        <div className="flex items-center gap-3 px-2 py-2 rounded-2xl bg-slate-50 border border-slate-200 mb-2">
+        <div className="flex items-center gap-3 px-2 py-2 rounded-2xl bg-white/95 border border-white/40 mb-2">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C8A557] to-[#A6873E] text-[#0B1623] flex items-center justify-center font-black shrink-0">
             {initials}
           </div>
           <div className="min-w-0">
-            <div className="text-white font-bold text-sm truncate">{userName}</div>
+            <div className="text-[#0B1623] font-bold text-sm truncate">{userName}</div>
             <div className="text-[10px] text-[#C8A557] font-bold flex items-center gap-1">
               <span className="material-symbols-outlined text-[12px]">shield_person</span>
               {tr("Quản trị hệ thống", "System admin")}
             </div>
           </div>
         </div>
-        <button onClick={logout} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition text-sm font-bold">
+        <button onClick={logout} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/90 border border-white/40 text-slate-700 hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition text-sm font-bold">
           <span className="material-symbols-outlined text-[18px]">logout</span>
           {tr("Đăng xuất", "Sign out")}
         </button>
@@ -152,7 +156,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen w-full flex bg-[#eef5fb]">
       {/* ── Sidebar desktop ── */}
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col sticky top-0 h-screen shadow-[2px_0_10px_rgba(0,0,0,0.05)]" style={{ background: '#ffffff' }}>
+      <aside className="hidden lg:flex w-64 shrink-0 flex-col sticky top-0 h-screen shadow-[2px_0_10px_rgba(0,0,0,0.05)]" style={{ background: '#1F6FEB' }}>
         {SidebarInner}
       </aside>
 
@@ -160,7 +164,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {open && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <aside className="relative w-64 max-w-[80vw] border-r border-slate-200 h-full animate-in slide-in-from-left duration-200" style={{ background: '#ffffff' }}>
+          <aside className="relative w-64 max-w-[80vw] border-r border-white/20 h-full animate-in slide-in-from-left duration-200" style={{ background: '#1F6FEB' }}>
             {SidebarInner}
           </aside>
         </div>
