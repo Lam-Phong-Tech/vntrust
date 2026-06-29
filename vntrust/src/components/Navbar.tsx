@@ -149,24 +149,24 @@ function AiNavModal({ onClose }: { onClose: () => void }) {
   const isOverLimit = charCount > MAX_CHAT_LEN;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-2 sm:p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      <div className="relative w-full max-w-md glass-panel border border-white/20 rounded-3xl p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div className="relative w-full max-w-md max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] glass-panel border border-white/20 rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
 
         {/* Header — giống Dashboard */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#C8A557] flex items-center justify-center shrink-0">
+        <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6 shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#C8A557] flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-white">smart_toy</span>
             </div>
-            <h2 className="text-lg font-black text-white font-display">{t("nav_chat_title")}</h2>
+            <h2 className="text-base sm:text-lg font-black text-white font-display truncate">{t("nav_chat_title")}</h2>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition">
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition shrink-0">
             <span className="material-symbols-outlined text-white text-[18px]">close</span>
           </button>
         </div>
 
-        <div className="flex flex-col h-[480px]">
+        <div className="flex flex-col h-[calc(100dvh-9rem)] min-h-[320px] max-h-[480px] sm:h-[480px]">
           {/* Messages — giống hệt Dashboard */}
           <div className="flex-1 overflow-y-auto space-y-3 hide-scrollbar pr-1">
             {msgs.map((m, i) => (
@@ -193,10 +193,10 @@ function AiNavModal({ onClose }: { onClose: () => void }) {
           </div>
 
           {/* Quick buttons — giống Dashboard */}
-          <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-white/10">
+          <div className="flex gap-2 mt-3 pt-3 border-t border-white/10 overflow-x-auto pb-1 shrink-0">
             {QUICK_BTNS.map(q => (
               <button key={q} onClick={() => setInput(q)}
-                className="text-[10px] font-bold px-3 py-1.5 bg-white/8 rounded-full text-slate-300 hover:bg-white/15 hover:text-white transition border border-white/10">
+                className="text-[10px] font-bold px-3 py-1.5 bg-white/8 rounded-full text-slate-300 hover:bg-white/15 hover:text-white transition border border-white/10 whitespace-nowrap shrink-0">
                 {q}
               </button>
             ))}
@@ -210,7 +210,7 @@ function AiNavModal({ onClose }: { onClose: () => void }) {
           )}
 
           {/* Input — giống Dashboard */}
-          <div className="flex gap-2 mt-2">
+          <div className="flex gap-2 mt-2 shrink-0">
             <div className="relative flex-1">
               <input
                 className={`flex-1 bg-white/10 border rounded-full px-4 py-2.5 text-sm text-white placeholder:text-slate-400 outline-none transition w-full ${isOverLimit ? "border-red-500/70 focus:border-red-500" : "border-white/20 focus:border-[#C8A557]"}`}
