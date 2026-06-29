@@ -51,7 +51,11 @@ const parseMoTa = (moTa: string) => {
 };
 
 const formatAuditAction = (action: string) => {
-  if (/^Integration Health Check/i.test(action)) {
+  if (
+    /^\[Integration Health Check\]/i.test(action) ||
+    /^Integration Health Check\b/i.test(action) ||
+    /\b(email|maps|haiquan|byt|bct|camera_ai):(active|configured|pending|error)\(/i.test(action)
+  ) {
     return "Kiểm tra trạng thái tích hợp hệ thống";
   }
   return action;
