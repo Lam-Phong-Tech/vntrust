@@ -461,10 +461,10 @@ export default function AdminUsersPage() {
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-[90px] md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-3 rounded-xl text-sm font-bold border shadow-lg backdrop-blur ${
+        <div className={`fixed right-4 top-20 z-[2147483647] w-[calc(100vw-2rem)] max-w-sm rounded-2xl border px-4 py-3 text-sm font-bold shadow-2xl backdrop-blur-md sm:right-6 ${
           toast.type === "ok"
-            ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-200"
-            : "bg-red-500/15 border-red-500/40 text-red-200"
+            ? "bg-emerald-950/95 border-emerald-400/50 text-emerald-50"
+            : "bg-red-950/95 border-red-400/50 text-red-50"
         }`}>
           {toast.msg}
         </div>

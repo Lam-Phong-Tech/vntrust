@@ -26,10 +26,10 @@ export function Toast({
   return (
     <div
       className={[
-        "fixed top-4 right-4 z-[9999]",
+        "fixed right-4 top-20 z-[2147483647] sm:right-6",
         "flex items-start gap-3",
         "px-4 py-3.5 rounded-2xl shadow-2xl",
-        "max-w-xs w-full sm:max-w-sm",
+        "w-[calc(100vw-2rem)] max-w-sm",
         "border backdrop-blur-md",
         "transition-all duration-300",
         ok
