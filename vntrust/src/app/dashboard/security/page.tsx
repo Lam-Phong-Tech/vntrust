@@ -191,21 +191,29 @@ export default function SecurityPage() {
               <span className="material-symbols-outlined text-[#C8A557] text-[18px]">speed</span>
               SLA Performance — NFR-PF
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
               {[
                 { label: "Uptime", value: health.sla.uptime, target: "≥99.5%", pass: true, icon: "cloud_done" },
                 { label: "P95 Response", value: health.sla.p95ResponseMs + "ms", target: "≤200ms", pass: health.sla.p95ResponseMs <= 200, icon: "timer" },
                 { label: "P50 Response", value: health.sla.p50ResponseMs + "ms", target: "≤100ms", pass: health.sla.p50ResponseMs <= 100, icon: "timer" },
                 { label: "Open Alerts", value: health.alerts.open, target: "= 0 ideal", pass: health.alerts.open === 0, icon: "notifications_active" },
               ].map((s, i) => (
-                <div key={i} className={`p-4 rounded-xl border ${s.pass ? "bg-[#4A7C5C]/10 border-[#4A7C5C]/20" : "bg-red-500/10 border-red-500/20"}`}>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`material-symbols-outlined text-[16px] ${s.pass ? "text-[#6FB585]" : "text-red-400"}`}>{s.icon}</span>
-                    <span className={`text-xs font-bold ${s.pass ? "text-emerald-300" : "text-red-300"}`}>{s.pass ? "OK" : t("sec_warn_label")}</span>
+                <div key={i} className={`p-4 rounded-xl border min-w-0 ${s.pass ? "bg-[#4A7C5C]/10 border-[#4A7C5C]/20" : "bg-red-500/10 border-red-500/20"}`}>
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={`material-symbols-outlined text-[18px] shrink-0 ${s.pass ? "text-[#6FB585]" : "text-red-400"}`}>{s.icon}</span>
+                      <p className="text-xs text-slate-300 font-bold leading-snug break-words">{s.label}</p>
+                    </div>
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black border ${
+                      s.pass ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" : "text-red-300 bg-red-500/10 border-red-500/20"
+                    }`}>
+                      {s.pass ? "OK" : t("sec_warn_label")}
+                    </span>
                   </div>
-                  <p className={`text-2xl font-black mt-1 ${s.pass ? "text-white" : "text-red-300"}`}>{s.value}</p>
-                  <p className="text-xs text-slate-300 mt-1">{s.label}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">Target: {s.target}</p>
+                  <p className={`text-2xl sm:text-3xl font-black leading-none ${s.pass ? "text-white" : "text-red-300"}`}>{s.value}</p>
+                  <p className="mt-2 inline-flex max-w-full rounded-full bg-white/5 px-2 py-1 text-[10px] font-bold text-slate-400">
+                    <span className="truncate">Target: {s.target}</span>
+                  </p>
                 </div>
               ))}
             </div>
