@@ -60,6 +60,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const existing = await prisma.nguoiDung.findUnique({ where: { id } });
     if (!existing) return NextResponse.json({ error: 'Không tìm thấy người dùng' }, { status: 404 });
 
+    if (existing.vaiTro === 'admin' && data.vaiTro && data.vaiTro !== 'admin') {
+      const adminCount = await prisma.nguoiDung.count({ where: { vaiTro: 'admin' } });
+      if (adminCount <= 1) {
+        return NextResponse.json({ error: 'Khong the doi vai tro admin cuoi cung cua he thong' }, { status: 400 });
+      }
+    }
+
     const updated = await prisma.nguoiDung.update({
       where: { id },
       select: { id: true, email: true, ten: true, vaiTro: true, trangThai: true },

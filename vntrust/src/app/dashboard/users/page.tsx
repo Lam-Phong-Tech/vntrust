@@ -157,6 +157,7 @@ export default function AdminUsersPage() {
   if (!userRole) return null;
 
   const stats = data?.stats || { byRole: {}, byStatus: {} };
+  const adminCount = Number(stats.byRole.admin || 0);
 
   // Pagination over the already-filtered list returned by the API
   const filtered = data?.users || [];
@@ -263,6 +264,7 @@ export default function AdminUsersPage() {
               const role = ROLE_META[u.vaiTro] || ROLE_META.consumer;
               const status = STATUS_META[u.trangThai] || STATUS_META.active;
               const isAct = acting === u.id;
+              const isLastAdmin = u.vaiTro === "admin" && adminCount <= 1;
               return (
                 <tr key={u.id} className="border-b border-white/5 hover:bg-white/5 transition">
                   <td className="px-4 py-3">
@@ -280,8 +282,9 @@ export default function AdminUsersPage() {
                     <select
                       value={u.vaiTro}
                       onChange={(e) => changeRole(u, e.target.value)}
-                      disabled={isAct}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${role.color} cursor-pointer focus:outline-none disabled:opacity-50`}
+                      disabled={isAct || isLastAdmin}
+                      title={isLastAdmin ? tr("Không thể đổi vai trò admin cuối cùng", "Cannot change the last admin role") : undefined}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${role.color} focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${isLastAdmin ? "cursor-not-allowed" : "cursor-pointer"}`}
                     >
                       {Object.entries(ROLE_META).map(([k, m]) => (
                         <option key={k} value={k} className="bg-[#0B1623] text-white">{lang === "en" ? m.en : m.label}</option>
