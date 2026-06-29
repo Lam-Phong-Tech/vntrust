@@ -48,6 +48,7 @@ export default function InventoryPage() {
   const [searchSp, setSearchSp] = useState("");
   const [spPage, setSpPage] = useState(1);
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
+  const [productToDelete, setProductToDelete] = useState<SanPham | null>(null);
   const { addLog } = useLogs();
 
   // Form states
@@ -198,6 +199,7 @@ export default function InventoryPage() {
 
   const closeModal = () => {
     setModal(null);
+    setProductToDelete(null);
     setEditingProductId(null);
     setForm({});
     setImageFile(null);
@@ -220,21 +222,29 @@ export default function InventoryPage() {
   };
 
   // ── Xóa sản phẩm (chặn nếu còn lô hàng) ──
-  const handleDeleteProduct = async (sp: any) => {
+  const handleDeleteProduct = (sp: SanPham) => {
     const soLo = sp._count?.loHangs || 0;
     if (soLo > 0) {
       showToast(`Sản phẩm "${sp.ten}" còn ${soLo} lô hàng — hãy xóa hết lô hàng trước.`, false);
       return;
     }
-    if (!confirm(`Xóa sản phẩm "${sp.ten}"?\nHành động này không thể hoàn tác.`)) return;
+    setProductToDelete(sp);
+  };
+
+  const confirmDeleteProduct = async () => {
+    if (!productToDelete) return;
+    setSubmitting(true);
     try {
-      const res = await fetch(`/api/inventory/product/${sp.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/inventory/product/${productToDelete.id}`, { method: "DELETE" });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Lỗi xóa sản phẩm");
-      showToast(`✓ Đã xóa sản phẩm ${sp.ten}`, true);
+      showToast(`✓ Đã xóa sản phẩm ${productToDelete.ten}`, true);
+      setProductToDelete(null);
       fetchData();
     } catch (e: any) {
       showToast("✗ " + e.message, false);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -901,6 +911,39 @@ export default function InventoryPage() {
                 {submitting && <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white" />}
                 <span className="material-symbols-outlined text-[16px]">save</span>
                 {t("inv_save_changes")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal: Xác nhận xóa sản phẩm ── */}
+      {productToDelete && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center justify-center md:p-4 pb-[80px] md:pb-4" onClick={() => setProductToDelete(null)}>
+          <div className="bg-[#142235] border border-red-500/30 rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-md max-h-[calc(100dvh-160px)] md:max-h-[88dvh] flex flex-col overflow-y-auto p-6 md:p-8" onClick={e => e.stopPropagation()}>
+            <div className="flex flex-col items-center text-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-red-500/15 flex items-center justify-center mb-4">
+                <span className="material-symbols-outlined text-red-400 text-3xl">delete_forever</span>
+              </div>
+              <h2 className="text-xl font-bold text-white">Xóa sản phẩm?</h2>
+              <p className="text-slate-300 text-sm mt-3 leading-relaxed">
+                Bạn đang xóa sản phẩm
+                <span className="block mt-1 font-bold text-white">"{productToDelete.ten}"</span>
+              </p>
+              <p className="mt-3 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs font-semibold leading-relaxed text-red-200">
+                Hành động này không thể hoàn tác. Chỉ xóa được sản phẩm chưa có lô hàng.
+              </p>
+            </div>
+            <div className="flex flex-col-reverse sm:flex-row gap-3">
+              <button onClick={() => setProductToDelete(null)} disabled={submitting}
+                className="flex-1 py-3 border border-white/20 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/5 transition disabled:opacity-50">
+                Hủy
+              </button>
+              <button onClick={confirmDeleteProduct} disabled={submitting}
+                className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-bold transition disabled:opacity-50 flex items-center justify-center gap-2">
+                {submitting && <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white" />}
+                <span className="material-symbols-outlined text-[16px]">delete</span>
+                Xóa sản phẩm
               </button>
             </div>
           </div>
