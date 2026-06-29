@@ -9,6 +9,10 @@ interface UsersResp { total: number; stats: { byRole: Record<string, number>; by
 interface LogItem { id: string; action: string; user: string; role: string; time: string; status: string; }
 
 const fmt = (n: number | undefined) => (n ?? 0).toLocaleString("vi-VN");
+const isNoisySystemLog = (action: string) =>
+  /^\[Integration Health Check\]/i.test(action) ||
+  /^Integration Health Check\b/i.test(action);
+
 const formatLogAction = (action: string) => {
   const bracketMatch = action.match(/^\[([^\]]+)\]\s*(.*)$/);
   if (bracketMatch) {
@@ -53,7 +57,10 @@ export default function AdminOverview() {
         if (ovR.status === "fulfilled" && ovR.value.ok) setOv(await ovR.value.json());
         if (usR.status === "fulfilled" && usR.value.ok) setUsers(await usR.value.json());
         if (pendR.status === "fulfilled" && pendR.value.ok) setPending((await pendR.value.json()).users || []);
-        if (logR.status === "fulfilled" && logR.value.ok) setLogs(((await logR.value.json()).logs || []).slice(0, 6));
+        if (logR.status === "fulfilled" && logR.value.ok) {
+          const logData = await logR.value.json();
+          setLogs(((logData.logs || []) as LogItem[]).filter(l => !isNoisySystemLog(l.action)).slice(0, 6));
+        }
       } catch { /* ignore */ }
       finally { if (!cancelled) setLoading(false); }
     })();
