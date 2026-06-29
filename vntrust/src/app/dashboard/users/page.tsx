@@ -2,8 +2,7 @@
 // Admin User Management — quản lý tài khoản NguoiDung
 // Khóa/Mở khóa (suspend/active) · Đổi vai trò · Xóa · Search/filter
 import { useEffect, useState, useCallback } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface User {
@@ -42,7 +41,6 @@ const STATUS_META: Record<string, { label: string; en: string; color: string; ic
 
 export default function AdminUsersPage() {
   const router = useRouter();
-  const pathname = usePathname();
   const { lang } = useLanguage();
   const tr = (vi: string, en: string) => (lang === "en" ? en : vi);
 
@@ -166,7 +164,6 @@ export default function AdminUsersPage() {
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount);
   const pagedUsers = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  const backHref = pathname.startsWith("/admin") ? "/admin" : "/dashboard";
 
   return (
     <div className="min-h-screen w-full p-4 sm:p-6 lg:p-8 pb-[100px] md:pb-8">
@@ -181,12 +178,6 @@ export default function AdminUsersPage() {
             {tr("Khóa / mở khóa / xóa tài khoản người dùng, NSX, nhà phân phối",
                 "Lock / unlock / delete accounts of users, manufacturers, distributors")}
           </p>
-        </div>
-        <div className="flex gap-2 text-xs">
-          <Link href={backHref} className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-            {tr("Quay lại", "Back")}
-          </Link>
         </div>
       </div>
 

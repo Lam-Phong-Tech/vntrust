@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+
+/* Admin pages already have a sidebar. Hide reused dashboard back buttons inside admin content. */
+.admin-content a[href="/dashboard"] {
+  display: none !important;
+}
 /* ═══════════════════════════════════════════════════════════
    MOBILE APP DESIGN TOKENS — AI VeriGoods Mobile
    Theo thiết kế vntrust_mobile.html
