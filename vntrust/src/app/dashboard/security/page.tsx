@@ -50,6 +50,13 @@ const parseMoTa = (moTa: string) => {
   return null;
 };
 
+const formatAuditAction = (action: string) => {
+  if (/^Integration Health Check/i.test(action)) {
+    return "Kiểm tra trạng thái tích hợp hệ thống";
+  }
+  return action;
+};
+
 export default function SecurityPage() {
   const router = useRouter();
   const { t } = useLanguage();
@@ -431,14 +438,14 @@ export default function SecurityPage() {
           {/* Log table */}
           <div className="glass-panel border border-white/10 rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left min-w-[700px]">
+              <table className="w-full table-fixed text-left min-w-[760px]">
                 <thead className="bg-white/5">
                   <tr className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    <th className="px-4 py-3">{t("sec_time")}</th>
-                    <th className="px-4 py-3">{t("sec_user_role")}</th>
+                    <th className="w-[150px] px-4 py-3">{t("sec_time")}</th>
+                    <th className="w-[130px] px-4 py-3">{t("sec_user_role")}</th>
                     <th className="px-4 py-3">{t("sec_action")}</th>
-                    <th className="px-4 py-3">IP</th>
-                    <th className="px-4 py-3">{t("sec_status")}</th>
+                    <th className="w-[140px] px-4 py-3">IP</th>
+                    <th className="w-[120px] px-4 py-3">{t("sec_status")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -448,13 +455,13 @@ export default function SecurityPage() {
                         {new Date(log.time).toLocaleString("vi-VN")}
                       </td>
                       <td className="px-4 py-3">
-                        <p className="text-sm text-white font-medium">{log.user}</p>
-                        <p className={`text-xs font-bold ${ROLE_COLORS[log.role] || "text-slate-400"}`}>{log.role}</p>
+                        <p className="truncate text-sm text-white font-medium" title={log.user}>{log.user}</p>
+                        <p className={`truncate text-xs font-bold ${ROLE_COLORS[log.role] || "text-slate-400"}`}>{log.role}</p>
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-200 max-w-xs">
-                        <span className="truncate block" title={log.action}>{log.action}</span>
+                      <td className="px-4 py-3 text-sm text-slate-200">
+                        <span className="block max-w-full break-words leading-snug" title={log.action}>{formatAuditAction(log.action)}</span>
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-slate-400">{log.ip}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-slate-400 truncate" title={log.ip}>{log.ip}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold border ${STATUS_STYLE[log.status] || STATUS_STYLE.warning}`}>
                           {log.status === "success" ? "✓" : log.status === "error" ? "✗" : "⚠"} {log.status}
