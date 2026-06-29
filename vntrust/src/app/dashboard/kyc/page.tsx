@@ -174,13 +174,13 @@ function KycProgressBar({ company }: { company: Company }) {
   const pct = Math.round((steps.filter(s => s.done).length / steps.length) * 100);
 
   return (
-    <div className="glass-panel border border-white/10 rounded-2xl p-6 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-sm font-bold text-white flex items-center gap-2">
+    <div className="glass-panel border border-white/10 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
+        <h2 className="text-sm font-bold text-white flex items-center gap-2 min-w-0">
           <span className="material-symbols-outlined text-cyan-400 text-[18px]">timeline</span>
-          Tiến trình xác minh KYC
+          <span className="break-words">Tiến trình xác minh KYC</span>
         </h2>
-        <span className={`text-lg font-black ${pct === 100 ? 'text-emerald-400' : 'text-cyan-400'}`}>{pct}%</span>
+        <span className={`text-base sm:text-lg font-black ${pct === 100 ? 'text-emerald-400' : 'text-cyan-400'}`}>{pct}%</span>
       </div>
       <div className="w-full h-2 bg-white/10 rounded-full mb-5">
         <div
@@ -188,13 +188,13 @@ function KycProgressBar({ company }: { company: Company }) {
           style={{ width: `${pct}%` }}
         />
       </div>
-      <div className="flex flex-wrap gap-y-2 gap-x-4">
+      <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-y-2 gap-x-4">
         {steps.map((s, i) => (
-          <div key={i} className="flex items-center gap-1.5">
-            <span className={`material-symbols-outlined text-[14px] ${s.done ? 'text-emerald-400' : 'text-slate-600'}`}>
+          <div key={i} className="flex items-start gap-1.5 min-w-0">
+            <span className={`material-symbols-outlined text-[14px] mt-0.5 shrink-0 ${s.done ? 'text-emerald-400' : 'text-slate-600'}`}>
               {s.done ? 'check_circle' : 'radio_button_unchecked'}
             </span>
-            <span className={`text-xs ${s.done ? 'text-slate-300' : 'text-slate-600'}`}>{s.label}</span>
+            <span className={`text-xs leading-5 break-words ${s.done ? 'text-slate-300' : 'text-slate-600'}`}>{s.label}</span>
           </div>
         ))}
       </div>
@@ -759,30 +759,30 @@ export default function KYCPage() {
       )}
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <div className="relative w-full bg-gradient-to-r from-[#0a1628] via-[#0d2040] to-[#0a1628] border-b border-white/5 px-6 lg:px-12 py-8">
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-start lg:items-center gap-6">
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
+      <div className="relative w-full bg-gradient-to-r from-[#0a1628] via-[#0d2040] to-[#0a1628] border-b border-white/5 px-4 sm:px-6 lg:px-12 py-5 sm:py-8 overflow-hidden">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-start lg:items-center gap-4 sm:gap-6">
+          <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0 w-full lg:w-auto">
+            <Link href="/dashboard" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition shrink-0">
               <span className="material-symbols-outlined text-white text-[18px]">arrow_back</span>
             </Link>
-            <div className="w-11 h-11 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-cyan-400">verified_user</span>
             </div>
-            <div>
-              <h1 className="text-2xl font-black text-white font-headline">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-black text-white font-headline break-words">
                 {userRole === "admin" ? "Phê duyệt Hồ sơ KYC" : "Xác minh Doanh nghiệp"}
               </h1>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-slate-400 leading-relaxed">
                 {userRole === "admin" ? "Kiểm duyệt & phê duyệt hồ sơ doanh nghiệp đăng ký mới" : "Nộp tài liệu pháp lý để được xác thực và sử dụng đầy đủ tính năng"}
               </p>
             </div>
           </div>
 
           {userRole === "admin" && (
-            <div className="lg:ml-auto flex flex-wrap gap-3">
+            <div className="lg:ml-auto flex flex-wrap gap-2 sm:gap-3 w-full lg:w-auto">
               {(["all", "pending", "verified", "suspended"] as const).map(f => (
                 <button key={f} onClick={() => setFilter(f)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1.5
+                  className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1.5
                     ${filter === f ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40" : "bg-white/5 text-slate-400 border-white/10 hover:bg-white/10"}`}>
                   {f === "all" ? "Tất cả" : f === "pending" ? "Chờ duyệt" : f === "verified" ? "Đã duyệt" : "Từ chối"}
                   <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-black
@@ -796,7 +796,7 @@ export default function KYCPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 lg:px-12 py-8">
+      <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-12 py-5 sm:py-8 overflow-x-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-32">
             <span className="w-12 h-12 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
@@ -892,12 +892,12 @@ export default function KYCPage() {
           </>
         ) : myCompany ? (
           /* ── MANUFACTURER / IMPORTER VIEW ───────────────────────────────── */
-          <div className="space-y-6 max-w-3xl">
+          <div className="w-full max-w-3xl mx-auto space-y-4 sm:space-y-6 overflow-x-hidden">
             {/* Progress */}
             <KycProgressBar company={myCompany} />
 
             {/* Status Banner */}
-            <div className={`p-5 rounded-2xl border flex items-start gap-4
+            <div className={`p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4
               ${myCompany.trangThai === "verified" ? "bg-emerald-500/10 border-emerald-500/30"
                 : myCompany.trangThai === "suspended" ? "bg-red-500/10 border-red-500/30"
                 : "bg-amber-500/10 border-amber-500/30"}`}>
@@ -907,13 +907,13 @@ export default function KYCPage() {
                   : "text-amber-400"}`}>
                 {myCompany.trangThai === "verified" ? "verified_user" : myCompany.trangThai === "suspended" ? "gpp_bad" : "pending"}
               </span>
-              <div>
-                <p className="font-bold text-white">
+              <div className="min-w-0">
+                <p className="font-bold text-white leading-snug">
                   {myCompany.trangThai === "verified" ? "✅ Tài khoản đã được xác thực KYC"
                     : myCompany.trangThai === "suspended" ? "❌ Hồ sơ bị từ chối — vui lòng nộp lại"
                     : "⏳ Đang chờ Admin xét duyệt KYC"}
                 </p>
-                <p className="text-sm text-slate-400 mt-1">
+                <p className="text-sm text-slate-400 mt-1 leading-relaxed">
                   {myCompany.trangThai === "pending"
                     ? "Hồ sơ của bạn đang được xem xét, vui lòng chờ trong 3 ngày làm việc."
                     : myCompany.trangThai === "suspended"
@@ -921,19 +921,19 @@ export default function KYCPage() {
                     : "Bạn đã có đầy đủ quyền truy cập các tính năng của hệ thống."}
                 </p>
               </div>
-              <div className="ml-auto shrink-0"><StatusBadge status={myCompany.trangThai} /></div>
+              <div className="sm:ml-auto shrink-0"><StatusBadge status={myCompany.trangThai} /></div>
             </div>
 
             {/* Document Upload Section */}
             <div className="glass-panel border border-white/10 rounded-2xl overflow-hidden">
-              <div className="px-6 py-4 border-b border-white/5 flex items-center gap-2">
+              <div className="px-4 sm:px-6 py-4 border-b border-white/5 flex flex-wrap items-center gap-2">
                 <span className="material-symbols-outlined text-amber-400 text-[18px]">folder_open</span>
-                <h2 className="text-sm font-bold text-white">Tài liệu pháp lý (BR-01)</h2>
-                <span className="ml-auto text-xs text-slate-400">
+                <h2 className="text-sm font-bold text-white min-w-0 flex-1">Tài liệu pháp lý (BR-01)</h2>
+                <span className="text-xs text-slate-400 shrink-0">
                   {[myCompany.giayphep_url, myCompany.cmnd_url].filter(Boolean).length}/2 tài liệu
                 </span>
               </div>
-              <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-8">
+              <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
                 <DocUploadZone
                   label="Giấy phép Kinh doanh"
                   icon="description"
@@ -955,7 +955,7 @@ export default function KYCPage() {
               </div>
               {/* OCR auto-fill — quét Giấy phép KD và điền vào form bên dưới */}
               {myCompany.giayphep_url && !myCompany.giayphep_url.endsWith('.pdf') && myCompany.trangThai !== "verified" && (
-                <div className="px-6 pb-5">
+                <div className="px-4 sm:px-6 pb-5">
                   <button
                     onClick={async () => {
                       try {
@@ -977,7 +977,7 @@ export default function KYCPage() {
               )}
               {/* Nhắc bắt buộc giấy tờ */}
               {myCompany.trangThai !== "verified" && (!myCompany.giayphep_url || !myCompany.cmnd_url) && (
-                <div className="mx-6 mb-5 flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                <div className="mx-4 sm:mx-6 mb-5 flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
                   <span className="material-symbols-outlined text-amber-400 text-[18px] shrink-0">priority_high</span>
                   <p className="text-xs text-amber-200">
                     Bắt buộc nộp <b>đủ cả 2 giấy tờ</b> (Giấy phép KD + CMND/CCCD). Admin chỉ phê duyệt khi hồ sơ đầy đủ.
@@ -985,7 +985,7 @@ export default function KYCPage() {
                 </div>
               )}
               {myCompany.trangThai === "verified" && (
-                <div className="px-6 pb-5 flex items-center gap-2 text-xs text-emerald-400">
+                <div className="px-4 sm:px-6 pb-5 flex items-start sm:items-center gap-2 text-xs text-emerald-400">
                   <span className="material-symbols-outlined text-[14px]">check_circle</span>
                   Tài liệu đã được Admin xác thực. Để cập nhật, vui lòng liên hệ hỗ trợ.
                 </div>
@@ -994,15 +994,15 @@ export default function KYCPage() {
 
             {/* Company Info — editable (khi chưa verified) hoặc read-only (đã verified) */}
             <div className="glass-panel border border-white/10 rounded-2xl overflow-hidden">
-              <div className="px-6 py-4 border-b border-white/5 flex items-center gap-2">
+              <div className="px-4 sm:px-6 py-4 border-b border-white/5 flex flex-wrap items-center gap-2">
                 <span className="material-symbols-outlined text-cyan-400 text-[18px]">business</span>
-                <h2 className="text-sm font-bold text-white">{tr("Thông tin doanh nghiệp", "Business information")}</h2>
-                {myCompany.trangThai !== "verified" && <span className="ml-auto text-[10px] text-slate-500">{tr("Có thể chỉnh / OCR tự điền", "Editable / OCR autofill")}</span>}
+                <h2 className="text-sm font-bold text-white min-w-0 flex-1">{tr("Thông tin doanh nghiệp", "Business information")}</h2>
+                {myCompany.trangThai !== "verified" && <span className="text-[10px] text-slate-500 shrink-0">{tr("Có thể chỉnh / OCR tự điền", "Editable / OCR autofill")}</span>}
               </div>
 
               {myCompany.trangThai === "verified" ? (
                 /* Read-only sau khi đã xác thực */
-                <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     { label: "Tên doanh nghiệp", value: myCompany.ten, icon: "apartment" },
                     { label: "Mã số thuế",        value: myCompany.maSoThue, icon: "tag" },
@@ -1013,15 +1013,15 @@ export default function KYCPage() {
                   ].map((row, i) => (
                     <div key={i} className="flex items-start gap-3 p-3 bg-white/5 rounded-xl border border-white/5">
                       <span className="material-symbols-outlined text-slate-400 text-[16px] mt-0.5">{row.icon}</span>
-                      <div>
+                      <div className="min-w-0">
                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">{row.label}</p>
-                        <p className="text-sm text-white font-medium mt-0.5">{row.value}</p>
+                        <p className="text-sm text-white font-medium mt-0.5 break-words">{row.value}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-6 space-y-4">
+                <div className="p-4 sm:p-6 space-y-4">
                   {/* Định danh — không sửa được */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="p-3 bg-white/5 rounded-xl border border-white/5">
@@ -1036,23 +1036,25 @@ export default function KYCPage() {
                     </div>
                   </div>
                   {/* Các trường có thể sửa / OCR điền */}
-                  {([
-                    { key: "diaChi",       label: "Địa chỉ", ph: "Số nhà, đường, phường/xã, tỉnh/thành", full: true },
-                    { key: "nguoiDaiDien", label: "Người đại diện", ph: "Họ tên người đại diện" },
-                    { key: "hotline",      label: "Hotline / SĐT", ph: "VD: 0901234567" },
-                    { key: "email",        label: "Email", ph: "email@congty.vn" },
-                    { key: "nganh_VSIC",   label: "Ngành nghề (VSIC)", ph: "VD: 1079 - Sản xuất thực phẩm" },
-                  ] as const).map(f => (
-                    <div key={f.key} className={("full" in f) ? "" : "inline-block w-full sm:w-[calc(50%-0.5rem)] sm:mr-2 align-top"}>
-                      <label className="text-[10px] text-slate-500 uppercase tracking-wider">{f.label}</label>
-                      <input
-                        value={(form as any)[f.key]}
-                        onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
-                        placeholder={f.ph}
-                        className="w-full mt-1 px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50"
-                      />
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {([
+                      { key: "diaChi",       label: "Địa chỉ", ph: "Số nhà, đường, phường/xã, tỉnh/thành", full: true },
+                      { key: "nguoiDaiDien", label: "Người đại diện", ph: "Họ tên người đại diện" },
+                      { key: "hotline",      label: "Hotline / SĐT", ph: "VD: 0901234567" },
+                      { key: "email",        label: "Email", ph: "email@congty.vn" },
+                      { key: "nganh_VSIC",   label: "Ngành nghề (VSIC)", ph: "VD: 1079 - Sản xuất thực phẩm" },
+                    ] as const).map(f => (
+                      <div key={f.key} className={("full" in f) ? "sm:col-span-2" : ""}>
+                        <label className="text-[10px] text-slate-500 uppercase tracking-wider">{f.label}</label>
+                        <input
+                          value={(form as any)[f.key]}
+                          onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                          placeholder={f.ph}
+                          className="w-full mt-1 px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50"
+                        />
+                      </div>
+                    ))}
+                  </div>
                   <button
                     onClick={saveInfo}
                     disabled={savingInfo}
@@ -1067,15 +1069,15 @@ export default function KYCPage() {
 
             {/* ── Giấy phép lưu hành (gắn vào hồ sơ DN) ── */}
             <div className="glass-panel border border-white/10 rounded-2xl overflow-hidden">
-              <div className="px-6 py-4 border-b border-white/5 flex items-center gap-2">
+              <div className="px-4 sm:px-6 py-4 border-b border-white/5 flex flex-wrap items-center gap-2">
                 <span className="material-symbols-outlined text-[#C8A557] text-[18px]">verified</span>
-                <h2 className="text-sm font-bold text-white">Giấy phép lưu hành</h2>
-                <span className="ml-auto text-[10px] text-slate-500">{licenses.length} giấy phép</span>
-                <button onClick={() => setLicOpen(o => !o)} className="ml-2 text-xs font-bold text-[#C8A557] hover:underline flex items-center gap-1">
+                <h2 className="text-sm font-bold text-white min-w-0 flex-1">Giấy phép lưu hành</h2>
+                <span className="text-[10px] text-slate-500 shrink-0">{licenses.length} giấy phép</span>
+                <button onClick={() => setLicOpen(o => !o)} className="text-xs font-bold text-[#C8A557] hover:underline flex items-center gap-1 shrink-0">
                   <span className="material-symbols-outlined text-[16px]">{licOpen ? "close" : "add"}</span>{licOpen ? "Đóng" : "Thêm"}
                 </button>
               </div>
-              <div className="p-6 space-y-3">
+              <div className="p-4 sm:p-6 space-y-3">
                 {licOpen && (
                   <div className="rounded-xl border border-[#C8A557]/25 bg-[#C8A557]/5 p-4 space-y-3">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1092,12 +1094,12 @@ export default function KYCPage() {
                         <input type="date" value={licForm.ngayHetHan} onChange={e => setLicForm(f => ({ ...f, ngayHetHan: e.target.value }))} className="w-full mt-1 px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500/50" />
                       </div>
                     </div>
-                    <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                    <label className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs text-slate-300 cursor-pointer">
                       <span className="material-symbols-outlined text-[18px] text-[#C8A557]">image</span>
-                      <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">{licFile ? `✓ ${licFile.name}` : "Chọn ảnh/scan giấy phép (tùy chọn)"}</span>
+                      <span className="w-full sm:w-auto px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg truncate">{licFile ? `✓ ${licFile.name}` : "Chọn ảnh/scan giấy phép (tùy chọn)"}</span>
                       <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={e => setLicFile(e.target.files?.[0] || null)} />
                     </label>
-                    <button onClick={addLicense} disabled={licSaving} className="px-5 py-2.5 bg-[#C8A557] text-[#0B1623] text-sm font-bold rounded-xl hover:brightness-110 transition disabled:opacity-50 flex items-center gap-2">
+                    <button onClick={addLicense} disabled={licSaving} className="w-full sm:w-auto px-5 py-2.5 bg-[#C8A557] text-[#0B1623] text-sm font-bold rounded-xl hover:brightness-110 transition disabled:opacity-50 flex items-center justify-center gap-2">
                       <span className="material-symbols-outlined text-[18px]">{licSaving ? "progress_activity" : "save"}</span>
                       {licSaving ? "Đang lưu…" : "Lưu giấy phép"}
                     </button>

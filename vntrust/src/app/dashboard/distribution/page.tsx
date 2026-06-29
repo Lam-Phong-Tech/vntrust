@@ -280,34 +280,34 @@ export default function DistributionPage() {
   if (!userRole) return null;
 
   return (
-    <div className="min-h-[calc(100vh-80px)] p-6 md:p-10 max-w-7xl mx-auto">
+    <div className="min-h-[calc(100vh-80px)] px-3 py-4 sm:p-6 md:p-10 max-w-7xl mx-auto overflow-x-hidden">
       {toast && (
-        <div className={`fixed bottom-8 right-8 z-50 px-5 py-3 rounded-2xl font-bold text-sm shadow-2xl ${toast.ok ? "bg-[#4A7C5C]" : "bg-red-600"} text-white`}>
+        <div className={`fixed bottom-24 sm:bottom-8 left-3 right-3 sm:left-auto sm:right-8 z-50 px-5 py-3 rounded-2xl font-bold text-sm shadow-2xl ${toast.ok ? "bg-[#4A7C5C]" : "bg-red-600"} text-white`}>
           {toast.msg}
         </div>
       )}
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 sm:mb-8 gap-4">
+        <div className="min-w-0 w-full md:w-auto">
           <Link href="/dashboard" className="text-xs text-slate-400 hover:text-white flex items-center gap-1 mb-2">
             <span className="material-symbols-outlined text-[14px]">arrow_back</span> {t("cmn_dashboard")}
           </Link>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#C8A557]/20 border border-[#C8A557]/30 flex items-center justify-center">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#C8A557]/20 border border-[#C8A557]/30 flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-[#C8A557]">local_shipping</span>
             </div>
-            <div>
-              <h1 className="text-2xl font-black text-white font-display">{t("dist_title")}</h1>
-              <p className="text-sm text-slate-400">{t("dist_sub")}</p>
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-black text-white font-display break-words">{t("dist_title")}</h1>
+              <p className="text-sm text-slate-400 leading-relaxed">{t("dist_sub")}</p>
             </div>
           </div>
         </div>
         {userRole !== 'importer' && (
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap w-full md:w-auto">
           {["all", "active", "distributed", "suspended"].map(s => (
             <button key={s} onClick={() => { setFilterStatus(s); setPageBatch(1); }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition border ${
+              className={`px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold transition border ${
                 filterStatus === s ? "bg-[#C8A557] text-white border-[#C8A557]" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
               }`}>
               {s === "all" ? t("dist_all") : t(TRANG_THAI_KEYS[s]?.labelKey || "dist_all")}
@@ -318,17 +318,17 @@ export default function DistributionPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-5 sm:mb-8">
         {[
           { label: t("dist_total"),   value: batches.length, icon: "inbox", color: "text-white" },
           { label: t("dist_ready"),   value: batches.filter(b => b.trangThai === "active" || b.trangThai === "approved").length, icon: "inventory", color: "text-[#C8A557]" },
           { label: t("dist_shipped"), value: batches.filter(b => b.trangThai === "distributed").length, icon: "local_shipping", color: "text-[#6FB585]" },
           { label: t("dist_locked"),  value: batches.filter(b => b.trangThai === "suspended").length, icon: "lock", color: "text-red-400" },
         ].map((s, i) => (
-          <div key={i} className="glass-panel border border-white/10 rounded-2xl p-4">
+          <div key={i} className="glass-panel border border-white/10 rounded-2xl p-3 sm:p-4 min-w-0">
             <span className={`material-symbols-outlined text-2xl ${s.color}`}>{s.icon}</span>
-            <p className={`text-2xl font-black mt-1 ${s.color}`}>{s.value}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{s.label}</p>
+            <p className={`text-xl sm:text-2xl font-black mt-1 ${s.color}`}>{s.value}</p>
+            <p className="text-xs text-slate-400 mt-0.5 break-words">{s.label}</p>
           </div>
         ))}
       </div>
@@ -370,13 +370,13 @@ export default function DistributionPage() {
             const statusInfo = TRANG_THAI_KEYS[batch.trangThai] || TRANG_THAI_KEYS.active;
             const expired = new Date(batch.hanDung) < new Date();
             return (
-              <div key={batch.id} className="glass-panel border border-white/10 rounded-2xl p-5 hover:border-white/20 transition">
+              <div key={batch.id} className="glass-panel border border-white/10 rounded-2xl p-4 sm:p-5 hover:border-white/20 transition">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3 sm:gap-4 min-w-0">
                     <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                       <span className="material-symbols-outlined text-slate-300">inventory_2</span>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-mono font-bold text-cyan-300">{batch.maLo}</span>
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold border ${statusInfo.cls}`}>
@@ -389,8 +389,8 @@ export default function DistributionPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-white mt-0.5">{batch.sanPham.ten} <span className="text-slate-400 text-xs">({batch.sanPham.maSKU})</span></p>
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      <p className="text-sm text-white mt-0.5 break-words">{batch.sanPham.ten} <span className="text-slate-400 text-xs">({batch.sanPham.maSKU})</span></p>
+                      <p className="text-xs text-slate-500 mt-0.5 leading-relaxed break-words">
                         NSX: {batch.sanPham.doanhNghiep?.ten} · 
                         SX: {new Date(batch.ngaySanXuat).toLocaleDateString("vi-VN")} · 
                         HSD: {new Date(batch.hanDung).toLocaleDateString("vi-VN")} · 
@@ -399,12 +399,12 @@ export default function DistributionPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2 shrink-0">
+                  <div className="flex gap-2 shrink-0 flex-wrap w-full md:w-auto">
                     {/* Chuyển đơn — chỉ khi active + là NSX */}
                     {batch.trangThai === "active" && userRole === "manufacturer" && (
                       <button
                         onClick={() => { setTransferBatch(batch); setTransferForm({ ghiChu: "", hinhAnhUrls: "", nsdId: "" }); setPreviewImg(""); setKhuVuc(""); }}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-[#C8A557]/20 text-cyan-300 border border-[#C8A557]/30 rounded-xl text-xs font-bold hover:bg-[#C8A557]/30 transition"
+                        className="flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 py-2 bg-[#C8A557]/20 text-cyan-300 border border-[#C8A557]/30 rounded-xl text-xs font-bold hover:bg-[#C8A557]/30 transition"
                       >
                         <span className="material-symbols-outlined text-[16px]">send</span>
                         Gửi đơn & Xuất kho
@@ -415,7 +415,7 @@ export default function DistributionPage() {
                       batch.trangThai !== "active" ? (
                         <button
                           onClick={() => { setActionBatch(batch); setNewStatus("active"); setKhuVuc(""); }}
-                          className="flex items-center gap-1.5 px-3 py-2 bg-[#C8A557]/20 text-blue-300 border border-[#C8A557]/30 rounded-xl text-xs font-bold hover:bg-[#C8A557]/30 transition"
+                          className="flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 py-2 bg-[#C8A557]/20 text-blue-300 border border-[#C8A557]/30 rounded-xl text-xs font-bold hover:bg-[#C8A557]/30 transition"
                         >
                           <span className="material-symbols-outlined text-[16px]">refresh</span>
                           Đặt lại
@@ -425,7 +425,7 @@ export default function DistributionPage() {
                     {!["pending_review","pending_distributor","ready","suspended"].includes(batch.trangThai) && (
                       <button
                         onClick={() => { setActionBatch(batch); setNewStatus("suspended"); setKhuVuc(""); }}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-red-500/15 text-red-400 border border-red-500/30 rounded-xl text-xs font-bold hover:bg-red-500/30 transition"
+                        className="flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 py-2 bg-red-500/15 text-red-400 border border-red-500/30 rounded-xl text-xs font-bold hover:bg-red-500/30 transition"
                       >
                         <span className="material-symbols-outlined text-[16px]">lock</span>
                         Khóa
@@ -434,7 +434,7 @@ export default function DistributionPage() {
                     {expired && userRole !== 'admin' && (
                       <button
                         onClick={() => setDeleteBatch(batch)}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-xs font-bold hover:bg-red-500/40 transition"
+                        className="flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-xs font-bold hover:bg-red-500/40 transition"
                       >
                         <span className="material-symbols-outlined text-[16px]">delete</span>
                         Xóa
@@ -446,7 +446,7 @@ export default function DistributionPage() {
             );
           })}
           {filtered.length > ITEMS_PER_PAGE && (
-            <div className="flex justify-center items-center gap-4 mt-6">
+            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mt-6">
               <button onClick={() => setPageBatch(p => Math.max(1, p - 1))} disabled={pageBatch === 1} className="px-4 py-2 bg-white/5 rounded-xl text-white disabled:opacity-30 border border-white/10">{tr("Trước", "Prev")}</button>
               <span className="text-slate-400 text-sm">Trang {pageBatch} / {Math.ceil(filtered.length / ITEMS_PER_PAGE)}</span>
               <button onClick={() => setPageBatch(p => Math.min(Math.ceil(filtered.length / ITEMS_PER_PAGE), p + 1))} disabled={pageBatch === Math.ceil(filtered.length / ITEMS_PER_PAGE)} className="px-4 py-2 bg-white/5 rounded-xl text-white disabled:opacity-30 border border-white/10">Sau</button>

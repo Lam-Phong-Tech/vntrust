@@ -489,13 +489,13 @@ export default function InventoryPage() {
 
 
   const TabBar = (
-    <div className="flex gap-2 mb-8 border-b border-white/10">
+    <div className="flex gap-2 mb-5 sm:mb-8 border-b border-white/10 overflow-x-auto scrollbar-hide -mx-3 px-3 sm:mx-0 sm:px-0">
       {([
         { k: "assets", icon: "inventory_2", label: lang === "en" ? "Products & Batches" : "Sản phẩm & Lô hàng" },
         { k: "dist",   icon: "local_shipping", label: lang === "en" ? "Distribution & Delivery" : "Phân phối & Giao hàng" },
       ] as const).map(tb => (
         <button key={tb.k} onClick={() => setMainTab(tb.k)}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition ${
+          className={`flex shrink-0 items-center gap-2 px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 -mb-px transition ${
             mainTab === tb.k ? "border-[#C8A557] text-white" : "border-transparent text-slate-400 hover:text-slate-200"
           }`}>
           <span className="material-symbols-outlined text-[18px]">{tb.icon}</span>
@@ -509,7 +509,7 @@ export default function InventoryPage() {
   if (mainTab === "dist") {
     return (
       <div className="flex flex-col transparent font-body">
-        <div className="mx-auto max-w-7xl w-full px-8 lg:px-12 pt-8">{TabBar}</div>
+        <div className="mx-auto max-w-7xl w-full px-3 sm:px-4 lg:px-12 pt-4 sm:pt-8">{TabBar}</div>
         <DistributionPage />
       </div>
     );
@@ -530,23 +530,23 @@ export default function InventoryPage() {
   const pagedSanPhams = filteredSanPhams.slice((safeSpPage - 1) * SP_PER_PAGE, safeSpPage * SP_PER_PAGE);
 
   return (
-    <div className="flex transparent font-body ">
+    <div className="flex transparent font-body w-full overflow-x-hidden">
 
 
 
 
-      <main className="mx-auto max-w-7xl w-full flex-1 p-8 lg:p-12 overflow-x-hidden min-h-[calc(100vh-80px)] transparent">
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
-          <div>
+      <main className="mx-auto max-w-7xl w-full flex-1 px-3 py-4 sm:p-6 lg:p-12 overflow-x-hidden min-h-[calc(100vh-80px)] transparent">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 sm:mb-10 gap-4">
+          <div className="min-w-0">
             <p className="font-label text-xs font-bold text-primary tracking-[0.2em] uppercase mb-2">{t("inv_title")}</p>
-            <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">{t("inv_sub")}</h1>
+            <h1 className="font-display text-2xl sm:text-4xl font-extrabold text-white tracking-tight break-words">{t("inv_sub")}</h1>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 flex-wrap w-full md:w-auto">
 
             {userRole !== 'admin' && canEdit && (
               <>
                 <button onClick={() => syncStamps()} disabled={syncing || submitting}
-                  className="px-3 py-1.5 border border-[#C8A557]/40 rounded-lg text-xs font-bold text-amber-300 hover:bg-[#C8A557]/10 transition flex items-center gap-1.5 disabled:opacity-50">
+                  className="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 border border-[#C8A557]/40 rounded-lg text-xs font-bold text-amber-300 hover:bg-[#C8A557]/10 transition flex items-center gap-1.5 disabled:opacity-50">
                   {syncing
                     ? <span className="animate-spin rounded-full h-3.5 w-3.5 border-t-2 border-b-2 border-amber-300" />
                     : <span className="material-symbols-outlined text-sm">sync</span>}
@@ -554,7 +554,7 @@ export default function InventoryPage() {
                   <span className="sm:hidden">Sync</span>
                 </button>
                 <button onClick={() => setModal("product")}
-                  className="px-4 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:opacity-90 transition flex items-center gap-1.5">
+                  className="flex-1 sm:flex-none justify-center px-4 py-2 sm:py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:opacity-90 transition flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-sm">add</span>
                   <span className="hidden sm:inline">{t("inv_add_product")}</span>
                   <span className="sm:hidden">{t("inv_field_product")}</span>
@@ -578,7 +578,7 @@ export default function InventoryPage() {
             <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : !data?.sanPhams?.length ? (
-          <div className="flex flex-col items-center justify-center h-80 bg-white/5 glass-panel text-white rounded-3xl border border-dashed border-white/20 gap-4">
+          <div className="flex flex-col items-center justify-center min-h-72 bg-white/5 glass-panel text-white rounded-2xl sm:rounded-3xl border border-dashed border-white/20 gap-4 px-4 text-center">
             <span className="material-symbols-outlined text-5xl text-slate-300">inventory_2</span>
             <p className="text-slate-300 font-bold">{t("inv_no_product")}</p>
             {userRole !== 'admin' && (
@@ -592,7 +592,7 @@ export default function InventoryPage() {
             )}
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-5 sm:space-y-8">
             {/* ── Tìm kiếm sản phẩm theo tên hoặc SKU ── */}
             <div className="relative">
               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] pointer-events-none">search</span>
@@ -615,18 +615,18 @@ export default function InventoryPage() {
             </div>
 
             {filteredSanPhams.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-60 bg-white/5 glass-panel text-white rounded-3xl border border-dashed border-white/20 gap-3">
+              <div className="flex flex-col items-center justify-center min-h-60 bg-white/5 glass-panel text-white rounded-2xl sm:rounded-3xl border border-dashed border-white/20 gap-3 px-4 text-center">
                 <span className="material-symbols-outlined text-4xl text-slate-300">search_off</span>
                 <p className="text-slate-300 font-bold">Không tìm thấy sản phẩm phù hợp</p>
                 <p className="text-sm text-slate-400">Thử từ khóa khác hoặc xóa bộ lọc.</p>
               </div>
             ) : (
             pagedSanPhams.map(sp => (
-              <div key={sp.id} className="bg-white/5 glass-panel text-white rounded-3xl shadow-sm border border-white/10 overflow-hidden">
+              <div key={sp.id} className="bg-white/5 glass-panel text-white rounded-2xl sm:rounded-3xl shadow-sm border border-white/10 overflow-hidden">
                 {/* Product header */}
                 <div className="p-4 sm:p-6 border-b border-white/10">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
                         {(sp as any).hinhAnhUrl ? (
                           <img src={(sp as any).hinhAnhUrl} alt={sp.ten} className="w-full h-full object-cover" />
@@ -640,7 +640,7 @@ export default function InventoryPage() {
                         {sp.moTa && <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{sp.moTa}</p>}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap pl-[52px] sm:pl-0">
+                    <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap pl-0 sm:pl-0 w-full sm:w-auto">
                       <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold whitespace-nowrap shrink-0">
                         {sp._count.loHangs} {t("inv_batch_count")}
                       </span>
@@ -721,7 +721,7 @@ export default function InventoryPage() {
                   <div className="p-8 text-center text-slate-400 text-sm">{t("inv_empty")}. Thêm lô hàng để tạo tem QR.</div>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="w-full min-w-[760px] text-left">
                       <thead>
                         <tr className="transparent text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                           <th className="px-6 py-3">{t("inv_batch_code")}</th>
@@ -846,17 +846,17 @@ export default function InventoryPage() {
 
             {/* ── TC-MFR-004: phân trang danh sách sản phẩm ── */}
             {filteredSanPhams.length > SP_PER_PAGE && (
-              <div className="flex items-center justify-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-2">
                 <button type="button" onClick={() => setSpPage(p => Math.max(1, p - 1))} disabled={safeSpPage <= 1}
-                  className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1">
+                  className="px-3 sm:px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1">
                   <span className="material-symbols-outlined text-[18px]">chevron_left</span>{lang === 'en' ? 'Prev' : 'Trước'}
                 </button>
-                <span className="text-sm text-slate-300 font-medium">
+                <span className="text-sm text-slate-300 font-medium text-center">
                   {lang === 'en' ? 'Page' : 'Trang'} {safeSpPage}/{spPageCount}
                   <span className="text-slate-500"> · {filteredSanPhams.length} {lang === 'en' ? 'products' : 'SP'}</span>
                 </span>
                 <button type="button" onClick={() => setSpPage(p => Math.min(spPageCount, p + 1))} disabled={safeSpPage >= spPageCount}
-                  className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1">
+                  className="px-3 sm:px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1">
                   {lang === 'en' ? 'Next' : 'Sau'}<span className="material-symbols-outlined text-[18px]">chevron_right</span>
                 </button>
               </div>
@@ -1064,10 +1064,10 @@ export default function InventoryPage() {
       {/* ── Modal: Thêm Sản phẩm / Lô hàng — sticky footer + pb-[80px] tránh bị che ── */}
       {(modal === "product" || modal === "batch") && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end md:items-center justify-center md:p-4 pb-[80px] md:pb-4" onClick={closeModal}>
-          <div className="bg-[#0B1623] glass-panel text-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-md max-h-[calc(100dvh-160px)] md:max-h-[88dvh] flex flex-col" onClick={e => e.stopPropagation()}>
+          <div className="bg-[#0B1623] glass-panel text-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-md max-h-[calc(100dvh-120px)] md:max-h-[88dvh] flex flex-col" onClick={e => e.stopPropagation()}>
             {/* Header — fixed */}
-            <div className="flex justify-between items-center p-6 pb-3 border-b border-white/10 shrink-0">
-              <h2 className="text-xl font-bold font-display">
+            <div className="flex justify-between items-center p-4 sm:p-6 pb-3 border-b border-white/10 shrink-0">
+              <h2 className="text-lg sm:text-xl font-bold font-display">
                 {modal === "product" ? (editingProductId ? "Sửa sản phẩm" : t("inv_modal_add_product")) : t("inv_modal_add_batch")}
               </h2>
               <button onClick={closeModal} className="text-slate-400 hover:text-slate-200">
@@ -1076,7 +1076,7 @@ export default function InventoryPage() {
             </div>
 
             {/* Scrollable body */}
-            <div className="overflow-y-auto px-6 py-5 flex-1 min-h-0 space-y-4">
+            <div className="overflow-y-auto px-4 sm:px-6 py-5 flex-1 min-h-0 space-y-4">
               {modal === "product" ? (
                 <>
                   <div>
@@ -1091,7 +1091,7 @@ export default function InventoryPage() {
                       className="w-full border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition resize-none"
                       rows={3} placeholder="Mô tả ngắn về sản phẩm..." />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">GTIN/Barcode</label>
                       <input value={form.GTIN || ""} onChange={e => setForm(f => ({ ...f, GTIN: e.target.value }))}
@@ -1135,7 +1135,7 @@ export default function InventoryPage() {
                       ))}
                     </select>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">{t("inv_field_mfg_date")}</label>
                       <input type="date" value={form.ngaySanXuat || ""}
@@ -1159,7 +1159,7 @@ export default function InventoryPage() {
                   {/* ── Nguồn mã: hỏi DN đã có mã chưa ── */}
                   <div className="rounded-xl border border-[#C8A557]/25 bg-[#C8A557]/5 p-4">
                     <label className="block text-xs font-bold text-[#C8A557] uppercase tracking-wider mb-2">Nguồn mã cho lô hàng</label>
-                    <div className="grid grid-cols-2 gap-2 mb-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
                       <button type="button" onClick={() => setCodeMode("generate")}
                         className={`flex flex-col items-start gap-0.5 p-3 rounded-xl border text-left transition ${codeMode === "generate" ? "bg-[#C8A557]/15 border-[#C8A557]/50 text-white" : "bg-white/5 border-white/10 text-slate-300 hover:border-white/30"}`}>
                         <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
@@ -1212,7 +1212,7 @@ export default function InventoryPage() {
               )}
             </div>
             {/* Sticky footer — luôn visible */}
-            <div className="flex gap-3 px-6 py-4 border-t border-white/10 bg-[#0B1623] shrink-0" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+            <div className="flex gap-3 px-4 sm:px-6 py-4 border-t border-white/10 bg-[#0B1623] shrink-0" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
               <button onClick={closeModal}
                 className="flex-1 py-3 border border-white/20 rounded-xl text-sm font-bold text-slate-200 hover:bg-white/5 transition">
                 {t("common_cancel")}
