@@ -10,6 +10,7 @@ import { useLogs } from "@/hooks/useLogs";
 
 // Shared marker type (synced with VietnamMap)
 type MapMarker = { id: number; name: string; country: string; lat: number; lon: number; scans: number; fake: number; type: string; color?: string; };
+const SHOW_INTEGRATION_AND_STANDARDS_CARDS = false;
 
 // ─── Live Clock (locale-aware, device local time) ──────────────────────────
 const LANG_LOCALE: Record<string, string> = {
@@ -1050,7 +1051,7 @@ export default function Dashboard() {
               )}
 
               {/* ── Integration Hub: BR-07 — NSX + NNK + Admin ── */}
-              {(userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
+              {SHOW_INTEGRATION_AND_STANDARDS_CARDS && (userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
                 <Link href="/dashboard/integration" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#C8A557]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#C8A557]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
@@ -1123,7 +1124,7 @@ export default function Dashboard() {
               )}
 
               {/* ── Thư viện Tiêu chuẩn: Manufacturer + Importer + Admin ── */}
-              {(userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
+              {SHOW_INTEGRATION_AND_STANDARDS_CARDS && (userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
                 <Link href="/dashboard/standards" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#C8A557]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#C8A557]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
