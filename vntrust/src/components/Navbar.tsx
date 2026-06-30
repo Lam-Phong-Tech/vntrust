@@ -388,7 +388,7 @@ export default function Navbar() {
       {modal === "app" && <AppDownloadModal onClose={() => setModal(null)} />}
 
       <nav
-        className="fixed top-0 w-full z-50 py-3 px-6"
+        className="site-navbar fixed top-0 w-full z-50 py-3 px-6"
         style={{
           backgroundColor: scrollOpacity < 0.02 ? 'transparent' : `rgba(11,19,32,${scrollOpacity})`,
           backdropFilter: scrollOpacity > 0.15 ? `blur(${Math.min(scrollOpacity * 16, 12)}px)` : 'none',
@@ -402,18 +402,18 @@ export default function Navbar() {
 
           {/* Left: Logo + nav */}
           <div className="flex items-center gap-10">
-            <Link href="/" className="flex items-center gap-2.5 min-w-0 max-w-[190px] overflow-hidden">
+            <Link href="/" className="navbar-brand flex items-center gap-2.5 min-w-0 max-w-[210px] overflow-hidden">
               <span style={{ background:'#ffffff', borderRadius:10, padding:'5px', display:'inline-flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(0,0,0,0.14)' }}>
                 <Image src="/logo-icon.png" alt="AI VeriGoods" width={30} height={30} style={{objectFit: 'contain', display:'block'}} priority />
               </span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/verigoods-wordmark.png" alt="VeriGoods" style={{ height:16, width:'auto', maxWidth:140, objectFit:'contain', display:'block', flexShrink:1 }} />
+              <img className="navbar-wordmark" src="/verigoods-wordmark.png" alt="VeriGoods" style={{ height:16, width:'auto', maxWidth:140, objectFit:'contain', display:'block', flexShrink:1 }} />
             </Link>
 
             <div className="hidden lg:flex items-center gap-7 pt-0.5">
               {navLinks.map(({ key, href }) => (
                 <Link key={href} href={href}
-                  className={`text-[13px] font-bold font-display tracking-widest transition-all uppercase pb-1 ${isActive(href) ? "text-white border-b-2 border-[#C8A557] glow-text" : "text-blue-100/70 hover:text-white"}`}>
+                  className={`site-navbar-link text-[13px] font-bold font-display tracking-widest transition-all uppercase pb-1 ${isActive(href) ? "is-active text-white border-b-2 border-white glow-text" : "text-white/85 hover:text-white"}`}>
                   {t(key)}
                 </Link>
               ))}
@@ -452,9 +452,9 @@ export default function Navbar() {
               </button>
             )}
 
-            <button onClick={toggleTheme} title="Toggle Theme"
-              className="w-9 h-9 flex items-center justify-center bg-white/10 rounded-full text-slate-200 hover:text-white hover:bg-white/20 transition border border-white/10 active:scale-95">
-              <span className="material-symbols-outlined text-[16px] no-invert">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
+            <button onClick={toggleTheme} title={theme === "dark" ? "Đang ở giao diện tối" : "Đang ở giao diện sáng"}
+              className="site-theme-toggle w-9 h-9 flex items-center justify-center bg-white/10 rounded-full text-slate-200 hover:text-white hover:bg-white/20 transition border border-white/10 active:scale-95">
+              <span className="material-symbols-outlined text-[16px] no-invert">{theme === "dark" ? "dark_mode" : "light_mode"}</span>
             </button>
 
             {/* Notification bell — only shown when logged in */}

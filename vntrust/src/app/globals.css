@@ -1219,3 +1219,51 @@ html.light-mode .geo-permission-deny {
 html.light-mode .geo-permission-deny:hover {
   background: #e7f0ff !important;
 }
+
+/* Public navbar on light theme: blue rail needs explicit white text and readable brand. */
+html.light-mode nav.site-navbar,
+html.light-mode .site-navbar {
+  background: #1F6FEB !important;
+  border-bottom-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 4px 18px rgba(31, 111, 235, 0.22) !important;
+}
+
+html.light-mode .site-navbar .navbar-brand {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid rgba(255, 255, 255, 0.65) !important;
+  border-radius: 16px !important;
+  padding: 5px 10px 5px 5px !important;
+  box-shadow: 0 6px 18px rgba(13, 27, 46, 0.14) !important;
+}
+
+html.light-mode .site-navbar .navbar-wordmark {
+  filter: saturate(1.18) contrast(1.22) drop-shadow(0 1px 0 rgba(255,255,255,0.45));
+}
+
+html.light-mode .site-navbar .site-navbar-link,
+html.light-mode .site-navbar .site-navbar-link *,
+html.light-mode .site-navbar button:not([class*="from-[#e7d188]"]),
+html.light-mode .site-navbar button:not([class*="from-[#e7d188]"]) *,
+html.light-mode .site-navbar .site-theme-toggle,
+html.light-mode .site-navbar .site-theme-toggle * {
+  color: #ffffff !important;
+}
+
+html.light-mode .site-navbar .site-navbar-link {
+  opacity: 0.9;
+  text-shadow: 0 1px 8px rgba(13, 27, 46, 0.16);
+}
+
+html.light-mode .site-navbar .site-navbar-link:hover,
+html.light-mode .site-navbar .site-navbar-link.is-active {
+  opacity: 1;
+}
+
+html.light-mode .site-navbar .site-navbar-link.is-active {
+  border-bottom-color: #ffffff !important;
+}
+
+html.light-mode .site-navbar .site-theme-toggle {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+}
