@@ -369,8 +369,6 @@ export default function Navbar() {
 
   const allNavLinks = [
     { key: "nav_verify", href: "/verify" },
-    { key: "nav_supply", href: "/supply-chain" },
-    { key: "nav_enterprise", href: "/enterprise" },
   ];
   // Ẩn nút "Bảng điều khiển": NTD/DN không hiển thị link nav trên navbar
   const navLinks = (userRole === "consumer" || userRole === "manufacturer" || userRole === "importer")
