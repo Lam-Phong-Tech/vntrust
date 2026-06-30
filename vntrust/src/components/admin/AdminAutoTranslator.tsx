@@ -381,6 +381,151 @@ const EN_PHRASES_EXTRA: Array<[RegExp, string]> = [
   [/\bFake rate\b/g, "Tỷ lệ nghi giả"],
 ];
 
+const VI_EXACT_EXTRA: Record<string, string> = {
+  "Đăng nhập hệ thống thành công": "Logged in successfully",
+  "Kiểm tra trạng thái tích hợp hệ thống": "Integration health check",
+  "Giấy phép KD": "Business license",
+  "CMND/CCCD": "ID card",
+  "Mỹ phẩm": "Cosmetics",
+  "Sản phẩm": "Products",
+  "Lô hàng": "Batches",
+  "Đang chờ": "Pending",
+  "Đã duyệt": "Approved",
+  "Từ chối": "Rejected",
+  "Tất cả": "All",
+  "Tất cả mức": "All levels",
+  "Xử lý": "Manage",
+  "Hủy": "Cancel",
+  "Xác nhận": "Confirm",
+  "Chi tiết": "Details",
+  "Thu hồi": "Revoke",
+  "Khóa": "Lock",
+  "Mở khóa": "Unlock",
+  "Đóng": "Close",
+  "Điều tra": "Investigate",
+  "Loại cảnh báo": "Alert type",
+  "LOẠI CẢNH BÁO": "ALERT TYPE",
+  "Mức độ": "Severity",
+  "MỨC ĐỘ": "SEVERITY",
+  "Mô tả cảnh báo": "Alert description",
+  "MÔ TẢ CẢNH BÁO": "ALERT DESCRIPTION",
+  "Tạo cảnh báo": "Create alert",
+  "Create cảnh báo": "Create alert",
+  "Trung bình": "Medium",
+  "Nghiêm trọng": "Severe",
+  "Thấp": "Low",
+  "Cao": "High",
+  "Thủ công": "Manual",
+  "Kiểm soát điểm thưởng": "Reward control",
+  "Quản lý và cấp điểm thưởng cho người dùng": "Manage and issue reward points to users",
+  "Cấp điểm": "Issue points",
+  "Cấp điểm thưởng": "Issue reward points",
+  "Số điểm (cộng hoặc trừ)": "Points (add or subtract)",
+  "Loại hành động": "Action type",
+  "Lý do / ghi chú": "Reason / note",
+  "Cho người dùng": "For user",
+  "Báo cáo đa định dạng": "Multi-format report",
+  "Report đa định dạng": "Multi-format report",
+  "Xuất PDF": "Export PDF",
+  "Xuất Excel": "Export Excel",
+  "Phân loại vi phạm hàng giả": "Counterfeit violation classification",
+  "Hàng giả (Counterfeit)": "Counterfeit",
+  "QR giả (Clone QR)": "Clone QR",
+  "Bao bì giả (Packaging Fraud)": "Packaging fraud",
+  "Hết hạn (Expired Product)": "Expired product",
+  "Kém chất lượng (Low Quality)": "Low quality",
+  "Vi phạm nhãn hiệu (Trademark)": "Trademark violation",
+  "Quản lý người dùng": "User management",
+  "Khóa / mở khóa / đổi vai trò": "Lock / unlock / change roles",
+  "Lock / mở khóa / đổi vai trò": "Lock / unlock / change roles",
+  "Duyệt hồ sơ, xác minh DN": "Approve profiles, verify enterprises",
+  "Approve hồ sơ, xác minh DN": "Approve profiles, verify enterprises",
+  "Tạo / sửa sản phẩm, kho hàng": "Create / edit products and inventory",
+  "Create / sửa sản phẩm, kho hàng": "Create / edit products and inventory",
+  "Phát hành tem, quản lý lô": "Issue stamps, manage batches",
+  "Đơn chuyển hàng, giao nhận": "Shipping orders and delivery",
+  "Cảnh báo thời gian thực, điều tra": "Real-time alerts and investigations",
+  "Alert real-time, điều tra": "Real-time alerts and investigations",
+  "Thống kê, xuất báo cáo": "Statistics and report export",
+  "Số lần quét/ngày/UID trước khi cảnh báo Vàng": "Scans per day per UID before yellow alert",
+  "Số lần quét trước khi cảnh báo Đỏ tự động": "Scans before automatic red alert",
+  "Khoảng cách tối đa so với vùng phân phối khai báo (km)": "Maximum distance from declared distribution area (km)",
+  "Số báo cáo người dùng để kích hoạt cảnh báo High": "User reports required to trigger high alert",
+  "Số ngày trước hết hạn để cảnh báo (mức 1,2,3)": "Days before expiry to warn (levels 1, 2, 3)",
+  "Gửi cảnh báo, OTP, thông báo cho doanh nghiệp": "Send alerts, OTPs, and notifications to enterprises",
+  "Hiển thị vị trí GPS trên bản đồ, heatmap hàng giả": "Show GPS locations on map and counterfeit heatmap",
+  "Giám sát hàng giả tự động tại điểm bán": "Automatically monitor counterfeits at points of sale",
+  "Chờ kết nối thiết bị Edge Gateway": "Waiting for Edge Gateway device connection",
+  "Người dùng": "Users",
+  "Doanh nghiệp": "Enterprises",
+  "Phân quyền": "Permissions",
+  "Duyệt SP & Lô": "Approvals",
+  "Cảnh báo": "Alerts",
+  "Phân phối": "Distribution",
+  "Báo cáo": "Reports",
+  "Điểm thưởng": "Rewards",
+  "Bảo mật": "Security",
+  "Cấu hình": "Config",
+  "Tích hợp": "Integration",
+  "Đăng xuất": "Sign out",
+  "Quản trị hệ thống": "System admin",
+  "Tài khoản chờ duyệt": "Pending accounts",
+  "Nhật ký gần đây": "Recent activity",
+  "Tổng người dùng": "Total users",
+  "Tem QR đã phát": "QR issued",
+  "Cảnh báo mở": "Open alerts",
+  "Tỷ lệ nghi giả": "Fake rate",
+};
+
+const VI_PHRASES_EXTRA: Array<[RegExp, string]> = [
+  [/(\d+)\s*lô hàng/g, "$1 batches"],
+  [/DN "([^"]+)" bị thu hồi\. (\d+) mã UID đã bị vô hiệu hóa tạm thời\. Lý do: Revoke tài khoản/g, 'Enterprise "$1" was revoked. $2 UIDs were temporarily disabled. Reason: Account revoked'],
+  [/Lý do: Revoke tài khoản/g, "Reason: Account revoked"],
+  [/bị thu hồi/g, "was revoked"],
+  [/mã UID đã bị vô hiệu hóa tạm thời/g, "UIDs were temporarily disabled"],
+  [/Đăng nhập hệ thống thành công/g, "Logged in successfully"],
+  [/Kiểm tra trạng thái tích hợp hệ thống/g, "Integration health check"],
+  [/Giấy phép KD/g, "Business license"],
+  [/CMND\/CCCD/g, "ID card"],
+  [/Cấp điểm thưởng/g, "Issue reward points"],
+  [/Cấp điểm/g, "Issue points"],
+  [/Cancel bỏ/g, "Cancel"],
+  [/Create cảnh báo/g, "Create alert"],
+  [/Report chính xác \(Hàng giả\)/g, "Accurate counterfeit report"],
+  [/Thưởng báo cáo hàng giả mã/g, "Reward for counterfeit report ID"],
+  [/Hàng giả \(Counterfeit\)/g, "Counterfeit"],
+  [/QR giả \(Clone QR\)/g, "Clone QR"],
+  [/Bao bì giả \(Packaging Fraud\)/g, "Packaging fraud"],
+  [/Hết hạn \(Expired Product\)/g, "Expired product"],
+  [/Kém chất lượng \(Low Quality\)/g, "Low quality"],
+  [/Vi phạm nhãn hiệu \(Trademark\)/g, "Trademark violation"],
+  [/Quản lý và cấp điểm thưởng cho người dùng/g, "Manage and issue reward points to users"],
+  [/Manage và cấp điểm thưởng cho người dùng/g, "Manage and issue reward points to users"],
+  [/Phân loại vi phạm hàng giả/g, "Counterfeit violation classification"],
+  [/Báo cáo đa định dạng|Report đa định dạng/g, "Multi-format report"],
+  [/Xuất PDF/g, "Export PDF"],
+  [/Xuất Excel/g, "Export Excel"],
+  [/Khóa \/ mở khóa \/ đổi vai trò|Lock \/ mở khóa \/ đổi vai trò/g, "Lock / unlock / change roles"],
+  [/Duyệt hồ sơ, xác minh DN|Approve hồ sơ, xác minh DN/g, "Approve profiles, verify enterprises"],
+  [/Tạo \/ sửa sản phẩm, kho hàng|Create \/ sửa sản phẩm, kho hàng/g, "Create / edit products and inventory"],
+  [/Phát hành tem, quản lý lô/g, "Issue stamps, manage batches"],
+  [/Đơn chuyển hàng, giao nhận/g, "Shipping orders and delivery"],
+  [/Cảnh báo thời gian thực, điều tra|Alert real-time, điều tra/g, "Real-time alerts and investigations"],
+  [/Thống kê, xuất báo cáo/g, "Statistics and report export"],
+  [/Số lần quét\/ngày\/UID trước khi cảnh báo Vàng/g, "Scans per day per UID before yellow alert"],
+  [/Số lần quét trước khi cảnh báo Đỏ tự động/g, "Scans before automatic red alert"],
+  [/Khoảng cách tối đa so với vùng phân phối khai báo \(km\)/g, "Maximum distance from declared distribution area (km)"],
+  [/Số báo cáo người dùng để kích hoạt cảnh báo High/g, "User reports required to trigger high alert"],
+  [/Số ngày trước hết hạn để cảnh báo \(mức 1,2,3\)/g, "Days before expiry to warn (levels 1, 2, 3)"],
+  [/Gửi cảnh báo, OTP, thông báo cho doanh nghiệp/g, "Send alerts, OTPs, and notifications to enterprises"],
+  [/Hiển thị vị trí GPS trên bản đồ, heatmap hàng giả/g, "Show GPS locations on map and counterfeit heatmap"],
+  [/Giám sát hàng giả tự động tại điểm bán/g, "Automatically monitor counterfeits at points of sale"],
+  [/Chờ kết nối thiết bị Edge Gateway/g, "Waiting for Edge Gateway device connection"],
+  [/\badmin\b/g, "Admin"],
+  [/\bconsumer\b/g, "Consumer"],
+  [/\bmanufacturer\b/g, "Manufacturer"],
+];
+
 type TranslateDirection = "vi-to-en" | "en-to-vi";
 
 const SKIP_SELECTOR = [
@@ -393,6 +538,14 @@ const SKIP_SELECTOR = [
   "[contenteditable='true']",
 ].join(",");
 
+const ATTR_SKIP_SELECTOR = [
+  "script",
+  "style",
+  "code",
+  "pre",
+  "[data-no-auto-translate]",
+].join(",");
+
 const ATTRS = ["placeholder", "title", "aria-label", "alt", "value"] as const;
 const originals = new WeakMap<Node | Element, OriginalNode>();
 
@@ -400,8 +553,8 @@ function translateText(input: string, direction: TranslateDirection) {
   const trimmed = input.trim();
   if (!trimmed) return input;
 
-  const exact = direction === "vi-to-en" ? EXACT : { ...EN_EXACT, ...EN_EXACT_EXTRA };
-  const phrases = direction === "vi-to-en" ? PHRASES : [...EN_PHRASES_EXTRA, ...EN_PHRASES];
+  const exact = direction === "vi-to-en" ? { ...EXACT, ...VI_EXACT_EXTRA } : { ...EN_EXACT, ...EN_EXACT_EXTRA };
+  const phrases = direction === "vi-to-en" ? [...VI_PHRASES_EXTRA, ...PHRASES] : [...EN_PHRASES_EXTRA, ...EN_PHRASES];
 
   if (exact[trimmed]) return input.replace(trimmed, exact[trimmed]);
 
@@ -438,7 +591,7 @@ function apply(root: ParentNode, direction: TranslateDirection | null) {
 
   const elements = root.querySelectorAll<HTMLElement>("input, textarea, select, button, img, [title], [aria-label]");
   elements.forEach((element) => {
-    if (element.closest(SKIP_SELECTOR)) return;
+    if (element.closest(ATTR_SKIP_SELECTOR)) return;
 
     const original = originals.get(element) ?? { attrs: {} };
     original.attrs ??= {};
