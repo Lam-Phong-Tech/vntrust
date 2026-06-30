@@ -303,7 +303,8 @@ function apply(root: ParentNode, shouldTranslate: boolean) {
   for (const node of textNodes) {
     const original = originals.get(node)?.text ?? node.textContent ?? "";
     if (!originals.has(node)) originals.set(node, { text: original });
-    node.textContent = shouldTranslate ? translateText(original) : original;
+    const next = shouldTranslate ? translateText(original) : original;
+    if (node.textContent !== next) node.textContent = next;
   }
 
   const elements = root.querySelectorAll<HTMLElement>("input, textarea, select, button, img, [title], [aria-label]");
@@ -318,7 +319,8 @@ function apply(root: ParentNode, shouldTranslate: boolean) {
       const value = element.getAttribute(attr);
       if (!value) return;
       if (original.attrs?.[attr] === undefined) original.attrs![attr] = value;
-      element.setAttribute(attr, shouldTranslate ? translateText(original.attrs![attr] || value) : original.attrs![attr] || value);
+      const next = shouldTranslate ? translateText(original.attrs![attr] || value) : original.attrs![attr] || value;
+      if (value !== next) element.setAttribute(attr, next);
       changed = true;
     });
 
@@ -336,28 +338,28 @@ export default function AdminAutoTranslator() {
     const shouldTranslate = lang === "en";
     apply(root, shouldTranslate);
 
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.type === "childList") {
-          mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === Node.ELEMENT_NODE) apply(node as Element, shouldTranslate);
-            if (node.nodeType === Node.TEXT_NODE && node.parentElement) apply(node.parentElement, shouldTranslate);
-          });
-        }
+    let frame = 0;
+    const scheduleApply = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        apply(root, shouldTranslate);
+      });
+    };
 
-        if (mutation.type === "characterData" && mutation.target.parentElement) {
-          apply(mutation.target.parentElement, shouldTranslate);
-        }
-      }
+    const observer = new MutationObserver(() => {
+      scheduleApply();
     });
 
     observer.observe(root, {
       childList: true,
-      characterData: true,
       subtree: true,
     });
 
-    return () => observer.disconnect();
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, [lang]);
 
   return null;
