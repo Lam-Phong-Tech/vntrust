@@ -504,6 +504,20 @@ html.light-mode input[type="number"]::-webkit-outer-spin-button {
 .mobile-input::placeholder { color: rgba(246,241,232,0.35); }
 .mobile-input:focus { border-color: #C8A557; }
 
+.verify-manual-serial-input,
+.verify-manual-serial-input::placeholder,
+html.light-mode .verify-manual-serial-input,
+html.light-mode .verify-manual-serial-input::placeholder {
+  font-family: var(--font-sans) !important;
+  letter-spacing: 0 !important;
+}
+
+.verify-manual-serial-input::placeholder,
+html.light-mode .verify-manual-serial-input::placeholder {
+  font-weight: 400 !important;
+  font-style: normal !important;
+}
+
 .mobile-chip {
   padding: 6px 12px; border: 1px solid rgba(200,165,87,0.25); border-radius: 100px;
   font-size: 11px; font-weight: 500; color: rgba(246,241,232,0.55);
