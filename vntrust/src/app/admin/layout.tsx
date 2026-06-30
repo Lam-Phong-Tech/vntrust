@@ -197,10 +197,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <NotificationBell />
-
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C8A557] to-[#A6873E] text-[#0B1623] flex items-center justify-center font-black shrink-0">
-            {initials}
-          </div>
         </header>
 
         {/* Content */}
