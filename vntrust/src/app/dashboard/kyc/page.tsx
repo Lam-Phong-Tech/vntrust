@@ -43,7 +43,7 @@ function StatusBadge({ status }: { status: string }) {
 
 // ─── Drag & Drop Upload Zone ──────────────────────────────────────────────────
 function DocUploadZone({
-  label, icon, url, uploading, onFile, fieldName, disabled
+  label, icon, url, uploading, onFile, fieldName, disabled, verified
 }: {
   label: string;
   icon: string;
@@ -52,6 +52,7 @@ function DocUploadZone({
   onFile: (file: File) => void;
   fieldName: string;
   disabled?: boolean;
+  verified?: boolean;
 }) {
   const { lang } = useLanguage();
   const tr = (vi: string, en: string) => (lang === 'en' ? en : vi);
@@ -70,14 +71,15 @@ function DocUploadZone({
   const isImage = url && !url.endsWith('.pdf');
   const isPdf   = url && url.endsWith('.pdf');
   const hasDoc  = !!url;
+  const isAccepted = hasDoc || !!verified;
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2 mb-1">
         <span className="material-symbols-outlined text-amber-400 text-[20px]">{icon}</span>
         <span className="text-sm font-bold text-white">{label}</span>
-        {hasDoc
-          ? <span className="ml-auto px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/30">✓ Đã nộp</span>
+        {isAccepted
+          ? <span className="ml-auto px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/30">{hasDoc ? "✓ Đã nộp" : "✓ Đã xác thực"}</span>
           : <span className="ml-auto px-2 py-0.5 bg-red-500/10 text-red-400 text-[10px] font-bold rounded-full border border-red-500/30">{tr("Chưa nộp", "Not submitted")}</span>
         }
       </div>
@@ -840,11 +842,11 @@ export default function KYCPage() {
                     </div>
                     <p className="text-xs text-slate-400 font-mono">MST: {c.maSoThue}</p>
                     <div className="flex flex-wrap gap-2 mt-2">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${c.giayphep_url ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : "bg-red-500/10 text-red-400 border-red-500/25"}`}>
-                        {c.giayphep_url ? "✓ Giấy phép KD" : "✕ Giấy phép KD"}
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${c.giayphep_url || c.trangThai === "verified" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : "bg-red-500/10 text-red-400 border-red-500/25"}`}>
+                        {c.giayphep_url || c.trangThai === "verified" ? "✓ Giấy phép KD" : "✕ Giấy phép KD"}
                       </span>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${c.cmnd_url ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : "bg-red-500/10 text-red-400 border-red-500/25"}`}>
-                        {c.cmnd_url ? "✓ CMND/CCCD" : "✕ CMND/CCCD"}
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${c.cmnd_url || c.trangThai === "verified" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : "bg-red-500/10 text-red-400 border-red-500/25"}`}>
+                        {c.cmnd_url || c.trangThai === "verified" ? "✓ CMND/CCCD" : "✕ CMND/CCCD"}
                       </span>
                     </div>
                   </div>
@@ -930,7 +932,7 @@ export default function KYCPage() {
                 <span className="material-symbols-outlined text-amber-400 text-[18px]">folder_open</span>
                 <h2 className="text-sm font-bold text-white min-w-0 flex-1">Tài liệu pháp lý (BR-01)</h2>
                 <span className="text-xs text-slate-400 shrink-0">
-                  {[myCompany.giayphep_url, myCompany.cmnd_url].filter(Boolean).length}/2 tài liệu
+                  {myCompany.trangThai === "verified" ? 2 : [myCompany.giayphep_url, myCompany.cmnd_url].filter(Boolean).length}/2 tài liệu
                 </span>
               </div>
               <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
@@ -941,6 +943,7 @@ export default function KYCPage() {
                   uploading={!!uploading["giayphep_url"]}
                   fieldName="giayphep_url"
                   disabled={myCompany.trangThai === "verified"}
+                  verified={myCompany.trangThai === "verified"}
                   onFile={f => handleUpload("giayphep_url", f)}
                 />
                 <DocUploadZone
@@ -950,6 +953,7 @@ export default function KYCPage() {
                   uploading={!!uploading["cmnd_url"]}
                   fieldName="cmnd_url"
                   disabled={myCompany.trangThai === "verified"}
+                  verified={myCompany.trangThai === "verified"}
                   onFile={f => handleUpload("cmnd_url", f)}
                 />
               </div>
