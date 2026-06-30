@@ -4,6 +4,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Toast } from "@/components/Toast";
 
 interface User {
   id: string;
@@ -463,13 +464,7 @@ export default function AdminUsersPage() {
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed right-4 top-20 z-[2147483647] w-[calc(100vw-2rem)] max-w-sm rounded-2xl border px-4 py-3 text-sm font-bold shadow-2xl backdrop-blur-md sm:right-6 ${
-          toast.type === "ok"
-            ? "bg-emerald-950/95 border-emerald-400/50 text-emerald-50"
-            : "bg-red-950/95 border-red-400/50 text-red-50"
-        }`}>
-          {toast.msg}
-        </div>
+        <Toast msg={toast.msg} ok={toast.type === "ok"} onClose={() => setToast(null)} />
       )}
     </div>
   );
