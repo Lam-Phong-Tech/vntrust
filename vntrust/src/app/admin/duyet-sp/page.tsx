@@ -30,19 +30,19 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 
 const statusMeta: Record<string, { vi: string; en: string; cls: string; icon: string }> = {
   pending: {
-    vi: "Chá» duyá»‡t",
+    vi: "Chờ duyệt",
     en: "Pending",
     cls: "bg-amber-500/15 text-amber-300 border-amber-500/30",
     icon: "hourglass_top",
   },
   approved: {
-    vi: "ÄÃ£ duyá»‡t",
+    vi: "Đã duyệt",
     en: "Approved",
     cls: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
     icon: "verified",
   },
   rejected: {
-    vi: "Tá»« chá»‘i",
+    vi: "Từ chối",
     en: "Rejected",
     cls: "bg-red-500/15 text-red-400 border-red-500/30",
     icon: "block",
@@ -50,10 +50,10 @@ const statusMeta: Record<string, { vi: string; en: string; cls: string; icon: st
 };
 
 const filters: Array<{ key: Status; vi: string; en: string }> = [
-  { key: "pending", vi: "Chá» duyá»‡t", en: "Pending" },
-  { key: "approved", vi: "ÄÃ£ duyá»‡t", en: "Approved" },
-  { key: "rejected", vi: "Tá»« chá»‘i", en: "Rejected" },
-  { key: "all", vi: "Táº¥t cáº£", en: "All" },
+  { key: "pending", vi: "Chờ duyệt", en: "Pending" },
+  { key: "approved", vi: "Đã duyệt", en: "Approved" },
+  { key: "rejected", vi: "Từ chối", en: "Rejected" },
+  { key: "all", vi: "Tất cả", en: "All" },
 ];
 
 export default function DuyetSpPage() {
@@ -82,11 +82,11 @@ export default function DuyetSpPage() {
       if (query.trim()) params.set("q", query.trim());
       const res = await fetch(`/api/admin/approvals?${params.toString()}`, { cache: "no-store" });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || tr("KhÃ´ng táº£i Ä‘Æ°á»£c dá»¯ liá»‡u", "Could not load data"));
+      if (!res.ok) throw new Error(data.error || tr("Không tải được dữ liệu", "Could not load data"));
       setItems(Array.isArray(data.items) ? data.items : []);
     } catch (error: unknown) {
       setItems([]);
-      showToast(getErrorMessage(error, tr("Lá»—i táº£i dá»¯ liá»‡u", "Load failed")), false);
+      showToast(getErrorMessage(error, tr("Lỗi tải dữ liệu", "Load failed")), false);
     } finally {
       setLoading(false);
     }
@@ -115,7 +115,7 @@ export default function DuyetSpPage() {
   const act = async (item: ApprovalItem, action: "approve" | "reject") => {
     const note = action === "reject"
       ? window.prompt(
-          tr(`LÃ½ do tá»« chá»‘i ${item.code}:`, `Reason to reject ${item.code}:`),
+          tr(`Lý do từ chối ${item.code}:`, `Reason to reject ${item.code}:`),
           item.note || ""
         )
       : "";
@@ -134,14 +134,14 @@ export default function DuyetSpPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || tr("Thao tÃ¡c tháº¥t báº¡i", "Action failed"));
+      if (!res.ok) throw new Error(data.error || tr("Thao tác thất bại", "Action failed"));
       showToast(
-        action === "approve" ? tr("ÄÃ£ phÃª duyá»‡t", "Approved") : tr("ÄÃ£ tá»« chá»‘i", "Rejected"),
+        action === "approve" ? tr("Đã phê duyệt", "Approved") : tr("Đã từ chối", "Rejected"),
         true
       );
       fetchItems();
     } catch (error: unknown) {
-      showToast(getErrorMessage(error, tr("Thao tÃ¡c tháº¥t báº¡i", "Action failed")), false);
+      showToast(getErrorMessage(error, tr("Thao tác thất bại", "Action failed")), false);
     } finally {
       setBusy(null);
     }
@@ -159,14 +159,14 @@ export default function DuyetSpPage() {
       <div className="mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
         <div>
           <p className="text-xs font-bold text-[#C8A557] uppercase tracking-[0.22em] mb-2">
-            {tr("Kiá»ƒm duyá»‡t", "Approvals")}
+            {tr("Kiểm duyệt", "Approvals")}
           </p>
           <h1 className="text-2xl lg:text-3xl font-black text-white font-headline">
-            {tr("Duyá»‡t Sáº£n pháº©m & LÃ´ hÃ ng", "Approve Products & Batches")}
+            {tr("Duyệt Sản phẩm & Lô hàng", "Approve Products & Batches")}
           </h1>
           <p className="text-sm text-slate-400 mt-1 max-w-3xl">
             {tr(
-              "Admin duyá»‡t trá»±c tiáº¿p tá»«ng sáº£n pháº©m vÃ  tá»«ng lÃ´ hÃ ng. Tráº¡ng thÃ¡i chÃ­nh hÃ£ng khi quÃ©t mÃ£ sáº½ Æ°u tiÃªn tráº¡ng thÃ¡i duyá»‡t theo lÃ´.",
+              "Admin duyệt trực tiếp từng sản phẩm và từng lô hàng. Trạng thái chính hãng khi quét mã sẽ ưu tiên trạng thái duyệt theo lô.",
               "Admins approve each product and batch directly. Verification uses batch approval as the primary authenticity gate."
             )}
           </p>
@@ -185,7 +185,7 @@ export default function DuyetSpPage() {
                   : "text-slate-400 hover:text-white hover:bg-white/5"
               }`}
             >
-              {key === "product" ? tr("Sáº£n pháº©m", "Products") : tr("LÃ´ hÃ ng", "Batches")}
+              {key === "product" ? tr("Sản phẩm", "Products") : tr("Lô hàng", "Batches")}
             </button>
           ))}
         </div>
@@ -219,7 +219,7 @@ export default function DuyetSpPage() {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder={tr("TÃ¬m mÃ£, tÃªn, doanh nghiá»‡p...", "Search code, name, enterprise...")}
+            placeholder={tr("Tìm mã, tên, doanh nghiệp...", "Search code, name, enterprise...")}
             className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50"
           />
           {query && (
@@ -230,7 +230,7 @@ export default function DuyetSpPage() {
                 setTimeout(fetchItems, 0);
               }}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
-              aria-label={tr("XÃ³a tÃ¬m kiáº¿m", "Clear search")}
+              aria-label={tr("Xóa tìm kiếm", "Clear search")}
             >
               <span className="material-symbols-outlined text-[18px]">close</span>
             </button>
@@ -245,7 +245,7 @@ export default function DuyetSpPage() {
       ) : items.length === 0 ? (
         <div className="text-center py-20 text-slate-500 border border-white/10 bg-white/5 rounded-2xl">
           <span className="material-symbols-outlined text-5xl mb-3 block">fact_check</span>
-          {tr("KhÃ´ng cÃ³ dá»¯ liá»‡u phÃ¹ há»£p", "No matching records")}
+          {tr("Không có dữ liệu phù hợp", "No matching records")}
         </div>
       ) : (
         <div className="space-y-3">
@@ -275,16 +275,16 @@ export default function DuyetSpPage() {
                   </div>
                   <h2 className="font-bold text-white text-base truncate">{item.name}</h2>
                   <p className="text-xs text-slate-400 mt-1 truncate">
-                    {item.secondary || tr("KhÃ´ng cÃ³ mÃ´ táº£ phá»¥", "No secondary detail")}
+                    {item.secondary || tr("Không có mô tả phụ", "No secondary detail")}
                   </p>
                   <p className="text-xs text-slate-500 mt-1">
-                    {tr("Doanh nghiá»‡p", "Enterprise")}: <span className="text-slate-300">{item.owner || "-"}</span>
+                    {tr("Doanh nghiệp", "Enterprise")}: <span className="text-slate-300">{item.owner || "-"}</span>
                     <span className="mx-2">-</span>
                     {target === "batch"
                       ? `${tr("NSX", "Mfg")}: ${fmtDate(item.createdAt)} - ${tr("HSD", "Exp")}: ${fmtDate(item.expiresAt)}`
-                      : `${tr("Táº¡o", "Created")}: ${fmtDate(item.createdAt)}`}
+                      : `${tr("Tạo", "Created")}: ${fmtDate(item.createdAt)}`}
                   </p>
-                  {item.note && <p className="text-xs text-red-400 mt-1">{tr("Ghi chÃº", "Note")}: {item.note}</p>}
+                  {item.note && <p className="text-xs text-red-400 mt-1">{tr("Ghi chú", "Note")}: {item.note}</p>}
                 </div>
 
                 <div className="flex lg:flex-col gap-2 shrink-0">
@@ -295,7 +295,7 @@ export default function DuyetSpPage() {
                       className="flex-1 lg:flex-none px-4 py-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-bold hover:bg-emerald-500/30 transition disabled:opacity-50 flex items-center justify-center gap-1.5"
                     >
                       <span className="material-symbols-outlined text-[15px]">check_circle</span>
-                      {tr("Duyá»‡t", "Approve")}
+                      {tr("Duyệt", "Approve")}
                     </button>
                   )}
                   {item.status !== "rejected" && (
@@ -305,7 +305,7 @@ export default function DuyetSpPage() {
                       className="flex-1 lg:flex-none px-4 py-2 bg-red-500/15 text-red-400 border border-red-500/25 rounded-xl text-xs font-bold hover:bg-red-500/25 transition disabled:opacity-50 flex items-center justify-center gap-1.5"
                     >
                       <span className="material-symbols-outlined text-[15px]">block</span>
-                      {tr("Tá»« chá»‘i", "Reject")}
+                      {tr("Từ chối", "Reject")}
                     </button>
                   )}
                 </div>
@@ -318,8 +318,8 @@ export default function DuyetSpPage() {
       {items.length > PAGE_SIZE && (
         <div className="flex flex-wrap items-center justify-between gap-3 mt-5">
           <p className="text-xs text-slate-500">
-            {tr("Hiá»ƒn thá»‹", "Showing")} {(safePage - 1) * PAGE_SIZE + 1}-
-            {Math.min(safePage * PAGE_SIZE, items.length)} {tr("trÃªn", "of")} {items.length}
+            {tr("Hiển thị", "Showing")} {(safePage - 1) * PAGE_SIZE + 1}-
+            {Math.min(safePage * PAGE_SIZE, items.length)} {tr("trên", "of")} {items.length}
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -327,7 +327,7 @@ export default function DuyetSpPage() {
               disabled={safePage <= 1}
               className="px-4 py-2 bg-white/5 rounded-xl text-white disabled:opacity-30 border border-white/10 text-sm"
             >
-              {tr("TrÆ°á»›c", "Prev")}
+              {tr("Trước", "Prev")}
             </button>
             <span className="text-slate-400 text-sm">
               {tr("Trang", "Page")} {safePage}/{pageCount}
