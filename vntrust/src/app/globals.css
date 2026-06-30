@@ -508,7 +508,7 @@ html.light-mode input[type="number"]::-webkit-outer-spin-button {
 .verify-manual-serial-input::placeholder,
 html.light-mode .verify-manual-serial-input,
 html.light-mode .verify-manual-serial-input::placeholder {
-  font-family: var(--font-sans) !important;
+  font-family: var(--font-body) !important;
   letter-spacing: 0 !important;
 }
 

@@ -57,7 +57,7 @@ export default function VerifyManualPage() {
                 <input
                   value={serial}
                   onChange={(e) => setSerial(e.target.value)}
-                  className="verify-manual-serial-input w-full bg-[#0F1B2C] border-2 border-[#C8A557]/35 outline-none rounded-2xl pl-12 pr-16 py-5 font-semibold text-lg text-[#F6F1E8] focus:border-[#C8A557] focus:ring-4 focus:ring-[#C8A557]/15 focus:bg-[#142235] transition-all placeholder:text-[#F6F1E8]/35 placeholder:font-normal shadow-inner"
+                  className="verify-manual-serial-input w-full bg-[#0F1B2C] border-2 border-[#C8A557]/35 outline-none rounded-2xl pl-12 pr-16 py-5 font-medium text-base text-[#F6F1E8] focus:border-[#C8A557] focus:ring-4 focus:ring-[#C8A557]/15 focus:bg-[#142235] transition-all placeholder:text-[#F6F1E8]/35 placeholder:font-normal shadow-inner"
                   placeholder="e.g. b8c4e09f-... hoặc bấm mic để nói"
                   type="text"
                 />
