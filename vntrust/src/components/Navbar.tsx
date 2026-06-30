@@ -402,7 +402,7 @@ export default function Navbar() {
 
           {/* Left: Logo + nav */}
           <div className="flex items-center gap-10">
-            <Link href="/" className="navbar-brand flex items-center gap-2.5 min-w-0 max-w-[210px] overflow-hidden">
+            <Link href="/" className="navbar-brand relative flex items-center gap-2.5 min-w-0 max-w-[210px] overflow-visible">
               <span style={{ background:'#ffffff', borderRadius:10, padding:'5px', display:'inline-flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(0,0,0,0.14)' }}>
                 <Image src="/logo-icon.png" alt="AI VeriGoods" width={30} height={30} style={{objectFit: 'contain', display:'block'}} priority />
               </span>
