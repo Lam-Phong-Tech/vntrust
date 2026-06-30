@@ -1233,26 +1233,16 @@ html.light-mode .site-navbar .navbar-brand {
   padding: 5px 8px 5px 0 !important;
 }
 
-html.light-mode .site-navbar .navbar-brand::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  right: -14px;
-  top: 50%;
-  height: 42px;
-  transform: translateY(-50%);
-  z-index: -1;
-  border-radius: 999px;
-  background:
-    radial-gradient(ellipse at 55% 50%, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.13) 42%, rgba(186, 230, 253, 0.08) 68%, transparent 100%);
-  filter: blur(22px);
-  pointer-events: none;
-}
-
 html.light-mode .site-navbar .navbar-wordmark {
   position: relative;
   z-index: 1;
-  filter: saturate(1.24) contrast(1.26) drop-shadow(0 1px 8px rgba(255,255,255,0.22));
+  filter:
+    saturate(1.36)
+    contrast(1.34)
+    brightness(1.08)
+    drop-shadow(0 0 2px rgba(255,255,255,0.82))
+    drop-shadow(0 0 9px rgba(186,230,253,0.46))
+    drop-shadow(0 0 14px rgba(34,197,94,0.22));
 }
 
 html.light-mode .site-navbar .site-navbar-link,
@@ -1290,26 +1280,15 @@ html.light-mode .admin-sidebar a:has(img[src*="verigoods-wordmark"]) {
   overflow: visible !important;
 }
 
-html.light-mode .mobile-top-bar a:has(img[src*="verigoods-wordmark"])::before,
-html.light-mode .admin-sidebar a:has(img[src*="verigoods-wordmark"])::before {
-  content: "";
-  position: absolute;
-  left: 6px;
-  right: 8px;
-  top: 50%;
-  height: 40px;
-  transform: translateY(-50%);
-  z-index: -1;
-  border-radius: 999px;
-  background:
-    radial-gradient(ellipse at 55% 50%, rgba(255, 255, 255, 0.23) 0%, rgba(255, 255, 255, 0.12) 46%, rgba(186, 230, 253, 0.08) 72%, transparent 100%);
-  filter: blur(22px);
-  pointer-events: none;
-}
-
 html.light-mode .mobile-top-bar img[src*="verigoods-wordmark"],
 html.light-mode .admin-sidebar img[src*="verigoods-wordmark"] {
   position: relative;
   z-index: 1;
-  filter: saturate(1.24) contrast(1.26) drop-shadow(0 1px 8px rgba(255,255,255,0.22));
+  filter:
+    saturate(1.36)
+    contrast(1.34)
+    brightness(1.08)
+    drop-shadow(0 0 2px rgba(255,255,255,0.82))
+    drop-shadow(0 0 9px rgba(186,230,253,0.46))
+    drop-shadow(0 0 14px rgba(34,197,94,0.22));
 }
