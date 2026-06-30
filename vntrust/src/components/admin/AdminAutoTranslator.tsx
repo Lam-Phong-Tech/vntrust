@@ -257,6 +257,95 @@ const PHRASES: Array<[RegExp, string]> = [
   [/Giấy phép Kinh doanh/g, "Business license"],
 ];
 
+const EN_EXACT: Record<string, string> = {
+  "Recent activity": "Nhật ký gần đây",
+  "Recent Activity": "Nhật ký gần đây",
+  "KYC profile approval": "Phê duyệt hồ sơ KYC",
+  "Product & Batch Approval": "Duyệt sản phẩm & lô hàng",
+  "Approvals": "Kiểm duyệt",
+  "Approval": "Phê duyệt",
+  "Rewards": "Điểm thưởng",
+  "Manage and issue reward points to users": "Quản lý và cấp điểm thưởng cho người dùng",
+  "Manage và cấp điểm thưởng cho người dùng": "Quản lý và cấp điểm thưởng cho người dùng",
+  "Pending Admin": "Chờ quản trị duyệt",
+  "Pending": "Chờ duyệt",
+  "Approved": "Đã duyệt",
+  "Rejected": "Từ chối",
+  "Verified": "Đã xác thực",
+  "Medium": "Trung bình",
+  "High": "Cao",
+  "Low": "Thấp",
+  "Severe": "Nghiêm trọng",
+  "DN_SUSPENDED_CASCADE": "Doanh nghiệp bị khóa dây chuyền",
+  "Open alerts": "Cảnh báo mở",
+  "System errors": "Lỗi hệ thống",
+  "Audit warnings": "Nhật ký cảnh báo",
+  "Admin overview": "Tổng quan quản trị",
+  "AI VeriGoods system status": "Tình hình hệ thống AI VeriGoods",
+  "Total users": "Tổng người dùng",
+  "Products": "Sản phẩm",
+  "QR issued": "Tem QR đã phát",
+  "Fake rate": "Tỷ lệ nghi giả",
+  "No data": "Không có dữ liệu",
+  "No data yet": "Chưa có dữ liệu",
+  "No pending requests": "Không có yêu cầu nào",
+  "No activity yet": "Chưa có nhật ký",
+  "Loading": "Đang tải",
+  "Loading...": "Đang tải...",
+  "Search": "Tìm kiếm",
+  "Filter": "Lọc",
+  "Refresh": "Làm mới",
+  "Save": "Lưu",
+  "Cancel": "Hủy",
+  "Delete": "Xóa",
+  "Lock": "Khóa",
+  "Unlock": "Mở khóa",
+  "Edit": "Sửa",
+  "View": "Xem",
+  "Details": "Chi tiết",
+  "Approve": "Duyệt",
+  "Revoke": "Thu hồi",
+  "Actions": "Thao tác",
+  "Status": "Trạng thái",
+  "Role": "Vai trò",
+  "Action": "Hành động",
+  "Time": "Thời gian",
+  "User": "Người dùng",
+  "Consumer": "Người tiêu dùng",
+  "Manufacturer": "Nhà sản xuất",
+  "Importer": "Nhập khẩu",
+  "Enterprise": "Doanh nghiệp",
+};
+
+const EN_PHRASES: Array<[RegExp, string]> = [
+  [/\bRecent activity\b/g, "Nhật ký gần đây"],
+  [/\bKYC profile approval\b/g, "Phê duyệt hồ sơ KYC"],
+  [/\bManage and issue reward points to users\b/g, "Quản lý và cấp điểm thưởng cho người dùng"],
+  [/\bManage v[àa] cấp điểm thưởng cho người dùng\b/g, "Quản lý và cấp điểm thưởng cho người dùng"],
+  [/\bPending Admin\b/g, "Chờ quản trị duyệt"],
+  [/\bPending\b/g, "Chờ duyệt"],
+  [/\bApproved\b/g, "Đã duyệt"],
+  [/\bRejected\b/g, "Từ chối"],
+  [/\bVerified\b/g, "Đã xác thực"],
+  [/\bMedium\b/g, "Trung bình"],
+  [/\bHigh\b/g, "Cao"],
+  [/\bLow\b/g, "Thấp"],
+  [/\bSevere\b/g, "Nghiêm trọng"],
+  [/\bDN_SUSPENDED_CASCADE\b/g, "Doanh nghiệp bị khóa dây chuyền"],
+  [/\bRewards\b/g, "Điểm thưởng"],
+  [/\bApprovals\b/g, "Kiểm duyệt"],
+  [/\bApproval\b/g, "Phê duyệt"],
+  [/\bProduct\b/g, "Sản phẩm"],
+  [/\bBatch\b/g, "Lô hàng"],
+  [/\bEnterprise\b/g, "Doanh nghiệp"],
+  [/\bConsumer\b/g, "Người tiêu dùng"],
+  [/\bManufacturer\b/g, "Nhà sản xuất"],
+  [/\bImporter\b/g, "Nhập khẩu"],
+  [/\bAdmin\b/g, "Quản trị"],
+];
+
+type TranslateDirection = "vi-to-en" | "en-to-vi";
+
 const SKIP_SELECTOR = [
   "script",
   "style",
@@ -270,14 +359,17 @@ const SKIP_SELECTOR = [
 const ATTRS = ["placeholder", "title", "aria-label", "alt", "value"] as const;
 const originals = new WeakMap<Node | Element, OriginalNode>();
 
-function translateText(input: string) {
+function translateText(input: string, direction: TranslateDirection) {
   const trimmed = input.trim();
   if (!trimmed) return input;
 
-  if (EXACT[trimmed]) return input.replace(trimmed, EXACT[trimmed]);
+  const exact = direction === "vi-to-en" ? EXACT : EN_EXACT;
+  const phrases = direction === "vi-to-en" ? PHRASES : EN_PHRASES;
+
+  if (exact[trimmed]) return input.replace(trimmed, exact[trimmed]);
 
   let output = input;
-  for (const [pattern, replacement] of PHRASES) {
+  for (const [pattern, replacement] of phrases) {
     output = output.replace(pattern, replacement);
   }
   return output;
@@ -288,7 +380,7 @@ function isSkippable(node: Node) {
   return !!element?.closest(SKIP_SELECTOR);
 }
 
-function apply(root: ParentNode, shouldTranslate: boolean) {
+function apply(root: ParentNode, direction: TranslateDirection | null) {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode(node) {
       if (isSkippable(node)) return NodeFilter.FILTER_REJECT;
@@ -303,7 +395,7 @@ function apply(root: ParentNode, shouldTranslate: boolean) {
   for (const node of textNodes) {
     const original = originals.get(node)?.text ?? node.textContent ?? "";
     if (!originals.has(node)) originals.set(node, { text: original });
-    const next = shouldTranslate ? translateText(original) : original;
+    const next = direction ? translateText(original, direction) : original;
     if (node.textContent !== next) node.textContent = next;
   }
 
@@ -319,7 +411,7 @@ function apply(root: ParentNode, shouldTranslate: boolean) {
       const value = element.getAttribute(attr);
       if (!value) return;
       if (original.attrs?.[attr] === undefined) original.attrs![attr] = value;
-      const next = shouldTranslate ? translateText(original.attrs![attr] || value) : original.attrs![attr] || value;
+      const next = direction ? translateText(original.attrs![attr] || value, direction) : original.attrs![attr] || value;
       if (value !== next) element.setAttribute(attr, next);
       changed = true;
     });
@@ -335,15 +427,15 @@ export default function AdminAutoTranslator() {
     const root = document.querySelector(".admin-content");
     if (!root) return;
 
-    const shouldTranslate = lang === "en";
-    apply(root, shouldTranslate);
+    const direction: TranslateDirection | null = lang === "en" ? "vi-to-en" : lang === "vi" ? "en-to-vi" : null;
+    apply(root, direction);
 
     let frame = 0;
     const scheduleApply = () => {
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
         frame = 0;
-        apply(root, shouldTranslate);
+        apply(root, direction);
       });
     };
 
