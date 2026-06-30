@@ -9,6 +9,13 @@ interface UsersResp { total: number; stats: { byRole: Record<string, number>; by
 interface LogItem { id: string; action: string; user: string; role: string; time: string; status: string; }
 
 const fmt = (n: number | undefined) => (n ?? 0).toLocaleString("vi-VN");
+const ROLE_LABELS: Record<string, { vi: string; en: string }> = {
+  admin: { vi: "Quản trị", en: "Admin" },
+  consumer: { vi: "Người tiêu dùng", en: "Consumer" },
+  manufacturer: { vi: "Doanh nghiệp", en: "Enterprise" },
+  authority: { vi: "Cơ quan chức năng", en: "Authority" },
+};
+
 const isNoisySystemLog = (action: string) =>
   /^\[Integration Health Check\]/i.test(action) ||
   /^Integration Health Check\b/i.test(action);
@@ -180,7 +187,7 @@ export default function AdminOverview() {
             {Object.entries(users.stats.byRole).map(([role, count]) => (
               <div key={role} className="px-4 py-2 rounded-xl bg-white/5 border border-white/10">
                 <span className="text-white font-black text-lg mr-2">{count}</span>
-                <span className="text-xs text-slate-400">{role}</span>
+                <span className="text-xs text-slate-400">{tr(ROLE_LABELS[role]?.vi || role, ROLE_LABELS[role]?.en || role)}</span>
               </div>
             ))}
           </div>
