@@ -257,19 +257,19 @@ export default function SecurityPage() {
               {/* Lỗi hệ thống */}
               {health.recentErrors && health.recentErrors.length > 0 && (
                 <div className="glass-panel border border-red-500/20 rounded-2xl p-5">
-                  <h2 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                  <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
                     <span className="material-symbols-outlined text-red-400 text-[18px]">error</span>
                     {t("sec_recent_errors")}
                   </h2>
                   <div className="space-y-2">
                     {health.recentErrors.map(e => (
-                      <div key={e.id} className="flex items-center gap-3 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-sm hover:bg-red-500/20 transition">
-                        <span className="material-symbols-outlined text-red-400 text-[16px] shrink-0">error</span>
-                        <div className="flex-1">
-                          <p className="text-red-200 font-medium leading-tight">{e.action}</p>
-                          <p className="text-xs text-slate-500 mt-0.5">{e.user} · {e.ip}</p>
+                      <div key={e.id} className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-xl text-sm hover:bg-red-100 transition">
+                        <span className="material-symbols-outlined text-red-700 text-[16px] shrink-0">error</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-red-900 font-semibold leading-tight break-words">{e.action}</p>
+                          <p className="text-xs text-red-700/80 mt-0.5">{e.user} · {e.ip}</p>
                         </div>
-                        <p className="text-xs text-slate-500 shrink-0 text-right">{new Date(e.time).toLocaleString("vi-VN").replace(' ', '\n')}</p>
+                        <p className="text-xs text-slate-700 shrink-0 text-right">{new Date(e.time).toLocaleString("vi-VN").replace(' ', '\n')}</p>
                       </div>
                     ))}
                   </div>
@@ -279,19 +279,19 @@ export default function SecurityPage() {
               {/* Cảnh báo Audit (Warnings) */}
               {health.recentWarnings && health.recentWarnings.length > 0 && (
                 <div className="glass-panel border border-[#C8A557]/20 rounded-2xl p-5">
-                  <h2 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                  <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
                     <span className="material-symbols-outlined text-[#C8A557] text-[18px]">warning</span>
                     Nhật ký Cảnh báo (Audit Warnings)
                   </h2>
                   <div className="space-y-2">
                     {health.recentWarnings.map(w => (
-                      <div key={w.id} className="flex items-center gap-3 p-3 bg-[#C8A557]/10 border border-[#C8A557]/20 rounded-xl text-sm hover:bg-[#C8A557]/20 transition">
-                        <span className="material-symbols-outlined text-[#C8A557] text-[16px] shrink-0">warning</span>
-                        <div className="flex-1">
-                          <p className="text-amber-200 font-medium leading-tight">{w.action}</p>
-                          <p className="text-xs text-slate-500 mt-0.5">{w.user} · {w.ip}</p>
+                      <div key={w.id} className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm hover:bg-amber-100 transition">
+                        <span className="material-symbols-outlined text-amber-700 text-[16px] shrink-0">warning</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-amber-950 font-semibold leading-tight break-words">{w.action}</p>
+                          <p className="text-xs text-amber-800/80 mt-0.5">{w.user} · {w.ip}</p>
                         </div>
-                        <p className="text-xs text-slate-500 shrink-0 text-right">{new Date(w.time).toLocaleString("vi-VN").replace(' ', '\n')}</p>
+                        <p className="text-xs text-slate-700 shrink-0 text-right">{new Date(w.time).toLocaleString("vi-VN").replace(' ', '\n')}</p>
                       </div>
                     ))}
                   </div>
