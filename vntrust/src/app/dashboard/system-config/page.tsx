@@ -30,13 +30,23 @@ const NS_META: Record<string, { label: string; en: string; icon: string; color: 
 const KEY_META: Record<string, { label: string; en: string }> = {
   scan_threshold_per_day: { label: "Ngưỡng quét mỗi ngày", en: "Daily scan threshold" },
   scan_threshold_fake: { label: "Ngưỡng quét giả mạo", en: "Fake scan threshold" },
+  geo_distance_km: { label: "Khoảng cách phân phối tối đa", en: "Maximum distribution distance" },
   consumer_report_threshold: { label: "Ngưỡng báo cáo người dùng", en: "Consumer report threshold" },
+  cert_expiry_warning_days: { label: "Mốc cảnh báo hết hạn chứng nhận", en: "Certificate expiry warning milestones" },
   email_enabled: { label: "Bật thông báo email", en: "Enable email notifications" },
   sms_enabled: { label: "Bật thông báo SMS", en: "Enable SMS notifications" },
+  daily_digest_hour: { label: "Giờ gửi báo cáo hằng ngày", en: "Daily digest delivery hour" },
   push_enabled: { label: "Bật thông báo đẩy", en: "Enable push notifications" },
   audit_log_days: { label: "Số ngày lưu nhật ký kiểm toán", en: "Audit log retention days" },
   scan_log_days: { label: "Số ngày lưu lịch sử quét", en: "Scan log retention days" },
+  closed_alert_days: { label: "Số ngày lưu cảnh báo đã đóng", en: "Closed alert retention days" },
   report_log_days: { label: "Số ngày lưu báo cáo", en: "Report retention days" },
+};
+
+const formatConfigLabel = (key: string, lang: string) => {
+  const labelMeta = KEY_META[key];
+  if (labelMeta) return lang === "en" ? labelMeta.en : labelMeta.label;
+  return lang === "en" ? "Custom configuration" : "Cấu hình tùy chỉnh";
 };
 
 export default function SystemConfigPage() {
@@ -87,7 +97,7 @@ export default function SystemConfigPage() {
       const json = await response.json();
       if (!response.ok) throw new Error(json.error || "Save failed");
 
-      setToast({ msg: tr(`Đã cập nhật ${key}`, `Updated ${key}`), ok: true });
+      setToast({ msg: tr("Đã cập nhật cấu hình", "Configuration updated"), ok: true });
       setEdits((current) => {
         const next = { ...current };
         delete next[key];
@@ -103,14 +113,15 @@ export default function SystemConfigPage() {
   };
 
   const resetKey = async (key: string, namespace: string) => {
-    if (!confirm(tr(`Reset ${key} về mặc định?`, `Reset ${key} to default?`))) return;
+    const label = formatConfigLabel(key, lang);
+    if (!confirm(tr(`Đưa "${label}" về mặc định?`, `Reset "${label}" to default?`))) return;
 
     setSaving(key);
     try {
       const response = await fetch(`/api/system-config?key=${encodeURIComponent(key)}`, { method: "DELETE" });
       if (!response.ok) throw new Error(((await response.json()) as any).error || "Reset failed");
 
-      setToast({ msg: tr(`Đã reset ${key}`, `Reset ${key}`), ok: true });
+      setToast({ msg: tr("Đã đưa cấu hình về mặc định", "Configuration reset to default"), ok: true });
       setEdits((current) => {
         const next = { ...current };
         delete next[key];
@@ -165,7 +176,9 @@ export default function SystemConfigPage() {
                 <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2 bg-[#C8A557]/5">
                   <span className={`material-symbols-outlined ${meta.color}`}>{meta.icon}</span>
                   <h2 className="text-sm font-bold text-white">{lang === "en" ? meta.en : meta.label}</h2>
-                  <span className="ml-auto text-[10px] text-slate-500 font-mono">{Object.keys(items).length} keys</span>
+                  <span className="ml-auto text-[10px] text-slate-500">
+                    {Object.keys(items).length} {tr("mục", "items")}
+                  </span>
                 </div>
 
                 <div className="divide-y divide-white/5">
@@ -173,16 +186,14 @@ export default function SystemConfigPage() {
                     const currentEdit = edits[key];
                     const displayValue = currentEdit ?? item.value;
                     const isDirty = currentEdit !== undefined && currentEdit !== item.value;
-                    const labelMeta = KEY_META[key];
 
                     return (
                       <div key={key} className="px-5 py-3">
                         <div className="flex items-start justify-between gap-3 mb-2">
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-white">
-                              {labelMeta ? tr(labelMeta.label, labelMeta.en) : key.replaceAll("_", " ")}
+                              {formatConfigLabel(key, lang)}
                             </p>
-                            <code className="mt-0.5 block text-[10px] text-[#C8A557] font-mono">{key}</code>
                             <p className="text-[11px] text-slate-400 mt-0.5">
                               {item.moTa || tr("(không có mô tả)", "(no description)")}
                             </p>
@@ -194,7 +205,7 @@ export default function SystemConfigPage() {
                                 : "bg-slate-500/15 text-slate-400"
                             }`}
                           >
-                            {item.source === "db" ? "custom" : "default"}
+                            {item.source === "db" ? tr("đã sửa", "custom") : tr("mặc định", "default")}
                           </span>
                         </div>
 
