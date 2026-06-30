@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import NotificationBell from "@/components/NotificationBell";
+import AdminAutoTranslator from "@/components/admin/AdminAutoTranslator";
 
 type NavItem = { href: string; label: string; en: string; icon: string };
 type NavGroup = { title: string; en: string; items: NavItem[] };
@@ -204,6 +205,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Content */}
         <main className="admin-content flex-1 min-w-0 overflow-x-hidden">
+          <AdminAutoTranslator />
           {children}
         </main>
       </div>
