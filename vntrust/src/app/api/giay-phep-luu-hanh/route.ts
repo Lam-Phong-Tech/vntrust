@@ -1,4 +1,4 @@
-// Giấy phép lưu hành — gắn vào hồ sơ doanh nghiệp (KYC)
+// Giấy phép lưu hành - gắn vào hồ sơ doanh nghiệp (KYC)
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
@@ -12,7 +12,24 @@ async function ctx() {
   };
 }
 
-// GET — danh sách giấy phép của DN (admin có thể truyền ?doanhNghiepId=)
+const TEXT_LIMITS = {
+  tenGiayPhep: 120,
+  soGiayPhep: 60,
+  coQuanCap: 120,
+  phamVi: 120,
+};
+
+function dateOnly(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function todayOnly() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+// GET - danh sách giấy phép của DN (admin có thể truyền ?doanhNghiepId=)
 export async function GET(req: NextRequest) {
   try {
     const { role, dnId } = await ctx();
@@ -30,7 +47,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST — DN thêm giấy phép
+// POST - DN thêm giấy phép
 export async function POST(req: NextRequest) {
   try {
     const { role, dnId } = await ctx();
@@ -42,18 +59,44 @@ export async function POST(req: NextRequest) {
     const b = await req.json();
     const tenGiayPhep = String(b.tenGiayPhep || '').trim();
     const soGiayPhep = String(b.soGiayPhep || '').trim();
+    const coQuanCap = String(b.coQuanCap || '').trim();
+    const phamVi = String(b.phamVi || '').trim();
     if (!tenGiayPhep || !soGiayPhep) {
       return NextResponse.json({ error: 'Vui lòng nhập tên giấy phép và số giấy phép' }, { status: 400 });
+    }
+
+    if (
+      tenGiayPhep.length > TEXT_LIMITS.tenGiayPhep ||
+      soGiayPhep.length > TEXT_LIMITS.soGiayPhep ||
+      coQuanCap.length > TEXT_LIMITS.coQuanCap ||
+      phamVi.length > TEXT_LIMITS.phamVi
+    ) {
+      return NextResponse.json({ error: 'Dữ liệu nhập quá dài' }, { status: 400 });
+    }
+
+    const ngayCap = b.ngayCap ? dateOnly(String(b.ngayCap)) : null;
+    const ngayHetHan = b.ngayHetHan ? dateOnly(String(b.ngayHetHan)) : null;
+    if (b.ngayCap && !ngayCap) {
+      return NextResponse.json({ error: 'Ngày cấp không hợp lệ' }, { status: 400 });
+    }
+    if (b.ngayHetHan && !ngayHetHan) {
+      return NextResponse.json({ error: 'Ngày hết hạn không hợp lệ' }, { status: 400 });
+    }
+    if (ngayCap && ngayCap > todayOnly()) {
+      return NextResponse.json({ error: 'Ngày cấp không được lớn hơn ngày hiện tại' }, { status: 400 });
+    }
+    if (ngayCap && ngayHetHan && ngayHetHan < ngayCap) {
+      return NextResponse.json({ error: 'Ngày hết hạn không được trước ngày cấp' }, { status: 400 });
     }
 
     const item = await prisma.giayPhepLuuHanh.create({
       data: {
         tenGiayPhep,
         soGiayPhep,
-        coQuanCap: b.coQuanCap?.trim() || null,
-        ngayCap: b.ngayCap ? new Date(b.ngayCap) : null,
-        ngayHetHan: b.ngayHetHan ? new Date(b.ngayHetHan) : null,
-        phamVi: b.phamVi?.trim() || null,
+        coQuanCap: coQuanCap || null,
+        ngayCap,
+        ngayHetHan,
+        phamVi: phamVi || null,
         fileUrl: b.fileUrl || null,
         trangThai: 'active',
         doanhNghiepId: dnId,
@@ -65,7 +108,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE — DN xóa giấy phép của mình (?id=...)
+// DELETE - DN xóa giấy phép của mình (?id=...)
 export async function DELETE(req: NextRequest) {
   try {
     const { role, dnId } = await ctx();

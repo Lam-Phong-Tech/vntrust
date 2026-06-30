@@ -24,6 +24,38 @@ interface Company {
   _count?: { sanPhams: number; nguoiDungs: number };
 }
 
+type LicenseForm = {
+  tenGiayPhep: string;
+  soGiayPhep: string;
+  coQuanCap: string;
+  ngayCap: string;
+  ngayHetHan: string;
+  phamVi: string;
+};
+
+const LICENSE_TEXT_LIMITS: Record<keyof Omit<LicenseForm, "ngayCap" | "ngayHetHan">, number> = {
+  tenGiayPhep: 120,
+  soGiayPhep: 60,
+  coQuanCap: 120,
+  phamVi: 120,
+};
+
+const emptyLicenseForm: LicenseForm = {
+  tenGiayPhep: "",
+  soGiayPhep: "",
+  coQuanCap: "",
+  ngayCap: "",
+  ngayHetHan: "",
+  phamVi: "",
+};
+
+function toLocalDateInput(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; cls: string; icon: string }> = {
@@ -506,10 +538,28 @@ export default function KYCPage() {
   // ── Giấy phép lưu hành (gắn vào hồ sơ DN) ──
   type GiayPhep = { id: string; tenGiayPhep: string; soGiayPhep: string; coQuanCap?: string | null; ngayCap?: string | null; ngayHetHan?: string | null; phamVi?: string | null; fileUrl?: string | null; trangThai: string };
   const [licenses, setLicenses] = useState<GiayPhep[]>([]);
-  const [licForm, setLicForm] = useState({ tenGiayPhep: "", soGiayPhep: "", coQuanCap: "", ngayCap: "", ngayHetHan: "", phamVi: "" });
+  const [licForm, setLicForm] = useState<LicenseForm>(emptyLicenseForm);
   const [licFile, setLicFile] = useState<File | null>(null);
   const [licOpen, setLicOpen] = useState(false);
   const [licSaving, setLicSaving] = useState(false);
+  const todayInput = toLocalDateInput();
+
+  const updateLicenseText = (field: keyof typeof LICENSE_TEXT_LIMITS, value: string) => {
+    setLicForm((f) => ({ ...f, [field]: value.slice(0, LICENSE_TEXT_LIMITS[field]) }));
+  };
+
+  const updateLicenseIssueDate = (value: string) => {
+    const next = value > todayInput ? todayInput : value;
+    setLicForm((f) => ({
+      ...f,
+      ngayCap: next,
+      ngayHetHan: f.ngayHetHan && next && f.ngayHetHan < next ? next : f.ngayHetHan,
+    }));
+  };
+
+  const updateLicenseExpiryDate = (value: string) => {
+    setLicForm((f) => ({ ...f, ngayHetHan: f.ngayCap && value < f.ngayCap ? f.ngayCap : value }));
+  };
 
   const showToast = (msg: string, ok: boolean) => {
     setToast({ msg, ok });
@@ -525,6 +575,8 @@ export default function KYCPage() {
 
   const addLicense = async () => {
     if (!licForm.tenGiayPhep.trim() || !licForm.soGiayPhep.trim()) { showToast("Nhập tên giấy phép và số giấy phép", false); return; }
+    if (licForm.ngayCap && licForm.ngayCap > todayInput) { showToast("Ngày cấp không được lớn hơn ngày hiện tại", false); return; }
+    if (licForm.ngayCap && licForm.ngayHetHan && licForm.ngayHetHan < licForm.ngayCap) { showToast("Ngày hết hạn không được trước ngày cấp", false); return; }
     setLicSaving(true);
     try {
       let fileUrl: string | undefined;
@@ -541,7 +593,7 @@ export default function KYCPage() {
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || "Lưu thất bại");
       showToast("✅ Đã thêm giấy phép lưu hành", true);
-      setLicForm({ tenGiayPhep: "", soGiayPhep: "", coQuanCap: "", ngayCap: "", ngayHetHan: "", phamVi: "" });
+      setLicForm(emptyLicenseForm);
       setLicFile(null); setLicOpen(false);
       await fetchLicenses();
     } catch (e: any) { showToast("❌ " + e.message, false); }
@@ -1085,17 +1137,17 @@ export default function KYCPage() {
                 {licOpen && (
                   <div className="rounded-xl border border-[#C8A557]/25 bg-[#C8A557]/5 p-4 space-y-3">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <input value={licForm.tenGiayPhep} onChange={e => setLicForm(f => ({ ...f, tenGiayPhep: e.target.value }))} placeholder="Tên/loại giấy phép *" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
-                      <input value={licForm.soGiayPhep} onChange={e => setLicForm(f => ({ ...f, soGiayPhep: e.target.value }))} placeholder="Số giấy phép / số đăng ký *" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
-                      <input value={licForm.coQuanCap} onChange={e => setLicForm(f => ({ ...f, coQuanCap: e.target.value }))} placeholder="Cơ quan cấp (VD: Cục QLD - Bộ Y tế)" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
-                      <input value={licForm.phamVi} onChange={e => setLicForm(f => ({ ...f, phamVi: e.target.value }))} placeholder="Phạm vi lưu hành (VD: Toàn quốc)" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
+                      <input value={licForm.tenGiayPhep} maxLength={LICENSE_TEXT_LIMITS.tenGiayPhep} onChange={e => updateLicenseText("tenGiayPhep", e.target.value)} placeholder="Tên/loại giấy phép *" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
+                      <input value={licForm.soGiayPhep} maxLength={LICENSE_TEXT_LIMITS.soGiayPhep} onChange={e => updateLicenseText("soGiayPhep", e.target.value)} placeholder="Số giấy phép / số đăng ký *" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
+                      <input value={licForm.coQuanCap} maxLength={LICENSE_TEXT_LIMITS.coQuanCap} onChange={e => updateLicenseText("coQuanCap", e.target.value)} placeholder="Cơ quan cấp (VD: Cục QLD - Bộ Y tế)" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
+                      <input value={licForm.phamVi} maxLength={LICENSE_TEXT_LIMITS.phamVi} onChange={e => updateLicenseText("phamVi", e.target.value)} placeholder="Phạm vi lưu hành (VD: Toàn quốc)" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50" />
                       <div>
                         <label className="text-[10px] text-slate-500 uppercase tracking-wider">Ngày cấp</label>
-                        <input type="date" value={licForm.ngayCap} onChange={e => setLicForm(f => ({ ...f, ngayCap: e.target.value }))} className="w-full mt-1 px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500/50" />
+                        <input type="date" value={licForm.ngayCap} max={todayInput} onChange={e => updateLicenseIssueDate(e.target.value)} className="w-full mt-1 px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500/50" />
                       </div>
                       <div>
                         <label className="text-[10px] text-slate-500 uppercase tracking-wider">Ngày hết hạn</label>
-                        <input type="date" value={licForm.ngayHetHan} onChange={e => setLicForm(f => ({ ...f, ngayHetHan: e.target.value }))} className="w-full mt-1 px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500/50" />
+                        <input type="date" value={licForm.ngayHetHan} min={licForm.ngayCap || undefined} onChange={e => updateLicenseExpiryDate(e.target.value)} className="w-full mt-1 px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500/50" />
                       </div>
                     </div>
                     <label className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs text-slate-300 cursor-pointer">
