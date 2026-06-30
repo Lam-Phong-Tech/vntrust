@@ -78,7 +78,7 @@ export default function AlertsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const [page, setPage] = useState(1);
-  const PAGE_SIZE = 12;
+  const PAGE_SIZE = 6;
 
   const showToast = (msg: string, ok: boolean) => {
     setToast({ msg, ok });
@@ -120,8 +120,9 @@ export default function AlertsPage() {
   // Reset về trang 1 khi đổi bộ lọc hoặc danh sách thay đổi
   useEffect(() => { setPage(1); }, [filterStatus, filterMucDo, alerts.length]);
 
-  const pageCount = Math.ceil(alerts.length / PAGE_SIZE);
-  const pagedAlerts = alerts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageCount = Math.max(1, Math.ceil(alerts.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount);
+  const pagedAlerts = alerts.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   const handleUpdateStatus = async (id: string, trangThai: string, ghiChu?: string) => {
     setUpdatingId(id);
@@ -386,17 +387,17 @@ export default function AlertsPage() {
         <div className="flex items-center justify-center gap-3 mt-8">
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page <= 1}
+            disabled={safePage <= 1}
             className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold border bg-white/5 text-slate-300 border-white/10 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">
             <span className="material-symbols-outlined text-[16px]">chevron_left</span>
             {tr("Trước", "Prev")}
           </button>
           <span className="text-xs font-bold text-slate-400">
-            {tr("Trang", "Page")} {page}/{pageCount}
+            {tr("Trang", "Page")} {safePage}/{pageCount}
           </span>
           <button
             onClick={() => setPage(p => Math.min(pageCount, p + 1))}
-            disabled={page >= pageCount}
+            disabled={safePage >= pageCount}
             className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold border bg-white/5 text-slate-300 border-white/10 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">
             {tr("Sau", "Next")}
             <span className="material-symbols-outlined text-[16px]">chevron_right</span>
