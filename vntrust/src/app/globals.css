@@ -1128,3 +1128,94 @@ html.light-mode [class*="bg-slate-800"] { background: #e9eff7 !important; }
    -> kem trên nền sáng = tàng hình. Ép đậm. (text-[#ffffff] đều trên nút brand-blue
    nên rule brand-blue đã giữ trắng đúng, không đụng tới.) */
 html.light-mode [class*="text-[#F6F1E8]"] { color: #0d1b2e !important; }
+
+/* Location permission prompt: keep contrast independent from broad light-mode overrides. */
+.geo-permission-overlay {
+  background: rgba(2, 6, 23, 0.62);
+  backdrop-filter: blur(12px);
+}
+
+.geo-permission-card {
+  background: rgba(11, 19, 32, 0.98);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+.geo-permission-icon {
+  background: rgba(31, 111, 235, 0.16);
+  border: 1px solid rgba(96, 165, 250, 0.38);
+  color: #93c5fd;
+}
+
+.geo-permission-title {
+  color: #ffffff !important;
+}
+
+.geo-permission-subtitle,
+.geo-permission-body {
+  color: #cbd5e1 !important;
+}
+
+.geo-permission-note {
+  color: #94a3b8 !important;
+}
+
+.geo-permission-deny {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #e2e8f0 !important;
+  background: rgba(15, 23, 42, 0.34);
+}
+
+.geo-permission-deny:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.geo-permission-allow {
+  background: #1F6FEB;
+  color: #ffffff !important;
+  box-shadow: 0 14px 30px rgba(31, 111, 235, 0.32);
+}
+
+.geo-permission-allow:hover {
+  background: #155EDB;
+}
+
+html.light-mode .geo-permission-overlay {
+  background: rgba(13, 27, 46, 0.18) !important;
+}
+
+html.light-mode .geo-permission-card {
+  background: rgba(255, 255, 255, 0.97) !important;
+  border-color: rgba(31, 111, 235, 0.22) !important;
+  color: #0d1b2e !important;
+  box-shadow: 0 24px 60px rgba(13, 27, 46, 0.18) !important;
+}
+
+html.light-mode .geo-permission-icon {
+  background: rgba(31, 111, 235, 0.12) !important;
+  border-color: rgba(31, 111, 235, 0.28) !important;
+  color: #1F6FEB !important;
+}
+
+html.light-mode .geo-permission-title {
+  color: #0d1b2e !important;
+}
+
+html.light-mode .geo-permission-subtitle,
+html.light-mode .geo-permission-body {
+  color: #2d4a6e !important;
+}
+
+html.light-mode .geo-permission-note {
+  color: #5e7895 !important;
+}
+
+html.light-mode .geo-permission-deny {
+  background: #f3f8ff !important;
+  border-color: rgba(31, 111, 235, 0.18) !important;
+  color: #1e3a5f !important;
+}
+
+html.light-mode .geo-permission-deny:hover {
+  background: #e7f0ff !important;
+}

@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useEffect, useState } from "react";
 
 // ─── Translation Dictionary ───────────────────────────────────────────────────
 const dict: Record<string, Record<string, string>> = {
@@ -732,6 +732,12 @@ const dict: Record<string, Record<string, string>> = {
   mob_nav_alert:    { vi: "Cảnh báo",   en: "Alerts",    zh: "警报",   ja: "警告",       ko: "경고",   fr: "Alertes"    },
   mob_nav_report:   { vi: "Báo cáo",    en: "Report",    zh: "报告",   ja: "報告",       ko: "신고",   fr: "Signaler"   },
   mob_nav_more:     { vi: "Khác",       en: "More",      zh: "更多",   ja: "その他",     ko: "기타",   fr: "Plus"       },
+  geo_prompt_title: { vi: "Cho phép truy cập vị trí?", en: "Allow location access?", zh: "允许访问位置？", ja: "位置情報へのアクセスを許可しますか？", ko: "위치 접근을 허용할까요?", fr: "Autoriser l'accès à la position ?" },
+  geo_prompt_subtitle: { vi: "AI VeriGoods muốn biết vị trí của bạn", en: "AI VeriGoods wants to know your location", zh: "AI VeriGoods 想获取您的位置", ja: "AI VeriGoods が現在地を使用します", ko: "AI VeriGoods가 위치를 사용하려고 합니다", fr: "AI VeriGoods souhaite connaître votre position" },
+  geo_prompt_body: { vi: "AI VeriGoods dùng vị trí GPS thực để cung cấp dữ liệu xác thực hàng hóa chính xác theo khu vực địa lý của bạn, thay vì ước tính từ địa chỉ IP.", en: "AI VeriGoods uses real GPS location to provide more accurate product verification data for your area instead of estimating from your IP address.", zh: "AI VeriGoods 使用真实 GPS 位置，为您的地区提供更准确的商品验证数据，而不是通过 IP 地址估算。", ja: "AI VeriGoods はIPアドレスからの推定ではなく、実際のGPS位置を使って地域に合った正確な認証データを提供します。", ko: "AI VeriGoods는 IP 주소 추정 대신 실제 GPS 위치를 사용해 지역에 맞는 더 정확한 상품 인증 데이터를 제공합니다.", fr: "AI VeriGoods utilise votre position GPS réelle pour fournir des données de vérification plus précises selon votre zone, au lieu d'une estimation par adresse IP." },
+  geo_prompt_deny: { vi: "Không cho phép", en: "Do not allow", zh: "不允许", ja: "許可しない", ko: "허용 안 함", fr: "Refuser" },
+  geo_prompt_allow: { vi: "Cho phép", en: "Allow", zh: "允许", ja: "許可", ko: "허용", fr: "Autoriser" },
+  geo_prompt_note: { vi: "Dữ liệu vị trí chỉ được dùng cho mục đích xác thực. Không chia sẻ với bên thứ ba.", en: "Location data is only used for verification and is not shared with third parties.", zh: "位置数据仅用于验证，不会与第三方共享。", ja: "位置情報は認証目的のみに使用され、第三者とは共有されません。", ko: "위치 데이터는 인증 목적으로만 사용되며 제3자와 공유되지 않습니다.", fr: "Les données de localisation sont utilisées uniquement pour la vérification et ne sont pas partagées avec des tiers." },
 };
 
 export function t(key: string, lang: string = "vi"): string {
@@ -742,19 +748,39 @@ export function t(key: string, lang: string = "vi"): string {
 interface LangCtx { lang: string; setLang: (l: string) => void; t: (key: string) => string; }
 const LanguageContext = createContext<LangCtx>({ lang: "vi", setLang: () => { }, t: (k) => dict[k]?.vi ?? k });
 
-import { useState as useStateHook } from "react";
+const supportedLangs = ["vi", "en", "zh", "ja", "ko", "fr"];
+
+function normalizeLang(raw?: string | null) {
+  if (!raw) return "vi";
+  const code = raw.toLowerCase().split("-")[0];
+  return supportedLangs.includes(code) ? code : "en";
+}
+
+function getBrowserLang() {
+  if (typeof window === "undefined") return "vi";
+  const candidates = navigator.languages?.length ? navigator.languages : [navigator.language];
+  return normalizeLang(candidates.find(Boolean));
+}
+
+function getInitialLang() {
+  if (typeof window === "undefined") return "vi";
+  const saved = localStorage.getItem("vntrust_lang");
+  return saved ? normalizeLang(saved) : getBrowserLang();
+}
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useStateHook<string>(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("vntrust_lang") || "vi";
-    }
-    return "vi";
-  });
+  const [lang, setLangState] = useState<string>(getInitialLang);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = localStorage.getItem("vntrust_lang");
+    if (!saved) setLangState(getBrowserLang());
+  }, []);
 
   const setLang = (l: string) => {
-    setLangState(l);
-    if (typeof window !== "undefined") localStorage.setItem("vntrust_lang", l);
+    const nextLang = normalizeLang(l);
+    setLangState(nextLang);
+    if (typeof window !== "undefined") localStorage.setItem("vntrust_lang", nextLang);
   };
 
   const translate = (key: string) => (dict[key] as any)?.[lang] ?? dict[key]?.vi ?? key;
