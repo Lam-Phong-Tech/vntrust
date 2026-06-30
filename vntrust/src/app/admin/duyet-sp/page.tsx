@@ -32,7 +32,7 @@ const statusMeta: Record<string, { vi: string; en: string; cls: string; icon: st
   pending: {
     vi: "Chờ duyệt",
     en: "Pending",
-    cls: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+    cls: "bg-[#1F6FEB]/10 text-[#1F6FEB] border-[#1F6FEB]/30",
     icon: "hourglass_top",
   },
   approved: {
@@ -218,7 +218,7 @@ export default function DuyetSpPage() {
 
       <div className="mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
         <div>
-          <p className="text-xs font-bold text-[#C8A557] uppercase tracking-[0.22em] mb-2">
+          <p className="text-xs font-bold text-[#1F6FEB] uppercase tracking-[0.22em] mb-2">
             {tr("Kiểm duyệt", "Approvals")}
           </p>
           <h1 className="text-2xl lg:text-3xl font-black text-white font-headline">
@@ -241,7 +241,7 @@ export default function DuyetSpPage() {
               onClick={() => setTarget(key)}
               className={`flex-1 lg:flex-none px-4 py-2 rounded-xl text-xs font-black transition ${
                 target === key
-                  ? "bg-[#C8A557] text-[#0B1623]"
+                  ? "bg-[#1F6FEB] text-white"
                   : "text-slate-400 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -300,7 +300,7 @@ export default function DuyetSpPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <span className="w-10 h-10 border-2 border-[#C8A557] border-t-transparent rounded-full animate-spin" />
+          <span className="w-10 h-10 border-2 border-[#1F6FEB] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : items.length === 0 ? (
         <div className="text-center py-20 text-slate-500 border border-white/10 bg-white/5 rounded-2xl">
@@ -317,7 +317,7 @@ export default function DuyetSpPage() {
                 className="glass-panel border border-white/10 rounded-2xl p-5 flex flex-col lg:flex-row lg:items-center gap-4"
               >
                 <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-[#C8A557]">
+                  <span className="material-symbols-outlined text-[#1F6FEB]">
                     {target === "product" ? "inventory_2" : "qr_code_2"}
                   </span>
                 </div>

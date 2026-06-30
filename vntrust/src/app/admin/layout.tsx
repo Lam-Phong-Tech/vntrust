@@ -135,12 +135,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* User card */}
       <div className="shrink-0 p-3 border-t border-white/5">
         <div className="flex items-center gap-3 px-2 py-2 rounded-2xl bg-white/95 border border-white/40 mb-2">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C8A557] to-[#A6873E] text-[#0B1623] flex items-center justify-center font-black shrink-0">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#1F6FEB] text-white flex items-center justify-center font-black shrink-0">
             {initials}
           </div>
           <div className="min-w-0">
             <div className="text-[#0B1623] font-bold text-sm truncate">{userName}</div>
-            <div className="text-[10px] text-[#C8A557] font-bold flex items-center gap-1">
+            <div className="text-[10px] text-[#1F6FEB] font-bold flex items-center gap-1">
               <span className="material-symbols-outlined text-[12px]">shield_person</span>
               {tr("Quản trị hệ thống", "System admin")}
             </div>

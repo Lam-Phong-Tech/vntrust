@@ -76,9 +76,9 @@ export default function AdminOverview() {
 
   const cards = [
     { label: tr("Tổng người dùng", "Total users"), value: fmt(users?.total), tag: "Σ", icon: "group", color: "text-white", tagColor: "text-slate-400 bg-white/5 border-white/10" },
-    { label: tr("Tổng sản phẩm", "Products"),       value: fmt(ov?.totalProducts), tag: "SKU", icon: "inventory_2", color: "text-[#C8A557]", tagColor: "text-[#C8A557] bg-[#C8A557]/10 border-[#C8A557]/30" },
+    { label: tr("Tổng sản phẩm", "Products"),       value: fmt(ov?.totalProducts), tag: "SKU", icon: "inventory_2", color: "text-[#1F6FEB]", tagColor: "text-[#1F6FEB] bg-[#1F6FEB]/10 border-[#1F6FEB]/30" },
     { label: tr("Tem QR đã phát", "QR issued"),      value: fmt(ov?.totalQR), tag: "QR", icon: "qr_code_2", color: "text-blue-300", tagColor: "text-blue-300 bg-blue-500/10 border-blue-500/30" },
-    { label: tr("Cảnh báo mở", "Open alerts"),       value: fmt(ov?.openAlerts), tag: tr("xử lý", "open"), icon: "notifications_active", color: "text-amber-300", tagColor: "text-amber-300 bg-amber-500/10 border-amber-500/30" },
+    { label: tr("Cảnh báo mở", "Open alerts"),       value: fmt(ov?.openAlerts), tag: tr("xử lý", "open"), icon: "notifications_active", color: "text-[#1F6FEB]", tagColor: "text-[#1F6FEB] bg-[#1F6FEB]/10 border-[#1F6FEB]/30" },
     { label: tr("Tỷ lệ nghi giả", "Fake rate"),      value: `${ov?.fakeRate ?? "0.0"}%`, tag: "RISK", icon: "gpp_maybe", color: "text-red-300", tagColor: "text-red-300 bg-red-500/10 border-red-500/30" },
   ];
 
@@ -117,7 +117,7 @@ export default function AdminOverview() {
         <div className="rounded-2xl bg-white/[0.04] border border-white/10 p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-black text-white">{tr("Tài khoản chờ duyệt", "Pending accounts")}</h2>
-            <Link href="/admin/users" className="text-xs font-bold text-[#C8A557] hover:underline">{tr("Xử lý →", "Manage →")}</Link>
+            <Link href="/admin/users" className="text-xs font-bold text-[#1F6FEB] hover:underline">{tr("Xử lý →", "Manage →")}</Link>
           </div>
           {loading ? (
             <p className="text-center text-slate-500 py-10 text-sm">{tr("Đang tải…", "Loading…")}</p>
@@ -127,14 +127,14 @@ export default function AdminOverview() {
             <div className="space-y-2">
               {pending.slice(0, 6).map(u => (
                 <Link key={u.id} href="/admin/users" className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition">
-                  <div className="w-9 h-9 rounded-full bg-[#C8A557]/15 border border-[#C8A557]/30 text-[#C8A557] flex items-center justify-center font-bold text-sm shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-[#1F6FEB]/10 border border-[#1F6FEB]/30 text-[#1F6FEB] flex items-center justify-center font-bold text-sm shrink-0">
                     {(u.ten || u.email || "?").charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-white text-sm font-bold truncate">{u.ten || u.email.split("@")[0]}</div>
                     <div className="text-[11px] text-slate-400 truncate">{u.email}</div>
                   </div>
-                  <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full shrink-0">{tr("Chờ duyệt", "Pending")}</span>
+                  <span className="text-[10px] font-bold text-[#1F6FEB] bg-[#1F6FEB]/10 border border-[#1F6FEB]/30 px-2 py-0.5 rounded-full shrink-0">{tr("Chờ duyệt", "Pending")}</span>
                 </Link>
               ))}
             </div>
@@ -145,7 +145,7 @@ export default function AdminOverview() {
         <div className="rounded-2xl bg-white/[0.04] border border-white/10 p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-black text-white">{tr("Nhật ký gần đây", "Recent activity")}</h2>
-            <Link href="/admin/security" className="text-xs font-bold text-[#C8A557] hover:underline">{tr("Tất cả →", "All →")}</Link>
+            <Link href="/admin/security" className="text-xs font-bold text-[#1F6FEB] hover:underline">{tr("Tất cả →", "All →")}</Link>
           </div>
           {loading ? (
             <p className="text-center text-slate-500 py-10 text-sm">{tr("Đang tải…", "Loading…")}</p>
@@ -158,7 +158,7 @@ export default function AdminOverview() {
                 return (
                 <div key={l.id} className="flex items-start gap-3 py-3 px-2 rounded-xl hover:bg-white/[0.03] transition">
                   <span className={`material-symbols-outlined text-[18px] mt-0.5 shrink-0 ${
-                    l.status === "error" ? "text-red-400" : l.status === "warning" ? "text-amber-400" : "text-emerald-400"
+                    l.status === "error" ? "text-red-400" : l.status === "warning" ? "text-[#1F6FEB]" : "text-emerald-400"
                   }`}>
                     {l.status === "error" ? "error" : l.status === "warning" ? "warning" : "check_circle"}
                   </span>
