@@ -25,7 +25,6 @@ const ALL_PAGES: MenuItem[] = [
   // Chung — mọi role
   { label: "Trang chủ",       href: "/dashboard",                   icon: "home",                       roles: ["*"], group: "common" },
   { label: "Xác thực",        href: "/verify",                      icon: "qr_code_scanner",            roles: ["*"], group: "common" },
-  { label: "Chuỗi cung ứng",  href: "/supply-chain",                icon: "route",                      roles: ["*"], group: "common" },
 
   // Sản phẩm — DN
   { label: "Sản phẩm",        href: "/dashboard/inventory",         icon: "inventory_2",                roles: ["manufacturer","importer","admin"], group: "product" },

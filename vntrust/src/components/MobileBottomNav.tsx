@@ -59,11 +59,10 @@ export default function MobileBottomNav() {
     // consumer / guest
     leftTabs = [
       { label: t("mob_nav_home")         || "Trang chủ", href: "/dashboard",    icon: "home" },
-      { label: t("mob_nav_supply_short") || "Chuỗi CƯ", href: "/supply-chain", icon: "route" },
+      { label: t("mob_nav_report")       || "Báo cáo", href: "/dashboard/report", icon: "report" },
     ];
     centerItem = { label: t("mob_nav_verify") || "Xác thực", href: "/verify", icon: "qr_code_scanner" };
     rightTabs = [
-      { label: t("mob_nav_report") || "Báo cáo", href: "/dashboard/report", icon: "report" },
       { label: t("mob_nav_more")   || "Khác",    icon: "apps", onClick: () => setDrawerOpen(true) },
     ];
   }
