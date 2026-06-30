@@ -69,6 +69,8 @@ export default function DuyetSpPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<ApprovalItem | null>(null);
+  const [rejectNote, setRejectNote] = useState("");
 
   const showToast = (msg: string, ok: boolean) => {
     setToast({ msg, ok });
@@ -112,15 +114,7 @@ export default function DuyetSpPage() {
     [items, safePage]
   );
 
-  const act = async (item: ApprovalItem, action: "approve" | "reject") => {
-    const note = action === "reject"
-      ? window.prompt(
-          tr(`Lý do từ chối ${item.code}:`, `Reason to reject ${item.code}:`),
-          item.note || ""
-        )
-      : "";
-    if (note === null) return;
-
+  const act = async (item: ApprovalItem, action: "approve" | "reject", note = "") => {
     setBusy(item.id);
     try {
       const res = await fetch("/api/admin/approvals", {
@@ -139,6 +133,10 @@ export default function DuyetSpPage() {
         action === "approve" ? tr("Đã phê duyệt", "Approved") : tr("Đã từ chối", "Rejected"),
         true
       );
+      if (action === "reject") {
+        setRejectTarget(null);
+        setRejectNote("");
+      }
       fetchItems();
     } catch (error: unknown) {
       showToast(getErrorMessage(error, tr("Thao tác thất bại", "Action failed")), false);
@@ -155,6 +153,68 @@ export default function DuyetSpPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 lg:px-8 py-8 pb-24">
       {toast && <Toast msg={toast.msg} ok={toast.ok} onClose={() => setToast(null)} />}
+      {rejectTarget && (
+        <div
+          className="fixed inset-0 z-[2147483646] flex items-center justify-center bg-black/60 p-3 backdrop-blur-sm sm:p-4"
+          onClick={() => {
+            setRejectTarget(null);
+            setRejectNote("");
+          }}
+        >
+          <form
+            className="w-full rounded-2xl border border-red-200 bg-white p-4 shadow-[0_24px_70px_rgba(15,23,42,0.26)] sm:p-5"
+            style={{ maxWidth: 460 }}
+            onClick={(event) => event.stopPropagation()}
+            onSubmit={(event) => {
+              event.preventDefault();
+              act(rejectTarget, "reject", rejectNote.trim());
+            }}
+          >
+            <div className="mb-4 flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600">
+                <span className="material-symbols-outlined text-[22px]">block</span>
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-base font-black text-slate-950">
+                  {tr("Từ chối hồ sơ", "Reject item")}
+                </h2>
+                <p className="mt-1 text-sm leading-snug text-slate-600 break-words">
+                  {tr("Nhập lý do từ chối", "Enter rejection reason")} {rejectTarget.code}
+                </p>
+              </div>
+            </div>
+
+            <textarea
+              value={rejectNote}
+              onChange={(event) => setRejectNote(event.target.value)}
+              autoFocus
+              rows={4}
+              placeholder={tr("Ví dụ: Hồ sơ chưa đủ giấy tờ hoặc thông tin chưa khớp...", "Example: Missing documents or mismatched information...")}
+              className="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-300 focus:ring-4 focus:ring-red-100"
+            />
+
+            <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setRejectTarget(null);
+                  setRejectNote("");
+                }}
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+              >
+                {tr("Hủy", "Cancel")}
+              </button>
+              <button
+                type="submit"
+                disabled={busy === rejectTarget.id}
+                className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {busy === rejectTarget.id ? tr("Đang xử lý...", "Processing...") : tr("Từ chối", "Reject")}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       <div className="mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
         <div>
@@ -300,7 +360,10 @@ export default function DuyetSpPage() {
                   )}
                   {item.status !== "rejected" && (
                     <button
-                      onClick={() => act(item, "reject")}
+                      onClick={() => {
+                        setRejectTarget(item);
+                        setRejectNote(item.note || "");
+                      }}
                       disabled={busy === item.id}
                       className="flex-1 lg:flex-none px-4 py-2 bg-red-500/15 text-red-400 border border-red-500/25 rounded-xl text-xs font-bold hover:bg-red-500/25 transition disabled:opacity-50 flex items-center justify-center gap-1.5"
                     >
