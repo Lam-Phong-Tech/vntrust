@@ -12,6 +12,21 @@ const DEMO_ACCOUNTS: Record<string, { role: string; name: string; pass: string }
   [process.env.DEMO_CON_EMAIL     || 'nguoitieudung@vntrust.vn']:  { role: 'consumer',     name: 'Người tiêu dùng (Demo)',    pass: process.env.DEMO_CON_PASS     || 'Con@VNTrust2024!' },
 };
 
+const BLOCKED_ACCOUNT_STATUSES = ['pending', 'suspended', 'revoked'];
+
+function getAccountStatusMessage(status: string) {
+  if (status === 'pending') {
+    return 'Tài khoản của bạn chưa được phê duyệt. Vui lòng quay lại sau.';
+  }
+  if (status === 'suspended') {
+    return 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ.';
+  }
+  if (status === 'revoked') {
+    return 'Tài khoản của bạn đã bị thu hồi. Vui lòng liên hệ quản trị viên để được hỗ trợ.';
+  }
+  return 'Tài khoản của bạn hiện không thể đăng nhập. Vui lòng liên hệ quản trị viên.';
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -25,6 +40,7 @@ export async function POST(req: NextRequest) {
 
     let foundRole = "";
     let foundUsername = "";
+    let foundEmail = "";
     let doanhNghiepId = "";
     // UC03 — sub-role context (chỉ có giá trị khi login bằng DB account, không phải demo)
     let foundUser: { id: string; vaiTroCty: string; quyenMoiNV: boolean } | null = null;
@@ -32,8 +48,24 @@ export async function POST(req: NextRequest) {
     // Check demo accounts (B-01: credentials từ env, không hardcode)
     const demoEntry = DEMO_ACCOUNTS[username?.toLowerCase?.()];
     if (demoEntry && password === demoEntry.pass) {
+      const email = String(username).toLowerCase();
+      const existingDemoUser = await prisma.nguoiDung.findUnique({
+        where: { email },
+        include: { doanhNghiep: true },
+      });
+      if (existingDemoUser && BLOCKED_ACCOUNT_STATUSES.includes(existingDemoUser.trangThai)) {
+        return NextResponse.json({ error: getAccountStatusMessage(existingDemoUser.trangThai) }, { status: 403 });
+      }
+      if (existingDemoUser?.doanhNghiep && BLOCKED_ACCOUNT_STATUSES.includes(existingDemoUser.doanhNghiep.trangThai)) {
+        return NextResponse.json({
+          error: existingDemoUser.doanhNghiep.trangThai === 'pending'
+            ? 'Hồ sơ doanh nghiệp đang chờ phê duyệt. Vui lòng quay lại sau.'
+            : 'Doanh nghiệp đã bị khoá/thu hồi trên hệ thống. Vui lòng liên hệ quản trị viên.'
+        }, { status: 403 });
+      }
       foundRole = demoEntry.role;
       foundUsername = demoEntry.name;
+      foundEmail = email;
     } else {
       // Find in DB — B-02: so sánh bằng bcrypt
       const user = await prisma.nguoiDung.findFirst({
@@ -50,11 +82,11 @@ export async function POST(req: NextRequest) {
           : user.matKhau === password;
 
         if (passwordMatch) {
-          if (['pending', 'suspended', 'revoked'].includes(user.trangThai)) {
-            return NextResponse.json({ error: 'Tài khoản của bạn chưa được phê duyệt hoặc đã bị khóa/thu hồi.' }, { status: 403 });
+          if (BLOCKED_ACCOUNT_STATUSES.includes(user.trangThai)) {
+            return NextResponse.json({ error: getAccountStatusMessage(user.trangThai) }, { status: 403 });
           }
           // #26: DN bị khoá/thu hồi → KHÔNG cho đăng nhập (trước đây thiếu 'revoked')
-          if (user.doanhNghiep && ['pending', 'suspended', 'revoked'].includes(user.doanhNghiep.trangThai)) {
+          if (user.doanhNghiep && BLOCKED_ACCOUNT_STATUSES.includes(user.doanhNghiep.trangThai)) {
             return NextResponse.json({
               error: user.doanhNghiep.trangThai === 'pending'
                 ? 'Hồ sơ doanh nghiệp đang chờ phê duyệt. Vui lòng quay lại sau.'
@@ -63,6 +95,7 @@ export async function POST(req: NextRequest) {
           }
 
           foundRole = user.vaiTro;
+          foundEmail = user.email;
           doanhNghiepId = user.doanhNghiepId || "";
           foundUsername = user.ten || user.email;
           // UC03 — sub-role context (chỉ áp dụng cho NSX/NNK)
@@ -141,6 +174,7 @@ export async function POST(req: NextRequest) {
         {
           role: foundRole,
           name: foundUsername,
+          email: foundEmail || undefined,
           doanhNghiepId: doanhNghiepId || undefined,
           userId: foundUser?.id,
           vaiTroCty: foundUser?.vaiTroCty,
