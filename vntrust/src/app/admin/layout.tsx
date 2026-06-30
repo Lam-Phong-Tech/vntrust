@@ -61,7 +61,7 @@ function clearSession() {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { lang, setLang, t } = useLanguage();
+  const { lang, setLang } = useLanguage();
   const tr = (vi: string, en: string) => (lang === "en" ? en : vi);
 
   const [ready, setReady] = useState(false);
@@ -96,7 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="leading-tight">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/verigoods-wordmark.png" alt="VeriGoods" style={{ height: 14, width: 'auto', display: 'block' }} />
-          <div className="text-[9px] text-white/85 uppercase tracking-widest mt-0.5">Admin Console</div>
+          <div className="text-[9px] text-white/85 uppercase tracking-widest mt-0.5">{tr("Bảng quản trị", "Admin Console")}</div>
         </div>
       </Link>
 

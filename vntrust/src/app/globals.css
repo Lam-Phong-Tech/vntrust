@@ -1093,6 +1093,11 @@ html.light-mode .admin-sidebar .admin-sidebar-link[aria-current="page"] {
   border-color: rgba(255,255,255,0.28) !important;
 }
 
+html.light-mode .admin-content .admin-stat-value {
+  color: #0d1b2e !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.75);
+}
+
 /* ═══════════════════════════════════════════════════════════
    #30 — RÀ SOÁT SÁNG/TỐI: ốc đảo nền tối còn sót sau khi đối chiếu
    toàn bộ class với các rule override hiện có. Chỉ đụng SURFACE nền

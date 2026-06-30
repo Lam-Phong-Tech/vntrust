@@ -105,7 +105,7 @@ export default function AdminOverview() {
               <span className="material-symbols-outlined text-[22px] text-slate-400">{c.icon}</span>
               <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${c.tagColor}`}>{c.tag}</span>
             </div>
-            <p className={`text-2xl sm:text-3xl font-black ${c.color}`}>{loading ? "—" : c.value}</p>
+            <p data-no-auto-translate className={`admin-stat-value text-2xl sm:text-3xl font-black ${c.color}`}>{c.value}</p>
             <p className="text-[11px] sm:text-xs text-slate-400 mt-1">{c.label}</p>
           </div>
         ))}

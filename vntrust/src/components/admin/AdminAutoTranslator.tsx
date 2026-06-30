@@ -344,6 +344,43 @@ const EN_PHRASES: Array<[RegExp, string]> = [
   [/\bAdmin\b/g, "Quản trị"],
 ];
 
+const EN_EXACT_EXTRA: Record<string, string> = {
+  "Pending accounts": "Tài khoản chờ duyệt",
+  "Users by role": "Người dùng theo vai trò",
+  "Admin Console": "Bảng quản trị",
+  "Dashboard": "Tổng quan",
+  "Overview": "Tổng quan",
+  "Manage": "Xử lý",
+  "Manage →": "Xử lý →",
+  "All": "Tất cả",
+  "All →": "Tất cả →",
+  "Users": "Người dùng",
+  "Enterprises": "Doanh nghiệp",
+  "Permissions": "Phân quyền",
+  "Reports": "Báo cáo",
+  "Analytics": "Phân tích",
+  "Config": "Cấu hình",
+  "Integration": "Tích hợp",
+  "Security": "Bảo mật",
+  "Alerts": "Cảnh báo",
+  "Investigation": "Điều tra",
+  "Distribution": "Phân phối",
+  "Operations": "Vận hành",
+  "System": "Hệ thống",
+  "Analytics & Rewards": "Phân tích & Thưởng",
+  "Users & Enterprises": "Người dùng & Doanh nghiệp",
+};
+
+const EN_PHRASES_EXTRA: Array<[RegExp, string]> = [
+  [/\bPending accounts\b/g, "Tài khoản chờ duyệt"],
+  [/\bUsers by role\b/g, "Người dùng theo vai trò"],
+  [/\bAdmin Console\b/g, "Bảng quản trị"],
+  [/\bTotal users\b/g, "Tổng người dùng"],
+  [/\bQR issued\b/g, "Tem QR đã phát"],
+  [/\bOpen alerts\b/g, "Cảnh báo mở"],
+  [/\bFake rate\b/g, "Tỷ lệ nghi giả"],
+];
+
 type TranslateDirection = "vi-to-en" | "en-to-vi";
 
 const SKIP_SELECTOR = [
@@ -363,8 +400,8 @@ function translateText(input: string, direction: TranslateDirection) {
   const trimmed = input.trim();
   if (!trimmed) return input;
 
-  const exact = direction === "vi-to-en" ? EXACT : EN_EXACT;
-  const phrases = direction === "vi-to-en" ? PHRASES : EN_PHRASES;
+  const exact = direction === "vi-to-en" ? EXACT : { ...EN_EXACT, ...EN_EXACT_EXTRA };
+  const phrases = direction === "vi-to-en" ? PHRASES : [...EN_PHRASES_EXTRA, ...EN_PHRASES];
 
   if (exact[trimmed]) return input.replace(trimmed, exact[trimmed]);
 
@@ -446,6 +483,9 @@ export default function AdminAutoTranslator() {
     observer.observe(root, {
       childList: true,
       subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: [...ATTRS],
     });
 
     return () => {
