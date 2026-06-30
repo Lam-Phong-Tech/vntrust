@@ -188,27 +188,27 @@ export default function TeamPage() {
   const canInvite = data?.me.quyenMoiNV && data?.me.vaiTroCty === "company_admin";
 
   return (
-    <div className="min-h-screen w-full p-4 sm:p-6 lg:p-8 pb-[100px] md:pb-8">
+    <div className="min-h-screen w-full max-w-[1500px] mx-auto px-3 py-4 sm:px-5 sm:py-6 lg:px-8 lg:py-8 pb-[100px] md:pb-8 overflow-x-hidden">
       {/* Header */}
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
+      <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+        <div className="min-w-0">
           <p className="text-xs font-bold text-[#C8A557] uppercase tracking-widest">{tr("Quản lý DN", "Enterprise")}</p>
-          <h1 className="text-2xl sm:text-3xl font-black text-white font-display mt-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-white font-display mt-1 leading-tight break-words">
             {tr("Nhân viên doanh nghiệp", "Team management")}
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-slate-400 mt-1 max-w-2xl">
             {tr("Mời nhân viên + phân quyền nội bộ DN theo UC03", "Invite staff + assign internal roles (UC03)")}
           </p>
         </div>
-        <div className="flex gap-2">
-          <Link href="/dashboard" className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center gap-1.5 text-xs">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+          <Link href="/dashboard" className="min-w-0 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center justify-center gap-1.5 text-xs">
             <span className="material-symbols-outlined text-[16px]">arrow_back</span>
             {tr("Quay lại", "Back")}
           </Link>
           {canInvite && (
             <button
               onClick={() => setShowInvite(true)}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#E4D2A1] to-[#C8A557] text-[#0B1623] font-bold text-sm flex items-center gap-1.5 hover:brightness-105 transition"
+              className="min-w-0 px-4 py-2 rounded-xl bg-gradient-to-r from-[#E4D2A1] to-[#C8A557] text-[#0B1623] font-bold text-sm flex items-center justify-center gap-1.5 hover:brightness-105 transition"
             >
               <span className="material-symbols-outlined text-[18px]">person_add</span>
               {tr("Mời nhân viên", "Invite member")}
@@ -240,13 +240,13 @@ export default function TeamPage() {
               const exp = new Date(inv.ngayHetHan);
               const daysLeft = Math.max(0, Math.ceil((exp.getTime() - Date.now()) / 86400000));
               return (
-                <div key={inv.id} className="rounded-xl bg-amber-500/5 border border-amber-500/20 p-3 flex items-center gap-3">
+                <div key={inv.id} className="rounded-xl bg-amber-500/5 border border-amber-500/20 p-3 flex flex-col gap-3 sm:flex-row sm:items-center">
                   <div className="w-9 h-9 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
                     <span className="material-symbols-outlined text-[18px]">mail</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-white truncate">{inv.email}</div>
-                    <div className="text-[11px] text-slate-400 truncate">
+                    <div className="text-sm font-bold text-white break-all">{inv.email}</div>
+                    <div className="text-[11px] text-slate-400 leading-relaxed">
                       <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full font-bold border ${meta.color} text-[9px] mr-2`}>
                         {lang === "en" ? meta.en : meta.label}
                       </span>
@@ -257,7 +257,7 @@ export default function TeamPage() {
                     <button
                       onClick={() => revokeInvite(inv.id)}
                       disabled={acting === inv.id}
-                      className="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-red-500/30 text-red-300 hover:bg-red-500/15 disabled:opacity-50"
+                      className="w-full sm:w-auto px-2.5 py-1 rounded-lg text-[11px] font-bold border border-red-500/30 text-red-300 hover:bg-red-500/15 disabled:opacity-50"
                     >
                       {tr("Thu hồi", "Revoke")}
                     </button>
@@ -275,14 +275,15 @@ export default function TeamPage() {
       </h2>
 
       {/* Desktop table */}
-      <div className="hidden md:block rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="hidden xl:block rounded-2xl bg-white/5 border border-white/10 overflow-hidden max-w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[820px] text-sm table-fixed">
           <thead className="bg-white/5 border-b border-white/10">
             <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400">
-              <th className="px-4 py-3 font-bold">{tr("Thành viên", "Member")}</th>
-              <th className="px-4 py-3 font-bold">{tr("Vai trò nội bộ", "Sub-role")}</th>
-              <th className="px-4 py-3 font-bold">{tr("Trạng thái", "Status")}</th>
-              <th className="px-4 py-3 font-bold text-right">{tr("Thao tác", "Actions")}</th>
+              <th className="w-[38%] px-4 py-3 font-bold">{tr("Thành viên", "Member")}</th>
+              <th className="w-[28%] px-4 py-3 font-bold">{tr("Vai trò nội bộ", "Sub-role")}</th>
+              <th className="w-[16%] px-4 py-3 font-bold">{tr("Trạng thái", "Status")}</th>
+              <th className="w-[18%] px-4 py-3 font-bold text-right">{tr("Thao tác", "Actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -302,11 +303,11 @@ export default function TeamPage() {
                         {(m.ten || m.email).charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <div className="text-white font-bold truncate">
+                        <div className="text-white font-bold leading-snug break-words">
                           {m.ten || m.email.split("@")[0]}
                           {isMe && <span className="ml-2 text-[10px] text-[#C8A557] font-medium">({tr("Bạn", "You")})</span>}
                         </div>
-                        <div className="text-xs text-slate-400 truncate">{m.email}</div>
+                        <div className="text-xs text-slate-400 break-all">{m.email}</div>
                       </div>
                     </div>
                   </td>
@@ -369,10 +370,11 @@ export default function TeamPage() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-3">
+      <div className="xl:hidden space-y-3">
         {loading && <div className="text-center text-slate-400 py-6">{tr("Đang tải…", "Loading…")}</div>}
         {!loading && data?.members.map(m => {
           const meta = SUBROLE_META[m.vaiTroCty || "viewer"] || SUBROLE_META.viewer;
@@ -384,11 +386,11 @@ export default function TeamPage() {
                   {(m.ten || m.email).charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-white font-bold truncate">
+                  <div className="text-white font-bold leading-snug break-words">
                     {m.ten || m.email.split("@")[0]}
                     {isMe && <span className="ml-2 text-[10px] text-[#C8A557]">({tr("Bạn", "You")})</span>}
                   </div>
-                  <div className="text-[11px] text-slate-400 truncate">{m.email}</div>
+                  <div className="text-[11px] text-slate-400 break-all">{m.email}</div>
                 </div>
               </div>
               {/* Vai trò nội bộ — dropdown (mobile) — admin có thể đổi role */}
