@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
-import EnterpriseSelect, { buildVerifyHref, getStoredVerifyEnterprise } from "@/components/EnterpriseSelect";
+import EnterpriseSelect, { buildVerifyHref, extractVerifyCode, getStoredVerifyEnterprise } from "@/components/EnterpriseSelect";
 import "./scan.css";
 
 export default function VerifyScanPage() {
@@ -19,6 +19,15 @@ export default function VerifyScanPage() {
   const [cameras, setCameras] = useState<Array<{ id: string; label: string }>>([]);
   const [activeCameraIdx, setActiveCameraIdx] = useState(0);
 
+  const handleDecodedText = useCallback((rawText: string) => {
+    const code = extractVerifyCode(rawText);
+    if (!code) {
+      setCameraError(lang === 'en' ? "Invalid QR code" : "Mã QR không hợp lệ trong hệ thống");
+      return;
+    }
+    router.push(buildVerifyHref(code, enterpriseId));
+  }, [enterpriseId, lang, router]);
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -32,14 +41,7 @@ export default function VerifyScanPage() {
       const html5QrCode = new Html5Qrcode("qr-reader");
       const text = await html5QrCode.scanFile(file, true);
       
-      if (text.length > 50 && !text.includes("vntrust") && !text.includes("anticounterfeit")) {
-        setCameraError(lang === 'en' ? "Invalid QR code" : "Mã QR không hợp lệ trong hệ thống");
-        return;
-      }
-      const uid = text.includes("/verify/")
-        ? text.split("/verify/")[1]
-        : text;
-      router.push(buildVerifyHref(uid, enterpriseId));
+      handleDecodedText(text);
     } catch (err) {
       setCameraError(lang === 'en' ? "Could not find a QR code in the image" : "Không tìm thấy mã QR trong ảnh");
     }
@@ -131,14 +133,7 @@ export default function VerifyScanPage() {
           (decodedText: string) => {
             if (html5QrCodeRef.current?.isScanning) {
               html5QrCodeRef.current.stop().then(() => {
-                if (decodedText.length > 50 && !decodedText.includes("vntrust") && !decodedText.includes("anticounterfeit")) {
-                  setCameraError(lang === 'en' ? "Invalid QR code" : "Mã QR không hợp lệ trong hệ thống");
-                  return;
-                }
-                const uid = decodedText.includes("/verify/")
-                  ? decodedText.split("/verify/")[1]
-                  : decodedText;
-                router.push(buildVerifyHref(uid, enterpriseId));
+                handleDecodedText(decodedText);
               }).catch(() => { });
             }
           },
@@ -167,7 +162,7 @@ export default function VerifyScanPage() {
         html5QrCodeRef.current.stop().catch(() => { });
       }
     };
-  }, [router, mode, activeCameraIdx, enterpriseId]);
+  }, [router, mode, activeCameraIdx, enterpriseId, handleDecodedText]);
 
   useEffect(() => {
     setEnterpriseId(getStoredVerifyEnterprise());

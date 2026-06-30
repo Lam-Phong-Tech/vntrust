@@ -3,10 +3,25 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { getConfigInt } from "@/lib/config";
 import { SYSTEM_APPROVAL_CERT_TYPES } from "@/lib/systemApproval";
+import { decryptQRToken, looksLikeEncryptedToken } from "@/lib/aesQR";
+
+function normalizeScannedCode(raw: string) {
+  let value = raw.trim();
+  try {
+    value = decodeURIComponent(value);
+  } catch {
+    // Keep raw value if it is not URI-encoded.
+  }
+
+  const marker = "/verify/";
+  const markerIndex = value.indexOf(marker);
+  if (markerIndex >= 0) value = value.slice(markerIndex + marker.length);
+  return value.split(/[?#/]/)[0].trim();
+}
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ uid: string }> }) {
   const resolvedParams = await params;
-  const uid = resolvedParams.uid;
+  const uid = normalizeScannedCode(resolvedParams.uid);
   const selectedDoanhNghiepId = req.nextUrl.searchParams.get("doanhNghiepId") || null;
 
   try {
@@ -52,6 +67,55 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
           }
         }
       });
+    }
+
+    if (!maDinhDanh) {
+      maDinhDanh = await prisma.maDinhDanh.findUnique({
+        where: { encryptedToken: uid },
+        include: {
+        loHang: {
+          include: {
+            chungNhans: { where: { loai: 'SYSTEM_BATCH_APPROVAL' }, orderBy: { ngayDuyet: 'desc' }, take: 1 },
+            sanPham: {
+              include: {
+                  doanhNghiep: {
+                    include: {
+                      chungNhans: { where: { trangThaiDuyet: 'approved' } }
+                    }
+                  },
+                  chungNhans: { where: { OR: [{ trangThaiDuyet: 'approved' }, { loai: SYSTEM_APPROVAL_CERT_TYPES.product }] }, orderBy: { ngayDuyet: 'desc' } }
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    if (!maDinhDanh && looksLikeEncryptedToken(uid)) {
+      const decryptedUid = decryptQRToken(uid);
+      if (decryptedUid) {
+        maDinhDanh = await prisma.maDinhDanh.findUnique({
+          where: { uid: decryptedUid },
+          include: {
+          loHang: {
+            include: {
+              chungNhans: { where: { loai: 'SYSTEM_BATCH_APPROVAL' }, orderBy: { ngayDuyet: 'desc' }, take: 1 },
+              sanPham: {
+                include: {
+                    doanhNghiep: {
+                      include: {
+                        chungNhans: { where: { trangThaiDuyet: 'approved' } }
+                      }
+                    },
+                    chungNhans: { where: { OR: [{ trangThaiDuyet: 'approved' }, { loai: SYSTEM_APPROVAL_CERT_TYPES.product }] }, orderBy: { ngayDuyet: 'desc' } }
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
     }
 
     if (!maDinhDanh) {
