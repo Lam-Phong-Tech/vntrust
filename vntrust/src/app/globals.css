@@ -1237,13 +1237,14 @@ html.light-mode .site-navbar .navbar-wordmark {
   position: relative;
   z-index: 1;
   filter:
-    saturate(1.52)
+    saturate(1.44)
     contrast(1.48)
-    brightness(1.18)
+    brightness(1.15)
     drop-shadow(0 0 2px rgba(255,255,255,0.92))
-    drop-shadow(0 0 8px rgba(255,255,255,0.38))
-    drop-shadow(0 0 16px rgba(186,230,253,0.58))
-    drop-shadow(0 0 26px rgba(34,197,94,0.30));
+    drop-shadow(0 0 10px rgba(255,255,255,0.42))
+    drop-shadow(0 0 20px rgba(186,230,253,0.58))
+    drop-shadow(0 0 34px rgba(96,165,250,0.28))
+    drop-shadow(0 0 28px rgba(34,197,94,0.16));
 }
 
 html.light-mode .site-navbar .site-navbar-link,
@@ -1286,11 +1287,12 @@ html.light-mode .admin-sidebar img[src*="verigoods-wordmark"] {
   position: relative;
   z-index: 1;
   filter:
-    saturate(1.52)
+    saturate(1.44)
     contrast(1.48)
-    brightness(1.18)
+    brightness(1.15)
     drop-shadow(0 0 2px rgba(255,255,255,0.92))
-    drop-shadow(0 0 8px rgba(255,255,255,0.38))
-    drop-shadow(0 0 16px rgba(186,230,253,0.58))
-    drop-shadow(0 0 26px rgba(34,197,94,0.30));
+    drop-shadow(0 0 10px rgba(255,255,255,0.42))
+    drop-shadow(0 0 20px rgba(186,230,253,0.58))
+    drop-shadow(0 0 34px rgba(96,165,250,0.28))
+    drop-shadow(0 0 28px rgba(34,197,94,0.16));
 }
