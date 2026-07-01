@@ -31,13 +31,13 @@ export default function VerifyCameraPage() {
   }, []);
 
   return (
-    <div className="h-screen bg-black flex flex-col relative overflow-hidden">
+    <div className="verify-consumer-page h-screen bg-black flex flex-col relative overflow-hidden">
       {/* Header overlay */}
-      <div className="absolute top-0 left-0 w-full p-6 z-20 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+      <div className="absolute top-0 left-0 w-full p-4 sm:p-6 z-20 flex justify-between items-center gap-3 bg-gradient-to-b from-black/80 to-transparent">
         <Link href="/verify" className="w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white">
           <span className="material-symbols-outlined">close</span>
         </Link>
-        <div className="px-4 py-1.5 rounded-full bg-[#0B1623]/80 border border-[#C8A557]/50 text-[#C8A557] font-mono text-xs flex items-center gap-2 backdrop-blur">
+        <div className="min-w-0 px-3 sm:px-4 py-1.5 rounded-full bg-[#0B1623]/80 border border-[#C8A557]/50 text-[#C8A557] font-mono text-[11px] sm:text-xs flex items-center gap-2 backdrop-blur">
           <span className={`w-2 h-2 rounded-full bg-[#C8A557] ${scanning ? 'animate-pulse' : ''}`}></span>
           {scanning ? (lang === 'en' ? 'AI Analyzing...' : 'AI Đang Phân Tích...') : (lang === 'en' ? 'Scan Complete' : 'Hoàn Tất')}
         </div>
@@ -83,7 +83,7 @@ export default function VerifyCameraPage() {
       </div>
 
       {/* Bottom Controls */}
-      <div className="absolute bottom-0 left-0 w-full p-8 z-20 bg-gradient-to-t from-black via-black/80 to-transparent flex flex-col items-center">
+      <div className="absolute bottom-0 left-0 w-full p-4 sm:p-8 z-20 bg-gradient-to-t from-black via-black/80 to-transparent flex flex-col items-center">
         {!scanning && (
           <div className="w-full max-w-sm glass-panel bg-[#142235]/90 border-red-500/50 rounded-2xl p-4 mb-6 backdrop-blur animate-in slide-in-from-bottom-4">
             <div className="flex items-start gap-3 mb-3">
@@ -99,22 +99,22 @@ export default function VerifyCameraPage() {
           </div>
         )}
         
-        <div className="flex items-center gap-8 text-white">
+        <div className="flex items-center justify-center gap-5 sm:gap-8 text-white w-full">
           <button className="flex flex-col items-center gap-1 opacity-60 hover:opacity-100 transition">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 flex items-center justify-center">
               <span className="material-symbols-outlined">image</span>
             </div>
             <span className="text-[10px] uppercase font-bold tracking-wider">{lang === 'en' ? 'Gallery' : 'Thư Viện'}</span>
           </button>
           
-          <button className="w-20 h-20 rounded-full border-4 border-[#C8A557] p-1 group">
+          <button className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-[#C8A557] p-1 group">
             <div className="w-full h-full rounded-full bg-white group-active:scale-95 transition-transform flex items-center justify-center">
               <span className="material-symbols-outlined text-black text-3xl">document_scanner</span>
             </div>
           </button>
           
           <Link href="/verify/wizard" className="flex flex-col items-center gap-1 opacity-60 hover:opacity-100 transition">
-            <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-500 border border-amber-500/50 flex items-center justify-center">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-amber-500/20 text-amber-500 border border-amber-500/50 flex items-center justify-center">
               <span className="material-symbols-outlined">report</span>
             </div>
             <span className="text-[10px] uppercase font-bold tracking-wider text-amber-500">{lang === 'en' ? 'Report' : 'Báo Lỗi'}</span>

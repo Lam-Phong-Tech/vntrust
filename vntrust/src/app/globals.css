@@ -706,6 +706,164 @@ body [class*="fixed"] {
   }
 }
 
+/* Consumer/verify role responsive corrections */
+.verify-consumer-page {
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.verify-consumer-page * {
+  min-width: 0;
+}
+
+.verify-consumer-page input,
+.verify-consumer-page select,
+.verify-consumer-page textarea,
+.verify-consumer-page button,
+.verify-consumer-page a {
+  max-width: 100%;
+}
+
+.verify-consumer-page .glass-panel,
+.verify-consumer-page [class*="rounded-3xl"],
+.verify-consumer-page [class*="rounded-2xl"] {
+  overflow-wrap: anywhere;
+}
+
+.verify-consumer-page h1,
+.verify-consumer-page h2,
+.verify-consumer-page h3 {
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 767px) {
+  .verify-consumer-page {
+    min-height: 100dvh !important;
+    padding-top: calc(64px + env(safe-area-inset-top, 0px)) !important;
+    padding-left: clamp(12px, 4vw, 18px) !important;
+    padding-right: clamp(12px, 4vw, 18px) !important;
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+    align-items: stretch !important;
+  }
+
+  .verify-consumer-page > div:not(.fixed) {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .verify-consumer-page header {
+    margin-bottom: 1rem !important;
+  }
+
+  .verify-consumer-page h1 {
+    font-size: clamp(1.45rem, 8vw, 2.1rem) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .verify-consumer-page h2 {
+    font-size: clamp(1.35rem, 7vw, 1.9rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  .verify-consumer-page h3 {
+    font-size: clamp(1.05rem, 5.5vw, 1.35rem) !important;
+    line-height: 1.18 !important;
+  }
+
+  .verify-consumer-page p,
+  .verify-consumer-page label,
+  .verify-consumer-page span,
+  .verify-consumer-page div {
+    max-width: 100%;
+  }
+
+  .verify-consumer-page [class*="grid"] {
+    gap: 0.875rem !important;
+  }
+
+  .verify-consumer-page [class*="md:grid-cols-"],
+  .verify-consumer-page [class*="grid-cols-3"],
+  .verify-consumer-page [class*="grid-cols-4"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .verify-consumer-page .glass-panel,
+  .verify-consumer-page [class*="rounded-3xl"] {
+    border-radius: 18px !important;
+  }
+
+  .verify-consumer-page .p-8,
+  .verify-consumer-page .md\:p-8,
+  .verify-consumer-page .md\:p-12 {
+    padding: clamp(16px, 4.5vw, 22px) !important;
+  }
+
+  .verify-consumer-page .w-16.h-16 {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .verify-consumer-page .text-4xl {
+    font-size: 2rem !important;
+  }
+
+  .verify-consumer-page form {
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 0.875rem !important;
+  }
+
+  .verify-consumer-page input,
+  .verify-consumer-page select,
+  .verify-consumer-page textarea {
+    min-height: 46px;
+    font-size: 16px !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+
+  .verify-consumer-page button,
+  .verify-consumer-page a {
+    min-height: 44px;
+  }
+
+  .verify-consumer-page [class*="tracking-[0.2em]"] {
+    letter-spacing: 0.1em !important;
+  }
+
+  .verify-consumer-page [class*="mb-10"],
+  .verify-consumer-page [class*="mb-12"] {
+    margin-bottom: 1.25rem !important;
+  }
+
+  .verify-consumer-page [class*="mt-10"],
+  .verify-consumer-page [class*="mt-12"] {
+    margin-top: 1.25rem !important;
+  }
+}
+
+@media (max-width: 380px), (max-height: 620px) {
+  .verify-consumer-page {
+    padding-top: calc(54px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  .verify-consumer-page h1 {
+    font-size: 1.35rem !important;
+  }
+
+  .verify-consumer-page h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .verify-consumer-page .glass-panel,
+  .verify-consumer-page [class*="rounded-3xl"] {
+    padding: 14px !important;
+  }
+}
+
 /* ╔══════════════════════════════════════════════════════════════════╗
    ║  MOBILE-ONLY FRAME LAYOUT (Flutter Web style)                    ║
    ║  Trên desktop: render như mobile app, fixed width 430px,         ║

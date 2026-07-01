@@ -10,7 +10,7 @@ export default function VerifyPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-[calc(100vh-80px)] pb-12 flex items-center justify-center px-4 md:px-12 relative">
+    <div className="verify-consumer-page min-h-[calc(100vh-80px)] pb-12 flex items-center justify-center px-4 md:px-12 relative">
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-[10%] -left-[5%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px]"></div>
         <div className="absolute -bottom-[10%] -right-[5%] w-[40%] h-[40%] rounded-full bg-tertiary/5 blur-[120px]"></div>

@@ -22,7 +22,7 @@ export default function VerifyWizardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0B1623] pt-24 pb-12 px-6 flex flex-col items-center">
+    <div className="verify-consumer-page min-h-screen bg-[#0B1623] pt-24 pb-12 px-6 flex flex-col items-center">
       <div className="w-full max-w-3xl">
         <div className="flex items-center gap-2 mb-8">
           <Link href="/verify" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition border border-white/10">
