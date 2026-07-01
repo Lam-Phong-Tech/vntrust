@@ -8,10 +8,63 @@ export default function VerifyWizardPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState("");
 
   // Form State
   const [kenhMua, setKenhMua] = useState("");
   const [tinhTrang, setTinhTrang] = useState("");
+  const [photos, setPhotos] = useState<Record<string, { url: string; name: string }>>({});
+  const uploadedPhotoCount = Object.keys(photos).length;
+  const photoFields = [
+    { id: "front", label: lang === 'en' ? "Front" : "Mặt trước SP" },
+    { id: "back", label: lang === 'en' ? "Back" : "Mặt sau SP" },
+    { id: "stamp", label: lang === 'en' ? "Stamp" : "Tem chống giả" },
+    { id: "expiry", label: lang === 'en' ? "Expiry/MFG" : "Vị trí NSX/HSD" },
+    { id: "barcode", label: lang === 'en' ? "Barcode" : "Mã vạch/QR" },
+  ];
+
+  const handlePhotoUpload = async (photoId: string, file?: File | null) => {
+    if (!file) return;
+    setUploadError("");
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setUploadError(lang === 'en' ? "Only JPG, PNG or WebP images are allowed." : "Chỉ chấp nhận ảnh JPG, PNG hoặc WebP.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError(lang === 'en' ? "Image must be 5MB or smaller." : "Ảnh không được vượt quá 5MB.");
+      return;
+    }
+
+    setUploadingPhoto(photoId);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("type", "report");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+
+      setPhotos(prev => ({
+        ...prev,
+        [photoId]: { url: data.url, name: file.name },
+      }));
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : (lang === 'en' ? "Upload failed." : "Tải ảnh thất bại."));
+    } finally {
+      setUploadingPhoto(null);
+    }
+  };
+
+  const removePhoto = (photoId: string) => {
+    setPhotos(prev => {
+      const next = { ...prev };
+      delete next[photoId];
+      return next;
+    });
+  };
   
   const steps = [
     { num: 1, title: lang === 'en' ? "Purchase Channel" : "Kênh Mua Hàng" },
@@ -117,20 +170,70 @@ export default function VerifyWizardPage() {
               <h2 className="text-xl font-bold text-white mb-2">3. {lang === 'en' ? 'Upload Evidence Photos' : 'Tải lên hình ảnh bằng chứng'}</h2>
               <p className="text-sm text-slate-400 mb-6">{lang === 'en' ? 'Upload 5 required photos for AI to analyze' : 'Cung cấp 5 góc chụp để hệ thống AI phân tích rủi ro.'}</p>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {[
-                  { id: "front", label: lang === 'en' ? "Front" : "Mặt trước SP" },
-                  { id: "back", label: lang === 'en' ? "Back" : "Mặt sau SP" },
-                  { id: "stamp", label: lang === 'en' ? "Stamp" : "Tem chống giả" },
-                  { id: "expiry", label: lang === 'en' ? "Expiry/MFG" : "Vị trí NSX/HSD" },
-                  { id: "barcode", label: lang === 'en' ? "Barcode" : "Mã vạch/QR" },
-                ].map(p => (
-                  <div key={p.id} className="aspect-square rounded-xl border-2 border-dashed border-white/20 bg-white/5 flex flex-col items-center justify-center text-slate-500 hover:border-[#C8A557] hover:text-[#C8A557] transition cursor-pointer group">
-                    <span className="material-symbols-outlined text-3xl mb-2 group-hover:scale-110 transition-transform">add_a_photo</span>
-                    <span className="text-xs font-bold uppercase tracking-wider">{p.label}</span>
-                  </div>
-                ))}
+              {uploadError && (
+                <div className="mb-4 rounded-xl border border-rose-400/40 bg-rose-500/10 px-4 py-3 text-sm font-semibold text-rose-100">
+                  {uploadError}
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {photoFields.map(p => {
+                  const uploaded = photos[p.id];
+                  const isUploading = uploadingPhoto === p.id;
+
+                  return (
+                    <div key={p.id} className="relative">
+                      <input
+                        id={`wizard-photo-${p.id}`}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="sr-only"
+                        onChange={(event) => handlePhotoUpload(p.id, event.target.files?.[0])}
+                      />
+                      <label
+                        htmlFor={`wizard-photo-${p.id}`}
+                        className={`h-28 md:h-32 rounded-xl border-2 border-dashed bg-white/5 p-3 flex flex-col items-center justify-center text-center transition cursor-pointer group ${
+                          uploaded
+                            ? "border-emerald-400/60 text-emerald-200 bg-emerald-500/10"
+                            : "border-white/20 text-slate-500 hover:border-[#C8A557] hover:text-[#C8A557]"
+                        }`}
+                      >
+                        {isUploading ? (
+                          <>
+                            <span className="material-symbols-outlined text-3xl mb-2 animate-spin">progress_activity</span>
+                            <span className="text-[11px] font-bold uppercase tracking-wider">{lang === 'en' ? "Uploading" : "Đang tải"}</span>
+                          </>
+                        ) : uploaded ? (
+                          <>
+                            <span className="material-symbols-outlined text-3xl mb-2">check_circle</span>
+                            <span className="line-clamp-2 text-[11px] font-bold">{uploaded.name}</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="material-symbols-outlined text-3xl mb-2 group-hover:scale-110 transition-transform">add_a_photo</span>
+                            <span className="text-[11px] font-bold uppercase tracking-wider">{p.label}</span>
+                          </>
+                        )}
+                      </label>
+                      {uploaded && (
+                        <button
+                          type="button"
+                          onClick={() => removePhoto(p.id)}
+                          className="absolute -right-2 -top-2 h-7 w-7 rounded-full bg-rose-500 text-white shadow-lg flex items-center justify-center hover:bg-rose-400 transition"
+                          aria-label={lang === 'en' ? "Remove photo" : "Xóa ảnh"}
+                        >
+                          <span className="material-symbols-outlined text-[16px]">close</span>
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
+              <p className="mt-4 text-xs font-semibold text-slate-400">
+                {lang === 'en'
+                  ? `${uploadedPhotoCount}/5 photos uploaded. Tap a box to choose or replace a photo.`
+                  : `Đã tải ${uploadedPhotoCount}/5 ảnh. Bấm vào ô để chọn hoặc thay ảnh.`}
+              </p>
             </div>
           )}
 
@@ -157,7 +260,7 @@ export default function VerifyWizardPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-500">{lang === 'en' ? 'Photos:' : 'Hình ảnh:'}</span>
-                  <span className="text-emerald-400 font-bold">5/5 {lang === 'en' ? 'Ready' : 'Đã tải lên'}</span>
+                  <span className="text-emerald-400 font-bold">{uploadedPhotoCount}/5 {lang === 'en' ? 'Uploaded' : 'Đã tải lên'}</span>
                 </div>
               </div>
             </div>
@@ -198,7 +301,11 @@ export default function VerifyWizardPage() {
                         kenhMua,
                         tinhTrangSP: tinhTrang,
                         moTa: `Báo cáo từ Wizard: Kênh - ${kenhMua}, Tình trạng - ${tinhTrang}`,
-                        anhMatTruocUrl: "https://example.com/mock-photo.jpg",
+                        anhMatTruocUrl: photos.front?.url,
+                        anhMatSauUrl: photos.back?.url,
+                        anhTemUrl: photos.stamp?.url,
+                        anhNSXHSDUrl: photos.expiry?.url,
+                        anhBarcodeUrl: photos.barcode?.url,
                         lat: 10.823,
                         lng: 106.629
                       })
