@@ -352,6 +352,8 @@ const dict: Record<string, Record<string, string>> = {
   nav_lang_active: { vi: "ĐANG DÙNG", en: "ACTIVE", zh: "当前使用", ja: "使用中", ko: "사용 중", fr: "ACTIF" },
   nav_app_title: { vi: "Tải App AI VeriGoods", en: "Download AI VeriGoods App", zh: "下载 AI VeriGoods 应用", ja: "AI VeriGoods アプリをダウンロード", ko: "AI VeriGoods 앱 다운로드", fr: "Télécharger l'application AI VeriGoods" },
   nav_app_desc: { vi: "Quét mã QR để cài đặt ứng dụng AI VeriGoods trên thiết bị di động. Hỗ trợ iOS và Android.", en: "Scan the QR code to install the AI VeriGoods app on your mobile device. Supports iOS and Android.", zh: "扫描二维码在移动设备上安装 AI VeriGoods 应用程序。支持 iOS 和 Android。", ja: "QRコードをスキャンしてモバイルデバイスに AI VeriGoods アプリをインストールします。iOSとAndroidをサポート。", ko: "QR 코드를 스캔하여 모바일 기기에 AI VeriGoods 앱을 설치하세요. iOS 및 Android 지원.", fr: "Scannez le code QR pour installer l'application AI VeriGoods sur votre appareil mobile. Prend en charge iOS et Android." },
+  nav_app_platform: { vi: "Tải trên", en: "Download on", zh: "下载于", ja: "こちらから入手", ko: "다운로드", fr: "Télécharger sur" },
+  nav_app_version: { vi: "Phiên bản mobile sẽ sớm có mặt trên App Store và Google Play.", en: "The mobile version will be available soon on the App Store and Google Play.", zh: "移动版本即将在 App Store 和 Google Play 上线。", ja: "モバイル版はまもなく App Store と Google Play で公開されます。", ko: "모바일 버전은 곧 App Store와 Google Play에서 제공됩니다.", fr: "La version mobile sera bientôt disponible sur l'App Store et Google Play." },
   nav_profile_logout: { vi: "Đăng xuất", en: "Logout", zh: "登出", ja: "ログアウト", ko: "로그아웃", fr: "Déconnexion" },
 
   // ── Profile Page ──
