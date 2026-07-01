@@ -415,20 +415,20 @@ export default function ProfilePage() {
     <>
       {showChangePass && <ChangePasswordModal onClose={() => setShowChangePass(false)} />}
 
-      <div className="min-h-[calc(100vh-80px)] w-full pb-24 lg:pb-8">
+      <div className="dashboard-profile-page min-h-[calc(100vh-80px)] w-full pb-24 lg:pb-8">
 
         {/* ── HERO BANNER ─────────────────────────────────────────────── */}
-        <div className="relative w-full bg-gradient-to-r from-[#0B1623] via-[#142235] to-[#0B1623] border-b border-white/5 px-6 lg:px-12 py-8">
+        <div className="dashboard-profile-hero relative w-full bg-gradient-to-r from-[#0B1623] via-[#142235] to-[#0B1623] border-b border-white/5 px-6 lg:px-12 py-8">
           {/* Back */}
           <button onClick={() => router.push('/dashboard')}
-            className="absolute top-6 left-6 lg:left-12 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
+            className="dashboard-profile-back absolute top-6 left-6 lg:left-12 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
             <span className="material-symbols-outlined text-white text-[18px]">arrow_back</span>
           </button>
 
-          <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-end gap-6 pt-4">
+          <div className="dashboard-profile-hero-inner max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-end gap-6 pt-4">
             {/* Avatar — click để upload */}
             <div className="relative flex-shrink-0">
-              <label className="cursor-pointer block w-24 h-24 lg:w-28 lg:h-28 rounded-2xl shadow-2xl border-4 border-[#0B1623] ring-4 ring-[#C8A557]/20 overflow-hidden hover:ring-[#C8A557]/40 transition group relative">
+              <label className="dashboard-profile-avatar cursor-pointer block w-24 h-24 lg:w-28 lg:h-28 rounded-2xl shadow-2xl border-4 border-[#0B1623] ring-4 ring-[#C8A557]/20 overflow-hidden hover:ring-[#C8A557]/40 transition group relative">
                 {editAvatar ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={editAvatar} alt="avatar" className="w-full h-full object-cover" />
@@ -455,8 +455,8 @@ export default function ProfilePage() {
             </div>
 
             {/* Name + role + badges */}
-            <div className="flex-1 text-center lg:text-left pb-1">
-              <h1 className="text-2xl lg:text-3xl font-black text-white mb-2">
+            <div className="dashboard-profile-identity flex-1 text-center lg:text-left pb-1">
+              <h1 className="dashboard-profile-title text-2xl lg:text-3xl font-black text-white mb-2">
                 {displayName || <span className="text-slate-500 font-medium italic text-xl">{tr("Chưa cập nhật tên", "Name not set")}</span>}
               </h1>
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
@@ -491,7 +491,7 @@ export default function ProfilePage() {
             <span className="w-12 h-12 border-2 border-[#C8A557] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="max-w-6xl mx-auto px-4 lg:px-12 py-8">
+          <div className="dashboard-profile-content max-w-6xl mx-auto px-4 lg:px-12 py-8">
             {/* 2-col grid: left = thông tin cá nhân | right = doanh nghiệp (#21: NTD chỉ 1 cột) */}
             <div className={`grid grid-cols-1 gap-6 ${role !== "consumer" ? "lg:grid-cols-2" : "max-w-2xl"}`}>
 
