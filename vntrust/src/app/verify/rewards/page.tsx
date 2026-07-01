@@ -13,6 +13,7 @@ export default function VerifyRewardsPage() {
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
   const [showHowToEarn, setShowHowToEarn] = useState(false);
   const formatPoints = (value: number) => new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'vi-VN').format(value || 0);
+  const dailyRedeemLimit = 3;
 
   const loadData = () => {
     setLoading(true);
@@ -65,6 +66,11 @@ export default function VerifyRewardsPage() {
     { id: 2, title: "GrabCar Giảm 50%", cost: 200, image: "directions_car" },
     { id: 3, title: "Thẻ cào Viettel 50K", cost: 300, image: "sim_card" }
   ];
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const redeemedToday = history.filter(item => item.loai === 'doi_qua' && new Date(item.thoiGian) >= startOfToday);
+  const redeemedTodayCount = redeemedToday.length;
+  const isVoucherRedeemedToday = (title: string) => redeemedToday.some(item => item.moTa === `Đổi voucher: ${title}`);
 
   return (
     <div className="verify-consumer-page verify-page-rewards min-h-screen bg-[#0B1623] pt-24 pb-12 px-6 flex flex-col items-center">
@@ -123,8 +129,18 @@ export default function VerifyRewardsPage() {
               <span className="material-symbols-outlined text-[#C8A557]">redeem</span>
               {lang === 'en' ? 'Redeem Rewards' : 'Đổi Quà'}
             </h2>
+            <p className="mb-4 text-xs font-semibold text-slate-400">
+              {lang === 'en'
+                ? `${redeemedTodayCount}/${dailyRedeemLimit} redemptions used today. Each voucher can be redeemed once per day.`
+                : `Đã dùng ${redeemedTodayCount}/${dailyRedeemLimit} lượt đổi hôm nay. Mỗi voucher chỉ đổi 1 lần/ngày.`}
+            </p>
             <div className="space-y-4">
-              {vouchers.map(v => (
+              {vouchers.map(v => {
+                const redeemedThisVoucher = isVoucherRedeemedToday(v.title);
+                const reachedDailyLimit = redeemedTodayCount >= dailyRedeemLimit;
+                const canRedeem = tongDiem >= v.cost && redeeming !== v.id && !redeemedThisVoucher && !reachedDailyLimit;
+
+                return (
                 <div key={v.id} className="glass-panel p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-[#C8A557]/50 transition flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 flex items-center justify-center text-white">
@@ -137,13 +153,19 @@ export default function VerifyRewardsPage() {
                   </div>
                   <button 
                     onClick={() => handleRedeem(v)}
-                    disabled={tongDiem < v.cost || redeeming === v.id}
-                    className={`px-4 py-1.5 rounded-lg text-sm font-bold transition flex items-center gap-2 ${tongDiem >= v.cost && redeeming !== v.id ? 'bg-[#C8A557] text-[#0B1623] hover:bg-[#e7d188]' : 'bg-white/5 text-slate-500 border border-white/10 cursor-not-allowed'}`}
+                    disabled={!canRedeem}
+                    className={`px-4 py-1.5 rounded-lg text-sm font-bold transition flex items-center gap-2 ${canRedeem ? 'bg-[#C8A557] text-[#0B1623] hover:bg-[#e7d188]' : 'bg-white/5 text-slate-500 border border-white/10 cursor-not-allowed'}`}
                   >
-                    {redeeming === v.id ? (lang === 'en' ? 'Processing...' : 'Đang xử lý...') : (lang === 'en' ? 'Redeem' : 'Đổi')}
+                    {redeeming === v.id
+                      ? (lang === 'en' ? 'Processing...' : 'Đang xử lý...')
+                      : redeemedThisVoucher
+                        ? (lang === 'en' ? 'Redeemed today' : 'Đã đổi hôm nay')
+                        : reachedDailyLimit
+                          ? (lang === 'en' ? 'Daily limit reached' : 'Hết lượt hôm nay')
+                          : (lang === 'en' ? 'Redeem' : 'Đổi')}
                   </button>
                 </div>
-              ))}
+              )})}
             </div>
           </div>
 
