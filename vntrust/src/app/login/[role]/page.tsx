@@ -40,6 +40,7 @@ function useToast() {
 function validateHoTen(name: string): string | null {
   const trimmed = name.trim();
   if (!trimmed) return "Vui lòng nhập họ và tên";
+  if (trimmed.length < 2) return "Họ và tên tối thiểu 2 ký tự";
   if (trimmed.length > 20) return "Họ và tên tối đa 20 ký tự";
   // Cho phép chữ Latin + chữ có dấu Việt Nam + space, KHÔNG số/ký tự đặc biệt
   if (!/^[\p{L}\s]+$/u.test(trimmed)) return "Họ và tên không được chứa số hoặc ký tự đặc biệt";
@@ -66,10 +67,59 @@ function validateVNPhone(phone: string, _errMsg?: string): string | null {
   return null;
 }
 
+function normalizeVNPhone(phone: string): string {
+  return phone.replace(/\s+/g, "").replace(/^(\+84|0084)/, "0").replace(/[^\d]/g, "");
+}
+
+function validateCompanyName(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return "Vui lòng nhập tên công ty / doanh nghiệp";
+  if (trimmed.length < 3) return "Tên doanh nghiệp tối thiểu 3 ký tự";
+  if (trimmed.length > 120) return "Tên doanh nghiệp tối đa 120 ký tự";
+  if (!/^[\p{L}\p{N}\s.,&()\-\/]+$/u.test(trimmed)) {
+    return "Tên doanh nghiệp không được chứa ký tự đặc biệt lạ";
+  }
+  return null;
+}
+
+function validateTaxCode(value: string): string | null {
+  const clean = value.replace(/-/g, "");
+  if (!clean) return "Vui lòng nhập mã số thuế (MST)";
+  if (!/^\d+$/.test(clean)) return "Mã số thuế chỉ được nhập số";
+  if (!/^\d{10}(\d{3})?$/.test(clean)) return "Mã số thuế phải có 10 hoặc 13 chữ số";
+  return null;
+}
+
+function validateBusinessAddress(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return "Vui lòng nhập địa chỉ nhà máy / kho hàng";
+  if (trimmed.length < 10) return "Địa chỉ tối thiểu 10 ký tự";
+  if (trimmed.length > 180) return "Địa chỉ tối đa 180 ký tự";
+  if (!/^[\p{L}\p{N}\s.,#()\-\/]+$/u.test(trimmed)) {
+    return "Địa chỉ không được chứa ký tự đặc biệt lạ";
+  }
+  return null;
+}
+
+function validateOptionalHotline(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const clean = normalizeVNPhone(trimmed);
+  if (!/^0[1-9]\d{8}$/.test(clean)) return "Hotline phải đủ 10 số, bắt đầu bằng 01-09";
+  return null;
+}
+
+function validateKycFile(file: File): string | null {
+  const allowed = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+  if (!allowed.includes(file.type)) return "Chỉ chấp nhận PDF, JPG, PNG hoặc WebP";
+  if (file.size > 10 * 1024 * 1024) return "File tối đa 10MB";
+  return null;
+}
+
 // Mật khẩu: ≥1 hoa, ≥1 thường, ≥1 số, ≥1 ký tự đặc biệt, tối đa 20 ký tự
 function validatePasswordStrict(pwd: string): string | null {
   if (!pwd) return "Vui lòng nhập mật khẩu";
-  if (pwd.length < 8)  return "Mật khẩu tối thiểu 8 ký tự";
+  if (pwd.length < 12) return "Mật khẩu tối thiểu 12 ký tự";
   if (pwd.length > 20) return "Mật khẩu tối đa 20 ký tự";
   if (!/[a-z]/.test(pwd))           return "Mật khẩu phải có ≥1 chữ thường";
   if (!/[A-Z]/.test(pwd))           return "Mật khẩu phải có ≥1 chữ HOA";
@@ -110,13 +160,17 @@ export default function LoginPage() {
   const [regName, setRegName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPhone, setRegPhone] = useState("");
+  const [regNameError, setRegNameError] = useState("");
+  const [regEmailError, setRegEmailError] = useState("");
   const [regPhoneError, setRegPhoneError] = useState("");
+  const [regPasswordError, setRegPasswordError] = useState("");
   const [regPassword, setRegPassword] = useState("");
   // Business-specific fields (NSX/NNK)
   const [regCompany, setRegCompany] = useState("");
   const [regTaxCode, setRegTaxCode] = useState("");
   const [regAddress, setRegAddress] = useState("");
   const [regHotline, setRegHotline] = useState("");
+  const [regBusinessErrors, setRegBusinessErrors] = useState<Record<string, string>>({});
   
   // Vai trò chọn khi đăng ký (cho phép đổi giữa Người tiêu dùng / Doanh nghiệp)
   const [regRole, setRegRole] = useState<string>(pageRole === "consumer" ? "consumer" : pageRole === "admin" ? "admin" : "manufacturer");
@@ -125,14 +179,16 @@ export default function LoginPage() {
   const [regStep, setRegStep] = useState<1 | 2>(1);
   // KYC document states
   const [regGiayphep, setRegGiayphep] = useState<File | null>(null);
-  const [regCmnd, setRegCmnd] = useState<File | null>(null);
+  const [regCmndFront, setRegCmndFront] = useState<File | null>(null);
+  const [regCmndBack, setRegCmndBack] = useState<File | null>(null);
   const [uploadingKyc, setUploadingKyc] = useState<Record<string, boolean>>({});
   const [uploadedKycUrls, setUploadedKycUrls] = useState<Record<string, string>>({});
 
   const resetRegForm = () => {
-    setRegName(""); setRegEmail(""); setRegPhone(""); setRegPhoneError(""); setRegPassword("");
+    setRegName(""); setRegEmail(""); setRegPhone(""); setRegNameError(""); setRegEmailError(""); setRegPhoneError(""); setRegPasswordError(""); setRegPassword("");
     setRegCompany(""); setRegTaxCode(""); setRegAddress(""); setRegHotline("");
-    setRegGiayphep(null); setRegCmnd(null); setUploadingKyc({}); setUploadedKycUrls({});
+    setRegBusinessErrors({});
+    setRegGiayphep(null); setRegCmndFront(null); setRegCmndBack(null); setUploadingKyc({}); setUploadedKycUrls({});
     setRegStep(1);
   };
 
@@ -148,12 +204,100 @@ export default function LoginPage() {
   };
 
   const handlePhoneChange = (val: string) => {
-    setRegPhone(val);
-    if (val.length > 0) {
-      const err = validateVNPhone(val, t("login_phone_invalid"));
+    const normalized = normalizeVNPhone(val).slice(0, 10);
+    setRegPhone(normalized);
+    if (normalized.length > 0) {
+      const err = validateVNPhone(normalized, t("login_phone_invalid"));
       setRegPhoneError(err || "");
     } else {
       setRegPhoneError("");
+    }
+  };
+
+  const handleNameChange = (val: string) => {
+    const next = val.replace(/[^\p{L}\s]/gu, "").replace(/\s{2,}/g, " ").slice(0, 20);
+    setRegName(next);
+    setRegNameError(next ? validateHoTen(next) || "" : "");
+  };
+
+  const handleEmailChange = (val: string) => {
+    const next = val.trim().toLowerCase().slice(0, 80);
+    setRegEmail(next);
+    setRegEmailError(next ? validateEmail(next) || "" : "");
+  };
+
+  const handlePasswordChange = (val: string) => {
+    const next = val.slice(0, 20);
+    setRegPassword(next);
+    setRegPasswordError(next ? validatePasswordStrict(next) || "" : "");
+  };
+
+  const setBusinessFieldError = (field: string, message: string | null) => {
+    setRegBusinessErrors((prev) => {
+      const next = { ...prev };
+      if (message) next[field] = message;
+      else delete next[field];
+      return next;
+    });
+  };
+
+  const handleBusinessTextChange = (
+    field: "company" | "taxCode" | "address" | "hotline",
+    value: string
+  ) => {
+    if (field === "company") {
+      const next = value.replace(/[^\p{L}\p{N}\s.,&()\-\/]/gu, "").replace(/\s{2,}/g, " ").slice(0, 120);
+      setRegCompany(next);
+      setBusinessFieldError(field, next ? validateCompanyName(next) : null);
+      return;
+    }
+    if (field === "taxCode") {
+      const next = value.replace(/[^\d-]/g, "").slice(0, 14);
+      setRegTaxCode(next);
+      setBusinessFieldError(field, next ? validateTaxCode(next) : null);
+      return;
+    }
+    if (field === "address") {
+      const next = value.replace(/[^\p{L}\p{N}\s.,#()\-\/]/gu, "").replace(/\s{2,}/g, " ").slice(0, 180);
+      setRegAddress(next);
+      setBusinessFieldError(field, next ? validateBusinessAddress(next) : null);
+      return;
+    }
+    const next = normalizeVNPhone(value).slice(0, 10);
+    setRegHotline(next);
+    setBusinessFieldError(field, next ? validateOptionalHotline(next) : null);
+  };
+
+  const uploadKycFile = async (field: "giayphep" | "cmnd_front" | "cmnd_back", file: File) => {
+    const fileErr = validateKycFile(file);
+    if (fileErr) {
+      showToast(fileErr, "error");
+      return;
+    }
+    if (field === "giayphep") setRegGiayphep(file);
+    if (field === "cmnd_front") setRegCmndFront(file);
+    if (field === "cmnd_back") setRegCmndBack(file);
+
+    setUploadingKyc((p) => ({ ...p, [field]: true }));
+    setUploadedKycUrls((p) => {
+      const next = { ...p };
+      delete next[field];
+      return next;
+    });
+
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("type", "kyc");
+    fd.append("kycField", "__pending__");
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const d = await res.json();
+      if (res.ok) setUploadedKycUrls((p) => ({ ...p, [field]: d.url }));
+      else showToast("❌ " + (d.error || "Upload thất bại"), "error");
+    } catch {
+      showToast("❌ Lỗi upload", "error");
+    } finally {
+      setUploadingKyc((p) => ({ ...p, [field]: false }));
     }
   };
 
@@ -163,10 +307,12 @@ export default function LoginPage() {
     if (view === "register") {
       // Họ và tên — chỉ chữ + dấu, max 20
       const nameErr = validateHoTen(regName);
+      setRegNameError(nameErr || "");
       if (nameErr) { showToast(nameErr, "error"); return; }
 
       // Email — phải đúng cấu trúc
       const emailErr = validateEmail(regEmail);
+      setRegEmailError(emailErr || "");
       if (emailErr) { showToast(emailErr, "error"); return; }
 
       // Phone — 10 số, đầu 01-09
@@ -175,15 +321,20 @@ export default function LoginPage() {
 
       // Password — phức tạp
       const pwdErr = validatePasswordStrict(regPassword);
+      setRegPasswordError(pwdErr || "");
       if (pwdErr) { showToast(pwdErr, "error"); return; }
 
       // Business role: extra required fields
       if (isBusiness) {
-        if (!regCompany.trim()) { showToast("Vui lòng nhập tên công ty / doanh nghiệp", "error"); return; }
-        if (!regTaxCode.trim()) { showToast("Vui lòng nhập mã số thuế (MST)", "error"); return; }
-        if (!/^\d{10}(\d{3})?$/.test(regTaxCode.replace(/-/g, ""))) { showToast("Mã số thuế không hợp lệ (10 hoặc 13 số)", "error"); return; }
-        if (!regAddress.trim()) { showToast("Vui lòng nhập địa chỉ nhà máy / kho hàng", "error"); return; }
-        // Removed corporate email validation for easier testing
+        const businessChecks = {
+          company: validateCompanyName(regCompany),
+          taxCode: validateTaxCode(regTaxCode),
+          address: validateBusinessAddress(regAddress),
+          hotline: validateOptionalHotline(regHotline),
+        };
+        setRegBusinessErrors(Object.fromEntries(Object.entries(businessChecks).filter(([, msg]) => !!msg)) as Record<string, string>);
+        const firstBusinessError = Object.values(businessChecks).find(Boolean);
+        if (firstBusinessError) { showToast(firstBusinessError, "error"); return; }
       }
 
       // 2 bước (Doanh nghiệp): xong bước 1 → sang bước 2 nộp giấy tờ, chưa tạo tài khoản
@@ -191,9 +342,10 @@ export default function LoginPage() {
 
       // Bước 2 — BẮT BUỘC nộp đủ giấy tờ trước khi tạo tài khoản
       if (isBusiness) {
-        if (uploadingKyc['giayphep'] || uploadingKyc['cmnd']) { showToast("Đang tải giấy tờ, vui lòng đợi…", "error"); return; }
+        if (uploadingKyc['giayphep'] || uploadingKyc['cmnd_front'] || uploadingKyc['cmnd_back']) { showToast("Đang tải giấy tờ, vui lòng đợi…", "error"); return; }
         if (!uploadedKycUrls['giayphep']) { showToast("Vui lòng tải lên Giấy phép Kinh doanh", "error"); return; }
-        if (!uploadedKycUrls['cmnd']) { showToast("Vui lòng tải lên CMND/CCCD người đại diện", "error"); return; }
+        if (!uploadedKycUrls['cmnd_front']) { showToast("Vui lòng tải lên mặt trước CMND/CCCD người đại diện", "error"); return; }
+        if (!uploadedKycUrls['cmnd_back']) { showToast("Vui lòng tải lên mặt sau CMND/CCCD người đại diện", "error"); return; }
       }
     }
 
@@ -245,16 +397,18 @@ export default function LoginPage() {
             company: regCompany,
             taxCode: regTaxCode,
             address: regAddress,
-            hotline: regHotline,
+            hotline: regHotline || undefined,
             // KYC documents (optional, uploaded before registration)
             giayphep_url: uploadedKycUrls['giayphep'] || undefined,
-            cmnd_url: uploadedKycUrls['cmnd'] || undefined,
+            cmnd_url: isBusiness
+              ? JSON.stringify([uploadedKycUrls['cmnd_front'], uploadedKycUrls['cmnd_back']])
+              : undefined,
           })
         });
         const data = await res.json();
 
         if (res.ok) {
-          showToast("Đăng ký thành công! Vui lòng đăng nhập.", "success");
+          showToast(isBusiness ? "Đăng ký doanh nghiệp thành công! Hồ sơ đang chờ admin xét duyệt." : "Đăng ký thành công! Vui lòng đăng nhập.", "success");
           setTimeout(() => {
             setView("login");
             setUsername(regEmail);
@@ -615,21 +769,31 @@ export default function LoginPage() {
                   <div className="relative">
                     <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">person</span>
                     <input required type="text" value={regName}
-                      onChange={(e) => setRegName(e.target.value.slice(0, 20))}
+                      onChange={(e) => handleNameChange(e.target.value)}
+                      onBlur={() => setRegNameError(validateHoTen(regName) || "")}
                       maxLength={20}
-                      className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
+                      className={`w-full bg-[#131b2c] border text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 ${
+                        regNameError ? "border-red-500/60 focus:border-red-500 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
+                      }`}
                       placeholder={t("reg_ph_name")} />
                   </div>
+                  {regNameError && <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1"><span className="material-symbols-outlined text-[13px]">error</span>{regNameError}</p>}
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email</label>
                   <div className="relative">
                     <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">mail</span>
-                    <input required type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)}
-                      className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
+                    <input required type="email" value={regEmail}
+                      onChange={(e) => handleEmailChange(e.target.value)}
+                      onBlur={() => setRegEmailError(validateEmail(regEmail) || "")}
+                      maxLength={80}
+                      className={`w-full bg-[#131b2c] border text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 ${
+                        regEmailError ? "border-red-500/60 focus:border-red-500 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
+                      }`}
                       placeholder={t("reg_ph_email")} />
                   </div>
+                  {regEmailError && <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1"><span className="material-symbols-outlined text-[13px]">error</span>{regEmailError}</p>}
                 </div>
 
                 <div>
@@ -637,7 +801,8 @@ export default function LoginPage() {
                   <div className="relative">
                     <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#6FB585] text-xl">call</span>
                     <input required type="tel" value={regPhone} onChange={(e) => handlePhoneChange(e.target.value)}
-                      maxLength={11}
+                      maxLength={10}
+                      inputMode="numeric"
                       className={`w-full bg-[#131b2c] border rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white ${
                         regPhoneError ? "border-red-500/60 focus:border-red-500 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
                       }`}
@@ -694,12 +859,16 @@ export default function LoginPage() {
                       </label>
                       <div className="relative">
                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">apartment</span>
-                        <input required={isBusiness} type="text" value={regCompany} onChange={e => setRegCompany(e.target.value)}
+                        <input required={isBusiness} type="text" value={regCompany}
+                          onChange={e => handleBusinessTextChange("company", e.target.value)}
+                          onBlur={() => setBusinessFieldError("company", validateCompanyName(regCompany))}
+                          maxLength={120}
                           className={`w-full bg-[#131b2c] border rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white ${
-                            !regCompany && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
+                            regBusinessErrors.company ? "border-red-500/60 focus:ring-red-500/30" : !regCompany && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
                           }`}
                           placeholder="VD: Công ty TNHH ABC Việt Nam" />
                       </div>
+                      {regBusinessErrors.company && <p className="mt-1 text-xs text-red-400 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">error</span>{regBusinessErrors.company}</p>}
                     </div>
 
                     {/* Mã số thuế */}
@@ -709,17 +878,20 @@ export default function LoginPage() {
                       </label>
                       <div className="relative">
                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#6FB585] text-xl">tag</span>
-                        <input required={isBusiness} type="text" value={regTaxCode} onChange={e => setRegTaxCode(e.target.value.replace(/[^0-9-]/g,""))}
+                        <input required={isBusiness} type="text" value={regTaxCode}
+                          onChange={e => handleBusinessTextChange("taxCode", e.target.value)}
+                          onBlur={() => setBusinessFieldError("taxCode", validateTaxCode(regTaxCode))}
                           maxLength={14}
+                          inputMode="numeric"
                           className={`w-full bg-[#131b2c] border rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white font-mono ${
-                            regTaxCode && !/^\d{10}(\d{3})?$/.test(regTaxCode.replace(/-/g,"")) ? "border-red-500/60 focus:ring-red-500/30" : !regTaxCode && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
+                            regBusinessErrors.taxCode ? "border-red-500/60 focus:ring-red-500/30" : !regTaxCode && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
                           }`}
                           placeholder="VD: 0123456789" />
                       </div>
-                      {regTaxCode && !/^\d{10}(\d{3})?$/.test(regTaxCode.replace(/-/g,"")) && (
+                      {regBusinessErrors.taxCode && (
                         <p className="mt-1 text-xs text-red-400 flex items-center gap-1">
                           <span className="material-symbols-outlined text-[12px]">error</span>
-                          MST phải có 10 hoặc 13 chữ số
+                          {regBusinessErrors.taxCode}
                         </p>
                       )}
                     </div>
@@ -731,13 +903,17 @@ export default function LoginPage() {
                       </label>
                       <div className="relative">
                         <span className="material-symbols-outlined absolute left-4 top-3.5 text-[#1F6FEB] text-xl">location_on</span>
-                        <textarea required={isBusiness} value={regAddress} onChange={e => setRegAddress(e.target.value)}
+                        <textarea required={isBusiness} value={regAddress}
+                          onChange={e => handleBusinessTextChange("address", e.target.value)}
+                          onBlur={() => setBusinessFieldError("address", validateBusinessAddress(regAddress))}
                           rows={2}
+                          maxLength={180}
                           className={`w-full bg-[#131b2c] border rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white resize-none ${
-                            !regAddress && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
+                            regBusinessErrors.address ? "border-red-500/60 focus:ring-red-500/30" : !regAddress && isBusiness ? "border-amber-500/40" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
                           }`}
                           placeholder="VD: Số 10 Lý Thái Tổ, Quận 1, TP.HCM" />
                       </div>
+                      {regBusinessErrors.address && <p className="mt-1 text-xs text-red-400 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">error</span>{regBusinessErrors.address}</p>}
                     </div>
 
                     {/* Hotline (không bắt buộc nhưng nên có) */}
@@ -748,10 +924,17 @@ export default function LoginPage() {
                       </label>
                       <div className="relative">
                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">support_agent</span>
-                        <input type="tel" value={regHotline} onChange={e => setRegHotline(e.target.value)}
-                          className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
-                          placeholder="VD: 1800 xxxx" />
+                        <input type="tel" value={regHotline}
+                          onChange={e => handleBusinessTextChange("hotline", e.target.value)}
+                          onBlur={() => setBusinessFieldError("hotline", validateOptionalHotline(regHotline))}
+                          maxLength={10}
+                          inputMode="numeric"
+                          className={`w-full bg-[#131b2c] border text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 ${
+                            regBusinessErrors.hotline ? "border-red-500/60 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
+                          }`}
+                          placeholder="VD: 0901234567" />
                       </div>
+                      {regBusinessErrors.hotline && <p className="mt-1 text-xs text-red-400 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">error</span>{regBusinessErrors.hotline}</p>}
                     </div>
                   </div>
                 )}
@@ -783,19 +966,7 @@ export default function LoginPage() {
                               const f = e.target.files?.[0];
                               if (!f) return;
                               e.target.value = '';
-                              setRegGiayphep(f);
-                              setUploadingKyc(p => ({ ...p, giayphep: true }));
-                              const fd = new FormData();
-                              fd.append('file', f);
-                              fd.append('type', 'kyc');
-                              fd.append('kycField', '__pending__'); // will be linked after registration
-                              try {
-                                const res = await fetch('/api/upload', { method: 'POST', body: fd });
-                                const d = await res.json();
-                                if (res.ok) setUploadedKycUrls(p => ({ ...p, giayphep: d.url }));
-                                else showToast('❌ ' + d.error, 'error');
-                              } catch { showToast('❌ Lỗi upload', 'error'); }
-                              setUploadingKyc(p => ({ ...p, giayphep: false }));
+                              uploadKycFile('giayphep', f);
                             }}
                           />
                         </label>
@@ -804,36 +975,34 @@ export default function LoginPage() {
                       {/* CMND / CCCD */}
                       <div>
                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                          CMND / CCCD Người đại diện <span className="text-red-400">*</span> <span className="text-slate-500 text-[10px] font-normal normal-case">(PDF, JPG, PNG · max 10MB)</span>
+                          CMND / CCCD Người đại diện <span className="text-red-400">*</span> <span className="text-slate-500 text-[10px] font-normal normal-case">(bắt buộc 2 mặt · PDF, JPG, PNG · max 10MB/file)</span>
                         </label>
-                        <label className={`flex items-center gap-3 w-full bg-[#131b2c] border rounded-xl py-3 px-4 cursor-pointer transition-all
-                          ${uploadedKycUrls['cmnd'] ? 'border-[#4A7C5C]/40 bg-[#4A7C5C]/5' : 'border-slate-700/50 hover:border-[#1F6FEB]/40'}`}>
-                          <span className={`material-symbols-outlined text-xl ${uploadedKycUrls['cmnd'] ? 'text-[#6FB585]' : 'text-amber-400'}`}>badge</span>
-                          <span className="text-sm flex-1 truncate text-slate-300">
-                            {uploadingKyc['cmnd'] ? 'Đang tải lên...' : uploadedKycUrls['cmnd'] ? `✓ ${regCmnd?.name}` : 'Chọn hoặc kéo thả file vào đây'}
-                          </span>
-                          {uploadingKyc['cmnd'] && <span className="w-4 h-4 border-2 border-[#1F6FEB] border-t-transparent rounded-full animate-spin shrink-0" />}
-                          <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden"
-                            onChange={async (e) => {
-                              const f = e.target.files?.[0];
-                              if (!f) return;
-                              e.target.value = '';
-                              setRegCmnd(f);
-                              setUploadingKyc(p => ({ ...p, cmnd: true }));
-                              const fd = new FormData();
-                              fd.append('file', f);
-                              fd.append('type', 'kyc');
-                              fd.append('kycField', '__pending__');
-                              try {
-                                const res = await fetch('/api/upload', { method: 'POST', body: fd });
-                                const d = await res.json();
-                                if (res.ok) setUploadedKycUrls(p => ({ ...p, cmnd: d.url }));
-                                else showToast('❌ ' + d.error, 'error');
-                              } catch { showToast('❌ Lỗi upload', 'error'); }
-                              setUploadingKyc(p => ({ ...p, cmnd: false }));
-                            }}
-                          />
-                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {([
+                            { key: "cmnd_front", file: regCmndFront, label: "Mặt trước" },
+                            { key: "cmnd_back", file: regCmndBack, label: "Mặt sau" },
+                          ] as const).map((side) => (
+                            <label key={side.key} className={`flex items-center gap-3 w-full bg-[#131b2c] border rounded-xl py-3 px-4 cursor-pointer transition-all
+                              ${uploadedKycUrls[side.key] ? 'border-[#4A7C5C]/40 bg-[#4A7C5C]/5' : 'border-slate-700/50 hover:border-[#1F6FEB]/40'}`}>
+                              <span className={`material-symbols-outlined text-xl ${uploadedKycUrls[side.key] ? 'text-[#6FB585]' : 'text-amber-400'}`}>badge</span>
+                              <span className="text-sm flex-1 min-w-0">
+                                <span className="block text-[10px] font-bold uppercase text-slate-500">{side.label}</span>
+                                <span className="block truncate text-slate-300">
+                                  {uploadingKyc[side.key] ? 'Đang tải lên...' : uploadedKycUrls[side.key] ? `✓ ${side.file?.name}` : 'Chọn file'}
+                                </span>
+                              </span>
+                              {uploadingKyc[side.key] && <span className="w-4 h-4 border-2 border-[#1F6FEB] border-t-transparent rounded-full animate-spin shrink-0" />}
+                              <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden"
+                                onChange={(e) => {
+                                  const f = e.target.files?.[0];
+                                  if (!f) return;
+                                  e.target.value = '';
+                                  uploadKycFile(side.key, f);
+                                }}
+                              />
+                            </label>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
@@ -849,15 +1018,19 @@ export default function LoginPage() {
                   <div className="relative">
                     <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">lock</span>
                     <input required type={showPassword ? "text" : "password"} value={regPassword}
-                      onChange={(e) => setRegPassword(e.target.value.slice(0, 20))}
+                      onChange={(e) => handlePasswordChange(e.target.value)}
+                      onBlur={() => setRegPasswordError(validatePasswordStrict(regPassword) || "")}
                       maxLength={20} minLength={12}
-                      className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3 pl-12 pr-12 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
+                      className={`w-full bg-[#131b2c] border text-white rounded-xl py-3 pl-12 pr-12 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 ${
+                        regPasswordError ? "border-red-500/60 focus:border-red-500 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"
+                      }`}
                       placeholder="VD: Abc@12345678" />
                     <button type="button" onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
                       <span className="material-symbols-outlined text-xl">{showPassword ? "visibility_off" : "visibility"}</span>
                     </button>
                   </div>
+                  {regPasswordError && <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1"><span className="material-symbols-outlined text-[13px]">error</span>{regPasswordError}</p>}
                   {/* NFR-SC-07: Password Strength Meter — synced với server: ≥12, ≤20 */}
                   {regPassword.length > 0 && (() => {
                     const checks = [
@@ -903,7 +1076,7 @@ export default function LoginPage() {
                       {lang === "en" ? "Back" : "Quay lại"}
                     </button>
                   )}
-                  <button type="submit" disabled={loading || !!regPhoneError}
+                  <button type="submit" disabled={loading || !!regNameError || !!regEmailError || !!regPhoneError || !!regPasswordError || Object.keys(regBusinessErrors).length > 0 || Object.values(uploadingKyc).some(Boolean)}
                     style={{ background: '#1F6FEB' }}
                     className="flex-1 text-[#ffffff] font-bold py-3.5 rounded-xl shadow-lg shadow-[#1F6FEB]/20 transition-all flex items-center justify-center gap-2 group relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-105">
                     {loading ? (

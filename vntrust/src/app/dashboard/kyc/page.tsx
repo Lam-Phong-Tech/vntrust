@@ -49,6 +49,17 @@ const emptyLicenseForm: LicenseForm = {
   phamVi: "",
 };
 
+function parseDocumentUrls(url?: string | null): string[] {
+  if (!url) return [];
+  try {
+    const parsed = JSON.parse(url);
+    if (Array.isArray(parsed)) return parsed.filter((v): v is string => typeof v === "string" && !!v.trim());
+  } catch {
+    // Old data stores a single URL string.
+  }
+  return [url];
+}
+
 function toLocalDateInput(date = new Date()) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -91,6 +102,8 @@ function DocUploadZone({
   const inputRef = useRef<HTMLInputElement>(null);
   const captureRef = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
+  const urls = parseDocumentUrls(url);
+  const primaryUrl = urls[0];
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -100,9 +113,9 @@ function DocUploadZone({
     if (f) onFile(f);
   }, [disabled, onFile]);
 
-  const isImage = url && !url.endsWith('.pdf');
-  const isPdf   = url && url.endsWith('.pdf');
-  const hasDoc  = !!url;
+  const isImage = primaryUrl && !primaryUrl.endsWith('.pdf');
+  const isPdf   = primaryUrl && primaryUrl.endsWith('.pdf');
+  const hasDoc  = urls.length > 0;
   const isAccepted = hasDoc || !!verified;
 
   return (
@@ -118,23 +131,32 @@ function DocUploadZone({
 
       {/* Preview */}
       {isImage && (
-        <div className="relative rounded-xl overflow-hidden border border-white/10 bg-black/30 group">
-          <img src={url} alt={label} className="w-full max-h-48 object-contain" />
-          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
-            <a href={url} target="_blank" rel="noreferrer"
-              className="px-3 py-1.5 bg-cyan-500 text-white text-xs font-bold rounded-lg flex items-center gap-1">
-              <span className="material-symbols-outlined text-[14px]">open_in_new</span> Xem
-            </a>
-          </div>
+        <div className="grid grid-cols-1 gap-2">
+          {urls.map((docUrl, idx) => (
+            <div key={docUrl} className="relative rounded-xl overflow-hidden border border-white/10 bg-black/30 group">
+              <img src={docUrl} alt={`${label} ${idx + 1}`} className="w-full max-h-48 object-contain" />
+              {urls.length > 1 && <span className="absolute left-2 top-2 px-2 py-0.5 rounded-full bg-black/60 text-white text-[10px] font-bold">{idx === 0 ? "Mặt trước" : "Mặt sau"}</span>}
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
+                <a href={docUrl} target="_blank" rel="noreferrer"
+                  className="px-3 py-1.5 bg-cyan-500 text-white text-xs font-bold rounded-lg flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[14px]">open_in_new</span> Xem
+                </a>
+              </div>
+            </div>
+          ))}
         </div>
       )}
       {isPdf && (
-        <a href={url} target="_blank" rel="noreferrer"
-          className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition">
-          <span className="material-symbols-outlined text-red-400 text-[24px]">picture_as_pdf</span>
-          <span className="text-sm text-slate-300 flex-1 truncate">Xem file PDF</span>
-          <span className="material-symbols-outlined text-slate-400 text-[16px]">open_in_new</span>
-        </a>
+        <div className="grid grid-cols-1 gap-2">
+          {urls.map((docUrl, idx) => (
+            <a key={docUrl} href={docUrl} target="_blank" rel="noreferrer"
+              className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition">
+              <span className="material-symbols-outlined text-red-400 text-[24px]">picture_as_pdf</span>
+              <span className="text-sm text-slate-300 flex-1 truncate">{urls.length > 1 ? (idx === 0 ? "Mặt trước" : "Mặt sau") : "Xem file PDF"}</span>
+              <span className="material-symbols-outlined text-slate-400 text-[16px]">open_in_new</span>
+            </a>
+          ))}
+        </div>
       )}
 
       {/* Drop Zone + Chụp ảnh */}
@@ -414,27 +436,32 @@ function AdminDetailModal({
                   }
                 </div>
                 {docs.cmnd_url ? (
-                  docs.cmnd_url.endsWith('.pdf') ? (
-                    <a href={docs.cmnd_url} target="_blank" rel="noreferrer"
-                      className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/8 transition">
-                      <span className="material-symbols-outlined text-red-400 text-[28px]">picture_as_pdf</span>
-                      <div>
-                        <p className="text-sm font-bold text-white">{tr("File PDF đã tải lên", "PDF uploaded")}</p>
-                        <p className="text-xs text-slate-400">Nhấn để xem/tải</p>
-                      </div>
-                      <span className="ml-auto material-symbols-outlined text-cyan-400">open_in_new</span>
-                    </a>
-                  ) : (
-                    <div className="rounded-xl overflow-hidden border border-white/10 bg-black/30">
-                      <img src={docs.cmnd_url} alt="CMND/CCCD" className="w-full max-h-64 object-contain" />
-                      <div className="p-2 flex justify-end">
-                        <a href={docs.cmnd_url} target="_blank" rel="noreferrer"
-                          className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-cyan-500/30 transition">
-                          <span className="material-symbols-outlined text-[14px]">open_in_new</span> Phóng to
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {parseDocumentUrls(docs.cmnd_url).map((docUrl, idx) => (
+                      docUrl.endsWith('.pdf') ? (
+                        <a key={docUrl} href={docUrl} target="_blank" rel="noreferrer"
+                          className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/8 transition">
+                          <span className="material-symbols-outlined text-red-400 text-[28px]">picture_as_pdf</span>
+                          <div>
+                            <p className="text-sm font-bold text-white">{idx === 0 ? "Mặt trước" : "Mặt sau"}</p>
+                            <p className="text-xs text-slate-400">Nhấn để xem/tải</p>
+                          </div>
+                          <span className="ml-auto material-symbols-outlined text-cyan-400">open_in_new</span>
                         </a>
-                      </div>
-                    </div>
-                  )
+                      ) : (
+                        <div key={docUrl} className="rounded-xl overflow-hidden border border-white/10 bg-black/30">
+                          <div className="px-2 py-1 text-[10px] font-bold text-slate-300 bg-white/5">{idx === 0 ? "Mặt trước" : "Mặt sau"}</div>
+                          <img src={docUrl} alt={`CMND/CCCD ${idx + 1}`} className="w-full max-h-64 object-contain" />
+                          <div className="p-2 flex justify-end">
+                            <a href={docUrl} target="_blank" rel="noreferrer"
+                              className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-cyan-500/30 transition">
+                              <span className="material-symbols-outlined text-[14px]">open_in_new</span> Phóng to
+                            </a>
+                          </div>
+                        </div>
+                      )
+                    ))}
+                  </div>
                 ) : (
                   <div className="p-6 rounded-xl bg-white/3 border border-red-500/20 flex items-center gap-3 text-red-400">
                     <span className="material-symbols-outlined text-[24px]">warning</span>
