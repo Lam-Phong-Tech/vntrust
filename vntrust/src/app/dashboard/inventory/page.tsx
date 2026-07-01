@@ -867,21 +867,22 @@ export default function InventoryPage() {
 
       {/* ── Modal: Sửa lô hàng — pb-[80px] tránh che bởi mobile nav ── */}
       {modal === "edit" && selectedBatch && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end md:items-center justify-center md:p-4 pb-[80px] md:pb-4" onClick={closeModal}>
-          <div className="bg-[#142235] border border-white/10 rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-md max-h-[calc(100dvh-160px)] md:max-h-[88dvh] flex flex-col overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/55 px-3 pb-[calc(env(safe-area-inset-bottom)+84px)] pt-4 backdrop-blur-sm sm:items-center sm:p-4" onClick={closeModal}>
+          <div className="w-full max-w-[560px] overflow-hidden rounded-t-3xl border border-white/10 bg-[#142235] shadow-2xl sm:rounded-3xl" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+            <div className="max-h-[calc(100dvh-110px)] overflow-y-auto p-4 sm:max-h-[88dvh] sm:p-6">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h2 className="text-xl font-bold text-white font-display">{t("inv_edit_batch")}</h2>
                 <p className="text-xs text-slate-400 mt-0.5 font-mono">{selectedBatch.maLo}</p>
               </div>
-              <button onClick={closeModal} className="text-slate-400 hover:text-white"><span className="material-symbols-outlined">close</span></button>
+              <button onClick={closeModal} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-white/10 hover:text-white" aria-label="Đóng"><span className="material-symbols-outlined text-[20px]">close</span></button>
             </div>
             <div className="space-y-4">
-              <div className="bg-white/5 rounded-xl px-4 py-3 text-sm text-slate-300 border border-white/10">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
                 <span className="text-xs text-slate-500 uppercase tracking-wider block mb-1">{t("inv_qty_readonly")}</span>
                 <span className="font-bold text-white">{selectedBatch.soLuong.toLocaleString()} tem QR</span>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">{t("inv_field_mfg_date")}</label>
                   <input type="date" value={form.ngaySanXuat || ""}
@@ -891,7 +892,7 @@ export default function InventoryPage() {
                       return form.hanDung < todayStr ? form.hanDung : todayStr;
                     })()}
                     onChange={e => setForm(f => ({ ...f, ngaySanXuat: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/20 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition" />
+                    className="w-full min-w-0 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">{t("inv_field_exp_date")}</label>
@@ -899,19 +900,20 @@ export default function InventoryPage() {
                     min={form.ngaySanXuat || undefined}
                     max="9999-12-31"
                     onChange={e => setForm(f => ({ ...f, hanDung: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/20 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition" />
+                    className="w-full min-w-0 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40" />
                 </div>
               </div>
             </div>
-            <div className="flex gap-3 mt-8">
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
               <button onClick={closeModal}
-                className="flex-1 py-3 border border-white/20 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/5 transition">{t("common_cancel")}</button>
+                className="flex-1 rounded-xl border border-white/20 py-3 text-sm font-bold text-slate-300 transition hover:bg-white/5">{t("common_cancel")}</button>
               <button onClick={handleEditBatch} disabled={submitting}
-                className="flex-1 py-3 bg-[#C8A557] hover:bg-[#C8A557] text-white rounded-xl text-sm font-bold transition disabled:opacity-50 flex items-center justify-center gap-2">
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#1F6FEB] py-3 text-sm font-bold text-white transition hover:bg-[#1d5fd0] disabled:opacity-50">
                 {submitting && <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white" />}
                 <span className="material-symbols-outlined text-[16px]">save</span>
                 {t("inv_save_changes")}
               </button>
+            </div>
             </div>
           </div>
         </div>
