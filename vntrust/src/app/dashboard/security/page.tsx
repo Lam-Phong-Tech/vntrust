@@ -61,9 +61,33 @@ const formatAuditAction = (action: string) => {
   return action;
 };
 
+const formatHealthAction = (action: string, lang: string) => {
+  const isEn = lang === "en";
+  const digest = action.match(/Daily digest:\s*(\d+)\s*high alerts,\s*(\d+)\s*escalated\.\s*Email:\s*([a-z0-9_]+)/i);
+  if (digest) {
+    const [, highAlerts, escalated, emailStatus] = digest;
+    const emailText = emailStatus === "email_disabled_in_config"
+      ? isEn ? "email notifications are disabled" : "email thông báo đang tắt trong cấu hình"
+      : emailStatus.replace(/_/g, " ");
+    return isEn
+      ? `Daily summary: ${highAlerts} high alerts, ${escalated} escalated. ${emailText}.`
+      : `Tổng hợp hằng ngày: ${highAlerts} cảnh báo mức cao, ${escalated} cảnh báo đã leo thang. ${emailText}.`;
+  }
+
+  const autoEscalate = action.match(/Auto-escalate\s+cảnh báo\s+([a-z0-9-]+)\s+từ\s+high\s+--\s+high\s+\((L\d)\)/i);
+  if (autoEscalate) {
+    return isEn
+      ? `Auto-escalated alert ${autoEscalate[1]} from high severity (${autoEscalate[2]}).`
+      : `Tự động leo thang cảnh báo ${autoEscalate[1]} từ mức cao (${autoEscalate[2]}).`;
+  }
+
+  return formatAuditAction(action);
+};
+
 export default function SecurityPage() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const tr = (vi: string, en: string) => (lang === "en" ? en : vi);
   const [health, setHealth] = useState<SystemHealth | null>(null);
   const [logData, setLogData] = useState<LogData | null>(null);
   const [activeTab, setActiveTab] = useState<"health" | "audit" | "nfr">("health");
@@ -208,12 +232,25 @@ export default function SecurityPage() {
                 { label: "P95 Response", value: health.sla.p95ResponseMs + "ms", target: "≤200ms", pass: health.sla.p95ResponseMs <= 200, icon: "timer" },
                 { label: "P50 Response", value: health.sla.p50ResponseMs + "ms", target: "≤100ms", pass: health.sla.p50ResponseMs <= 100, icon: "timer" },
                 { label: "Open Alerts", value: health.alerts.open, target: "= 0 ideal", pass: health.alerts.open === 0, icon: "notifications_active" },
-              ].map((s, i) => (
+              ].map((s, i) => {
+                const labelMap: Record<string, string> = {
+                  Uptime: tr("Thời gian hoạt động", "Uptime"),
+                  "P95 Response": tr("Phản hồi P95", "P95 Response"),
+                  "P50 Response": tr("Phản hồi P50", "P50 Response"),
+                  "Open Alerts": tr("Cảnh báo mở", "Open Alerts"),
+                };
+                const targetMap: Record<string, string> = {
+                  Uptime: ">= 99.5%",
+                  "P95 Response": "<= 200ms",
+                  "P50 Response": "<= 100ms",
+                  "Open Alerts": tr("Lý tưởng = 0", "Ideal = 0"),
+                };
+                return (
                 <div key={i} className={`p-4 rounded-xl border min-w-0 ${s.pass ? "bg-[#4A7C5C]/10 border-[#4A7C5C]/20" : "bg-red-500/10 border-red-500/20"}`}>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-2 min-w-0">
                       <span className={`material-symbols-outlined text-[18px] shrink-0 ${s.pass ? "text-[#6FB585]" : "text-red-400"}`}>{s.icon}</span>
-                      <p className="text-xs text-slate-300 font-bold leading-snug break-words">{s.label}</p>
+                      <p className="text-xs text-slate-300 font-bold leading-snug break-words">{labelMap[s.label] || s.label}</p>
                     </div>
                     <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black border ${
                       s.pass ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" : "text-red-300 bg-red-500/10 border-red-500/20"
@@ -223,10 +260,11 @@ export default function SecurityPage() {
                   </div>
                   <p className={`text-2xl sm:text-3xl font-black leading-none ${s.pass ? "text-white" : "text-red-300"}`}>{s.value}</p>
                   <p className="mt-2 inline-flex max-w-full rounded-full bg-white/5 px-2 py-1 text-[10px] font-bold text-slate-400">
-                    <span className="truncate">Target: {s.target}</span>
+                    <span className="truncate">{tr("Mục tiêu", "Target")}: {targetMap[s.label] || s.target}</span>
                   </p>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -266,7 +304,7 @@ export default function SecurityPage() {
                       <div key={e.id} className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-xl text-sm hover:bg-red-100 transition">
                         <span className="material-symbols-outlined text-red-700 text-[16px] shrink-0">error</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-red-900 font-semibold leading-tight break-words">{e.action}</p>
+                          <p className="text-red-950 font-semibold leading-tight break-words">{formatHealthAction(e.action, lang)}</p>
                           <p className="text-xs text-red-700/80 mt-0.5">{e.user} · {e.ip}</p>
                         </div>
                         <p className="text-xs text-slate-700 shrink-0 text-right">{new Date(e.time).toLocaleString("vi-VN").replace(' ', '\n')}</p>
@@ -288,7 +326,7 @@ export default function SecurityPage() {
                       <div key={w.id} className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm hover:bg-amber-100 transition">
                         <span className="material-symbols-outlined text-amber-700 text-[16px] shrink-0">warning</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-amber-950 font-semibold leading-tight break-words">{w.action}</p>
+                          <p className="text-amber-950 font-semibold leading-tight break-words">{formatHealthAction(w.action, lang)}</p>
                           <p className="text-xs text-amber-800/80 mt-0.5">{w.user} · {w.ip}</p>
                         </div>
                         <p className="text-xs text-slate-700 shrink-0 text-right">{new Date(w.time).toLocaleString("vi-VN").replace(' ', '\n')}</p>
