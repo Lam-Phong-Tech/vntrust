@@ -1317,3 +1317,66 @@ html.light-mode .admin-sidebar img[src*="verigoods-wordmark"] {
     drop-shadow(0 0 62px rgba(59,130,246,0.18))
     drop-shadow(0 0 30px rgba(34,197,94,0.07));
 }
+
+/* Dashboard emergency card: keep hotline text readable in light mode despite broad theme overrides. */
+html.light-mode .emergency-card {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-color: rgba(31, 111, 235, 0.24) !important;
+  box-shadow: 0 10px 26px rgba(31, 111, 235, 0.12) !important;
+}
+
+html.light-mode .emergency-card__call {
+  border-width: 1px !important;
+  border-style: solid !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85) !important;
+}
+
+html.light-mode .emergency-card__call--alert {
+  background: #fee2e2 !important;
+  border-color: rgba(220, 38, 38, 0.34) !important;
+}
+
+html.light-mode .emergency-card__call--alert .emergency-card__label {
+  color: #991b1b !important;
+}
+
+html.light-mode .emergency-card__call--support {
+  background: #dbeafe !important;
+  border-color: rgba(31, 111, 235, 0.34) !important;
+}
+
+html.light-mode .emergency-card__call--support .emergency-card__label {
+  color: #0b4fc7 !important;
+}
+
+html.light-mode .emergency-card__number {
+  color: #0d1b2e !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65) !important;
+}
+
+html.light-mode .emergency-card__title {
+  color: #0d1b2e !important;
+  border-top: 1px solid rgba(31, 111, 235, 0.18) !important;
+  text-shadow: none !important;
+}
+
+.dark .emergency-card__call--alert {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.dark .emergency-card__call--support {
+  background: rgba(31, 111, 235, 0.15);
+  border: 1px solid rgba(31, 111, 235, 0.3);
+}
+
+.dark .emergency-card__call--alert .emergency-card__label,
+.dark .emergency-card__call--support .emergency-card__label,
+.dark .emergency-card__number,
+.dark .emergency-card__title {
+  color: #ffffff;
+}
+
+.dark .emergency-card__title {
+  border-top: 1px solid rgba(239, 68, 68, 0.2);
+}

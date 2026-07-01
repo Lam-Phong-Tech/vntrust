@@ -1153,18 +1153,18 @@ export default function Dashboard() {
                 <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_hist")}</h3>
               </Link>
 
-                <div className="glass-card rounded-3xl p-3 sm:p-4 flex flex-col justify-between h-32 border border-[#1F6FEB]/20 bg-white/85 min-w-0 overflow-hidden shadow-sm dark:bg-red-900/20 dark:border-red-500/30">
+                <div className="emergency-card glass-card rounded-3xl p-3 sm:p-4 flex flex-col justify-between h-32 border border-[#1F6FEB]/20 bg-white/85 min-w-0 overflow-hidden shadow-sm dark:bg-red-900/20 dark:border-red-500/30">
                   <div className="flex gap-1.5 sm:gap-2 min-w-0">
-                    <a href="tel:113" className="flex-1 min-w-0 rounded-xl border border-red-300/70 bg-red-50 p-1.5 text-center transition hover:bg-red-100 dark:bg-red-500/20 dark:border-red-500/30 dark:hover:bg-red-500/40">
-                      <p className="text-[8px] sm:text-[9px] font-black text-red-700 truncate leading-tight dark:text-red-100">{lang === 'en' ? 'ALERTS' : 'CẢNH BÁO'}</p>
-                      <p className="text-sm sm:text-base font-black text-slate-950 truncate leading-tight dark:text-white">113</p>
+                    <a href="tel:113" className="emergency-card__call emergency-card__call--alert flex-1 min-w-0 rounded-xl p-1.5 text-center transition">
+                      <p className="emergency-card__label text-[8px] sm:text-[9px] font-black truncate leading-tight">{lang === 'en' ? 'ALERTS' : 'CẢNH BÁO'}</p>
+                      <p className="emergency-card__number text-sm sm:text-base font-black truncate leading-tight">113</p>
                     </a>
-                    <a href="tel:1900" className="flex-1 min-w-0 rounded-xl border border-[#1F6FEB]/35 bg-[#1F6FEB]/10 p-1.5 text-center transition hover:bg-[#1F6FEB]/15 dark:bg-[#1F6FEB]/15 dark:border-[#1F6FEB]/30 dark:hover:bg-[#1F6FEB]/25">
-                      <p className="text-[8px] sm:text-[9px] font-black text-[#1557B0] truncate leading-tight dark:text-blue-100">{lang === 'en' ? 'SUPPORT' : 'HỖ TRỢ'}</p>
-                      <p className="text-sm sm:text-base font-black text-slate-950 truncate leading-tight dark:text-white">1900</p>
+                    <a href="tel:1900" className="emergency-card__call emergency-card__call--support flex-1 min-w-0 rounded-xl p-1.5 text-center transition">
+                      <p className="emergency-card__label text-[8px] sm:text-[9px] font-black truncate leading-tight">{lang === 'en' ? 'SUPPORT' : 'HỖ TRỢ'}</p>
+                      <p className="emergency-card__number text-sm sm:text-base font-black truncate leading-tight">1900</p>
                     </a>
                   </div>
-                  <h3 className="text-[11px] sm:text-sm font-black text-slate-800 uppercase text-center border-t border-[#1F6FEB]/15 pt-1.5 sm:pt-2 leading-tight truncate dark:border-red-500/20 dark:text-white">{t("app_emg")}</h3>
+                  <h3 className="emergency-card__title text-[11px] sm:text-sm font-black uppercase text-center pt-1.5 sm:pt-2 leading-tight truncate">{t("app_emg")}</h3>
                 </div>
             </div>
 
