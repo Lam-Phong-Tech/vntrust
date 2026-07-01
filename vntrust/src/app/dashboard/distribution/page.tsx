@@ -203,18 +203,40 @@ export default function DistributionPage() {
 
   const handleTransfer = async () => {
     if (!transferBatch) return;
+    const nsdId = transferForm.nsdId.trim();
+    const khuVucValue = khuVuc.trim();
+    const ghiChuValue = transferForm.ghiChu.trim();
+    const imageUrl = transferForm.hinhAnhUrls.trim();
+
+    if (!nsdId) {
+      showToast("✗ Vui lòng chọn nhà phân phối tiếp nhận", false);
+      return;
+    }
+    if (!khuVucValue) {
+      showToast("✗ Vui lòng nhập khu vực phân phối", false);
+      return;
+    }
+    if (!ghiChuValue) {
+      showToast("✗ Vui lòng nhập ghi chú / mô tả đơn hàng", false);
+      return;
+    }
+    if (!imageUrl) {
+      showToast("✗ Vui lòng tải ảnh lô hàng", false);
+      return;
+    }
+
     setSubmitting(true);
-    const imgs = transferForm.hinhAnhUrls ? [transferForm.hinhAnhUrls] : [];
+    const imgs = [imageUrl];
     const res = await fetch("/api/don-chuyen-hang", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         loHangId: transferBatch.id,
         nsxDoanhNghiepId: doanhNghiepId,
-        nsdDoanhNghiepId: transferForm.nsdId || null,
-        ghiChu: transferForm.ghiChu,
+        nsdDoanhNghiepId: nsdId,
+        ghiChu: ghiChuValue,
         hinhAnhUrls: imgs,
-        khuVucPhanPhoi: khuVuc,
+        khuVucPhanPhoi: khuVucValue,
       }),
     });
     const data = await res.json();
@@ -223,6 +245,7 @@ export default function DistributionPage() {
       showToast("✓ Đã gửi đơn — đang chờ Admin duyệt", true);
       setTransferBatch(null);
       setTransferForm({ ghiChu: "", hinhAnhUrls: "", nsdId: "" });
+      setKhuVuc("");
       setPreviewImg("");
       fetchData(userRole || undefined, doanhNghiepId);
     }
@@ -588,13 +611,14 @@ export default function DistributionPage() {
             <div className="space-y-4">
               {/* NSD selection */}
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Nhà phân phối tiếp nhận <span className="text-slate-600 font-normal">(tuỳ chọn)</span></label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Nhà phân phối tiếp nhận <span className="text-red-400">*</span></label>
                 <select
                   value={transferForm.nsdId}
                   onChange={e => setTransferForm(f => ({ ...f, nsdId: e.target.value }))}
+                  required
                   className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#C8A557]"
                 >
-                  <option value="">— Để Admin chỉ định sau —</option>
+                  <option value="">— Chọn nhà phân phối —</option>
                   {nsdList.map(n => (
                     <option key={n.id} value={n.id}>{n.tenDoanhNghiep} ({n.maSoThue})</option>
                   ))}
@@ -602,28 +626,32 @@ export default function DistributionPage() {
               </div>
               {/* Notes */}
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Khu vực phân phối <span className="text-slate-600 font-normal">(tuỳ chọn)</span></label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Khu vực phân phối <span className="text-red-400">*</span></label>
                 <input
                   type="text"
                   placeholder="VD: TP.HCM, Miền Nam, siêu thị X..."
                   value={khuVuc}
                   onChange={e => setKhuVuc(e.target.value)}
+                  required
+                  maxLength={120}
                   className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#C8A557]"
                 />
               </div>
               
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Ghi chú / Mô tả đơn hàng</label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Ghi chú / Mô tả đơn hàng <span className="text-red-400">*</span></label>
                 <textarea
                   value={transferForm.ghiChu}
                   onChange={e => setTransferForm(f => ({ ...f, ghiChu: e.target.value }))}
                   rows={3} placeholder="Yêu cầu đặc biệt, điều kiện bảo quản..."
+                  required
+                  maxLength={500}
                   className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C8A557] resize-none"
                 />
               </div>
               {/* Image upload */}
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Ảnh lô hàng <span className="text-slate-600 font-normal">(tuỳ chọn)</span></label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Ảnh lô hàng <span className="text-red-400">*</span></label>
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
                   onChange={e => { const f = e.target.files?.[0]; if (f) handleImageUpload(f); }}
                 />

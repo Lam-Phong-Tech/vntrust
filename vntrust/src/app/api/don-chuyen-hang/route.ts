@@ -72,9 +72,27 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const { loHangId, nsxDoanhNghiepId, nsdDoanhNghiepId, ghiChu, hinhAnhUrls, khuVucPhanPhoi } = body;
+    const cleanNsdId = typeof nsdDoanhNghiepId === 'string' ? nsdDoanhNghiepId.trim() : '';
+    const cleanGhiChu = typeof ghiChu === 'string' ? ghiChu.trim() : '';
+    const cleanKhuVuc = typeof khuVucPhanPhoi === 'string' ? khuVucPhanPhoi.trim() : '';
+    const cleanImages = Array.isArray(hinhAnhUrls)
+      ? hinhAnhUrls.map((url) => String(url || '').trim()).filter(Boolean)
+      : [];
 
     if (!loHangId || !nsxDoanhNghiepId) {
       return NextResponse.json({ error: 'Thiếu thông tin bắt buộc' }, { status: 400 });
+    }
+    if (!cleanNsdId) {
+      return NextResponse.json({ error: 'Vui lòng chọn nhà phân phối tiếp nhận' }, { status: 400 });
+    }
+    if (!cleanKhuVuc) {
+      return NextResponse.json({ error: 'Vui lòng nhập khu vực phân phối' }, { status: 400 });
+    }
+    if (!cleanGhiChu) {
+      return NextResponse.json({ error: 'Vui lòng nhập ghi chú / mô tả đơn hàng' }, { status: 400 });
+    }
+    if (cleanImages.length === 0) {
+      return NextResponse.json({ error: 'Vui lòng tải ảnh lô hàng' }, { status: 400 });
     }
 
     // P0.1 — Tenant isolation: NSX không thể tạo đơn cho DN khác
@@ -94,16 +112,16 @@ export async function POST(req: NextRequest) {
       data: {
         loHangId,
         nsxDoanhNghiepId,
-        nsdDoanhNghiepId: nsdDoanhNghiepId || null,
-        ghiChu: ghiChu || null,
-        hinhAnhUrls: hinhAnhUrls ? JSON.stringify(hinhAnhUrls) : null,
+        nsdDoanhNghiepId: cleanNsdId,
+        ghiChu: cleanGhiChu,
+        hinhAnhUrls: JSON.stringify(cleanImages),
         trangThai: 'pending_review',
       },
     });
 
     // Cập nhật trạng thái lô hàng -> pending_review
     const updateData: any = { trangThai: 'pending_review' };
-    if (khuVucPhanPhoi) updateData.khuVucPhanPhoi = khuVucPhanPhoi;
+    updateData.khuVucPhanPhoi = cleanKhuVuc;
     
     await prisma.loHang.update({
       where: { id: loHangId },
