@@ -174,6 +174,9 @@ export async function GET(req: NextRequest) {
 
 const normalizePhone = (value: string) => value.replace(/\s+/g, '').replace(/^(\+84|0084)/, '0');
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const namePattern = /^[\p{L}\s]+$/u;
+const addressPattern = /^[\p{L}\p{N}\s,./#()\-]+$/u;
+const minBirthday = new Date('1900-01-01T00:00:00');
 const roleValues = new Set(['M', 'F', 'O']);
 
 // PATCH: Update hồ sơ cá nhân (ten, sdt, email, avatar, diaChi, ngaySinh, gioiTinh, cccd)
@@ -212,6 +215,10 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Họ tên phải từ 2 đến 80 ký tự' }, { status: 400 });
   }
 
+  if (data.ten && !namePattern.test(data.ten)) {
+    return NextResponse.json({ error: 'Họ tên chỉ được gồm chữ cái và khoảng trắng' }, { status: 400 });
+  }
+
   if (data.email !== undefined) {
     data.email = data.email ? String(data.email).toLowerCase() : null;
   }
@@ -226,8 +233,8 @@ export async function PATCH(req: NextRequest) {
       const parsedDate = new Date(`${String(body.ngaySinh).slice(0, 10)}T00:00:00`);
       const today = new Date();
       today.setHours(23, 59, 59, 999);
-      if (Number.isNaN(parsedDate.getTime()) || parsedDate > today) {
-        return NextResponse.json({ error: 'Ngày sinh không được lớn hơn ngày hiện tại' }, { status: 400 });
+      if (Number.isNaN(parsedDate.getTime()) || parsedDate > today || parsedDate < minBirthday) {
+        return NextResponse.json({ error: parsedDate < minBirthday ? 'Ngày sinh không được trước năm 1900' : 'Ngày sinh không được lớn hơn ngày hiện tại' }, { status: 400 });
       }
       data.ngaySinh = parsedDate;
     }
@@ -249,6 +256,9 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Địa chỉ cá nhân tối đa 200 ký tự' }, { status: 400 });
   }
   // Avatar: chỉ chấp nhận URL nội bộ /uploads/...
+  if (data.diaChi && !addressPattern.test(data.diaChi)) {
+    return NextResponse.json({ error: 'Địa chỉ chỉ nên gồm chữ, số và ký tự , . / # ( ) -' }, { status: 400 });
+  }
   if (data.avatar && !data.avatar.startsWith('/uploads/') && !data.avatar.startsWith('http')) {
     return NextResponse.json({ error: 'URL ảnh đại diện không hợp lệ' }, { status: 400 });
   }

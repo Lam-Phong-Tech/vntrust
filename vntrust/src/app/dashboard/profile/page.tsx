@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const normalizePhone = (value: string) => value.replace(/\s+/g, "").replace(/^(\+84|0084)/, "0");
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const namePattern = /^[\p{L}\s]+$/u;
+const addressPattern = /^[\p{L}\p{N}\s,./#()\-]+$/u;
+const minBirthday = "1900-01-01";
+const todayISO = () => new Date().toISOString().split("T")[0];
 
 // Strength labels per language (array — can't be in string dict)
 const STRENGTH_LABELS: Record<string, string[]> = {
@@ -162,7 +166,7 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 // ── Profile Page ───────────────────────────────────────────────────────────────
 export default function ProfilePage() {
   const { t, lang } = useLanguage();
-  const tr = (vi: string, en: string) => (lang === 'en' ? en : vi);
+  const tr = useCallback((vi: string, en: string) => (lang === 'en' ? en : vi), [lang]);
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -212,6 +216,41 @@ export default function ProfilePage() {
     editBirthday !== origBirthday ||
     editGender !== origGender ||
     editCccd !== origCccd;
+
+  const fieldErrors = useMemo(() => {
+    const errors: Record<string, string> = {};
+    const name = editName.trim();
+    const phone = normalizePhone(editPhone);
+    const email = editEmail.trim().toLowerCase();
+    const address = editAddress.trim();
+    const cccd = editCccd.replace(/\s+/g, "");
+    const today = todayISO();
+
+    if (!name) errors.name = tr("Vui lòng nhập họ và tên", "Please enter your full name");
+    else if (name.length < 2 || name.length > 80) errors.name = tr("Họ tên phải từ 2 đến 80 ký tự", "Full name must be 2-80 characters");
+    else if (!namePattern.test(name)) errors.name = tr("Họ tên chỉ được gồm chữ cái và khoảng trắng", "Full name can only contain letters and spaces");
+
+    if (!email) errors.email = tr("Vui lòng nhập email liên hệ", "Please enter contact email");
+    else if (!emailPattern.test(email) || email.length > 120) errors.email = tr("Email liên hệ không hợp lệ", "Contact email is invalid");
+
+    if (phone && !/^0\d{9}$/.test(phone)) errors.phone = tr("Số điện thoại phải gồm 10 số và bắt đầu bằng 0", "Phone number must have 10 digits and start with 0");
+
+    if (editBirthday) {
+      if (editBirthday < minBirthday) errors.birthday = tr("Ngày sinh không được trước năm 1900", "Birthday cannot be before 1900");
+      else if (editBirthday > today) errors.birthday = tr("Ngày sinh không được lớn hơn ngày hiện tại", "Birthday cannot be in the future");
+    }
+
+    if (editGender && !["M", "F", "O"].includes(editGender)) errors.gender = tr("Giới tính không hợp lệ", "Gender is invalid");
+
+    if (cccd && !/^\d{9}$|^\d{12}$/.test(cccd)) errors.cccd = tr("CCCD/CMND phải gồm 9 hoặc 12 số", "ID card must have 9 or 12 digits");
+
+    if (address.length > 200) errors.address = tr("Địa chỉ cá nhân tối đa 200 ký tự", "Personal address is limited to 200 characters");
+    else if (address && !addressPattern.test(address)) errors.address = tr("Địa chỉ chỉ nên gồm chữ, số và ký tự , . / # ( ) -", "Address should only contain letters, numbers and , . / # ( ) -");
+
+    return errors;
+  }, [editName, editPhone, editEmail, editBirthday, editGender, editCccd, editAddress, tr]);
+
+  const hasFieldErrors = Object.keys(fieldErrors).length > 0;
 
   // Load real user data from API
   useEffect(() => {
@@ -272,6 +311,11 @@ export default function ProfilePage() {
   }, []);
 
   const handleSave = async () => {
+    if (hasFieldErrors) {
+      setSaveError(tr("Vui lòng sửa các trường đang báo lỗi trước khi lưu", "Please fix the highlighted fields before saving"));
+      return;
+    }
+
     const name = editName.trim();
     const phone = normalizePhone(editPhone);
     const email = editEmail.trim().toLowerCase();
@@ -506,45 +550,51 @@ export default function ProfilePage() {
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{t("prof_fullname")}</label>
                     <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} disabled={isDemo}
                       minLength={2} maxLength={80} required
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 disabled:cursor-not-allowed" />
+                      className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-sm outline-none transition focus:bg-white/8 disabled:opacity-40 disabled:cursor-not-allowed ${fieldErrors.name ? "border-red-500/60 focus:border-red-500" : "border-white/10 focus:border-[#C8A557]"}`} />
+                    {fieldErrors.name && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.name}</p>}
                   </div>
                   <div>
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{t("prof_phone")}</label>
-                    <input type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} disabled={isDemo}
-                      inputMode="tel" maxLength={15} placeholder="0xxxxxxxxx"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 disabled:cursor-not-allowed" />
+                    <input type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} disabled={isDemo}
+                      inputMode="numeric" maxLength={10} pattern="[0-9]*" placeholder="0xxxxxxxxx"
+                      className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-sm outline-none transition focus:bg-white/8 disabled:opacity-40 disabled:cursor-not-allowed ${fieldErrors.phone ? "border-red-500/60 focus:border-red-500" : "border-white/10 focus:border-[#C8A557]"}`} />
+                    {fieldErrors.phone && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.phone}</p>}
                   </div>
                   <div>
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{t("prof_email")}</label>
                     <input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} disabled={isDemo}
                       maxLength={120} required
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 disabled:cursor-not-allowed" />
+                      className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-sm outline-none transition focus:bg-white/8 disabled:opacity-40 disabled:cursor-not-allowed ${fieldErrors.email ? "border-red-500/60 focus:border-red-500" : "border-white/10 focus:border-[#C8A557]"}`} />
+                    {fieldErrors.email && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.email}</p>}
                   </div>
                   {/* Profile expansion: ngày sinh + giới tính */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{tr("Ngày sinh", "Birthday")}</label>
                       <input type="date" value={editBirthday} onChange={(e) => setEditBirthday(e.target.value)} disabled={isDemo}
-                        max={new Date().toISOString().split("T")[0]}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 [color-scheme:dark]" />
+                        min={minBirthday} max={todayISO()}
+                        className={`w-full bg-white/5 border rounded-xl px-3 py-3 text-white text-sm outline-none transition focus:bg-white/8 disabled:opacity-40 [color-scheme:dark] ${fieldErrors.birthday ? "border-red-500/60 focus:border-red-500" : "border-white/10 focus:border-[#C8A557]"}`} />
+                      {fieldErrors.birthday && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.birthday}</p>}
                     </div>
                     <div>
                       <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{tr("Giới tính", "Gender")}</label>
                       <select value={editGender} onChange={(e) => setEditGender(e.target.value)} disabled={isDemo}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40">
+                        className={`w-full bg-white/5 border rounded-xl px-3 py-3 text-white text-sm outline-none transition focus:bg-white/8 disabled:opacity-40 ${fieldErrors.gender ? "border-red-500/60 focus:border-red-500" : "border-white/10 focus:border-[#C8A557]"}`}>
                         <option value="" className="bg-[#0B1623]">{tr("— Chọn —", "— Select —")}</option>
                         <option value="M" className="bg-[#0B1623]">{tr("Nam", "Male")}</option>
                         <option value="F" className="bg-[#0B1623]">{tr("Nữ", "Female")}</option>
                         <option value="O" className="bg-[#0B1623]">{tr("Khác", "Other")}</option>
                       </select>
+                      {fieldErrors.gender && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.gender}</p>}
                     </div>
                   </div>
                   {/* Profile expansion: CCCD */}
                   <div>
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{tr("CCCD / CMND", "ID Card")}</label>
-                    <input type="text" value={editCccd} onChange={(e) => setEditCccd(e.target.value)} disabled={isDemo}
-                      inputMode="numeric" maxLength={12} placeholder="012345678912"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40" />
+                    <input type="text" value={editCccd} onChange={(e) => setEditCccd(e.target.value.replace(/\D/g, "").slice(0, 12))} disabled={isDemo}
+                      inputMode="numeric" maxLength={12} pattern="[0-9]*" placeholder="012345678912"
+                      className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-sm font-mono outline-none transition focus:bg-white/8 disabled:opacity-40 ${fieldErrors.cccd ? "border-red-500/60 focus:border-red-500" : "border-white/10 focus:border-[#C8A557]"}`} />
+                    {fieldErrors.cccd && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.cccd}</p>}
                   </div>
                   {/* Profile expansion: địa chỉ */}
                   <div>
@@ -552,7 +602,11 @@ export default function ProfilePage() {
                     <textarea value={editAddress} onChange={(e) => setEditAddress(e.target.value)} disabled={isDemo}
                       rows={2} maxLength={200}
                       placeholder={tr("Số nhà, đường, phường, quận, thành phố", "Street, ward, district, city")}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 resize-none" />
+                      className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-sm outline-none transition focus:bg-white/8 disabled:opacity-40 resize-none ${fieldErrors.address ? "border-red-500/60 focus:border-red-500" : "border-white/10 focus:border-[#C8A557]"}`} />
+                    <div className="mt-1.5 flex items-center justify-between gap-3">
+                      {fieldErrors.address ? <p className="text-xs text-red-400">{fieldErrors.address}</p> : <span />}
+                      <span className="text-[10px] text-slate-500">{editAddress.length}/200</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -594,7 +648,7 @@ export default function ProfilePage() {
             )}
 
             <div className="mt-5 flex items-center gap-3">
-              <button onClick={handleSave} disabled={saving || isDemo || !isDirty}
+              <button onClick={handleSave} disabled={saving || isDemo || !isDirty || hasFieldErrors}
                 className={`flex-1 lg:flex-none lg:px-10 py-3.5 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition ${saved ? 'bg-[#4A7C5C] text-white shadow-[0_0_24px_rgba(16,185,129,0.3)]' : 'bg-[#C8A557] hover:bg-[#C8A557] text-white shadow-[0_0_24px_rgba(6,182,212,0.25)]'} disabled:opacity-40 disabled:cursor-not-allowed`}>
               {saving ? (
                 <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
