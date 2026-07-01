@@ -31,10 +31,10 @@ export default function VerifyManualPage() {
       <div className="w-full max-w-2xl relative z-10 flex flex-col items-center">
         {/* Navigation / Back */}
         <div className="w-full mb-6">
-          <Link href="/verify" className="inline-flex items-center gap-2 text-sm font-bold text-on-surface-variant hover:text-tertiary transition">
+          <button type="button" onClick={() => router.back()} className="inline-flex items-center gap-2 text-sm font-bold text-on-surface-variant hover:text-tertiary transition">
             <span className="material-symbols-outlined text-lg">arrow_back</span>
-            Về Trung tâm Xác thực
-          </Link>
+            Quay lại
+          </button>
         </div>
 
         <div className="glass-panel border border-outline-variant/15 rounded-3xl p-8 md:p-12 w-full shadow-2xl flex flex-col text-center bg-surface-container-lowest/80 backdrop-blur-xl">

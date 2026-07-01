@@ -464,7 +464,7 @@ export default function ProfilePage() {
         {/* ── HERO BANNER ─────────────────────────────────────────────── */}
         <div className="dashboard-profile-hero relative w-full bg-gradient-to-r from-[#0B1623] via-[#142235] to-[#0B1623] border-b border-white/5 px-6 lg:px-12 py-8">
           {/* Back */}
-          <button onClick={() => router.push('/dashboard')}
+          <button type="button" onClick={() => router.back()}
             className="dashboard-profile-back absolute top-6 left-6 lg:left-12 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
             <span className="material-symbols-outlined text-white text-[18px]">arrow_back</span>
           </button>

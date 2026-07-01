@@ -508,7 +508,7 @@ export default function VerificationResult() {
 
                     setShowSuccessModal(true);
                     setTimeout(() => {
-                      router.push('/verify');
+                      router.back();
                     }, 3000);
                   } catch (e) {
                     console.error("Submit error:", e);
@@ -549,10 +549,10 @@ export default function VerificationResult() {
                       : 'Báo cáo của bạn đã được ghi nhận. Cảm ơn bạn đã góp phần bảo vệ cộng đồng!'}
                   </p>
                   <button 
-                    onClick={() => router.push('/verify')}
+                    onClick={() => router.back()}
                     className="w-full py-3.5 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors"
                   >
-                    {lang === 'en' ? 'Return to Home' : 'Quay lại trang chủ'}
+                    {lang === 'en' ? 'Go back' : 'Quay lại'}
                   </button>
                 </div>
               </div>

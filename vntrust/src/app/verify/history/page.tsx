@@ -1,10 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function VerifyHistoryPage() {
   const { lang } = useLanguage();
+  const router = useRouter();
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [tongDiem, setTongDiem] = useState(0);
@@ -32,9 +33,9 @@ export default function VerifyHistoryPage() {
     <div className="verify-consumer-page verify-page-history min-h-screen bg-[#0B1623] pt-24 pb-12 px-6 flex flex-col items-center">
       <div className="w-full max-w-4xl">
         <div className="flex items-center gap-2 mb-8">
-          <Link href="/verify" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition border border-white/10">
+          <button type="button" onClick={() => router.back()} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition border border-white/10">
             <span className="material-symbols-outlined">arrow_back</span>
-          </Link>
+          </button>
           <h1 className="text-2xl font-black text-white uppercase tracking-wider font-display">
             {lang === 'en' ? 'My Activity History' : 'Lịch Sử Kiểm Tra Của Tôi'}
           </h1>

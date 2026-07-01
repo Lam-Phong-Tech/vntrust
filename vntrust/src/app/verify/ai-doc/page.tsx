@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function VerifyAiDocPage() {
   const { t } = useLanguage();
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "analyzing" | "success" | "fake">("idle");
@@ -134,10 +135,10 @@ export default function VerifyAiDocPage() {
       <div className="w-full max-w-4xl relative z-10 flex flex-col items-center">
         {/* Navigation / Back */}
         <div className="w-full mb-6">
-          <Link href="/verify" className="inline-flex items-center gap-2 text-sm font-bold text-on-surface-variant hover:text-[#C8A557] transition">
+          <button type="button" onClick={() => router.back()} className="inline-flex items-center gap-2 text-sm font-bold text-on-surface-variant hover:text-[#C8A557] transition">
             <span className="material-symbols-outlined text-lg">arrow_back</span>
             {t("vai_6")}
-          </Link>
+          </button>
         </div>
 
         <div className="glass-panel border border-outline-variant/15 rounded-3xl p-8 w-full shadow-2xl bg-surface-container-lowest/80 backdrop-blur-xl">

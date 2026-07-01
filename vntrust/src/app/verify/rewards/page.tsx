@@ -1,10 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function VerifyRewardsPage() {
   const { lang } = useLanguage();
+  const router = useRouter();
   const [history, setHistory] = useState<any[]>([]);
   const [tongDiem, setTongDiem] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -69,9 +70,9 @@ export default function VerifyRewardsPage() {
       <div className="w-full max-w-4xl">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
-            <Link href="/verify" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition border border-white/10">
+            <button type="button" onClick={() => router.back()} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition border border-white/10">
               <span className="material-symbols-outlined">arrow_back</span>
-            </Link>
+            </button>
             <h1 className="text-2xl font-black text-white uppercase tracking-wider font-display">
               {lang === 'en' ? 'My Rewards' : 'Điểm Thưởng'}
             </h1>
