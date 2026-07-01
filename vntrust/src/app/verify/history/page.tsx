@@ -13,6 +13,7 @@ type HistoryItem = {
   maCaseHoSo?: string | null;
   riskScore?: number | null;
 };
+type HistoryFilter = 'all' | 'scans' | 'reports';
 
 export default function VerifyHistoryPage() {
   const { lang } = useLanguage();
@@ -20,6 +21,7 @@ export default function VerifyHistoryPage() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [tongDiem, setTongDiem] = useState(0);
+  const [filter, setFilter] = useState<HistoryFilter>('all');
 
   useEffect(() => {
     Promise.all([
@@ -39,6 +41,21 @@ export default function VerifyHistoryPage() {
 
   const totalScans = history.filter(h => h.loaiHanhDong !== 'bao_cao').length;
   const reportsSubmitted = history.filter(h => h.loaiHanhDong === 'bao_cao').length;
+  const filteredHistory = history.filter(item => {
+    if (filter === 'scans') return item.loaiHanhDong !== 'bao_cao';
+    if (filter === 'reports') return item.loaiHanhDong === 'bao_cao';
+    return true;
+  });
+  const filterButtons: { key: HistoryFilter; label: string }[] = [
+    { key: 'all', label: lang === 'en' ? 'All' : 'Tất cả' },
+    { key: 'scans', label: lang === 'en' ? 'Scans' : 'Lượt quét' },
+    { key: 'reports', label: lang === 'en' ? 'Reports' : 'Báo cáo' },
+  ];
+  const emptyMessage = filter === 'scans'
+    ? (lang === 'en' ? 'No scan history found.' : 'Chưa có lịch sử lượt quét.')
+    : filter === 'reports'
+      ? (lang === 'en' ? 'No submitted reports found.' : 'Chưa có báo cáo đã gửi.')
+      : (lang === 'en' ? 'No activity history found.' : 'Chưa có lịch sử hoạt động.');
   const getStatusLabel = (item: HistoryItem) => {
     if (item.trangThaiDieuTra === 'dang_dieu_tra') {
       return { text: lang === 'en' ? 'Investigating' : 'Đang điều tra', className: 'text-amber-400' };
@@ -96,18 +113,29 @@ export default function VerifyHistoryPage() {
           <div className="p-6 border-b border-white/10 bg-white/5 flex justify-between items-center">
             <h2 className="font-bold text-white uppercase tracking-wider">{lang === 'en' ? 'Timeline' : 'Dòng thời gian'}</h2>
             <div className="flex gap-2">
-              <button className="px-3 py-1 rounded-full bg-white/10 text-xs font-bold text-white hover:bg-white/20 transition">{lang === 'en' ? 'All' : 'Tất cả'}</button>
-              <button className="px-3 py-1 rounded-full bg-[#0B1623] border border-white/10 text-xs text-slate-400 hover:text-white transition">{lang === 'en' ? 'Scans' : 'Lượt quét'}</button>
-              <button className="px-3 py-1 rounded-full bg-[#0B1623] border border-white/10 text-xs text-slate-400 hover:text-white transition">{lang === 'en' ? 'Reports' : 'Báo cáo'}</button>
+              {filterButtons.map(button => (
+                <button
+                  key={button.key}
+                  type="button"
+                  onClick={() => setFilter(button.key)}
+                  className={`px-3 py-1 rounded-full border text-xs font-bold transition ${
+                    filter === button.key
+                      ? 'bg-white/10 border-white/10 text-white shadow-sm'
+                      : 'bg-[#0B1623] border-white/10 text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {button.label}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="p-6 space-y-6">
             {loading ? (
               <div className="text-center text-slate-400 py-8">{lang === 'en' ? 'Loading history...' : 'Đang tải lịch sử...'}</div>
-            ) : history.length === 0 ? (
-              <div className="text-center text-slate-400 py-8 border border-white/5 bg-white/5 rounded-xl">{lang === 'en' ? 'No activity history found.' : 'Chưa có lịch sử hoạt động.'}</div>
-            ) : history.map((item) => {
+            ) : filteredHistory.length === 0 ? (
+              <div className="text-center text-slate-400 py-8 border border-white/5 bg-white/5 rounded-xl">{emptyMessage}</div>
+            ) : filteredHistory.map((item) => {
               const status = getStatusLabel(item);
               const riskScore = item.riskScore || 0;
               return (
