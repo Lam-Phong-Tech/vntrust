@@ -65,7 +65,7 @@ export default function VerifyRewardsPage() {
   ];
 
   return (
-    <div className="verify-consumer-page min-h-screen bg-[#0B1623] pt-24 pb-12 px-6 flex flex-col items-center">
+    <div className="verify-consumer-page verify-page-rewards min-h-screen bg-[#0B1623] pt-24 pb-12 px-6 flex flex-col items-center">
       <div className="w-full max-w-4xl">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">

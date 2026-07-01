@@ -23,7 +23,7 @@ export default function VerifyManualPage() {
   };
 
   return (
-    <div className="verify-consumer-page min-h-[calc(100vh-80px)] pb-12 flex flex-col items-center pt-8 px-4 relative">
+    <div className="verify-consumer-page verify-page-manual min-h-[calc(100vh-80px)] pb-12 flex flex-col items-center pt-8 px-4 relative">
       <div className="fixed inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
         <div className="w-[60%] h-[60%] rounded-full bg-tertiary/10 blur-[150px]"></div>
       </div>

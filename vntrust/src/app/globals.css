@@ -738,6 +738,117 @@ body [class*="fixed"] {
   overflow-wrap: anywhere;
 }
 
+/* Desktop/tablet verify pages should read as app screens, not stretched billboards. */
+.verify-consumer-page {
+  padding-left: clamp(16px, 3vw, 48px) !important;
+  padding-right: clamp(16px, 3vw, 48px) !important;
+}
+
+.verify-consumer-page > div:not(.fixed) {
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.verify-page-hub > div:not(.fixed) {
+  max-width: min(1180px, 100%) !important;
+}
+
+.verify-page-manual > div:not(.fixed) {
+  max-width: min(920px, 100%) !important;
+}
+
+.verify-page-ai-doc > div:not(.fixed),
+.verify-page-history > div:not(.fixed),
+.verify-page-rewards > div:not(.fixed) {
+  max-width: min(1120px, 100%) !important;
+}
+
+.verify-page-wizard > div:not(.fixed) {
+  max-width: min(980px, 100%) !important;
+}
+
+.verify-page-hub {
+  align-items: flex-start !important;
+  padding-top: clamp(36px, 6vh, 72px) !important;
+}
+
+.verify-page-hub header {
+  margin-bottom: clamp(24px, 4vw, 40px) !important;
+}
+
+.verify-page-hub h1 {
+  font-size: clamp(2.5rem, 4vw, 4rem) !important;
+  line-height: 1.02 !important;
+}
+
+.verify-page-hub p {
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem) !important;
+}
+
+.verify-page-hub a.group {
+  min-height: 220px !important;
+  padding: clamp(24px, 2.6vw, 32px) !important;
+}
+
+.verify-page-manual .glass-panel,
+.verify-page-ai-doc .glass-panel,
+.verify-page-wizard .glass-panel,
+.verify-page-history .glass-panel,
+.verify-page-rewards .glass-panel {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.verify-page-manual .glass-panel {
+  max-width: 760px !important;
+  padding: clamp(24px, 3vw, 40px) !important;
+}
+
+.verify-page-manual form {
+  max-width: 560px !important;
+}
+
+.verify-page-ai-doc .glass-panel {
+  padding: clamp(24px, 3vw, 36px) !important;
+}
+
+.verify-page-ai-doc [class*="lg:grid-cols-2"] {
+  gap: clamp(20px, 3vw, 36px) !important;
+}
+
+.verify-page-ai-doc [class*="min-h-[350px]"] {
+  min-height: clamp(260px, 32vw, 340px) !important;
+}
+
+.verify-page-wizard .glass-panel {
+  min-height: 360px !important;
+}
+
+.verify-page-history [class*="md:grid-cols-3"],
+.verify-page-rewards [class*="md:grid-cols-2"] {
+  gap: clamp(16px, 2vw, 24px) !important;
+}
+
+.verify-page-rewards .text-5xl {
+  font-size: clamp(2.25rem, 4vw, 3rem) !important;
+}
+
+@media (min-width: 768px) and (max-width: 1180px) {
+  .verify-page-hub [class*="md:grid-cols-3"] {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+  }
+
+  .verify-page-hub a.group {
+    min-height: 200px !important;
+  }
+
+  .verify-page-ai-doc [class*="lg:grid-cols-2"],
+  .verify-page-rewards [class*="md:grid-cols-2"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 @media (max-width: 767px) {
   .verify-consumer-page {
     min-height: 100dvh !important;
