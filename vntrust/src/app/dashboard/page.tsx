@@ -565,6 +565,11 @@ export default function Dashboard() {
   const router = useRouter();
   const { logs } = useLogs();
   const { toasts, show: showToast, dismiss: dismissToast } = useToast();
+  const tr = (vi: string, en: string, zh?: string) => {
+    if (lang === "en") return en;
+    if (lang === "zh") return zh || en;
+    return vi;
+  };
 
   useEffect(() => {
     const readCookie = (n: string) =>
@@ -1086,7 +1091,7 @@ export default function Dashboard() {
                     <span className="material-symbols-outlined text-3xl text-red-400">report</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-red-500/20 text-red-300 rounded-full border border-red-500/30">{lang === 'en' ? 'WIZARD' : 'TỪNG BƯỚC'}</span>
                   </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{lang === 'en' ? 'Step-by-step reporting' : 'Báo cáo từng bước'}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Report Fake Goods' : 'Báo Cáo Hàng Giả'}</h3></div>
+                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{tr("Báo cáo từng bước", "Step-by-step reporting", "分步报告")}</p><h3 className="text-sm font-bold text-white">{tr("Báo cáo hàng giả", "Report Fake Goods", "举报假货")}</h3></div>
                 </Link>
               )}
 
@@ -1096,9 +1101,9 @@ export default function Dashboard() {
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="material-symbols-outlined text-3xl text-cyan-400">history</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 rounded-full border border-cyan-500/30">{lang === 'en' ? 'ACTIVITY' : 'HOẠT ĐỘNG'}</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 rounded-full border border-cyan-500/30">{tr("HOẠT ĐỘNG", "ACTIVITY", "活动")}</span>
                   </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{lang === 'en' ? 'Scan & report history' : 'Lịch sử quét và báo cáo'}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'My History' : 'Lịch Sử Cá Nhân'}</h3></div>
+                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{tr("Lịch sử quét và báo cáo", "Scan & report history", "扫码与报告历史")}</p><h3 className="text-sm font-bold text-white">{tr("Lịch sử cá nhân", "My History", "我的历史")}</h3></div>
                 </Link>
               )}
 
@@ -1108,9 +1113,9 @@ export default function Dashboard() {
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="material-symbols-outlined text-3xl text-emerald-400">redeem</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">{lang === 'en' ? 'VOUCHERS' : 'ĐỔI QUÀ'}</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">{tr("ĐỔI QUÀ", "VOUCHERS", "兑换")}</span>
                   </div>
-                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{lang === 'en' ? 'Earn & spend points' : 'Tích điểm và đổi quà'}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Rewards' : 'Điểm Thưởng'}</h3></div>
+                  <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{tr("Tích điểm và đổi quà", "Earn & spend points", "赚取并使用积分")}</p><h3 className="text-sm font-bold text-white">{tr("Điểm thưởng", "Rewards", "奖励积分")}</h3></div>
                 </Link>
               )}
 
@@ -1230,7 +1235,7 @@ export default function Dashboard() {
 
               <button onClick={() => setModal("report")}
                 className="glass-panel px-3 py-2 rounded-xl text-[10px] font-bold text-slate-200 hover:bg-white/10 transition text-left cursor-pointer active:scale-95">
-                {t("sc_export")}<br /><span className="text-[9px] text-slate-500">(AI Summary)</span>
+                {t("sc_export")}<br /><span className="text-[9px] text-slate-500">({tr("Tóm tắt AI", "AI Summary", "AI摘要")})</span>
               </button>
 
               <button onClick={async () => {
@@ -1242,7 +1247,7 @@ export default function Dashboard() {
                   window.location.href = "/login";
                 }}
                 className="glass-panel px-3 py-2 rounded-xl text-[10px] font-bold text-rose-400 hover:bg-rose-500/20 border-rose-500/20 transition flex items-center justify-center gap-1 cursor-pointer active:scale-95 mt-2">
-                <span className="material-symbols-outlined text-[14px]">logout</span> {lang === 'en' ? 'Logout' : 'Đăng xuất'}
+                <span className="material-symbols-outlined text-[14px]">logout</span> {tr("Đăng xuất", "Logout", "登出")}
               </button>
             </div>
 
@@ -1271,7 +1276,7 @@ export default function Dashboard() {
                 {gpsStatus === 'loading' && !ipInfo && (
                   <div className="glass-panel rounded-2xl border border-white/10 p-4 flex items-center gap-3">
                     <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-[#C8A557] shrink-0" />
-                    <span className="text-[11px] text-slate-300">{lang === 'en' ? 'Getting GPS location...' : 'Đang lấy vị trí GPS...'}</span>
+                    <span className="text-[11px] text-slate-300">{tr("Đang lấy vị trí GPS...", "Getting GPS location...", "正在获取GPS位置...")}</span>
                   </div>
                 )}
 
@@ -1280,15 +1285,15 @@ export default function Dashboard() {
                   <div className="glass-panel rounded-2xl border border-red-500/30 bg-red-500/10 p-3 space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-red-400 text-[18px]">location_disabled</span>
-                      <span className="text-[11px] font-bold text-red-300">{lang === 'en' ? 'GPS blocked in browser' : 'GPS bị chặn trong trình duyệt'}</span>
+                      <span className="text-[11px] font-bold text-red-300">{tr("GPS bị chặn trong trình duyệt", "GPS blocked in browser", "浏览器已阻止GPS")}</span>
                     </div>
                     <p className="text-[10px] text-slate-400 leading-relaxed">
-                      {lang === 'en' ? <>Click the <strong className="text-white">🔒 lock icon</strong> in the address bar → select <strong className="text-white">Location</strong> → <strong className="text-[#6FB585]">Allow</strong> → Reload.</> : <>Nhấn vào <strong className="text-white">🔒 biểu tượng ổ khoá</strong> trên thanh địa chỉ → chọn <strong className="text-white">Vị trí</strong> → <strong className="text-[#6FB585]">Cho phép</strong> → Tải lại trang.</>}
+                      {lang === "en" ? <>Click the <strong className="text-white">lock icon</strong> in the address bar → select <strong className="text-white">Location</strong> → <strong className="text-[#6FB585]">Allow</strong> → Reload.</> : lang === "zh" ? <>点击地址栏中的<strong className="text-white">锁形图标</strong> → 选择<strong className="text-white">位置</strong> → <strong className="text-[#6FB585]">允许</strong> → 重新加载。</> : <>Nhấn vào <strong className="text-white">biểu tượng ổ khoá</strong> trên thanh địa chỉ → chọn <strong className="text-white">Vị trí</strong> → <strong className="text-[#6FB585]">Cho phép</strong> → Tải lại trang.</>}
                     </p>
                     <button
                       onClick={() => { sessionStorage.removeItem("vntrust_geo"); setGpsStatus("idle"); window.location.reload(); }}
                       className="w-full py-1.5 bg-[#4A7C5C]/20 text-[#6FB585] border border-[#4A7C5C]/30 rounded-xl text-[10px] font-bold hover:bg-[#4A7C5C]/30 transition flex items-center justify-center gap-1">
-                      <span className="material-symbols-outlined text-[12px]">refresh</span> {lang === 'en' ? 'Permission granted — Reload' : 'Đã cấp quyền — Tải lại'}
+                      <span className="material-symbols-outlined text-[12px]">refresh</span> {tr("Đã cấp quyền - Tải lại", "Permission granted - Reload", "已授权 - 重新加载")}
                     </button>
                   </div>
                 )}
@@ -1298,10 +1303,10 @@ export default function Dashboard() {
                   <div className="glass-panel rounded-2xl border border-white/10 p-4 w-full sm:w-72">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="material-symbols-outlined text-[#C8A557] text-[18px]">location_searching</span>
-                      <span className="text-xs font-bold text-white">{lang === 'en' ? 'Last Auth Location' : 'Vị trí xác thực lần cuối'}</span>
+                      <span className="text-xs font-bold text-white">{tr("Vị trí xác thực lần cuối", "Last Auth Location", "最近验证位置")}</span>
                     </div>
                     <p className="text-[11px] text-slate-400 mb-3">
-                      {lang === 'en' ? 'Grant GPS permission to display your verified location on the map.' : 'Cấp quyền GPS để hiển thị vị trí xác thực trên bản đồ.'}
+                      {tr("Cấp quyền GPS để hiển thị vị trí xác thực trên bản đồ.", "Grant GPS permission to display your verified location on the map.", "授权GPS以在地图上显示您的验证位置。")}
                     </p>
                     <button
                       onClick={() => {
@@ -1327,7 +1332,7 @@ export default function Dashboard() {
                       }}
                       className="w-full py-2 bg-[#4A7C5C]/20 text-[#6FB585] border border-[#4A7C5C]/30 rounded-xl text-xs font-bold hover:bg-[#4A7C5C]/30 transition flex items-center justify-center gap-1.5">
                       <span className="material-symbols-outlined text-[14px]">gps_fixed</span>
-                      {lang === 'en' ? 'Enable GPS' : 'Cấp quyền GPS'}
+                      {tr("Cấp quyền GPS", "Enable GPS", "启用GPS")}
                     </button>
                   </div>
                 )}

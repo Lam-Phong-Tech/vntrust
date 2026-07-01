@@ -289,7 +289,7 @@ const dict: Record<string, Record<string, string>> = {
   sc_hotspot: { vi: "Điểm nóng", en: "Hotspot", zh: "热点", ja: "ホットスポット", ko: "핫스팟", fr: "Point chaud" },
   sc_tracking: { vi: "Đang theo dõi", en: "Tracking", zh: "追踪中", ja: "追跡中", ko: "추적 중", fr: "En suivi" },
   sc_normal: { vi: "Bình thường", en: "Normal", zh: "正常", ja: "正常", ko: "정상", fr: "Normal" },
-  sc_export: { vi: "EXPORT REPORT", en: "EXPORT REPORT", zh: "导出报告", ja: "レポート出力", ko: "보고서 내보내기", fr: "EXPORTER RAPPORT" },
+  sc_export: { vi: "Xuất báo cáo", en: "Export report", zh: "导出报告", ja: "レポート出力", ko: "보고서 내보내기", fr: "Exporter le rapport" },
 
   // ── Supply Chain inline text ──
   sc_active_badge: { vi: "ĐANG HOẠT ĐỘNG", en: "ACTIVE", zh: "活跃中", ja: "アクティブ", ko: "활성", fr: "ACTIF" },
@@ -742,13 +742,140 @@ const dict: Record<string, Record<string, string>> = {
   geo_prompt_note: { vi: "Dữ liệu vị trí chỉ được dùng cho mục đích xác thực. Không chia sẻ với bên thứ ba.", en: "Location data is only used for verification and is not shared with third parties.", zh: "位置数据仅用于验证，不会与第三方共享。", ja: "位置情報は認証目的のみに使用され、第三者とは共有されません。", ko: "위치 데이터는 인증 목적으로만 사용되며 제3자와 공유되지 않습니다.", fr: "Les données de localisation sont utilisées uniquement pour la vérification et ne sont pas partagées avec des tiers." },
 };
 
-export function t(key: string, lang: string = "vi"): string {
+const aiResponseOverrides: Record<string, Record<string, string>> = {
+  ai_resp_0: {
+    en: "Hello! 😊 Nice to see you today. I am AI VeriGoods. Do you need to look up a serial number, check a batch, or ask something else?",
+    zh: "你好！😊 很高兴见到你。我是 AI VeriGoods。你需要查询序列号、检查批次，还是想问其他问题？",
+    ja: "こんにちは！😊 AI VeriGoodsです。シリアル番号の確認、ロット確認、または別の質問をしますか？",
+    ko: "안녕하세요! 😊 AI VeriGoods입니다. 시리얼 번호 조회, 배치 확인 또는 다른 질문이 필요하신가요?",
+    fr: "Bonjour ! 😊 Je suis AI VeriGoods. Voulez-vous rechercher un numéro de série, vérifier un lot ou poser une autre question ?",
+  },
+  ai_resp_1: {
+    en: "Hey! 👋 I am here. Type a serial number and I will check it right away, or ask me anything about the system.",
+    zh: "你好！👋 我在这里。输入序列号我可以马上检查，也可以询问系统相关问题。",
+    ja: "やあ！👋 シリアル番号を入力すればすぐ確認します。システムについても質問できます。",
+    ko: "안녕하세요! 👋 시리얼 번호를 입력하면 바로 확인해 드립니다. 시스템 관련 질문도 가능합니다.",
+    fr: "Salut ! 👋 Entrez un numéro de série et je le vérifie tout de suite, ou posez-moi une question.",
+  },
+  ai_resp_2: {
+    en: "You are welcome 😄 Happy to help. Ask me anytime if you need more.",
+    zh: "不客气 😄 很高兴能帮到你。需要更多帮助随时问我。",
+    ja: "どういたしまして 😄 いつでも聞いてください。",
+    ko: "천만에요 😄 도움이 필요하면 언제든 물어보세요.",
+    fr: "Avec plaisir 😄 Demandez-moi si vous avez besoin d'autre chose.",
+  },
+  ai_resp_3: {
+    en: "Got it. I am always ready to help 🙌",
+    zh: "好的，我随时准备帮助你 🙌",
+    ja: "了解です。いつでもサポートします 🙌",
+    ko: "알겠습니다. 언제든 도와드릴게요 🙌",
+    fr: "Compris. Je suis toujours prêt à aider 🙌",
+  },
+  ai_resp_4: {
+    en: "Enter the serial number here and I will check it immediately. Example: EDG123456 🔎",
+    zh: "请在这里输入序列号，我会立即检查。例如：EDG123456 🔎",
+    ja: "ここにシリアル番号を入力してください。すぐ確認します。例：EDG123456 🔎",
+    ko: "여기에 시리얼 번호를 입력하면 바로 확인해 드립니다. 예: EDG123456 🔎",
+    fr: "Entrez le numéro de série ici et je le vérifie immédiatement. Exemple : EDG123456 🔎",
+  },
+  ai_resp_5: {
+    en: "I can help. Type the serial or UID from the QR stamp and I will verify it.",
+    zh: "我可以帮你。请输入 QR 标签上的序列号或 UID，我会进行验证。",
+    ja: "お手伝いします。QRラベルのシリアル番号またはUIDを入力してください。",
+    ko: "도와드릴게요. QR 스탬프의 시리얼 또는 UID를 입력해 주세요.",
+    fr: "Je peux aider. Saisissez le numéro de série ou l'UID du QR pour vérification.",
+  },
+  ai_resp_6: {
+    en: "That sounds serious. Please send me the product serial number so I can check it now.\n\n• Hotline: **1800 6789** (free, 24/7)\n• Email: report@vntrust.vn",
+    zh: "这听起来比较严重。请发送商品序列号，我现在为你检查。\n\n• 热线：**1800 6789**（免费，24/7）\n• 邮箱：report@vntrust.vn",
+    ja: "重要な内容のようです。商品のシリアル番号を送ってください。すぐ確認します。\n\n• 電話：**1800 6789**（無料、24時間）\n• Email: report@vntrust.vn",
+    ko: "중요한 문제일 수 있습니다. 제품 시리얼 번호를 보내주시면 바로 확인하겠습니다.\n\n• 전화: **1800 6789** (무료, 24/7)\n• 이메일: report@vntrust.vn",
+    fr: "Cela semble sérieux. Envoyez-moi le numéro de série du produit pour que je vérifie maintenant.\n\n• Hotline : **1800 6789** (gratuit, 24/7)\n• Email : report@vntrust.vn",
+  },
+  ai_resp_7: {
+    en: "To manage products, open **Assets & Batches** 📦\n• Add product → QR codes are generated\n• Create batch → distribute stamps by batch\n\nWhich step do you need help with?",
+    zh: "要管理商品，请进入 **资产与批次** 📦\n• 添加商品 → 系统生成 QR\n• 创建批次 → 按批次分配标签\n\n你需要哪一步的帮助？",
+    ja: "商品管理は **資産とロット** を開いてください 📦\n• 商品追加 → QRコード生成\n• ロット作成 → ロット別にラベル配布\n\nどの手順をサポートしますか？",
+    ko: "제품 관리는 **자산 및 배치**에서 할 수 있습니다 📦\n• 제품 추가 → QR 생성\n• 배치 생성 → 배치별 스탬프 배포\n\n어떤 단계가 필요하신가요?",
+    fr: "Pour gérer les produits, ouvrez **Actifs & Lots** 📦\n• Ajouter un produit → génération des QR\n• Créer un lot → distribution par lot\n\nQuelle étape souhaitez-vous faire ?",
+  },
+  ai_resp_8: {
+    en: "About pricing:\n🟢 **Starter** — Free (100 products, 500 QR/month)\n🔵 **Business** — 2,990,000 VND/month\n🟡 **Enterprise** — Contact us for a custom quote",
+    zh: "价格方案：\n🟢 **Starter** — 免费（100 个商品，500 个 QR/月）\n🔵 **Business** — 2,990,000 越南盾/月\n🟡 **Enterprise** — 联系我们获取定制报价",
+    ja: "料金プラン：\n🟢 **Starter** — 無料（100商品、月500QR）\n🔵 **Business** — 月額 2,990,000 VND\n🟡 **Enterprise** — 個別見積もり",
+    ko: "요금 안내:\n🟢 **Starter** — 무료 (제품 100개, 월 QR 500개)\n🔵 **Business** — 월 2,990,000 VND\n🟡 **Enterprise** — 맞춤 견적 문의",
+    fr: "Tarifs :\n🟢 **Starter** — Gratuit (100 produits, 500 QR/mois)\n🔵 **Business** — 2 990 000 VND/mois\n🟡 **Enterprise** — devis personnalisé",
+  },
+  ai_resp_9: {
+    en: "AI VeriGoods supply chain tracks thousands of verification points nationwide 🗺️\nOpen **Supply Chain** to view the real-time map.",
+    zh: "AI VeriGoods 供应链正在全国范围追踪大量验证点 🗺️\n打开 **供应链** 可查看实时地图。",
+    ja: "AI VeriGoodsのサプライチェーンは全国の多数の検証地点を追跡しています 🗺️\n**サプライチェーン** を開いてリアルタイム地図を確認できます。",
+    ko: "AI VeriGoods 공급망은 전국의 인증 지점을 추적합니다 🗺️\n**공급망**에서 실시간 지도를 확인하세요.",
+    fr: "La chaîne d'approvisionnement AI VeriGoods suit des points de vérification dans tout le pays 🗺️\nOuvrez **Supply Chain** pour voir la carte en temps réel.",
+  },
+  ai_resp_10: {
+    en: "Security is a top priority for AI VeriGoods 🔐\n• AES-256 encryption\n• 2FA for enterprise accounts\n• 24/7 AI monitoring",
+    zh: "安全是 AI VeriGoods 的最高优先级 🔐\n• AES-256 加密\n• 企业账户 2FA\n• AI 24/7 监控",
+    ja: "AI VeriGoodsではセキュリティを最優先しています 🔐\n• AES-256暗号化\n• 企業アカウントの2FA\n• AIによる24時間監視",
+    ko: "AI VeriGoods는 보안을 최우선으로 합니다 🔐\n• AES-256 암호화\n• 기업 계정 2FA\n• 24/7 AI 모니터링",
+    fr: "La sécurité est une priorité pour AI VeriGoods 🔐\n• Chiffrement AES-256\n• 2FA pour les comptes entreprise\n• Surveillance IA 24/7",
+  },
+  ai_resp_11: {
+    en: "The AI VeriGoods mobile app supports camera QR scanning and offline mode. Tap **APP DOWNLOAD** in the top bar to get it.",
+    zh: "AI VeriGoods 手机 App 支持相机扫码和离线模式。点击顶部的 **APP DOWNLOAD** 下载。",
+    ja: "AI VeriGoodsモバイルアプリはカメラQRスキャンとオフラインモードに対応しています。上部の **APP DOWNLOAD** から取得できます。",
+    ko: "AI VeriGoods 모바일 앱은 카메라 QR 스캔과 오프라인 모드를 지원합니다. 상단의 **APP DOWNLOAD**를 눌러 받으세요.",
+    fr: "L'application mobile AI VeriGoods permet le scan QR par caméra et le mode hors ligne. Touchez **APP DOWNLOAD** en haut.",
+  },
+  ai_resp_12: {
+    en: "Reports are easy to export. Use the **Export report** button on the map/dashboard and the system will generate a summary.",
+    zh: "导出报告很简单。点击地图或仪表盘上的 **导出报告** 按钮，系统会生成摘要。",
+    ja: "レポート出力は簡単です。地図またはダッシュボードの **レポート出力** ボタンを使用してください。",
+    ko: "보고서 내보내기는 간단합니다. 지도/대시보드의 **보고서 내보내기** 버튼을 사용하세요.",
+    fr: "L'export de rapport est simple. Utilisez le bouton **Exporter le rapport** sur la carte ou le tableau de bord.",
+  },
+  ai_resp_13: {
+    en: "Contact support:\n• Hotline: 1800 6789 (free, 24/7)\n• Email: support@vntrust.vn\n• Zalo: zalo.me/vntrust",
+    zh: "联系支持：\n• 热线：1800 6789（免费，24/7）\n• 邮箱：support@vntrust.vn\n• Zalo：zalo.me/vntrust",
+    ja: "サポート連絡先：\n• 電話：1800 6789（無料、24時間）\n• Email: support@vntrust.vn\n• Zalo: zalo.me/vntrust",
+    ko: "지원 문의:\n• 전화: 1800 6789 (무료, 24/7)\n• 이메일: support@vntrust.vn\n• Zalo: zalo.me/vntrust",
+    fr: "Contacter le support :\n• Hotline : 1800 6789 (gratuit, 24/7)\n• Email : support@vntrust.vn\n• Zalo : zalo.me/vntrust",
+  },
+  ai_resp_14: {
+    en: "I am not fully sure I understood. Could you describe it a bit more, or enter a serial number for lookup?",
+    zh: "我还没有完全理解。你可以再说明一下，或者直接输入序列号查询。",
+    ja: "内容を完全には理解できませんでした。もう少し詳しく説明するか、シリアル番号を入力してください。",
+    ko: "완전히 이해하지 못했습니다. 조금 더 설명해 주시거나 시리얼 번호를 입력해 주세요.",
+    fr: "Je ne suis pas sûr d'avoir compris. Pouvez-vous préciser ou entrer un numéro de série ?",
+  },
+  ai_resp_15: {
+    en: "Interesting question. Are you asking about a specific product, how to use the system, or pricing?",
+    zh: "这个问题很有意思。你是在问某个具体商品、系统使用方式，还是价格？",
+    ja: "興味深い質問です。特定の商品、システムの使い方、または料金についてですか？",
+    ko: "흥미로운 질문입니다. 특정 제품, 시스템 사용법 또는 요금에 관한 질문인가요?",
+    fr: "Question intéressante. Parlez-vous d'un produit précis, de l'utilisation du système ou des tarifs ?",
+  },
+  ai_resp_16: {
+    en: "Try asking another way, or type a serial number and I will check it quickly.",
+    zh: "可以换一种方式提问，或者输入序列号，我会快速检查。",
+    ja: "別の言い方で質問するか、シリアル番号を入力してください。すぐ確認します。",
+    ko: "다른 방식으로 질문하거나 시리얼 번호를 입력하면 빠르게 확인해 드립니다.",
+    fr: "Essayez de reformuler ou saisissez un numéro de série pour une vérification rapide.",
+  },
+};
+
+function translateKey(key: string, lang: string): string {
+  if (lang !== "vi" && aiResponseOverrides[key]?.[lang]) return aiResponseOverrides[key][lang];
   return (dict[key] as any)?.[lang] ?? dict[key]?.vi ?? key;
+}
+
+export function t(key: string, lang: string = "vi"): string {
+  return translateKey(key, lang);
 }
 
 // ─── Context ─────────────────────────────────────────────────────────────────
 interface LangCtx { lang: string; setLang: (l: string) => void; t: (key: string) => string; }
-const LanguageContext = createContext<LangCtx>({ lang: "vi", setLang: () => { }, t: (k) => dict[k]?.vi ?? k });
+const LanguageContext = createContext<LangCtx>({ lang: "vi", setLang: () => { }, t: (k) => translateKey(k, "vi") });
 
 const supportedLangs = ["vi", "en", "zh", "ja", "ko", "fr"];
 
@@ -785,7 +912,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     if (typeof window !== "undefined") localStorage.setItem("vntrust_lang", nextLang);
   };
 
-  const translate = (key: string) => (dict[key] as any)?.[lang] ?? dict[key]?.vi ?? key;
+  const translate = (key: string) => translateKey(key, lang);
 
   return (
     <LanguageContext.Provider value={{ lang, setLang, t: translate }}>

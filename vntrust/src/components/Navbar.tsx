@@ -87,7 +87,7 @@ const MAX_CHAT_LEN = 500;
 
 // ─── AI Chat Modal — dùng ChatContext (real-time sync với Dashboard) ──────────
 function AiNavModal({ onClose }: { onClose: () => void }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { msgs, addMsg } = useChat();
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
@@ -97,6 +97,11 @@ function AiNavModal({ onClose }: { onClose: () => void }) {
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, typing]);
 
   const QUICK_BTNS = [t("chat_q_qr"), t("chat_q_fake"), t("chat_q_price"), t("chat_q_support"), t("chat_q_app")];
+  const tr = (vi: string, en: string, zh?: string) => {
+    if (lang === "en") return en;
+    if (lang === "zh") return zh || en;
+    return vi;
+  };
 
   const handleInput = (val: string) => {
     setWarning(val.length > MAX_CHAT_LEN ? `⚠️ ${t("nav_chat_limit")} ${MAX_CHAT_LEN} ${t("nav_chat_chars")}.` : "");
@@ -122,9 +127,17 @@ function AiNavModal({ onClose }: { onClose: () => void }) {
           const sp = data.data?.loHang?.sanPham;
           const lo = data.data?.loHang;
           const statusText = data.status === "genuine" ? t("vuid_5") : data.status === "expired" ? t("vuid_9") : t("vuid_8");
-          reply = `🔍 Xong rồi! Mình tìm thấy mã **${serial.toUpperCase()}**\n${statusText}\n📦 Sản phẩm: ${sp?.tenSanPham ?? "N/A"}\n🏭 NSX: ${sp?.doanhNghiep?.tenDoanhNghiep ?? "N/A"}\n📅 SX: ${lo?.ngaySanXuat ? new Date(lo.ngaySanXuat).toLocaleDateString("vi-VN") : "N/A"} · HSD: ${lo?.hanDung ? new Date(lo.hanDung).toLocaleDateString("vi-VN") : "N/A"}\n\nXem chi tiết tại /verify/${serial.toUpperCase()}`;
+          reply = tr(
+            `🔍 Xong rồi! Mình tìm thấy mã **${serial.toUpperCase()}**\n${statusText}\n📦 Sản phẩm: ${sp?.tenSanPham ?? "N/A"}\n🏭 NSX: ${sp?.doanhNghiep?.tenDoanhNghiep ?? "N/A"}\n📅 SX: ${lo?.ngaySanXuat ? new Date(lo.ngaySanXuat).toLocaleDateString("vi-VN") : "N/A"} · HSD: ${lo?.hanDung ? new Date(lo.hanDung).toLocaleDateString("vi-VN") : "N/A"}\n\nXem chi tiết tại /verify/${serial.toUpperCase()}`,
+            `🔍 Done. I found code **${serial.toUpperCase()}**\n${statusText}\n📦 Product: ${sp?.tenSanPham ?? "N/A"}\n🏭 Manufacturer: ${sp?.doanhNghiep?.tenDoanhNghiep ?? "N/A"}\n📅 MFG: ${lo?.ngaySanXuat ? new Date(lo.ngaySanXuat).toLocaleDateString("en-US") : "N/A"} · EXP: ${lo?.hanDung ? new Date(lo.hanDung).toLocaleDateString("en-US") : "N/A"}\n\nView details at /verify/${serial.toUpperCase()}`,
+            `🔍 已找到代码 **${serial.toUpperCase()}**\n${statusText}\n📦 商品：${sp?.tenSanPham ?? "N/A"}\n🏭 生产商：${sp?.doanhNghiep?.tenDoanhNghiep ?? "N/A"}\n📅 生产日期：${lo?.ngaySanXuat ? new Date(lo.ngaySanXuat).toLocaleDateString("zh-CN") : "N/A"} · 有效期：${lo?.hanDung ? new Date(lo.hanDung).toLocaleDateString("zh-CN") : "N/A"}\n\n详情：/verify/${serial.toUpperCase()}`
+          );
         } else {
-          reply = `⚠️ Mã **${serial.toUpperCase()}** không có trong hệ thống!\n\nCó thể là:\n• Sản phẩm chưa đăng ký AI VeriGoods\n• Mã bị nhập sai hoặc tem hỏng\n• **Nguy hiểm: Có thể là hàng giả!**`;
+          reply = tr(
+            `⚠️ Mã **${serial.toUpperCase()}** không có trong hệ thống!\n\nCó thể là:\n• Sản phẩm chưa đăng ký AI VeriGoods\n• Mã bị nhập sai hoặc tem hỏng\n• **Nguy hiểm: Có thể là hàng giả!**`,
+            `⚠️ Code **${serial.toUpperCase()}** is not in the system.\n\nPossible reasons:\n• The product is not registered with AI VeriGoods\n• The code was typed incorrectly or the stamp is damaged\n• **Risk: it may be counterfeit.**`,
+            `⚠️ 代码 **${serial.toUpperCase()}** 不在系统中。\n\n可能原因：\n• 商品尚未注册 AI VeriGoods\n• 代码输入错误或标签损坏\n• **风险：可能是假货。**`
+          );
         }
       } catch { reply = "⚠️ " + t("nav_chat_connfail"); }
     } else {
