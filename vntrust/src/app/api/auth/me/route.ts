@@ -172,6 +172,10 @@ export async function GET(req: NextRequest) {
   );
 }
 
+const normalizePhone = (value: string) => value.replace(/\s+/g, '').replace(/^(\+84|0084)/, '0');
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const roleValues = new Set(['M', 'F', 'O']);
+
 // PATCH: Update hồ sơ cá nhân (ten, sdt, email, avatar, diaChi, ngaySinh, gioiTinh, cccd)
 export async function PATCH(req: NextRequest) {
   const cookieStore = await cookies();
@@ -199,24 +203,57 @@ export async function PATCH(req: NextRequest) {
   for (const k of allowed) {
     if (body[k] !== undefined && body[k] !== null) data[k] = String(body[k]).trim() || null;
   }
+
+  if ('tenDoanhNghiep' in body || 'doanhNghiepId' in body || 'vaiTro' in body || 'role' in body) {
+    return NextResponse.json({ error: 'Thông tin doanh nghiệp và vai trò không được sửa tại trang hồ sơ' }, { status: 400 });
+  }
+
+  if (data.ten !== undefined && (!data.ten || data.ten.length < 2 || data.ten.length > 80)) {
+    return NextResponse.json({ error: 'Họ tên phải từ 2 đến 80 ký tự' }, { status: 400 });
+  }
+
+  if (data.email !== undefined) {
+    data.email = data.email ? String(data.email).toLowerCase() : null;
+  }
+
+  if (data.soDienThoai) data.soDienThoai = normalizePhone(data.soDienThoai);
+
   // ngaySinh: convert ISO date string → Date
   if (body.ngaySinh !== undefined) {
-    try {
-      data.ngaySinh = body.ngaySinh ? new Date(body.ngaySinh) : null;
-    } catch {}
+    if (!body.ngaySinh) {
+      data.ngaySinh = null;
+    } else {
+      const parsedDate = new Date(`${String(body.ngaySinh).slice(0, 10)}T00:00:00`);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+      if (Number.isNaN(parsedDate.getTime()) || parsedDate > today) {
+        return NextResponse.json({ error: 'Ngày sinh không được lớn hơn ngày hiện tại' }, { status: 400 });
+      }
+      data.ngaySinh = parsedDate;
+    }
   }
   // Validate email format nếu có
-  if (data.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) {
-    return NextResponse.json({ error: 'Email không hợp lệ' }, { status: 400 });
+  if (data.email !== undefined && (!data.email || !emailPattern.test(data.email) || data.email.length > 120)) {
+    return NextResponse.json({ error: 'Email liên hệ không hợp lệ' }, { status: 400 });
+  }
+  if (data.soDienThoai && !/^0\d{9}$/.test(data.soDienThoai)) {
+    return NextResponse.json({ error: 'Số điện thoại phải gồm 10 số và bắt đầu bằng 0' }, { status: 400 });
+  }
+  if (data.gioiTinh && !roleValues.has(data.gioiTinh)) {
+    return NextResponse.json({ error: 'Giới tính không hợp lệ' }, { status: 400 });
+  }
+  if (data.cccd && !/^\d{9}$|^\d{12}$/.test(data.cccd)) {
+    return NextResponse.json({ error: 'CCCD/CMND phải gồm 9 hoặc 12 số' }, { status: 400 });
+  }
+  if (data.diaChi && data.diaChi.length > 200) {
+    return NextResponse.json({ error: 'Địa chỉ cá nhân tối đa 200 ký tự' }, { status: 400 });
   }
   // Avatar: chỉ chấp nhận URL nội bộ /uploads/...
   if (data.avatar && !data.avatar.startsWith('/uploads/') && !data.avatar.startsWith('http')) {
     return NextResponse.json({ error: 'URL ảnh đại diện không hợp lệ' }, { status: 400 });
   }
-  // Tên công ty (DoanhNghiep) — cập nhật riêng vì nằm ở model khác NguoiDung
-  const tenDoanhNghiep = typeof body.tenDoanhNghiep === 'string' ? body.tenDoanhNghiep.trim() : null;
 
-  if (Object.keys(data).length === 0 && !tenDoanhNghiep) {
+  if (Object.keys(data).length === 0) {
     return NextResponse.json({ error: 'Không có dữ liệu cập nhật' }, { status: 400 });
   }
 
@@ -231,23 +268,20 @@ export async function PATCH(req: NextRequest) {
     const dup = await prisma.nguoiDung.findUnique({ where: { email: data.email } });
     if (dup) return NextResponse.json({ error: 'Email này đã được dùng' }, { status: 409 });
   }
+  if (data.soDienThoai && data.soDienThoai !== existing.soDienThoai) {
+    const dupPhone = await prisma.nguoiDung.findFirst({
+      where: { soDienThoai: data.soDienThoai, NOT: { id: existing.id } },
+      select: { id: true },
+    });
+    if (dupPhone) return NextResponse.json({ error: 'Số điện thoại này đã được dùng' }, { status: 409 });
+  }
 
   const updated: any = Object.keys(data).length > 0
     ? await prisma.nguoiDung.update({ where: { id: existing.id }, data })
     : existing;
 
-  // Cập nhật tên công ty nếu user thuộc một DN (sửa bug "không đổi được tên công ty")
-  let tenDNUpdated: string | null = null;
-  if (tenDoanhNghiep && existing.doanhNghiepId) {
-    const cty = await prisma.doanhNghiep.update({
-      where: { id: existing.doanhNghiepId },
-      data: { ten: tenDoanhNghiep },
-    });
-    tenDNUpdated = cty.ten;
-  }
-
   // Update userName cookie nếu đổi tên
-  const response = NextResponse.json({ ok: true, ten: updated.ten, email: updated.email, tenDoanhNghiep: tenDNUpdated });
+  const response = NextResponse.json({ ok: true, ten: updated.ten, email: updated.email });
   if (data.ten) {
     response.cookies.set('userName', data.ten, {
       path: '/', maxAge: SESSION_TTL_SEC, sameSite: 'lax',

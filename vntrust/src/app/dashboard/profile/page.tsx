@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+const normalizePhone = (value: string) => value.replace(/\s+/g, "").replace(/^(\+84|0084)/, "0");
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // Strength labels per language (array — can't be in string dict)
 const STRENGTH_LABELS: Record<string, string[]> = {
   vi: ["Rất yếu", "Yếu", "Trung bình", "Mạnh", "Rất mạnh"],
@@ -204,7 +207,6 @@ export default function ProfilePage() {
     editName !== origName ||
     editPhone !== origPhone ||
     editEmail !== origEmail ||
-    editCompany !== origCompany ||
     editAvatar !== origAvatar ||
     editAddress !== origAddress ||
     editBirthday !== origBirthday ||
@@ -270,6 +272,46 @@ export default function ProfilePage() {
   }, []);
 
   const handleSave = async () => {
+    const name = editName.trim();
+    const phone = normalizePhone(editPhone);
+    const email = editEmail.trim().toLowerCase();
+    const address = editAddress.trim();
+    const cccd = editCccd.replace(/\s+/g, "");
+
+    if (name.length < 2 || name.length > 80) {
+      setSaveError(tr("Họ tên phải từ 2 đến 80 ký tự", "Full name must be 2-80 characters"));
+      return;
+    }
+    if (!emailPattern.test(email) || email.length > 120) {
+      setSaveError(tr("Email liên hệ không hợp lệ", "Contact email is invalid"));
+      return;
+    }
+    if (phone && !/^0\d{9}$/.test(phone)) {
+      setSaveError(tr("Số điện thoại phải gồm 10 số và bắt đầu bằng 0", "Phone number must have 10 digits and start with 0"));
+      return;
+    }
+    if (editBirthday) {
+      const birthday = new Date(`${editBirthday}T00:00:00`);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+      if (Number.isNaN(birthday.getTime()) || birthday > today) {
+        setSaveError(tr("Ngày sinh không được lớn hơn ngày hiện tại", "Birthday cannot be in the future"));
+        return;
+      }
+    }
+    if (editGender && !["M", "F", "O"].includes(editGender)) {
+      setSaveError(tr("Giới tính không hợp lệ", "Gender is invalid"));
+      return;
+    }
+    if (cccd && !/^\d{9}$|^\d{12}$/.test(cccd)) {
+      setSaveError(tr("CCCD/CMND phải gồm 9 hoặc 12 số", "ID card must have 9 or 12 digits"));
+      return;
+    }
+    if (address.length > 200) {
+      setSaveError(tr("Địa chỉ cá nhân tối đa 200 ký tự", "Personal address is limited to 200 characters"));
+      return;
+    }
+
     setSaving(true);
     setSaveError("");
     try {
@@ -277,28 +319,31 @@ export default function ProfilePage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ten: editName, soDienThoai: editPhone, email: editEmail,
-          avatar: editAvatar, diaChi: editAddress,
-          ngaySinh: editBirthday || null, gioiTinh: editGender, cccd: editCccd,
-          tenDoanhNghiep: editCompany,
+          ten: name, soDienThoai: phone, email,
+          avatar: editAvatar, diaChi: address,
+          ngaySinh: editBirthday || null, gioiTinh: editGender, cccd,
         }),
       });
       const data = await res.json();
       if (res.ok) {
         // Chỉ sau khi save thành công mới sync display + snapshot
-        setDisplayName(editName);
-        setDisplayCompany(editCompany);
-        setOrigName(editName);
-        setOrigPhone(editPhone);
-        setOrigEmail(editEmail);
+        setEditName(name);
+        setEditPhone(phone);
+        setEditEmail(email);
+        setEditAddress(address);
+        setEditCccd(cccd);
+        setDisplayName(name);
+        setOrigName(name);
+        setOrigPhone(phone);
+        setOrigEmail(email);
         setOrigCompany(editCompany);
         setOrigAvatar(editAvatar);
-        setOrigAddress(editAddress);
+        setOrigAddress(address);
         setOrigBirthday(editBirthday);
         setOrigGender(editGender);
-        setOrigCccd(editCccd);
+        setOrigCccd(cccd);
         setSaved(true);
-        localStorage.setItem("userName", data.ten || editName);
+        localStorage.setItem("userName", data.ten || name);
         window.dispatchEvent(new Event("storage"));
         setTimeout(() => setSaved(false), 3000);
       } else {
@@ -460,16 +505,19 @@ export default function ProfilePage() {
                   <div>
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{t("prof_fullname")}</label>
                     <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} disabled={isDemo}
+                      minLength={2} maxLength={80} required
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 disabled:cursor-not-allowed" />
                   </div>
                   <div>
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{t("prof_phone")}</label>
                     <input type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} disabled={isDemo}
+                      inputMode="tel" maxLength={15} placeholder="0xxxxxxxxx"
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 disabled:cursor-not-allowed" />
                   </div>
                   <div>
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{t("prof_email")}</label>
                     <input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} disabled={isDemo}
+                      maxLength={120} required
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 disabled:cursor-not-allowed" />
                   </div>
                   {/* Profile expansion: ngày sinh + giới tính */}
@@ -477,6 +525,7 @@ export default function ProfilePage() {
                     <div>
                       <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{tr("Ngày sinh", "Birthday")}</label>
                       <input type="date" value={editBirthday} onChange={(e) => setEditBirthday(e.target.value)} disabled={isDemo}
+                        max={new Date().toISOString().split("T")[0]}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 [color-scheme:dark]" />
                     </div>
                     <div>
@@ -494,14 +543,14 @@ export default function ProfilePage() {
                   <div>
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{tr("CCCD / CMND", "ID Card")}</label>
                     <input type="text" value={editCccd} onChange={(e) => setEditCccd(e.target.value)} disabled={isDemo}
-                      placeholder="0123456789xxx"
+                      inputMode="numeric" maxLength={12} placeholder="012345678912"
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40" />
                   </div>
                   {/* Profile expansion: địa chỉ */}
                   <div>
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{tr("Địa chỉ cá nhân", "Personal address")}</label>
                     <textarea value={editAddress} onChange={(e) => setEditAddress(e.target.value)} disabled={isDemo}
-                      rows={2}
+                      rows={2} maxLength={200}
                       placeholder={tr("Số nhà, đường, phường, quận, thành phố", "Street, ward, district, city")}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 resize-none" />
                   </div>
@@ -518,8 +567,11 @@ export default function ProfilePage() {
                 <div className="p-6 space-y-5">
                   <div>
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{t("prof_company")}</label>
-                    <input type="text" value={editCompany} onChange={(e) => setEditCompany(e.target.value)} disabled={isDemo}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#C8A557] transition focus:bg-white/8 disabled:opacity-40 disabled:cursor-not-allowed" />
+                    <input type="text" value={editCompany} readOnly disabled
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-slate-300 text-sm outline-none opacity-70 cursor-not-allowed" />
+                    <p className="mt-2 text-[11px] text-slate-500">
+                      {tr("Thông tin doanh nghiệp được quản lý qua hồ sơ KYC.", "Business information is managed through the KYC profile.")}
+                    </p>
                   </div>
                   <div>
                     <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">{tr("Vai trò", "Role")}</label>
