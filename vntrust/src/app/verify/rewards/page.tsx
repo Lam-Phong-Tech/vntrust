@@ -12,6 +12,7 @@ export default function VerifyRewardsPage() {
   const [redeeming, setRedeeming] = useState<number | null>(null);
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
   const [showHowToEarn, setShowHowToEarn] = useState(false);
+  const formatPoints = (value: number) => new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'vi-VN').format(value || 0);
 
   const loadData = () => {
     setLoading(true);
@@ -95,7 +96,7 @@ export default function VerifyRewardsPage() {
           
           <span className="material-symbols-outlined text-6xl text-[#C8A557] mb-4">stars</span>
           <div className="text-xs text-[#C8A557] font-bold uppercase tracking-wider mb-2">{lang === 'en' ? 'Current Balance' : 'Số dư hiện tại'}</div>
-          <div className="text-5xl font-black text-white mb-6">{tongDiem} <span className="text-2xl text-slate-400 font-bold tracking-normal">AI VeriGoods Points</span></div>
+          <div className="text-5xl font-black text-white mb-6">{formatPoints(tongDiem)} <span className="text-2xl text-slate-400 font-bold tracking-normal">AI VeriGoods Points</span></div>
           
           <div className="flex gap-4">
             <button 
@@ -131,7 +132,7 @@ export default function VerifyRewardsPage() {
                     </div>
                     <div>
                       <div className="font-bold text-white">{v.title}</div>
-                      <div className="text-xs text-slate-400 mt-1">{v.cost} Points</div>
+                      <div className="text-xs text-slate-400 mt-1">{formatPoints(v.cost)} Points</div>
                     </div>
                   </div>
                   <button 
@@ -164,7 +165,7 @@ export default function VerifyRewardsPage() {
                     <div className="text-xs text-slate-500 mt-1">{new Date(item.thoiGian).toLocaleString('vi-VN')}</div>
                   </div>
                   <div className={`font-mono font-bold ${item.diemThuong > 0 ? 'text-emerald-400' : 'text-slate-400'}`}>
-                    {item.diemThuong > 0 ? `+${item.diemThuong}` : item.diemThuong}
+                    {item.diemThuong > 0 ? `+${formatPoints(item.diemThuong)}` : formatPoints(item.diemThuong)}
                   </div>
                 </div>
               ))}
