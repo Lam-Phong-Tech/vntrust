@@ -221,7 +221,7 @@ export default function QRPrintPage() {
           - Khi in (@media print): tự revert về trắng-đen để máy in tiết kiệm mực
             và mã QR scanner đọc rõ */}
       <style>{`
-        .qr-page-scope { --qr-bg-page: #0B1623; --qr-bg-card: #142235; --qr-bg-soft: rgba(246,241,232,0.04); --qr-text-strong: #F6F1E8; --qr-text-soft: rgba(246,241,232,0.7); --qr-text-muted: rgba(246,241,232,0.5); --qr-border: rgba(200,165,87,0.20); --qr-border-soft: rgba(246,241,232,0.10); --qr-accent: #C8A557; --qr-accent-soft: rgba(200,165,87,0.15); --qr-shadow: 0 4px 20px rgba(0,0,0,0.4); margin-top: 0 !important; }
+        .qr-page-scope { --qr-bg-page: #0B1623; --qr-bg-card: #142235; --qr-bg-soft: rgba(246,241,232,0.04); --qr-text-strong: #F6F1E8; --qr-text-soft: rgba(246,241,232,0.7); --qr-text-muted: rgba(246,241,232,0.5); --qr-border: rgba(200,165,87,0.20); --qr-border-soft: rgba(246,241,232,0.10); --qr-accent: #C8A557; --qr-accent-soft: rgba(200,165,87,0.15); --qr-shadow: 0 4px 20px rgba(0,0,0,0.4); margin-top: -0.5rem !important; }
         .qr-page-scope .bg-slate-100 { background: var(--qr-bg-page) !important; }
         .qr-page-scope .bg-slate-50 { background: var(--qr-bg-soft) !important; }
         .qr-page-scope .bg-white { background: var(--qr-bg-card) !important; }
