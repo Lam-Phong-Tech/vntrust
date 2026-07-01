@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 type Log = {
@@ -16,6 +17,7 @@ type Log = {
 const PAGE_SIZE = 20;
 
 export default function HistoryPage() {
+  const router = useRouter();
   const [filter, setFilter] = useState("all");
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,6 +86,14 @@ export default function HistoryPage() {
             </p>
           </div>
           <div className="flex gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="px-3 py-1.5 text-xs font-bold rounded-xl transition bg-white/5 glass-panel text-slate-300 border border-white/20 hover:bg-white/10 flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+              {tr("Quay lại", "Back")}
+            </button>
             <button onClick={() => setFilter("all")}
               className={`px-3 py-1.5 text-xs font-bold rounded-xl transition ${filter === "all" ? "bg-primary text-white" : "bg-white/5 glass-panel text-slate-300 border border-white/20 hover:bg-white/10"}`}>
               {t("hist_all")}
