@@ -3,10 +3,21 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+type HistoryItem = {
+  id: string;
+  loaiHanhDong?: string | null;
+  uid?: string | null;
+  thoiGian: string;
+  ketQua?: string | null;
+  trangThaiDieuTra?: string | null;
+  maCaseHoSo?: string | null;
+  riskScore?: number | null;
+};
+
 export default function VerifyHistoryPage() {
   const { lang } = useLanguage();
   const router = useRouter();
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [tongDiem, setTongDiem] = useState(0);
 
@@ -28,6 +39,28 @@ export default function VerifyHistoryPage() {
 
   const totalScans = history.filter(h => h.loaiHanhDong !== 'bao_cao').length;
   const reportsSubmitted = history.filter(h => h.loaiHanhDong === 'bao_cao').length;
+  const getStatusLabel = (item: HistoryItem) => {
+    if (item.trangThaiDieuTra === 'dang_dieu_tra') {
+      return { text: lang === 'en' ? 'Investigating' : 'Đang điều tra', className: 'text-amber-400' };
+    }
+    if (item.trangThaiDieuTra === 'da_xu_ly') {
+      return { text: lang === 'en' ? 'Processed' : 'Đã xử lý', className: 'text-red-400' };
+    }
+    if (item.trangThaiDieuTra === 'dong') {
+      return { text: lang === 'en' ? 'Closed' : 'Đã đóng', className: 'text-emerald-400' };
+    }
+
+    const statusMap: Record<string, { vi: string; en: string; className: string }> = {
+      verified: { vi: 'Chính hãng', en: 'Verified', className: 'text-emerald-400' },
+      warning: { vi: 'Cần kiểm tra', en: 'Needs review', className: 'text-amber-400' },
+      expired: { vi: 'Hết hạn', en: 'Expired', className: 'text-orange-400' },
+      blocked: { vi: 'Không xác thực', en: 'Not verified', className: 'text-red-400' },
+      unknown: { vi: 'Chờ xử lý', en: 'Pending', className: 'text-slate-300' },
+    };
+    const statusKey = item.ketQua || 'unknown';
+    const status = statusMap[statusKey] || statusMap.unknown;
+    return { text: lang === 'en' ? status.en : status.vi, className: status.className };
+  };
 
   return (
     <div className="verify-consumer-page verify-page-history min-h-screen bg-[#0B1623] pt-24 pb-12 px-6 flex flex-col items-center">
@@ -74,7 +107,10 @@ export default function VerifyHistoryPage() {
               <div className="text-center text-slate-400 py-8">{lang === 'en' ? 'Loading history...' : 'Đang tải lịch sử...'}</div>
             ) : history.length === 0 ? (
               <div className="text-center text-slate-400 py-8 border border-white/5 bg-white/5 rounded-xl">{lang === 'en' ? 'No activity history found.' : 'Chưa có lịch sử hoạt động.'}</div>
-            ) : history.map((item, index) => (
+            ) : history.map((item) => {
+              const status = getStatusLabel(item);
+              const riskScore = item.riskScore || 0;
+              return (
               <div key={item.id} className="relative pl-8 pb-6 border-l border-white/10 last:border-0 last:pb-0">
                 <div className={`absolute left-[-9px] top-0 w-4 h-4 rounded-full border-4 border-[#0B1623] ${
                   item.loaiHanhDong === 'bao_cao' ? 'bg-amber-400' : 'bg-cyan-400'
@@ -104,10 +140,7 @@ export default function VerifyHistoryPage() {
                   <div className="flex items-center gap-4 text-sm mt-4 pt-4 border-t border-white/10">
                     <div className="flex items-center gap-2">
                       <span className="text-slate-500">{lang === 'en' ? 'Status:' : 'Trạng thái:'}</span>
-                      {item.ketQua === 'verified' && <span className="text-emerald-400 font-bold">{lang === 'en' ? 'Verified' : 'Chính hãng'}</span>}
-                      {item.trangThaiDieuTra === 'dang_dieu_tra' && <span className="text-amber-400 font-bold">{lang === 'en' ? 'Investigating' : 'Đang điều tra'}</span>}
-                      {item.trangThaiDieuTra === 'da_xu_ly' && <span className="text-red-400 font-bold">{lang === 'en' ? 'Processed' : 'Đã xử lý'}</span>}
-                      {!item.ketQua && !item.trangThaiDieuTra && <span className="text-slate-400 font-bold">{lang === 'en' ? 'Pending' : 'Chờ xử lý'}</span>}
+                      <span className={`${status.className} font-bold`}>{status.text}</span>
                     </div>
                     
                     {item.loaiHanhDong === 'bao_cao' && (
@@ -115,16 +148,16 @@ export default function VerifyHistoryPage() {
                         <span className="text-slate-500">{lang === 'en' ? 'AI Risk Score:' : 'Điểm rủi ro AI:'}</span>
                         <div className="flex items-center gap-2">
                           <div className="w-24 h-1.5 bg-[#0B1623] rounded-full overflow-hidden">
-                            <div className={`h-full ${item.riskScore > 80 ? 'bg-red-500' : 'bg-amber-500'}`} style={{ width: `${item.riskScore || 0}%` }}></div>
+                            <div className={`h-full ${riskScore > 80 ? 'bg-red-500' : 'bg-amber-500'}`} style={{ width: `${riskScore}%` }}></div>
                           </div>
-                          <span className={`font-bold ${item.riskScore > 80 ? 'text-red-400' : 'text-amber-400'}`}>{item.riskScore || 0}/100</span>
+                          <span className={`font-bold ${riskScore > 80 ? 'text-red-400' : 'text-amber-400'}`}>{riskScore}/100</span>
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
       </div>
