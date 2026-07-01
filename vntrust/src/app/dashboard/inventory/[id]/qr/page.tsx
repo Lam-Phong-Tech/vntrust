@@ -221,7 +221,7 @@ export default function QRPrintPage() {
           - Khi in (@media print): tự revert về trắng-đen để máy in tiết kiệm mực
             và mã QR scanner đọc rõ */}
       <style>{`
-        .qr-page-scope { --qr-bg-page: #0B1623; --qr-bg-card: #142235; --qr-bg-soft: rgba(246,241,232,0.04); --qr-text-strong: #F6F1E8; --qr-text-soft: rgba(246,241,232,0.7); --qr-text-muted: rgba(246,241,232,0.5); --qr-border: rgba(200,165,87,0.20); --qr-border-soft: rgba(246,241,232,0.10); --qr-accent: #C8A557; --qr-accent-soft: rgba(200,165,87,0.15); --qr-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        .qr-page-scope { --qr-bg-page: #0B1623; --qr-bg-card: #142235; --qr-bg-soft: rgba(246,241,232,0.04); --qr-text-strong: #F6F1E8; --qr-text-soft: rgba(246,241,232,0.7); --qr-text-muted: rgba(246,241,232,0.5); --qr-border: rgba(200,165,87,0.20); --qr-border-soft: rgba(246,241,232,0.10); --qr-accent: #C8A557; --qr-accent-soft: rgba(200,165,87,0.15); --qr-shadow: 0 4px 20px rgba(0,0,0,0.4); margin-top: 0 !important; }
         .qr-page-scope .bg-slate-100 { background: var(--qr-bg-page) !important; }
         .qr-page-scope .bg-slate-50 { background: var(--qr-bg-soft) !important; }
         .qr-page-scope .bg-white { background: var(--qr-bg-card) !important; }
@@ -241,6 +241,11 @@ export default function QRPrintPage() {
         .qr-page-scope .focus\\:ring-primary:focus { --tw-ring-color: var(--qr-accent) !important; }
         .qr-page-scope .hover\\:bg-slate-50:hover { background: var(--qr-accent-soft) !important; color: var(--qr-text-strong) !important; }
         .qr-page-scope .border-emerald-200 { border-color: rgba(74,124,92,0.4) !important; }
+        .qr-page-scope .qr-toolbar { background: linear-gradient(180deg, #0B1623 0%, #101D2E 100%) !important; border-top: 0 !important; border-bottom: 1px solid var(--qr-border) !important; }
+        .qr-page-scope .qr-toolbar-control { background: rgba(246,241,232,0.05) !important; border-color: var(--qr-border) !important; }
+        .qr-page-scope .qr-toolbar-control input,
+        .qr-page-scope .qr-toolbar-control select { background: rgba(246,241,232,0.08) !important; border-color: rgba(246,241,232,0.18) !important; color: var(--qr-text-strong) !important; }
+        .qr-page-scope .qr-toolbar-control option { background: #142235 !important; color: #F6F1E8 !important; }
         .qr-page-scope .shadow-2xl,
         .qr-page-scope .shadow-xl { box-shadow: var(--qr-shadow) !important; }
         /* Tile chứa QR code: nền trắng để scanner đọc tốt, kể cả trên màn hình dark */
@@ -266,15 +271,15 @@ export default function QRPrintPage() {
       <div className="qr-page-scope bg-slate-100 min-h-screen">
       {/* Toolbar — ẩn khi print */}
       {!printMode && (
-        <div className="bg-white border-b border-slate-200 px-8 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
-          <div>
+        <div className="qr-toolbar border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex flex-col xl:flex-row xl:items-start justify-between gap-4 print:hidden">
+          <div className="min-w-0 flex-1">
             <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">In tem QR — Lô hàng</p>
-            <h1 className="text-xl font-bold text-slate-900">{batch.maLo} — {batch.sanPham?.ten || "Sản phẩm không có tên"}</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug break-words">{batch.maLo} — {batch.sanPham?.ten || "Sản phẩm không có tên"}</h1>
             <p className="text-xs text-slate-500 mt-1">{batch.uids.length} tem tổng cộng · NSX: {ngaySX} · HSD: {hanDung}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-              <label className="text-sm font-bold text-slate-600">Số lượng in:</label>
+          <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[auto_auto_auto_auto] xl:w-auto xl:justify-end">
+            <div className="qr-toolbar-control flex min-w-0 items-center justify-between gap-2 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200">
+              <label className="text-sm font-bold text-slate-600 whitespace-nowrap">Số lượng in:</label>
               <input 
                 type="number" 
                 min="1" 
@@ -294,15 +299,15 @@ export default function QRPrintPage() {
                   setPrintCount(clamped);
                   setPrintCountStr(String(clamped));
                 }}
-                className="w-20 px-2 py-1 border border-slate-300 rounded text-sm text-center text-slate-800 font-bold focus:outline-none focus:border-primary"
+                className="w-20 shrink-0 px-2 py-1 border border-slate-300 rounded text-sm text-center text-slate-800 font-bold focus:outline-none focus:border-primary"
               />
             </div>
-            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-              <label className="text-sm font-bold text-slate-600">Sắp xếp:</label>
+            <div className="qr-toolbar-control flex min-w-0 items-center justify-between gap-2 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200">
+              <label className="text-sm font-bold text-slate-600 whitespace-nowrap">Sắp xếp:</label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="bg-transparent text-sm text-slate-800 font-bold focus:outline-none cursor-pointer"
+                className="min-w-0 max-w-full flex-1 rounded px-2 py-1 bg-transparent text-sm text-slate-800 font-bold focus:outline-none cursor-pointer"
               >
                 <option value="default">Mặc định</option>
                 <option value="serial-asc">Mã / Serial (A→Z)</option>
@@ -312,7 +317,7 @@ export default function QRPrintPage() {
               </select>
             </div>
             <Link href="/dashboard/inventory"
-              className="px-4 py-2 text-sm font-bold text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-bold text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
               ← Quay lại
             </Link>
             
@@ -366,7 +371,7 @@ export default function QRPrintPage() {
                 });
                 alert(`Đã tải ${tiles.length} file SVG.`);
               }}
-              className="px-4 py-2 bg-[#C8A557]/20 text-[#C8A557] border border-[#C8A557]/40 text-sm font-bold rounded-lg hover:bg-[#C8A557]/30 transition flex items-center gap-2"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#C8A557]/20 text-[#C8A557] border border-[#C8A557]/40 text-sm font-bold rounded-lg hover:bg-[#C8A557]/30 transition"
               title="Tải mỗi QR dưới dạng SVG vector — chất lượng in cao"
             >
               <span className="material-symbols-outlined text-sm">download</span>
@@ -382,7 +387,7 @@ export default function QRPrintPage() {
                   setPrintSingleId(null);
                 };
               }}
-              className="px-6 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:opacity-90 transition flex items-center gap-2"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:opacity-90 transition sm:col-span-2 lg:col-span-1"
               title="Mẹo: Chọn 'Save as PDF' (Lưu dưới dạng PDF) trong hộp thoại in để xuất file PDF."
             >
               <span className="material-symbols-outlined text-sm">print</span>
