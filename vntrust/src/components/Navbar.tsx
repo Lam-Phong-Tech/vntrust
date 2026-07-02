@@ -7,6 +7,15 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useChat } from "@/contexts/ChatContext";
 import NotificationBell from "@/components/NotificationBell";
 
+type SiteTheme = "light" | "dark";
+
+const THEME_STORAGE_KEY = "vntrust_theme_v2";
+
+function getStoredTheme(): SiteTheme {
+  if (typeof window === "undefined") return "light";
+  return localStorage.getItem(THEME_STORAGE_KEY) === "dark" ? "dark" : "light";
+}
+
 
 // ─── Shared AI Engine ─────────────────────────────────────────────────────────
 const getAI_RESPONSES = (t: any): Array<{ match: RegExp; replies: string[] }> => [
@@ -302,7 +311,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { t, lang, setLang } = useLanguage();
   const [modal, setModal] = useState<"ai" | "app" | null>(null);
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState<SiteTheme>(getStoredTheme);
   const [scrollOpacity, setScrollOpacity] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -324,6 +333,16 @@ export default function Navbar() {
     const onStorage = () => setUserName(localStorage.getItem("userName") || "");
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  useEffect(() => {
+    const syncTheme = () => setTheme(getStoredTheme());
+    window.addEventListener("storage", syncTheme);
+    window.addEventListener("vntrust_theme_change", syncTheme);
+    return () => {
+      window.removeEventListener("storage", syncTheme);
+      window.removeEventListener("vntrust_theme_change", syncTheme);
+    };
   }, []);
 
   // Close user menu on outside click
@@ -376,9 +395,17 @@ export default function Navbar() {
     } else {
       document.documentElement.classList.remove("light-mode");
     }
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme(t => t === "dark" ? "light" : "dark");
+  const toggleTheme = () => {
+    setTheme(t => {
+      const next = t === "dark" ? "light" : "dark";
+      localStorage.setItem(THEME_STORAGE_KEY, next);
+      window.dispatchEvent(new Event("vntrust_theme_change"));
+      return next;
+    });
+  };
 
   const allNavLinks = [
     { key: "nav_verify", href: "/verify" },

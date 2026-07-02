@@ -33,6 +33,20 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="vi" className={`light-mode ${fontManrope.variable} ${fontInter.variable} h-full antialiased`}>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var theme = localStorage.getItem('vntrust_theme_v2') || 'light';
+                if (theme === 'dark') {
+                  document.documentElement.classList.remove('light-mode');
+                } else {
+                  document.documentElement.classList.add('light-mode');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
         <meta name="mobile-web-app-capable" content="yes" />

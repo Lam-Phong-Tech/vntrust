@@ -346,9 +346,24 @@ export function MobileTopBar() {
     setTheme(savedTheme);
     if (savedTheme === "light") {
       document.documentElement.classList.add("light-mode");
+    } else {
+      document.documentElement.classList.remove("light-mode");
     }
     const savedGeo = localStorage.getItem("geo_enabled");
     if (savedGeo === "0") setGeoEnabled(false);
+  }, []);
+
+  useEffect(() => {
+    const syncTheme = () => {
+      const savedTheme = localStorage.getItem("vntrust_theme_v2") || "light";
+      setTheme(savedTheme);
+    };
+    window.addEventListener("storage", syncTheme);
+    window.addEventListener("vntrust_theme_change", syncTheme);
+    return () => {
+      window.removeEventListener("storage", syncTheme);
+      window.removeEventListener("vntrust_theme_change", syncTheme);
+    };
   }, []);
 
   // Sync theme class to <html>
@@ -361,7 +376,14 @@ export function MobileTopBar() {
     localStorage.setItem("vntrust_theme_v2", theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme(t => t === "dark" ? "light" : "dark");
+  const toggleTheme = () => {
+    setTheme(t => {
+      const next = t === "dark" ? "light" : "dark";
+      localStorage.setItem("vntrust_theme_v2", next);
+      window.dispatchEvent(new Event("vntrust_theme_change"));
+      return next;
+    });
+  };
 
   const toggleGeo = () => {
     const next = !geoEnabled;
