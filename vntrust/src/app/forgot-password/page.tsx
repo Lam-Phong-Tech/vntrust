@@ -177,7 +177,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1320] flex flex-col items-center justify-center px-3 py-5 sm:p-6 lg:px-8 lg:py-8 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0b1320] flex flex-col items-center justify-center px-3 py-5 sm:p-6 lg:px-8 lg:py-8 relative overflow-hidden overflow-x-hidden">
       {/* Background blobs */}
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-cyan-900/20 rounded-full blur-3xl pointer-events-none" />
@@ -189,7 +189,7 @@ export default function ForgotPasswordPage() {
       </div>
 
       {/* Card */}
-      <div className="bg-[#1a2235]/90 backdrop-blur-xl border border-slate-800/50 p-4 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl w-full max-w-[28rem] sm:max-w-[30rem] lg:max-w-[32rem] shadow-2xl z-10">
+      <div className="bg-[#1a2235]/90 backdrop-blur-xl border border-slate-800/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl w-full max-w-[26rem] shadow-2xl z-10">
         {/* Header */}
         <div className="flex items-start sm:items-center mb-5 sm:mb-6">
           <button onClick={() => step === 1 ? router.push("/login") : setStep(s => (s - 1) as 1 | 2 | 3)}
