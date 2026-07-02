@@ -138,8 +138,18 @@ export async function POST(req: NextRequest) {
     }
 
     otpStore.set(normalizedEmail, { otp, expires: Date.now() + 5 * 60 * 1000 });
-    console.log('[OTP] Email accepted by SMTP. MessageId:', info.messageId, 'accepted:', accepted);
-    return NextResponse.json({ message: 'Mã OTP đã được gửi đến email của bạn' });
+    console.log('[OTP] Email accepted by SMTP.', {
+      messageId: info.messageId,
+      accepted,
+      response: info.response,
+    });
+    return NextResponse.json({
+      message: 'Mã OTP đã được gửi. Nếu chưa thấy trong Hộp thư đến, vui lòng kiểm tra Spam/Thư rác hoặc All Mail.',
+      delivery: {
+        status: 'accepted',
+        messageId: info.messageId,
+      },
+    });
 
   } catch (error: any) {
     console.error('[OTP] ERROR:', error.message, '| code:', error.code);

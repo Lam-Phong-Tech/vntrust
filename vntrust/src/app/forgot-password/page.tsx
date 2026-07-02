@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
       if (!res.ok) throw new Error(data.error || "Không thể gửi OTP");
       setEmail(normalizedEmail);
       setOtpCode(["", "", "", "", "", ""]);
-      showMsg("✉️ Mã OTP đã gửi! Kiểm tra hộp thư.", true);
+      showMsg(data.message || "Mã OTP đã gửi. Kiểm tra Hộp thư đến hoặc Spam/Thư rác.", true);
       setStep(2);
       setCountdown(300);
     } catch (e: any) {

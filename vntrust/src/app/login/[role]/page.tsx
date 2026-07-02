@@ -488,7 +488,7 @@ export default function LoginPage() {
       if (!res.ok) throw new Error(data.error || "Không thể gửi OTP");
       setOtpEmail(normalizedEmail);
       setOtpCode(["", "", "", "", "", ""]);
-      showToast("✉️ Mã OTP đã gửi! Kiểm tra hộp thư của bạn.", "success");
+      showToast(data.message || "Mã OTP đã gửi. Kiểm tra Hộp thư đến hoặc Spam/Thư rác.", "success");
       setOtpStep(2);
       setOtpCountdown(300); // 5 phút
     } catch (e: any) {
