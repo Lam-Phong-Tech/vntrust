@@ -93,7 +93,12 @@ export async function GET(req: NextRequest) {
         where: {
           trangThai: 'open',
           uid: { not: null },
-          ...(since ? { thoiGian: { gte: since } } : {}),
+          ...((since || until) ? {
+            thoiGian: {
+              ...(since ? { gte: since } : {}),
+              ...(until ? { lt: until } : {}),
+            },
+          } : {}),
         },
         select: { uid: true, mucDo: true },
         take: 2000,

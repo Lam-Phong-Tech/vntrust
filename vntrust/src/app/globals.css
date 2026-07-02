@@ -171,6 +171,32 @@ body {
   width: 100%;
 }
 
+.map-layer-panel {
+  min-width: 280px;
+}
+
+.map-timeline-range {
+  display: block;
+}
+
+.map-timeline-track {
+  width: 100%;
+}
+
+.map-timeline-range::-webkit-slider-thumb {
+  margin-top: -1px;
+}
+
+@media (max-width: 420px) {
+  .map-layer-panel {
+    left: 12px;
+    right: 12px;
+    width: auto !important;
+    min-width: 0;
+    max-width: none !important;
+  }
+}
+
 @media (max-width: 640px) {
   .ai-chat-modal-panel {
     width: calc(100vw - 16px) !important;

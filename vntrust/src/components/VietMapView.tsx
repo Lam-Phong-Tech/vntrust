@@ -304,9 +304,20 @@ export default function VietMapView({
 
   // ── Fetch heatmap layers khi activeLayers/period/sliderStep thay đổi ───
   useEffect(() => {
-    const toFetch = Array.from(activeLayers).filter(k => !heatmapData[k]);
-    if (toFetch.length === 0) return;
+    const toFetch = Array.from(activeLayers);
+    if (toFetch.length === 0) {
+      setHeatmapData({ scan: null, fake: null, alert: null, dn: null });
+      setLoadingLayers(new Set());
+      return;
+    }
+
+    const controller = new AbortController();
     setLoadingLayers(new Set(toFetch));
+    setHeatmapData(prev => {
+      const next = { ...prev };
+      toFetch.forEach((k) => { next[k] = null; });
+      return next;
+    });
 
     // Build query: nếu sliderStep != null + có bucket, dùng from/to
     let queryExtra = '';
@@ -318,28 +329,30 @@ export default function VietMapView({
     Promise.all(
       toFetch.map(async (type) => {
         try {
-          const r = await fetch(`/api/heatmap?type=${type}&period=${period}${queryExtra}`, { cache: 'no-store' });
+          const r = await fetch(`/api/heatmap?type=${type}&period=${period}${queryExtra}`, {
+            cache: 'no-store',
+            signal: controller.signal,
+          });
           if (!r.ok) return [type, null];
           return [type, await r.json()];
         } catch {
+          if (controller.signal.aborted) return [type, undefined];
           return [type, null];
         }
       })
     ).then((results) => {
+      if (controller.signal.aborted) return;
       setHeatmapData(prev => {
         const next = { ...prev };
-        for (const [k, v] of results as [LayerKey, any][]) next[k] = v;
+        for (const [k, v] of results as [LayerKey, any][]) {
+          if (v !== undefined) next[k] = v;
+        }
         return next;
       });
       setLoadingLayers(new Set());
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeLayers, period, sliderStep]);
-
-  // Reset cache khi period HOẶC slider thay đổi (refetch all active)
-  useEffect(() => {
-    setHeatmapData({ scan: null, fake: null, alert: null, dn: null });
-  }, [period, sliderStep]);
+    return () => controller.abort();
+  }, [activeLayers, period, sliderStep, buckets]);
 
   // ── Toggle helpers ──────────────────────────────────────────────
   const toggleLayer = (k: LayerKey) => {
@@ -537,7 +550,7 @@ export default function VietMapView({
       </div>
 
       {/* ─── Heatmap control panel (top-right, collapsible) ─── */}
-      <div className="absolute top-3 right-3 z-10 max-w-[260px]">
+      <div className="map-layer-panel absolute top-3 right-3 z-10 w-[min(320px,calc(100%-1.5rem))] max-w-[320px]">
         {panelOpen ? (
           <div className="bg-black/80 backdrop-blur-md rounded-2xl border border-[#C8A557]/30 shadow-2xl overflow-hidden">
             <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10 bg-[#C8A557]/10">
@@ -566,9 +579,9 @@ export default function VietMapView({
             {/* Phase 4: Time Slider (chỉ hiện khi period != all) */}
             {buckets.length > 0 && (
               <div className="px-3 py-2 border-b border-white/10">
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="text-[9px] text-white/40 uppercase tracking-wider font-bold">🎬 {tr("Timeline", "Timeline")}</div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 shrink-0">
                     {/* Play/Pause button */}
                     <button onClick={() => {
                       if (!playing && sliderStep === null) setSliderStep(0);
@@ -586,7 +599,7 @@ export default function VietMapView({
                     </button>
                     {/* Speed selector */}
                     <select value={playSpeed} onChange={(e) => setPlaySpeed(parseInt(e.target.value))}
-                      className="bg-white/5 text-white/70 text-[9px] font-bold rounded px-1 py-0.5 border border-white/10 focus:outline-none">
+                      className="bg-white/5 text-white/70 text-[9px] font-bold rounded px-1.5 py-1 border border-white/10 focus:outline-none max-w-[58px]">
                       <option value={300} className="bg-[#0B1623]">×3</option>
                       <option value={500} className="bg-[#0B1623]">×2</option>
                       <option value={700} className="bg-[#0B1623]">×1</option>
@@ -596,20 +609,22 @@ export default function VietMapView({
                 </div>
 
                 {/* Slider */}
-                <input type="range" min={0} max={buckets.length - 1}
-                  value={sliderStep ?? buckets.length - 1}
-                  onChange={(e) => { setSliderStep(parseInt(e.target.value)); setPlaying(false); }}
-                  className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#C8A557]" />
+                <div className="map-timeline-track px-2">
+                  <input type="range" min={0} max={buckets.length - 1}
+                    value={sliderStep ?? buckets.length - 1}
+                    onChange={(e) => { setSliderStep(parseInt(e.target.value)); setPlaying(false); }}
+                    className="map-timeline-range w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#C8A557]" />
+                </div>
 
                 {/* Labels */}
-                <div className="flex justify-between text-[9px] text-white/40 mt-1 font-mono">
-                  <span>{buckets[0]?.label}</span>
-                  <span className={sliderStep !== null ? "text-[#C8A557] font-bold" : ""}>
+                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-[9px] text-white/40 mt-1.5 font-mono">
+                  <span className="truncate text-left">{buckets[0]?.label}</span>
+                  <span className={`truncate text-center max-w-[140px] ${sliderStep !== null ? "text-[#C8A557] font-bold" : ""}`}>
                     {sliderStep !== null
                       ? `${buckets[sliderStep]?.label} (${sliderStep + 1}/${buckets.length})`
                       : tr('Toàn period', 'Full period')}
                   </span>
-                  <span>{buckets[buckets.length - 1]?.label}</span>
+                  <span className="truncate text-right">{buckets[buckets.length - 1]?.label}</span>
                 </div>
               </div>
             )}
@@ -638,6 +653,11 @@ export default function VietMapView({
                   </button>
                 );
               })}
+              {activeLayers.size === 0 && (
+                <div className="px-2 py-2 text-[10px] text-white/45">
+                  {tr("Chưa bật lớp dữ liệu nào.", "No data layer is enabled.")}
+                </div>
+              )}
             </div>
 
             {/* Marker toggle */}
