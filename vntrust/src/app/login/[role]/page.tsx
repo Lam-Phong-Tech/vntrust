@@ -61,6 +61,7 @@ function validateEmail(email: string): string | null {
 // Phone VN: 10 số, đầu 01-09
 function validateVNPhone(phone: string, _errMsg?: string): string | null {
   const cleaned = phone.replace(/\s+/g, "").replace(/^(\+84|0084)/, "0");
+  if (!cleaned) return "Vui lòng nhập số điện thoại";
   if (!/^0[1-9]\d{8}$/.test(cleaned)) {
     return "Số điện thoại phải đủ 10 số, bắt đầu bằng 01-09 (ví dụ: 0987654321)";
   }
@@ -204,8 +205,13 @@ export default function LoginPage() {
   };
 
   const handlePhoneChange = (val: string) => {
+    const hasInvalidChars = /[^\d\s+]/.test(val);
     const normalized = normalizeVNPhone(val).slice(0, 10);
     setRegPhone(normalized);
+    if (hasInvalidChars) {
+      setRegPhoneError("Số điện thoại chỉ được nhập số");
+      return;
+    }
     if (normalized.length > 0) {
       const err = validateVNPhone(normalized, t("login_phone_invalid"));
       setRegPhoneError(err || "");
@@ -215,9 +221,10 @@ export default function LoginPage() {
   };
 
   const handleNameChange = (val: string) => {
+    const hasInvalidChars = /[^\p{L}\s]/u.test(val);
     const next = val.replace(/[^\p{L}\s]/gu, "").replace(/\s{2,}/g, " ").slice(0, 20);
     setRegName(next);
-    setRegNameError(next ? validateHoTen(next) || "" : "");
+    setRegNameError(hasInvalidChars ? "Họ và tên chỉ được nhập chữ" : next ? validateHoTen(next) || "" : "");
   };
 
   const handleEmailChange = (val: string) => {
@@ -246,26 +253,30 @@ export default function LoginPage() {
     value: string
   ) => {
     if (field === "company") {
+      const hasInvalidChars = /[^\p{L}\p{N}\s.,&()\-\/]/u.test(value);
       const next = value.replace(/[^\p{L}\p{N}\s.,&()\-\/]/gu, "").replace(/\s{2,}/g, " ").slice(0, 120);
       setRegCompany(next);
-      setBusinessFieldError(field, next ? validateCompanyName(next) : null);
+      setBusinessFieldError(field, hasInvalidChars ? "Tên doanh nghiệp không được chứa ký tự đặc biệt lạ" : next ? validateCompanyName(next) : null);
       return;
     }
     if (field === "taxCode") {
+      const hasInvalidChars = /[^\d-]/.test(value);
       const next = value.replace(/[^\d-]/g, "").slice(0, 14);
       setRegTaxCode(next);
-      setBusinessFieldError(field, next ? validateTaxCode(next) : null);
+      setBusinessFieldError(field, hasInvalidChars ? "Mã số thuế chỉ được nhập số" : next ? validateTaxCode(next) : null);
       return;
     }
     if (field === "address") {
+      const hasInvalidChars = /[^\p{L}\p{N}\s.,#()\-\/]/u.test(value);
       const next = value.replace(/[^\p{L}\p{N}\s.,#()\-\/]/gu, "").replace(/\s{2,}/g, " ").slice(0, 180);
       setRegAddress(next);
-      setBusinessFieldError(field, next ? validateBusinessAddress(next) : null);
+      setBusinessFieldError(field, hasInvalidChars ? "Địa chỉ không được chứa ký tự đặc biệt lạ" : next ? validateBusinessAddress(next) : null);
       return;
     }
+    const hasInvalidChars = /[^\d\s+]/.test(value);
     const next = normalizeVNPhone(value).slice(0, 10);
     setRegHotline(next);
-    setBusinessFieldError(field, next ? validateOptionalHotline(next) : null);
+    setBusinessFieldError(field, hasInvalidChars ? "Hotline chỉ được nhập số" : next ? validateOptionalHotline(next) : null);
   };
 
   const uploadKycFile = async (field: "giayphep" | "cmnd_front" | "cmnd_back", file: File) => {
@@ -408,7 +419,12 @@ export default function LoginPage() {
         const data = await res.json();
 
         if (res.ok) {
-          showToast(isBusiness ? "Đăng ký doanh nghiệp thành công! Hồ sơ đang chờ admin xét duyệt." : "Đăng ký thành công! Vui lòng đăng nhập.", "success");
+          showToast(
+            isBusiness
+              ? (data.message || "Đã nhận hồ sơ doanh nghiệp. Vui lòng chờ admin xét duyệt trước khi đăng nhập.")
+              : (data.message || "Đăng ký thành công! Vui lòng đăng nhập."),
+            "success"
+          );
           setTimeout(() => {
             setView("login");
             setUsername(regEmail);

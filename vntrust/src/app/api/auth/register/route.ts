@@ -207,8 +207,14 @@ export async function POST(req: Request) {
       }
     });
 
+    const requiresApproval = role === 'manufacturer' || role === 'importer';
+
     return NextResponse.json({
-      message: 'Đăng ký thành công',
+      message: requiresApproval
+        ? 'Đã nhận hồ sơ doanh nghiệp. Vui lòng chờ admin xét duyệt trước khi đăng nhập.'
+        : 'Đăng ký thành công! Vui lòng đăng nhập.',
+      status: requiresApproval ? 'pending_approval' : 'active',
+      requiresApproval,
       user: { id: newUser.id, email: newUser.email, role: newUser.vaiTro },
     });
   } catch (error: any) {
