@@ -14,15 +14,15 @@ function validateEmailStrict(email: string): string | null {
   return null;
 }
 
-// Mật khẩu: ≥1 hoa, ≥1 thường, ≥1 số, ≥1 ký tự đặc biệt, 8-20 ký tự
+// Mật khẩu: >=1 hoa, >=1 thường, >=1 số, >=1 ký tự đặc biệt, 12-20 ký tự
 function validatePasswordStrict(pwd: string): string | null {
   if (!pwd) return "Vui lòng nhập mật khẩu";
-  if (pwd.length < 8)  return "Mật khẩu tối thiểu 8 ký tự";
+  if (pwd.length < 12)  return "Mật khẩu tối thiểu 12 ký tự";
   if (pwd.length > 20) return "Mật khẩu tối đa 20 ký tự";
-  if (!/[a-z]/.test(pwd))           return "Mật khẩu phải có ≥1 chữ thường";
-  if (!/[A-Z]/.test(pwd))           return "Mật khẩu phải có ≥1 chữ HOA";
-  if (!/[0-9]/.test(pwd))           return "Mật khẩu phải có ≥1 chữ số";
-  if (!/[^A-Za-z0-9]/.test(pwd))    return "Mật khẩu phải có ≥1 ký tự đặc biệt (!@#$%...)";
+  if (!/[a-z]/.test(pwd))           return "Mật khẩu phải có ít nhất 1 chữ thường";
+  if (!/[A-Z]/.test(pwd))           return "Mật khẩu phải có ít nhất 1 chữ HOA";
+  if (!/[0-9]/.test(pwd))           return "Mật khẩu phải có ít nhất 1 chữ số";
+  if (!/[^A-Za-z0-9]/.test(pwd))    return "Mật khẩu phải có ít nhất 1 ký tự đặc biệt (!@#$%...)";
   return null;
 }
 
@@ -53,17 +53,20 @@ export default function ForgotPasswordPage() {
 
   // Bước 1: Gửi OTP
   const sendOtp = async () => {
-    const emailErr = validateEmailStrict(email);
+    const normalizedEmail = email.trim().toLowerCase();
+    const emailErr = validateEmailStrict(normalizedEmail);
     if (emailErr) { showMsg(emailErr, false); return; }
     setLoading(true);
     try {
       const res = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: normalizedEmail }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error || "Không thể gửi OTP");
+      setEmail(normalizedEmail);
+      setOtpCode(["", "", "", "", "", ""]);
       showMsg("✉️ Mã OTP đã gửi! Kiểm tra hộp thư.", true);
       setStep(2);
       setCountdown(300);
@@ -137,31 +140,67 @@ export default function ForgotPasswordPage() {
     }
   };
 
+  const applyOtpFromText = (text: string) => {
+    const digits = text.replace(/\D/g, "").slice(0, 6).split("");
+    if (digits.length === 0) return false;
+    const next = ["", "", "", "", "", ""];
+    digits.forEach((digit, idx) => {
+      next[idx] = digit;
+    });
+    setOtpCode(next);
+    const focusIndex = Math.min(digits.length, 5);
+    window.setTimeout(() => {
+      (document.getElementById(`otp-${focusIndex}`) as HTMLInputElement | null)?.focus();
+    }, 0);
+    return digits.length === 6;
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text");
+    if (!applyOtpFromText(pasted)) {
+      showMsg("Mã OTP chỉ gồm 6 chữ số", false);
+    }
+  };
+
+  const pasteOtpFromClipboard = async () => {
+    if (!navigator.clipboard?.readText) {
+      showMsg("Trình duyệt chưa cho phép đọc clipboard. Bạn có thể bấm Ctrl+V vào ô OTP.", false);
+      return;
+    }
+    try {
+      const pasted = await navigator.clipboard.readText();
+      if (!applyOtpFromText(pasted)) showMsg("Clipboard không có mã OTP hợp lệ", false);
+    } catch {
+      showMsg("Không đọc được clipboard. Hãy bấm Ctrl+V vào ô OTP.", false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#0b1320] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0b1320] flex flex-col items-center justify-center px-3 py-5 sm:p-4 relative overflow-hidden">
       {/* Background blobs */}
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-cyan-900/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* Logo */}
-      <div className="flex flex-col items-center mb-8 z-10">
-        <img src="/verigoods-logo.png" alt="AI VeriGoods" className="w-28 h-28 object-contain mb-2" />
-        <p className="text-slate-400 mt-1 text-sm text-center">Nền tảng xác thực hàng hóa chống giả mạo toàn quốc</p>
+      <div className="flex flex-col items-center mb-5 sm:mb-8 z-10">
+        <img src="/verigoods-logo.png" alt="AI VeriGoods" className="w-20 h-20 sm:w-28 sm:h-28 object-contain mb-2" />
+        <p className="text-slate-400 mt-1 text-xs sm:text-sm text-center px-2">Nền tảng xác thực hàng hóa chống giả mạo toàn quốc</p>
       </div>
 
       {/* Card */}
-      <div className="bg-[#1a2235]/90 backdrop-blur-xl border border-slate-800/50 p-8 rounded-3xl w-full max-w-md shadow-2xl z-10">
+      <div className="bg-[#1a2235]/90 backdrop-blur-xl border border-slate-800/50 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl w-full max-w-[28rem] shadow-2xl z-10">
         {/* Header */}
-        <div className="flex items-center mb-6">
+        <div className="flex items-start sm:items-center mb-5 sm:mb-6">
           <button onClick={() => step === 1 ? router.push("/login") : setStep(s => (s - 1) as 1 | 2 | 3)}
-            className="mr-3 w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all">
+            className="mr-3 w-9 h-9 shrink-0 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all">
             <span className="material-symbols-outlined text-xl">arrow_back</span>
           </button>
-          <div>
-            <h2 className="text-2xl font-bold text-white">
+          <div className="min-w-0">
+            <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight">
               {step === 1 ? "Quên mật khẩu" : step === 2 ? "Nhập mã OTP" : "Mật khẩu mới"}
             </h2>
-            <p className="text-slate-400 text-sm mt-0.5">
+            <p className="text-slate-400 text-xs sm:text-sm mt-0.5 break-words">
               {step === 1 ? "Nhận mã xác thực 6 số qua Gmail"
                 : step === 2 ? `Mã đã gửi đến ${email}`
                 : "Tạo mật khẩu mới cho tài khoản"}
@@ -226,18 +265,25 @@ export default function ForgotPasswordPage() {
           <div className="space-y-5">
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 text-center">Mã xác thực 6 số</label>
-              <div className="flex gap-3 justify-center">
+              <div className="flex gap-1.5 sm:gap-3 justify-center">
                 {otpCode.map((digit, idx) => (
                   <input key={idx} id={`otp-${idx}`} type="text" inputMode="numeric"
                     maxLength={1} value={digit}
                     onKeyDown={e => handleOtpKey(e, idx)}
+                    onPaste={handleOtpPaste}
                     onChange={() => {}}
-                    className={`w-12 h-14 text-center text-2xl font-bold rounded-xl border transition-all outline-none
+                    aria-label={`Số OTP thứ ${idx + 1}`}
+                    className={`w-10 h-12 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold rounded-xl border transition-all outline-none
                       ${digit ? "border-[#1F6FEB] bg-[#1F6FEB]/10 text-[#1F6FEB]" : "border-slate-700/50 bg-[#131b2c] text-white"}
                       focus:border-[#1F6FEB] focus:ring-2 focus:ring-[#1F6FEB]/30`}
                     autoFocus={idx === 0} />
                 ))}
               </div>
+              <button type="button" onClick={pasteOtpFromClipboard}
+                className="mx-auto mt-3 flex items-center justify-center gap-1 text-xs font-semibold text-[#93C5FD] hover:text-white transition-colors">
+                <span className="material-symbols-outlined text-[15px]">content_paste</span>
+                Dán mã OTP hoặc bấm Ctrl+V
+              </button>
             </div>
             <div className="text-center">
               {countdown > 0
@@ -267,15 +313,15 @@ export default function ForgotPasswordPage() {
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
-                Mật khẩu mới <span className="ml-1 text-[10px] font-normal text-slate-500 normal-case">(8–20 ký tự · hoa + thường + số + ký tự đặc biệt)</span>
+                Mật khẩu mới <span className="ml-1 text-[10px] font-normal text-slate-500 normal-case">(12–20 ký tự · hoa + thường + số + ký tự đặc biệt)</span>
               </label>
               <div className="relative">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">lock</span>
                 <input type={showPassword ? "text" : "password"} value={newPassword}
                   onChange={e => setNewPassword(e.target.value.slice(0, 20))}
-                  minLength={8} maxLength={20}
+                  minLength={12} maxLength={20}
                   className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-12 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
-                  placeholder="VD: Abc@1234" autoFocus />
+                   placeholder="VD: Abc@12345678" autoFocus />
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
                   <span className="material-symbols-outlined text-xl">{showPassword ? "visibility_off" : "visibility"}</span>
@@ -284,7 +330,7 @@ export default function ForgotPasswordPage() {
               {/* Strength meter */}
               {newPassword.length > 0 && (() => {
                 const checks = [
-                  newPassword.length >= 8 && newPassword.length <= 20,
+                  newPassword.length >= 12 && newPassword.length <= 20,
                   /[A-Z]/.test(newPassword),
                   /[a-z]/.test(newPassword),
                   /\d/.test(newPassword),
@@ -304,7 +350,7 @@ export default function ForgotPasswordPage() {
                     <div className="flex flex-wrap justify-between items-center gap-1">
                       <span className={`text-[10px] font-bold ${textColors[score-1] || 'text-slate-500'}`}>{score > 0 ? labels[score-1] : ''}</span>
                       <div className="flex gap-1 flex-wrap">
-                        {[['8-20', checks[0]], ['HOA', checks[1]], ['thường', checks[2]], ['số', checks[3]], ['!@#', checks[4]]].map(([l, ok], i) => (
+                        {[['12-20', checks[0]], ['HOA', checks[1]], ['thường', checks[2]], ['số', checks[3]], ['!@#', checks[4]]].map(([l, ok], i) => (
                           <span key={i} className={`text-[9px] px-1 py-0.5 rounded font-bold ${ok ? 'bg-[#4A7C5C]/20 text-[#6FB585]' : 'bg-white/5 text-slate-600'}`}>{l as string}</span>
                         ))}
                       </div>
@@ -346,7 +392,7 @@ export default function ForgotPasswordPage() {
 
       {/* Toast */}
       {msg && (
-        <div className={`fixed bottom-8 right-8 z-50 px-6 py-4 rounded-2xl shadow-2xl font-bold text-sm max-w-sm transition-all
+        <div className={`fixed bottom-4 left-3 right-3 sm:left-auto sm:bottom-8 sm:right-8 z-50 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-2xl font-bold text-sm max-w-sm sm:max-w-sm sm:min-w-[18rem] transition-all
           ${msg.ok ? "bg-[#4A7C5C] text-white" : "bg-red-600 text-white"}`}>
           {msg.text}
         </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { prisma } from '@/lib/prisma';
 import { otpStore } from '@/lib/otpStore';
 
 function generateOTP(): string {
@@ -9,8 +10,35 @@ function generateOTP(): string {
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
-    if (!email) {
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+
+    if (!normalizedEmail) {
       return NextResponse.json({ error: 'Email không được để trống' }, { status: 400 });
+    }
+
+    const candidates = await prisma.nguoiDung.findMany({
+      where: {
+        email: { contains: normalizedEmail.split('@')[0] },
+      },
+      select: { id: true, email: true, trangThai: true },
+      take: 20,
+    });
+    const targetUser = candidates.find(u => (u.email || '').toLowerCase().trim() === normalizedEmail)
+      || await prisma.nguoiDung.findFirst({
+        where: { email: normalizedEmail },
+        select: { id: true, email: true, trangThai: true },
+      });
+
+    if (!targetUser) {
+      return NextResponse.json({
+        error: 'Không tìm thấy tài khoản với email này. Kiểm tra lại email đã đăng ký.',
+      }, { status: 404 });
+    }
+
+    if (['locked', 'disabled', 'suspended', 'revoked'].includes(targetUser.trangThai)) {
+      return NextResponse.json({
+        error: 'Tài khoản này đang bị khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ.',
+      }, { status: 403 });
     }
 
     const gmailUser = process.env.GMAIL_USER;
@@ -26,8 +54,8 @@ export async function POST(req: NextRequest) {
     }
 
     const otp = generateOTP();
-    otpStore.set(email.toLowerCase(), { otp, expires: Date.now() + 5 * 60 * 1000 });
-    console.log(`[OTP] Generated for ${email}: ${otp}`);
+    otpStore.set(normalizedEmail, { otp, expires: Date.now() + 5 * 60 * 1000 });
+    console.log(`[OTP] Generated for ${normalizedEmail}: ${otp}`);
 
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -47,7 +75,7 @@ export async function POST(req: NextRequest) {
     const info = await transporter.sendMail({
       from: `"AI VeriGoods" <${gmailUser}>`,
       replyTo: gmailUser,
-      to: email,
+      to: normalizedEmail,
       subject: `Mã xác thực AI VeriGoods của bạn`,
       headers: {
         'X-Mailer': 'AI VeriGoods Mailer 1.0',
@@ -66,7 +94,7 @@ export async function POST(req: NextRequest) {
             </div>
             <div style="padding:32px;">
               <p style="color:#475569;font-size:15px;margin:0 0 24px;line-height:1.6;">
-                Xin chào, bạn đã yêu cầu đặt lại mật khẩu cho tài khoản <strong style="color:#0a3352;">${email}</strong>.
+                Xin chào, bạn đã yêu cầu đặt lại mật khẩu cho tài khoản <strong style="color:#0a3352;">${normalizedEmail}</strong>.
               </p>
               <div style="background:#f0fdf9;border:2px solid #3cdada;border-radius:12px;padding:28px;text-align:center;margin:0 0 24px;">
                 <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:3px;margin:0 0 12px;text-transform:uppercase;">Mã xác thực của bạn</p>

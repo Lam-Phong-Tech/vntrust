@@ -19,8 +19,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Thiếu thông tin' }, { status: 400 });
     }
 
-    if (newPassword.length < 6) {
-      return NextResponse.json({ error: 'Mật khẩu phải có ít nhất 6 ký tự' }, { status: 400 });
+    if (
+      newPassword.length < 12 ||
+      newPassword.length > 20 ||
+      !/[a-z]/.test(newPassword) ||
+      !/[A-Z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword) ||
+      !/[^A-Za-z0-9]/.test(newPassword)
+    ) {
+      return NextResponse.json({
+        error: 'Mật khẩu phải dài 12-20 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt.',
+      }, { status: 400 });
     }
 
     // Xác thực token ĐÃ KÝ HMAC (chống giả mạo). verifyJWT trả null nếu chữ ký sai HOẶC hết hạn.
