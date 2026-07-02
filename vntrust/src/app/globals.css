@@ -159,6 +159,27 @@ body {
   flex-wrap: nowrap !important;
 }
 
+.dashboard-modal-panel {
+  width: min(448px, calc(100vw - 32px)) !important;
+  max-width: 448px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.dashboard-report-modal {
+  width: min(560px, calc(100vw - 32px)) !important;
+  max-width: 560px !important;
+}
+
+@media (max-width: 640px) {
+  .dashboard-modal-panel,
+  .dashboard-report-modal {
+    width: calc(100vw - 16px) !important;
+    max-width: calc(100vw - 16px) !important;
+    max-height: calc(100dvh - 16px) !important;
+  }
+}
+
 .dashboard-action-card {
   min-height: 160px;
 }

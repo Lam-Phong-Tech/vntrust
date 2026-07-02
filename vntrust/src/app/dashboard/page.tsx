@@ -231,7 +231,7 @@ function ModalWrapper({ onClose, title, icon, iconColor, children, panelClass = 
   return (
     <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-2 sm:p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      <div className={`relative w-full max-w-md max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] glass-panel border border-white/20 rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col overflow-hidden ${panelClass}`} onClick={e => e.stopPropagation()}>
+      <div className={`dashboard-modal-panel relative w-full max-w-md max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] glass-panel border border-white/20 rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col overflow-hidden ${panelClass}`} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${iconColor} flex items-center justify-center shrink-0`}>
@@ -403,19 +403,19 @@ function ExportReportModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <ModalWrapper onClose={onClose} title="Xuất Báo cáo AI" icon="summarize" iconColor="bg-[#C8A557]">
-      <div className="space-y-3 mb-5">
+    <ModalWrapper onClose={onClose} title="Xuất Báo cáo AI" icon="summarize" iconColor="bg-[#C8A557]" panelClass="dashboard-report-modal">
+      <div className="space-y-3 mb-5 min-w-0 overflow-y-auto pr-1">
         {["Tóm tắt hoạt động theo kỳ", "Thống kê lượt quét thực tế", "Top sản phẩm được quét", "Xu hướng 7 ngày"].map(i => (
-          <div key={i} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10">
+          <div key={i} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10 min-w-0">
             <span className="material-symbols-outlined text-[#6FB585] text-[18px]">check_circle</span>
-            <span className="text-sm text-slate-200">{i}</span>
+            <span className="text-sm text-slate-200 min-w-0">{i}</span>
           </div>
         ))}
       </div>
-      <div className="flex gap-2 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
         {(["week", "month", "quarter"] as const).map(p => (
           <button key={p} onClick={() => setPeriod(p)}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold border transition ${
+            className={`py-2 rounded-xl text-xs font-bold border transition ${
               period === p ? "bg-[#C8A557] text-white border-[#C8A557]" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
             }`}>
             {p === "week" ? "7 ngày" : p === "month" ? "30 ngày" : "3 tháng"}
