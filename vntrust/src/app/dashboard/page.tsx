@@ -1009,6 +1009,21 @@ export default function Dashboard() {
                 </Link>
               )}
 
+              {/* ── Trung tâm quản lý doanh nghiệp: Manufacturer + Importer ── */}
+              {(userRole === 'manufacturer' || userRole === 'importer') && (
+                <Link href="/dashboard/manage" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="material-symbols-outlined text-3xl text-emerald-300">dashboard_customize</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">DN</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{lang === 'en' ? 'Profile · products · batches · team' : 'Hồ sơ · sản phẩm · lô · nhân sự'}</p>
+                    <h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Enterprise management' : 'Quản lý doanh nghiệp'}</h3>
+                  </div>
+                </Link>
+              )}
+
               {/* ── Quản lý người dùng: Admin only ── */}
               {(userRole === 'admin') && (
                 <Link href="/dashboard/users" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
