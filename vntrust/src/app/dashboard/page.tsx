@@ -348,19 +348,31 @@ function AiChatModal({ msgs, addMsg, onClose }: {
 
 // ─── Other Modals ─────────────────────────────────────────────────────────────
 function ExportReportModal({ onClose }: { onClose: () => void }) {
-  const [state, setState] = useState<"idle" | "loading" | "done">("idle");
-  const [period, setPeriod] = useState<"week" | "month" | "quarter">("month");
+  type ReportPeriod = "week" | "month" | "quarter";
+  type ExportState = "idle" | "loading" | "done";
+
+  const [period, setPeriod] = useState<ReportPeriod>("month");
+  const [stateByPeriod, setStateByPeriod] = useState<Record<ReportPeriod, ExportState>>({
+    week: "idle",
+    month: "idle",
+    quarter: "idle",
+  });
+  const state = stateByPeriod[period];
+  const setPeriodState = (nextState: ExportState, targetPeriod: ReportPeriod = period) => {
+    setStateByPeriod(prev => ({ ...prev, [targetPeriod]: nextState }));
+  };
 
   const doExport = async () => {
-    setState("loading");
+    const currentPeriod = period;
+    setPeriodState("loading", currentPeriod);
     try {
       const [ovRes, scanRes] = await Promise.all([
-        fetch(`/api/analytics?type=overview&period=${period}`),
-        fetch(`/api/analytics?type=scan_stats&period=${period}`),
+        fetch(`/api/analytics?type=overview&period=${currentPeriod}`),
+        fetch(`/api/analytics?type=scan_stats&period=${currentPeriod}`),
       ]);
       const [ov, sc] = await Promise.all([ovRes.json(), scanRes.json()]);
       const now = new Date().toLocaleDateString("vi-VN");
-      const periodLabel = period === "week" ? "7 ngày" : period === "month" ? "30 ngày" : "3 tháng";
+      const periodLabel = currentPeriod === "week" ? "7 ngày" : currentPeriod === "month" ? "30 ngày" : "3 tháng";
       const genuine = ov.totalScans - ov.totalFake;
       const integrity = ov.totalScans > 0 ? (100 - parseFloat(ov.fakeRate)).toFixed(1) : "100.0";
 
@@ -396,26 +408,27 @@ function ExportReportModal({ onClose }: { onClose: () => void }) {
         download: `AIVeriGoods_BaoCao_${periodLabel.replace(/ /g, "_")}_${now.replace(/\//g, "-")}.csv`,
       });
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setState("done");
+      URL.revokeObjectURL(a.href);
+      setPeriodState("done", currentPeriod);
     } catch {
-      setState("idle");
+      setPeriodState("idle", currentPeriod);
     }
   };
 
   return (
     <ModalWrapper onClose={onClose} title="Xuất Báo cáo AI" icon="summarize" iconColor="bg-[#C8A557]" panelClass="dashboard-report-modal">
-      <div className="space-y-3 mb-5 min-w-0 overflow-y-auto pr-1">
+      <div className="dashboard-report-content space-y-2.5 sm:space-y-3 mb-4 min-w-0 overflow-y-auto pr-1">
         {["Tóm tắt hoạt động theo kỳ", "Thống kê lượt quét thực tế", "Top sản phẩm được quét", "Xu hướng 7 ngày"].map(i => (
-          <div key={i} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10 min-w-0">
+          <div key={i} className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 bg-white/5 rounded-xl border border-white/10 min-w-0">
             <span className="material-symbols-outlined text-[#6FB585] text-[18px]">check_circle</span>
-            <span className="text-sm text-slate-200 min-w-0">{i}</span>
+            <span className="text-xs sm:text-sm text-slate-200 min-w-0 leading-snug">{i}</span>
           </div>
         ))}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
-        {(["week", "month", "quarter"] as const).map(p => (
+        {(["week", "month", "quarter"] as ReportPeriod[]).map(p => (
           <button key={p} onClick={() => setPeriod(p)}
-            className={`py-2 rounded-xl text-xs font-bold border transition ${
+            className={`py-2.5 sm:py-2 rounded-xl text-xs font-bold border transition ${
               period === p ? "bg-[#C8A557] text-white border-[#C8A557]" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
             }`}>
             {p === "week" ? "7 ngày" : p === "month" ? "30 ngày" : "3 tháng"}
@@ -423,8 +436,8 @@ function ExportReportModal({ onClose }: { onClose: () => void }) {
         ))}
       </div>
       {state === "done" ? (
-        <div className="text-center p-4 bg-[#4A7C5C]/15 border border-[#4A7C5C]/30 rounded-2xl">
-          <span className="material-symbols-outlined text-4xl text-[#6FB585]">task_alt</span>
+        <div className="text-center p-3 sm:p-4 bg-[#4A7C5C]/15 border border-[#4A7C5C]/30 rounded-2xl">
+          <span className="material-symbols-outlined text-3xl sm:text-4xl text-[#6FB585]">task_alt</span>
           <p className="text-[#6FB585] font-bold mt-1">File CSV đã được tải về máy!</p>
           <button onClick={doExport} className="mt-2 text-xs text-[#C8A557] underline">Tải lại</button>
         </div>

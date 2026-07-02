@@ -167,8 +167,14 @@ body {
 }
 
 .dashboard-report-modal {
-  width: min(560px, calc(100vw - 32px)) !important;
-  max-width: 560px !important;
+  width: min(520px, calc(100vw - 32px)) !important;
+  max-width: 520px !important;
+  max-height: min(620px, calc(100dvh - 32px)) !important;
+}
+
+.dashboard-report-modal .dashboard-report-content {
+  max-height: min(260px, calc(100dvh - 330px));
+  min-height: 0;
 }
 
 @media (max-width: 640px) {
@@ -177,6 +183,10 @@ body {
     width: calc(100vw - 16px) !important;
     max-width: calc(100vw - 16px) !important;
     max-height: calc(100dvh - 16px) !important;
+  }
+
+  .dashboard-report-modal .dashboard-report-content {
+    max-height: calc(100dvh - 360px);
   }
 }
 
