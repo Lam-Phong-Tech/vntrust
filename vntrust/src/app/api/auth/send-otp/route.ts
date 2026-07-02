@@ -54,7 +54,6 @@ export async function POST(req: NextRequest) {
     }
 
     const otp = generateOTP();
-    otpStore.set(normalizedEmail, { otp, expires: Date.now() + 5 * 60 * 1000 });
     console.log(`[OTP] Generated for ${normalizedEmail}: ${otp}`);
 
     const transporter = nodemailer.createTransport({
@@ -74,6 +73,10 @@ export async function POST(req: NextRequest) {
 
     const info = await transporter.sendMail({
       from: `"AI VeriGoods" <${gmailUser}>`,
+      envelope: {
+        from: gmailUser,
+        to: normalizedEmail,
+      },
       replyTo: gmailUser,
       to: normalizedEmail,
       subject: `Mã xác thực AI VeriGoods của bạn`,
@@ -115,7 +118,27 @@ export async function POST(req: NextRequest) {
       `,
     });
 
-    console.log('[OTP] Email sent! MessageId:', info.messageId);
+    const accepted = (info.accepted || []).map(String).map(v => v.toLowerCase());
+    const rejected = (info.rejected || []).map(String);
+    const pending = (info.pending || []).map(String);
+
+    if (!accepted.includes(normalizedEmail)) {
+      console.error('[OTP] SMTP did not accept recipient', {
+        to: normalizedEmail,
+        accepted,
+        rejected,
+        pending,
+        messageId: info.messageId,
+      });
+      return NextResponse.json({
+        error: rejected.length
+          ? 'Email bị máy chủ gửi thư từ chối. Vui lòng kiểm tra lại địa chỉ email hoặc thử email khác.'
+          : 'Máy chủ gửi thư chưa xác nhận đã nhận email OTP. Vui lòng thử gửi lại sau.',
+      }, { status: 502 });
+    }
+
+    otpStore.set(normalizedEmail, { otp, expires: Date.now() + 5 * 60 * 1000 });
+    console.log('[OTP] Email accepted by SMTP. MessageId:', info.messageId, 'accepted:', accepted);
     return NextResponse.json({ message: 'Mã OTP đã được gửi đến email của bạn' });
 
   } catch (error: any) {
