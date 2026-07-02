@@ -159,6 +159,18 @@ body {
   flex-wrap: nowrap !important;
 }
 
+.dashboard-action-card {
+  min-height: 160px;
+}
+
+.dashboard-action-grid .emergency-card {
+  gap: 14px;
+}
+
+.dashboard-action-grid .emergency-card > div {
+  width: 100%;
+}
+
 @media (max-width: 640px) {
   .ai-chat-modal-panel {
     width: calc(100vw - 16px) !important;

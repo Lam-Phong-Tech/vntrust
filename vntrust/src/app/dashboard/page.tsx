@@ -964,7 +964,7 @@ export default function Dashboard() {
             </form>
 
             {/* App Grid — phân quyền theo nghiệp vụ */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="dashboard-action-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
 
               {/* ── Phê duyệt hồ sơ: Admin only ── */}
               {(userRole === 'admin') && (
@@ -1121,7 +1121,7 @@ export default function Dashboard() {
 
               {/* ── Hậu kiểm: Admin only ── */}
               {(userRole === 'admin') && (
-                <Link href="/dashboard/haukiem" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-32 group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/haukiem" className="dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span className="material-symbols-outlined text-4xl text-[#1F6FEB]">biotech</span>
                   <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_hk")}</h3>
@@ -1145,7 +1145,7 @@ export default function Dashboard() {
 
               {/* ── Báo cáo & Phân tích: Manufacturer + Importer + Admin (FR-RPT-06) ── */}
               {(userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/dashboard/analytics" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-32 group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/analytics" className="dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span className="material-symbols-outlined text-4xl text-[#1F6FEB]">analytics</span>
                   <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{lang === 'en' ? 'Reports & Analytics' : 'Báo cáo & Phân tích'}</h3>
@@ -1153,12 +1153,12 @@ export default function Dashboard() {
               )}
 
               {/* ── Nhật ký: Tất cả ── */}
-              <Link href="/dashboard/history" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-32 group">
+              <Link href="/dashboard/history" className="dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group">
                 <span className="material-symbols-outlined text-4xl text-slate-300">history</span>
                 <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_hist")}</h3>
               </Link>
 
-                <div className="emergency-card glass-card rounded-3xl p-3 sm:p-4 flex flex-col justify-between h-32 border border-[#1F6FEB]/20 bg-white/85 min-w-0 overflow-hidden shadow-sm dark:bg-red-900/20 dark:border-red-500/30">
+                <div className="dashboard-action-card emergency-card glass-card rounded-3xl p-3 sm:p-4 flex flex-col justify-center border border-[#1F6FEB]/20 bg-white/85 min-w-0 overflow-hidden shadow-sm dark:bg-red-900/20 dark:border-red-500/30">
                   <div className="flex gap-1.5 sm:gap-2 min-w-0">
                     <a href="tel:113" className="emergency-card__call emergency-card__call--alert flex-1 min-w-0 rounded-xl p-1.5 text-center transition">
                       <p className="emergency-card__label text-[8px] sm:text-[9px] font-black truncate leading-tight">{lang === 'en' ? 'ALERTS' : 'CẢNH BÁO'}</p>
