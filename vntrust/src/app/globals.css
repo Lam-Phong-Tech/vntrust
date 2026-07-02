@@ -1678,25 +1678,36 @@ html.light-mode .emergency-card__title {
   text-shadow: none !important;
 }
 
-.dark .emergency-card__call--alert {
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+.emergency-card__call {
+  border-width: 1px;
+  border-style: solid;
 }
 
-.dark .emergency-card__call--support {
-  background: rgba(31, 111, 235, 0.15);
-  border: 1px solid rgba(31, 111, 235, 0.3);
+.emergency-card__call--alert {
+  background: rgba(239, 68, 68, 0.22) !important;
+  border-color: rgba(248, 113, 113, 0.42) !important;
 }
 
-.dark .emergency-card__call--alert .emergency-card__label,
-.dark .emergency-card__call--support .emergency-card__label,
-.dark .emergency-card__number,
-.dark .emergency-card__title {
-  color: #ffffff;
+.emergency-card__call--support {
+  background: rgba(31, 111, 235, 0.22) !important;
+  border-color: rgba(96, 165, 250, 0.42) !important;
 }
 
-.dark .emergency-card__title {
-  border-top: 1px solid rgba(239, 68, 68, 0.2);
+.emergency-card__call--alert .emergency-card__label {
+  color: #fecaca !important;
+}
+
+.emergency-card__call--support .emergency-card__label {
+  color: #bfdbfe !important;
+}
+
+.emergency-card__number,
+.emergency-card__title {
+  color: #ffffff !important;
+}
+
+.emergency-card__title {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 /* Dashboard profile: keep the personal profile header compact and readable. */
