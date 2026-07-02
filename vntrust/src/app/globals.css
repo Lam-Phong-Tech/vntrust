@@ -1430,6 +1430,29 @@ html.light-mode .admin-content .admin-stat-value {
   text-shadow: 0 1px 0 rgba(255,255,255,0.75);
 }
 
+/* Admin content uses a light canvas even when the public-site theme is dark.
+   Keep page text dark, while leaving sidebar/topbar and colored buttons alone. */
+.admin-content {
+  color: #0d1b2e;
+}
+
+.admin-content :where(h1, h2, h3, h4, h5, h6, p, div, span, label, th, td)[class*="text-white"],
+.admin-content :where(h1, h2, h3, h4, h5, h6, p, div, span, label, th, td)[class*="text-slate-50"],
+.admin-content :where(h1, h2, h3, h4, h5, h6, p, div, span, label, th, td)[class*="text-slate-100"],
+.admin-content :where(h1, h2, h3, h4, h5, h6, p, div, span, label, th, td)[class*="text-slate-200"] {
+  color: #0d1b2e !important;
+}
+
+.admin-content :where(p, div, span, label, th, td)[class*="text-slate-300"],
+.admin-content :where(p, div, span, label, th, td)[class*="text-slate-400"],
+.admin-content :where(p, div, span, label, th, td)[class*="text-slate-500"] {
+  color: #456985 !important;
+}
+
+.admin-content .admin-stat-value {
+  color: #0d1b2e !important;
+}
+
 /* ═══════════════════════════════════════════════════════════
    #30 — RÀ SOÁT SÁNG/TỐI: ốc đảo nền tối còn sót sau khi đối chiếu
    toàn bộ class với các rule override hiện có. Chỉ đụng SURFACE nền
