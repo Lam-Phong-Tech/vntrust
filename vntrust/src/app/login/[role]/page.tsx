@@ -678,7 +678,15 @@ export default function LoginPage() {
       {/* Background glow */}
       <div style={{ position:'fixed', inset:0, pointerEvents:'none', background:'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(31,111,235,0.12) 0%, transparent 60%)' }} />
 
-        <div style={{ position:'relative', zIndex:1, width:'100%', maxWidth:440, margin:'auto', padding:'24px 12px 32px', boxSizing:'border-box' }}>
+        <div style={{
+          position:'relative',
+          zIndex:1,
+          width:'100%',
+          maxWidth: view === 'forgot' ? 760 : 440,
+          margin:'auto',
+          padding: view === 'forgot' ? 'clamp(18px, 4vw, 32px) clamp(12px, 3vw, 20px) 40px' : '24px 12px 32px',
+          boxSizing:'border-box'
+        }}>
 
         {/* Top bar: back + brand (decorative role icon removed — no function) */}
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:28 }}>
@@ -719,7 +727,15 @@ export default function LoginPage() {
         )}
 
         {/* Main Card */}
-        <div style={{ background:'#ffffff', border:'1px solid rgba(31,111,235,0.15)', borderRadius:20, padding:'22px 16px', marginBottom:16, boxShadow:'0 10px 30px rgba(31,111,235,0.08)', boxSizing:'border-box' }}>
+        <div style={{
+          background:'#ffffff',
+          border:'1px solid rgba(31,111,235,0.15)',
+          borderRadius:20,
+          padding: view === 'forgot' ? 'clamp(18px, 4vw, 28px) clamp(16px, 5vw, 32px)' : '22px 16px',
+          marginBottom:16,
+          boxShadow:'0 10px 30px rgba(31,111,235,0.08)',
+          boxSizing:'border-box'
+        }}>
           {view === "login" && (
             <div>
               <form onSubmit={handleAction} style={{ display:'flex', flexDirection:'column', gap:16 }}>
