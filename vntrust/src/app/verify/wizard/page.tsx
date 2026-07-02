@@ -86,20 +86,24 @@ export default function VerifyWizardPage() {
         </div>
 
         {/* Stepper */}
-        <div className="flex justify-between relative mb-12">
-          <div className="absolute top-1/2 left-0 w-full h-1 bg-white/10 -translate-y-1/2 rounded-full z-0"></div>
-          <div className="absolute top-1/2 left-0 h-1 bg-[#C8A557] -translate-y-1/2 rounded-full z-0 transition-all duration-500" style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}></div>
-          
-          {steps.map((s) => (
-            <div key={s.num} className="relative z-10 flex flex-col items-center gap-2">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-colors duration-300 ${
+        <div className="grid grid-cols-4 relative mb-12">
+          {steps.map((s, index) => (
+            <div key={s.num} className="relative flex flex-col items-center gap-2 min-w-0">
+              {index < steps.length - 1 && (
+                <div
+                  className={`absolute top-5 left-[calc(50%+28px)] right-[calc(-50%+28px)] h-1 rounded-full transition-colors duration-500 ${
+                    step > s.num ? "bg-[#C8A557]" : "bg-white/10"
+                  }`}
+                />
+              )}
+              <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-colors duration-300 ${
                 step >= s.num 
                   ? 'bg-[#0B1623] border-[#C8A557] text-[#C8A557] shadow-[0_0_15px_rgba(200,165,87,0.3)]' 
                   : 'bg-[#0B1623] border-white/20 text-slate-500'
               }`}>
                 {step > s.num ? <span className="material-symbols-outlined text-[20px]">check</span> : s.num}
               </div>
-              <span className={`text-xs font-bold uppercase tracking-wider ${step >= s.num ? 'text-white' : 'text-slate-500'}`}>{s.title}</span>
+              <span className={`relative z-10 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center leading-tight px-1 ${step >= s.num ? 'text-white' : 'text-slate-500'}`}>{s.title}</span>
             </div>
           ))}
         </div>
