@@ -177,19 +177,19 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1320] flex flex-col items-center justify-center px-3 py-5 sm:p-6 lg:px-8 lg:py-10 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0b1320] flex flex-col items-center justify-center px-3 py-5 sm:p-6 lg:px-8 lg:py-8 relative overflow-hidden">
       {/* Background blobs */}
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-cyan-900/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* Logo */}
-      <div className="flex flex-col items-center mb-5 sm:mb-8 lg:mb-10 z-10">
-        <img src="/verigoods-logo.png" alt="AI VeriGoods" className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 object-contain mb-2" />
-        <p className="text-slate-400 mt-1 text-xs sm:text-sm lg:text-base text-center px-2">Nền tảng xác thực hàng hóa chống giả mạo toàn quốc</p>
+      <div className="flex flex-col items-center mb-5 sm:mb-6 z-10">
+        <img src="/verigoods-logo.png" alt="AI VeriGoods" className="w-20 h-20 sm:w-24 sm:h-24 object-contain mb-2" />
+        <p className="text-slate-400 mt-1 text-xs sm:text-sm text-center px-2">Nền tảng xác thực hàng hóa chống giả mạo toàn quốc</p>
       </div>
 
       {/* Card */}
-      <div className="bg-[#1a2235]/90 backdrop-blur-xl border border-slate-800/50 p-4 sm:p-6 md:p-8 lg:p-10 rounded-2xl sm:rounded-3xl w-full max-w-[28rem] sm:max-w-[34rem] lg:max-w-[44rem] shadow-2xl z-10">
+      <div className="bg-[#1a2235]/90 backdrop-blur-xl border border-slate-800/50 p-4 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl w-full max-w-[28rem] sm:max-w-[30rem] lg:max-w-[32rem] shadow-2xl z-10">
         {/* Header */}
         <div className="flex items-start sm:items-center mb-5 sm:mb-6">
           <button onClick={() => step === 1 ? router.push("/login") : setStep(s => (s - 1) as 1 | 2 | 3)}
@@ -197,10 +197,10 @@ export default function ForgotPasswordPage() {
             <span className="material-symbols-outlined text-xl">arrow_back</span>
           </button>
           <div className="min-w-0">
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight">
               {step === 1 ? "Quên mật khẩu" : step === 2 ? "Nhập mã OTP" : "Mật khẩu mới"}
             </h2>
-            <p className="text-slate-400 text-xs sm:text-sm lg:text-base mt-0.5 break-words">
+            <p className="text-slate-400 text-xs sm:text-sm mt-0.5 break-words">
               {step === 1 ? "Nhận mã xác thực 6 số qua Gmail"
                 : step === 2 ? `Mã đã gửi đến ${email}`
                 : "Tạo mật khẩu mới cho tài khoản"}
@@ -209,9 +209,9 @@ export default function ForgotPasswordPage() {
         </div>
 
         {/* Step indicators */}
-        <div className="flex items-center mb-7 lg:mb-9">
+        <div className="flex items-center mb-7">
           <div className="flex flex-col items-center gap-1 shrink-0">
-            <div className={`w-8 h-8 lg:w-9 lg:h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
               ${step >= 1 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
               {step > 1 ? <span className="material-symbols-outlined text-[15px]">check</span> : "1"}
             </div>
@@ -219,7 +219,7 @@ export default function ForgotPasswordPage() {
           </div>
           <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${step > 1 ? "bg-[#1F6FEB]" : "bg-white/10"}`} />
           <div className="flex flex-col items-center gap-1 shrink-0">
-            <div className={`w-8 h-8 lg:w-9 lg:h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
               ${step >= 2 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
               {step > 2 ? <span className="material-symbols-outlined text-[15px]">check</span> : "2"}
             </div>
@@ -227,7 +227,7 @@ export default function ForgotPasswordPage() {
           </div>
           <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${step > 2 ? "bg-[#1F6FEB]" : "bg-white/10"}`} />
           <div className="flex flex-col items-center gap-1 shrink-0">
-            <div className={`w-8 h-8 lg:w-9 lg:h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
               ${step >= 3 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
               3
             </div>
@@ -265,7 +265,7 @@ export default function ForgotPasswordPage() {
           <div className="space-y-5">
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 text-center">Mã xác thực 6 số</label>
-              <div className="flex gap-1.5 sm:gap-3 lg:gap-4 justify-center">
+              <div className="flex gap-1.5 sm:gap-3 justify-center">
                 {otpCode.map((digit, idx) => (
                   <input key={idx} id={`otp-${idx}`} type="text" inputMode="numeric"
                     maxLength={1} value={digit}
@@ -273,7 +273,7 @@ export default function ForgotPasswordPage() {
                     onPaste={handleOtpPaste}
                     onChange={() => {}}
                     aria-label={`Số OTP thứ ${idx + 1}`}
-                    className={`w-10 h-12 sm:w-12 sm:h-14 lg:w-14 lg:h-16 text-center text-xl sm:text-2xl lg:text-3xl font-bold rounded-xl border transition-all outline-none
+                    className={`w-10 h-12 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold rounded-xl border transition-all outline-none
                       ${digit ? "border-[#1F6FEB] bg-[#1F6FEB]/10 text-[#1F6FEB]" : "border-slate-700/50 bg-[#131b2c] text-white"}
                       focus:border-[#1F6FEB] focus:ring-2 focus:ring-[#1F6FEB]/30`}
                     autoFocus={idx === 0} />

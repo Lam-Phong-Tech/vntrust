@@ -682,9 +682,9 @@ export default function LoginPage() {
           position:'relative',
           zIndex:1,
           width:'100%',
-          maxWidth: view === 'forgot' ? 760 : 440,
+          maxWidth: view === 'forgot' ? 520 : 440,
           margin:'auto',
-          padding: view === 'forgot' ? 'clamp(18px, 4vw, 32px) clamp(12px, 3vw, 20px) 40px' : '24px 12px 32px',
+          padding: view === 'forgot' ? 'clamp(18px, 4vw, 28px) 12px 36px' : '24px 12px 32px',
           boxSizing:'border-box'
         }}>
 
@@ -731,7 +731,7 @@ export default function LoginPage() {
           background:'#ffffff',
           border:'1px solid rgba(31,111,235,0.15)',
           borderRadius:20,
-          padding: view === 'forgot' ? 'clamp(18px, 4vw, 28px) clamp(16px, 5vw, 32px)' : '22px 16px',
+          padding: view === 'forgot' ? 'clamp(18px, 4vw, 26px) clamp(16px, 4vw, 24px)' : '22px 16px',
           marginBottom:16,
           boxShadow:'0 10px 30px rgba(31,111,235,0.08)',
           boxSizing:'border-box'
