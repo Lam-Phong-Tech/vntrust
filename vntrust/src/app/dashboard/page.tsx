@@ -225,13 +225,13 @@ function getAIReply(q: string): string {
 }
 
 // ─── Modal Wrapper ────────────────────────────────────────────────────────────
-function ModalWrapper({ onClose, title, icon, iconColor, children }: {
-  onClose: () => void; title: string; icon: string; iconColor: string; children: React.ReactNode;
+function ModalWrapper({ onClose, title, icon, iconColor, children, panelClass = "" }: {
+  onClose: () => void; title: string; icon: string; iconColor: string; children: React.ReactNode; panelClass?: string;
 }) {
   return (
     <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-2 sm:p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      <div className="relative w-full max-w-md max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] glass-panel border border-white/20 rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
+      <div className={`relative w-full max-w-md max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] glass-panel border border-white/20 rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col overflow-hidden ${panelClass}`} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${iconColor} flex items-center justify-center shrink-0`}>
@@ -297,8 +297,8 @@ function AiChatModal({ msgs, addMsg, onClose }: {
   const quickBtns = ["Cách tra mã QR?", "Báo cáo hàng giả", "Giá dịch vụ", "Liên hệ hỗ trợ", "Hướng dẫn dùng app"];
 
   return (
-    <ModalWrapper onClose={onClose} title="Trợ lý AI AI VeriGoods" icon="smart_toy" iconColor="bg-[#C8A557]">
-      <div className="flex flex-col h-[calc(100dvh-9rem)] min-h-[320px] max-h-[480px] sm:h-[480px]">
+    <ModalWrapper onClose={onClose} title="Trợ lý AI AI VeriGoods" icon="smart_toy" iconColor="bg-[#C8A557]" panelClass="ai-chat-modal-panel">
+      <div className="ai-chat-modal-body flex flex-col h-[calc(100dvh-9rem)] min-h-[320px] max-h-[480px] sm:h-[480px]">
         <div className="flex-1 overflow-y-auto space-y-3 hide-scrollbar pr-1">
           {msgs.map((m, i) => (
             <div key={i} className={`flex gap-2 ${m.from === "user" ? "flex-row-reverse" : ""}`}>
@@ -330,7 +330,7 @@ function AiChatModal({ msgs, addMsg, onClose }: {
             </button>
           ))}
         </div>
-        <div className="flex gap-2 mt-2 shrink-0">
+        <div className="ai-chat-input-row flex gap-2 mt-2 shrink-0">
           <input
             className="flex-1 bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-sm text-white placeholder:text-slate-400 outline-none focus:border-[#C8A557] transition"
             placeholder="Chat với AI AI VeriGoods..."
