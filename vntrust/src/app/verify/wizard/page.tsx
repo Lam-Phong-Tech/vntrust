@@ -13,7 +13,8 @@ export default function VerifyWizardPage() {
 
   // Form State
   const [kenhMua, setKenhMua] = useState("");
-  const [tinhTrang, setTinhTrang] = useState("");
+  const [tinhTrang, setTinhTrang] = useState<string[]>([]);
+  const [tinhTrangKhac, setTinhTrangKhac] = useState("");
   const [photos, setPhotos] = useState<Record<string, { url: string; name: string }>>({});
   const uploadedPhotoCount = Object.keys(photos).length;
   const photoFields = [
@@ -72,6 +73,28 @@ export default function VerifyWizardPage() {
     { num: 3, title: lang === 'en' ? "Upload Photos" : "Tải Lên Ảnh" },
     { num: 4, title: lang === 'en' ? "Confirm" : "Xác Nhận" },
   ];
+
+  const statusOptions = [
+    { id: "nguyen_seal", label: lang === 'en' ? "Brand new, sealed" : "Nguy\u00ean seal, ch\u01b0a b\u00f3c h\u1ed9p" },
+    { id: "mo_hop", label: lang === 'en' ? "Opened but unused" : "\u0110\u00e3 m\u1edf h\u1ed9p nh\u01b0ng ch\u01b0a s\u1eed d\u1ee5ng" },
+    { id: "hu_hong", label: lang === 'en' ? "Damaged packaging/seal" : "Bao b\u00ec h\u01b0 h\u1ecfng, tem r\u00e1ch" },
+    { id: "khong_co_tem", label: lang === 'en' ? "No anti-counterfeit stamp" : "Kh\u00f4ng c\u00f3 tem ch\u1ed1ng gi\u1ea3" },
+    { id: "gia_bat_thuong", label: lang === 'en' ? "Suspiciously low price" : "Gi\u00e1 qu\u00e1 r\u1ebb b\u1ea5t th\u01b0\u1eddng" },
+  ];
+  const toggleTinhTrang = (id: string) => {
+    setTinhTrang(prev => prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]);
+  };
+  const statusLabelMap = Object.fromEntries(statusOptions.map(item => [item.id, item.label]));
+  const tinhTrangKhacTrimmed = tinhTrangKhac.trim();
+  const hasTinhTrang = tinhTrang.length > 0 || tinhTrangKhacTrimmed.length > 0;
+  const tinhTrangPayload = [
+    ...tinhTrang,
+    ...(tinhTrangKhacTrimmed ? [`khac:${tinhTrangKhacTrimmed}`] : []),
+  ].join("|");
+  const tinhTrangSummary = [
+    ...tinhTrang.map(id => statusLabelMap[id] || id),
+    ...(tinhTrangKhacTrimmed ? [tinhTrangKhacTrimmed] : []),
+  ].join(", ");
 
   return (
     <div className="verify-consumer-page verify-page-wizard min-h-screen bg-[#0B1623] pt-24 pb-12 px-6 flex flex-col items-center">
@@ -143,28 +166,46 @@ export default function VerifyWizardPage() {
 
           {step === 2 && (
             <div className="animate-in fade-in slide-in-from-right-8 duration-500 flex-1">
-              <h2 className="text-xl font-bold text-white mb-6">2. {lang === 'en' ? 'What is the current status of the product?' : 'Tình trạng hiện tại của sản phẩm ra sao?'}</h2>
+              <h2 className="text-xl font-bold text-white mb-2">2. {lang === 'en' ? 'What is the current status of the product?' : 'T\u00ecnh tr\u1ea1ng hi\u1ec7n t\u1ea1i c\u1ee7a s\u1ea3n ph\u1ea9m ra sao?'}</h2>
+              <p className="text-sm text-slate-400 mb-6">
+                {lang === 'en' ? 'You can choose multiple signs and add another note.' : 'C\u00f3 th\u1ec3 ch\u1ecdn nhi\u1ec1u d\u1ea5u hi\u1ec7u v\u00e0 nh\u1eadp th\u00eam m\u1ee5c kh\u00e1c.'}
+              </p>
               <div className="space-y-3">
-                {[
-                  { id: "nguyen_seal", label: lang === 'en' ? "Brand new, sealed" : "Nguyên seal, chưa bóc hộp" },
-                  { id: "mo_hop", label: lang === 'en' ? "Opened but unused" : "Đã mở hộp nhưng chưa sử dụng" },
-                  { id: "hu_hong", label: lang === 'en' ? "Damaged packaging/seal" : "Bao bì hư hỏng, tem rách" },
-                  { id: "khong_co_tem", label: lang === 'en' ? "No anti-counterfeit stamp" : "Không có tem chống giả" },
-                  { id: "gia_bat_thuong", label: lang === 'en' ? "Suspiciously low price" : "Giá quá rẻ bất thường" },
-                ].map(t => (
-                  <button 
-                    key={t.id}
-                    onClick={() => setTinhTrang(t.id)}
-                    className={`w-full p-4 rounded-xl border flex items-center justify-between transition-all ${
-                      tinhTrang === t.id 
-                        ? 'border-[#C8A557] bg-[#C8A557]/10 text-white' 
-                        : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10'
-                    }`}
-                  >
-                    <span className="font-bold">{t.label}</span>
-                    {tinhTrang === t.id && <span className="material-symbols-outlined text-[#C8A557]">check_circle</span>}
-                  </button>
-                ))}
+                {statusOptions.map(t => {
+                  const checked = tinhTrang.includes(t.id);
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => toggleTinhTrang(t.id)}
+                      className={`w-full p-4 rounded-xl border flex items-center justify-between gap-4 transition-all ${
+                        checked
+                          ? 'border-[#C8A557] bg-[#C8A557]/10 text-white'
+                          : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10'
+                      }`}
+                    >
+                      <span className="font-bold text-left">{t.label}</span>
+                      <span className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 ${
+                        checked ? "border-[#C8A557] bg-[#C8A557] text-[#0B1623]" : "border-white/20 text-transparent"
+                      }`}>
+                        <span className="material-symbols-outlined text-[18px]">check</span>
+                      </span>
+                    </button>
+                  );
+                })}
+                <div className={`rounded-xl border p-4 transition-all ${tinhTrangKhac ? 'border-[#C8A557] bg-[#C8A557]/10' : 'border-white/10 bg-white/5'}`}>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                    {lang === 'en' ? 'Other issue' : 'M\u1ee5c kh\u00e1c'}
+                  </label>
+                  <textarea
+                    value={tinhTrangKhac}
+                    onChange={(e) => setTinhTrangKhac(e.target.value.slice(0, 300))}
+                    maxLength={300}
+                    rows={3}
+                    placeholder={lang === 'en' ? 'Describe another sign you noticed...' : 'Nh\u1eadp d\u1ea5u hi\u1ec7u kh\u00e1c m\u00e0 b\u1ea1n ph\u00e1t hi\u1ec7n...'}
+                    className="w-full resize-none rounded-lg border border-white/10 bg-[#0B1623]/60 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus:border-[#C8A557]"
+                  />
+                  <div className="mt-1 text-right text-[10px] text-slate-500">{tinhTrangKhac.length}/300</div>
+                </div>
               </div>
             </div>
           )}
@@ -260,7 +301,7 @@ export default function VerifyWizardPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-500">{lang === 'en' ? 'Status:' : 'Tình trạng:'}</span>
-                  <span className="text-white font-bold">{tinhTrang || 'Chưa chọn'}</span>
+                  <span className="text-white font-bold text-right">{tinhTrangSummary || (lang === 'en' ? 'Not selected' : 'Ch\u01b0a ch\u1ecdn')}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-500">{lang === 'en' ? 'Photos:' : 'Hình ảnh:'}</span>
@@ -283,9 +324,9 @@ export default function VerifyWizardPage() {
             {step < 4 ? (
               <button 
                 onClick={() => setStep(Math.min(4, step + 1))}
-                disabled={(step === 1 && !kenhMua) || (step === 2 && !tinhTrang)}
+                disabled={(step === 1 && !kenhMua) || (step === 2 && !hasTinhTrang)}
                 className={`px-6 py-2 rounded-lg font-bold flex items-center gap-2 transition ${
-                  ((step === 1 && !kenhMua) || (step === 2 && !tinhTrang)) 
+                  ((step === 1 && !kenhMua) || (step === 2 && !hasTinhTrang))
                     ? 'opacity-50 cursor-not-allowed bg-white/10 text-slate-400' 
                     : 'bg-gradient-to-r from-[#C8A557] to-[#e7d188] text-[#0B1623] hover:scale-105 shadow-[0_0_15px_rgba(200,165,87,0.3)]'
                 }`}
@@ -303,8 +344,9 @@ export default function VerifyWizardPage() {
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
                         kenhMua,
-                        tinhTrangSP: tinhTrang,
-                        moTa: `Báo cáo từ Wizard: Kênh - ${kenhMua}, Tình trạng - ${tinhTrang}`,
+                        tinhTrangSP: tinhTrangPayload,
+                        tinhTrangKhac: tinhTrangKhacTrimmed,
+                        moTa: `Bao cao tu Wizard: Kenh - ${kenhMua}, Tinh trang - ${tinhTrangSummary || tinhTrangPayload}`,
                         anhMatTruocUrl: photos.front?.url,
                         anhMatSauUrl: photos.back?.url,
                         anhTemUrl: photos.stamp?.url,

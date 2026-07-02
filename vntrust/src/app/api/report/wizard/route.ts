@@ -15,7 +15,8 @@ export async function POST(req: NextRequest) {
     const {
       uid,          // UID / serial sản phẩm
       kenhMua,      // cho | sieu_thi | tap_hoa | tmdt | livestream | khong_ro
-      tinhTrangSP,  // nguyen_seal | mo_hop | hu_hong | bat_thuong | khong_co_tem | gia_bat_thuong
+      tinhTrangSP,  // string or pipe-separated list
+      tinhTrangKhac,
       giaMua,       // Giá mua thực tế
       moTa,         // Mô tả chi tiết
       cheDoAnDanh,  // an_danh | co_lien_he | cong_khai
@@ -35,6 +36,24 @@ export async function POST(req: NextRequest) {
 
     const ALLOWED_KENH = ['cho', 'sieu_thi', 'tap_hoa', 'tmdt', 'livestream', 'khong_ro'];
     const ALLOWED_TINH_TRANG = ['nguyen_seal', 'mo_hop', 'hu_hong', 'bat_thuong', 'khong_co_tem', 'gia_bat_thuong'];
+    const rawStatuses = Array.isArray(tinhTrangSP)
+      ? tinhTrangSP
+      : typeof tinhTrangSP === 'string'
+        ? tinhTrangSP.split('|')
+        : [];
+    const normalizedStatuses = rawStatuses
+      .map((item: unknown) => String(item || '').trim())
+      .filter(Boolean);
+    const allowedStatuses = normalizedStatuses.filter(item => ALLOWED_TINH_TRANG.includes(item));
+    const otherStatuses = [
+      ...normalizedStatuses.filter(item => item.startsWith('khac:')).map(item => item.slice(5).trim()).filter(Boolean),
+      ...(typeof tinhTrangKhac === 'string' && tinhTrangKhac.trim() ? [tinhTrangKhac.trim()] : []),
+    ];
+    const hasStatus = (status: string) => allowedStatuses.includes(status);
+    const tinhTrangStored = [
+      ...allowedStatuses,
+      ...otherStatuses.map(item => `khac:${item.slice(0, 300)}`),
+    ].join('|') || null;
 
     if (!moTa && !anhMatTruocUrl) {
       return NextResponse.json({ error: 'Vui lòng mô tả vấn đề hoặc cung cấp ảnh sản phẩm' }, { status: 400 });
@@ -53,10 +72,10 @@ export async function POST(req: NextRequest) {
           if (!uid) { triggered = true; lydo = 'Không có UID/QR sản phẩm'; }
           break;
         case 'hsd_invalid':
-          if (anhNSXHSDUrl && tinhTrangSP === 'bat_thuong') { triggered = true; lydo = 'NSX/HSD bất thường'; }
+          if (anhNSXHSDUrl && hasStatus('bat_thuong')) { triggered = true; lydo = 'NSX/HSD bất thường'; }
           break;
         case 'bao_bi_khac':
-          if (tinhTrangSP === 'hu_hong' || tinhTrangSP === 'bat_thuong') { triggered = true; lydo = 'Bao bì có dấu hiệu bất thường'; }
+          if (hasStatus('hu_hong') || hasStatus('bat_thuong')) { triggered = true; lydo = 'Bao bì có dấu hiệu bất thường'; }
           break;
         case 'gps_bat_thuong':
           if (!lat || !lng) { triggered = true; lydo = 'Không có GPS xác thực vị trí'; }
@@ -70,7 +89,7 @@ export async function POST(req: NextRequest) {
           }
           break;
         case 'khong_co_tem':
-          if (tinhTrangSP === 'khong_co_tem') { triggered = true; lydo = 'Sản phẩm không có tem chống giả'; }
+          if (hasStatus('khong_co_tem')) { triggered = true; lydo = 'Sản phẩm không có tem chống giả'; }
           break;
       }
       if (triggered) {
@@ -94,7 +113,7 @@ export async function POST(req: NextRequest) {
     // ── Workflow Routing (Mục 13) ────────────────────────────────────────
     let trangThaiDieuTra = 'cho_phan_tich';
     let trangThai = 'open';
-    let ketLuanMoTa = moTa || `Báo cáo từ wizard: ${tinhTrangSP || 'Không rõ'}`;
+    let ketLuanMoTa = moTa || `Bao cao tu wizard: ${tinhTrangStored || 'Khong ro'}`;
 
     if (riskScore < 40) {
       trangThaiDieuTra = 'dong';
@@ -116,7 +135,7 @@ export async function POST(req: NextRequest) {
         noiMua: ALLOWED_KENH.includes(kenhMua) ? kenhMua : null,
         giaMua: typeof giaMua === 'number' && giaMua > 0 ? giaMua : null,
         cheDoAnDanh: cheDoAnDanh || 'an_danh',
-        tinhTrangSP: ALLOWED_TINH_TRANG.includes(tinhTrangSP) ? tinhTrangSP : null,
+        tinhTrangSP: tinhTrangStored,
         anhMatTruocUrl: anhMatTruocUrl || null,
         anhMatSauUrl:   anhMatSauUrl || null,
         anhTemUrl:      anhTemUrl || null,
