@@ -1780,3 +1780,33 @@ html.light-mode .dashboard-profile-page textarea:disabled {
     padding-top: 18px !important;
   }
 }
+
+/* Forgot password: compact auth card. Keep this at the end so broad
+   responsive/light-mode overrides cannot stretch the form across the screen. */
+.forgot-password-page {
+  overflow-x: hidden !important;
+}
+
+.forgot-password-page .forgot-password-card {
+  width: min(416px, calc(100vw - 32px)) !important;
+  max-width: min(416px, calc(100vw - 32px)) !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+
+.forgot-password-page .forgot-password-card input,
+.forgot-password-page .forgot-password-card button,
+.forgot-password-page .forgot-password-card [class*="rounded-xl"] {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 480px) {
+  .forgot-password-page .forgot-password-card {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+}
