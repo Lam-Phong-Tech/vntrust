@@ -16,9 +16,9 @@ function Toast({ msg, type, onClose }: { msg: string; type: TType; onClose: () =
   }[type];
   const icon = { error: "error", success: "check_circle", info: "info" }[type];
   return (
-    <div className={`fixed top-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 rounded-2xl border backdrop-blur-md shadow-2xl text-sm font-semibold animate-in slide-in-from-top-4 duration-300 ${cls}`}>
+    <div className={`fixed top-4 left-3 right-3 sm:left-auto sm:top-6 sm:right-6 z-[9999] flex items-center gap-3 px-4 sm:px-5 py-3.5 rounded-2xl border backdrop-blur-md shadow-2xl text-sm font-semibold animate-in slide-in-from-top-4 duration-300 ${cls}`}>
       <span className="material-symbols-outlined text-[18px]">{icon}</span>
-      <span className="flex-1">{msg}</span>
+      <span className="flex-1 min-w-0 break-words">{msg}</span>
       <button onClick={onClose} className="opacity-60 hover:opacity-100 transition">
         <span className="material-symbols-outlined text-[15px]">close</span>
       </button>
@@ -474,17 +474,20 @@ export default function LoginPage() {
 
   // ── Bước 1: Gửi OTP ─────────────────────────────────────────────────────────
   const sendOtp = async () => {
-    if (!otpEmail.trim()) { showToast("Vui lòng nhập email", "error"); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(otpEmail)) { showToast("Email không hợp lệ", "error"); return; }
+    const normalizedEmail = otpEmail.trim().toLowerCase();
+    const emailErr = validateEmail(normalizedEmail);
+    if (emailErr) { showToast(emailErr, "error"); return; }
     setLoading(true);
     try {
       const res = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: otpEmail }),
+        body: JSON.stringify({ email: normalizedEmail }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error || "Không thể gửi OTP");
+      setOtpEmail(normalizedEmail);
+      setOtpCode(["", "", "", "", "", ""]);
       showToast("✉️ Mã OTP đã gửi! Kiểm tra hộp thư của bạn.", "success");
       setOtpStep(2);
       setOtpCountdown(300); // 5 phút
@@ -548,7 +551,6 @@ export default function LoginPage() {
 
   // OTP input keyboard handler
   const handleOtpKey = (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => {
-    const val = e.currentTarget.value;
     if (/^\d$/.test(e.key)) {
       const next = [...otpCode];
       next[idx] = e.key;
@@ -563,6 +565,42 @@ export default function LoginPage() {
       (document.getElementById(`otp-${idx-1}`) as HTMLInputElement)?.focus();
     } else if (e.key === "ArrowRight" && idx < 5) {
       (document.getElementById(`otp-${idx+1}`) as HTMLInputElement)?.focus();
+    }
+  };
+
+  const applyOtpFromText = (text: string) => {
+    const digits = text.replace(/\D/g, "").slice(0, 6).split("");
+    if (digits.length === 0) return false;
+    const next = ["", "", "", "", "", ""];
+    digits.forEach((digit, idx) => {
+      next[idx] = digit;
+    });
+    setOtpCode(next);
+    const focusIndex = Math.min(digits.length, 5);
+    window.setTimeout(() => {
+      (document.getElementById(`otp-${focusIndex}`) as HTMLInputElement | null)?.focus();
+    }, 0);
+    return digits.length === 6;
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text");
+    if (!applyOtpFromText(pasted)) {
+      showToast("Mã OTP chỉ gồm 6 chữ số", "error");
+    }
+  };
+
+  const pasteOtpFromClipboard = async () => {
+    if (!navigator.clipboard?.readText) {
+      showToast("Trình duyệt chưa cho phép đọc clipboard. Bạn có thể bấm Ctrl+V vào ô OTP.", "error");
+      return;
+    }
+    try {
+      const pasted = await navigator.clipboard.readText();
+      if (!applyOtpFromText(pasted)) showToast("Clipboard không có mã OTP hợp lệ", "error");
+    } catch {
+      showToast("Không đọc được clipboard. Hãy bấm Ctrl+V vào ô OTP.", "error");
     }
   };
 
@@ -640,7 +678,7 @@ export default function LoginPage() {
       {/* Background glow */}
       <div style={{ position:'fixed', inset:0, pointerEvents:'none', background:'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(31,111,235,0.12) 0%, transparent 60%)' }} />
 
-      <div style={{ position:'relative', zIndex:1, width:'100%', maxWidth:440, margin:'auto', padding:'32px 20px 40px' }}>
+        <div style={{ position:'relative', zIndex:1, width:'100%', maxWidth:440, margin:'auto', padding:'24px 12px 32px', boxSizing:'border-box' }}>
 
         {/* Top bar: back + brand (decorative role icon removed — no function) */}
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:28 }}>
@@ -681,7 +719,7 @@ export default function LoginPage() {
         )}
 
         {/* Main Card */}
-        <div style={{ background:'#ffffff', border:'1px solid rgba(31,111,235,0.15)', borderRadius:20, padding:'24px 20px', marginBottom:16, boxShadow:'0 10px 30px rgba(31,111,235,0.08)' }}>
+        <div style={{ background:'#ffffff', border:'1px solid rgba(31,111,235,0.15)', borderRadius:20, padding:'22px 16px', marginBottom:16, boxShadow:'0 10px 30px rgba(31,111,235,0.08)', boxSizing:'border-box' }}>
           {view === "login" && (
             <div>
               <form onSubmit={handleAction} style={{ display:'flex', flexDirection:'column', gap:16 }}>
@@ -1111,15 +1149,15 @@ export default function LoginPage() {
           {view === "forgot" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               {/* Header */}
-              <div className="flex items-center mb-6">
-                <button onClick={() => { setView("login"); setOtpStep(1); setOtpCode(["","","","","",""]); }} className="mr-3 text-slate-400 hover:text-white transition-colors">
+              <div className="flex items-start sm:items-center mb-6">
+                <button onClick={() => { setView("login"); setOtpStep(1); setOtpCode(["","","","","",""]); }} className="mr-3 shrink-0 text-slate-400 hover:text-[#1F6FEB] transition-colors">
                   <span className="material-symbols-outlined text-xl">arrow_back</span>
                 </button>
-                <div>
-                  <h2 className="text-2xl font-bold text-white">
+                <div className="min-w-0">
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#0d1b2e] leading-tight">
                     {otpStep === 1 ? "Quên mật khẩu" : otpStep === 2 ? "Nhập mã OTP" : "Đặt mật khẩu mới"}
                   </h2>
-                  <p className="text-slate-400 text-sm mt-1">
+                  <p className="text-[#4A6F90] text-xs sm:text-sm mt-1 break-words">
                     {otpStep === 1 ? "Nhập email để nhận mã xác thực 6 số" : otpStep === 2 ? `Mã đã gửi đến ${otpEmail}` : "Tạo mật khẩu mới cho tài khoản"}
                   </p>
                 </div>
@@ -1133,7 +1171,7 @@ export default function LoginPage() {
                     ${otpStep >= 1 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
                     {otpStep > 1 ? <span className="material-symbols-outlined text-[15px]">check</span> : "1"}
                   </div>
-                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 1 ? "text-[#1F6FEB]" : "text-slate-600"}`}>Email</span>
+                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 1 ? "text-[#1F6FEB]" : "text-slate-500"}`}>Email</span>
                 </div>
                 {/* Line 1→2 */}
                 <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${otpStep > 1 ? "bg-[#1F6FEB]" : "bg-white/10"}`} />
@@ -1143,7 +1181,7 @@ export default function LoginPage() {
                     ${otpStep >= 2 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
                     {otpStep > 2 ? <span className="material-symbols-outlined text-[15px]">check</span> : "2"}
                   </div>
-                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 2 ? "text-[#1F6FEB]" : "text-slate-600"}`}>OTP</span>
+                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 2 ? "text-[#1F6FEB]" : "text-slate-500"}`}>OTP</span>
                 </div>
                 {/* Line 2→3 */}
                 <div className={`flex-1 h-0.5 mx-2 mb-3 rounded-full transition-all duration-500 ${otpStep > 2 ? "bg-[#1F6FEB]" : "bg-white/10"}`} />
@@ -1153,7 +1191,7 @@ export default function LoginPage() {
                     ${otpStep >= 3 ? "bg-[#1F6FEB] text-white shadow-[0_0_12px_rgba(60,218,218,0.35)]" : "bg-white/10 text-slate-500"}`}>
                     {otpStep > 3 ? <span className="material-symbols-outlined text-[15px]">check</span> : "3"}
                   </div>
-                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 3 ? "text-[#1F6FEB]" : "text-slate-600"}`}>Mật khẩu</span>
+                  <span className={`text-[9px] font-bold tracking-wider uppercase ${otpStep >= 3 ? "text-[#1F6FEB]" : "text-slate-500"}`}>Mật khẩu</span>
                 </div>
               </div>
 
@@ -1161,14 +1199,14 @@ export default function LoginPage() {
               {otpStep === 1 && (
                 <div className="space-y-5">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Địa chỉ Email</label>
+                    <label className="block text-xs font-bold text-[#4A6F90] uppercase tracking-widest mb-2">Địa chỉ Email</label>
                     <div className="relative">
                       <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">contact_mail</span>
                       <input
                         type="email" value={otpEmail}
-                        onChange={e => setOtpEmail(e.target.value)}
+                        onChange={e => setOtpEmail(e.target.value.trim().toLowerCase().slice(0, 80))}
                         onKeyDown={e => e.key === "Enter" && sendOtp()}
-                        className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
+                        className="w-full bg-[#f4f8fd] border border-[#CFE2FF] text-[#0d1b2e] rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-400"
                         placeholder="example@gmail.com"
                         autoFocus
                       />
@@ -1176,7 +1214,7 @@ export default function LoginPage() {
                   </div>
                   <div className="flex items-center gap-2 p-3 bg-[#1F6FEB]/10 border border-[#1F6FEB]/20 rounded-xl">
                     <span className="material-symbols-outlined text-[#1F6FEB] text-[18px] shrink-0">mail</span>
-                    <p className="text-xs text-slate-300">Mã OTP 6 chữ số sẽ được gửi qua <strong className="text-white">Gmail</strong>. Kiểm tra cả thư mục Spam nếu không thấy.</p>
+                    <p className="text-xs text-[#315A7A]">Hệ thống sẽ kiểm tra email đã đăng ký trước khi gửi mã OTP 6 chữ số qua <strong className="text-[#0d1b2e]">Gmail</strong>.</p>
                   </div>
                   <button onClick={sendOtp} disabled={loading}
                     style={{ background: '#1F6FEB' }}
@@ -1193,8 +1231,8 @@ export default function LoginPage() {
               {otpStep === 2 && (
                 <div className="space-y-5">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 text-center">Mã xác thực 6 số</label>
-                    <div className="flex gap-3 justify-center">
+                    <label className="block text-xs font-bold text-[#4A6F90] uppercase tracking-widest mb-4 text-center">Mã xác thực 6 số</label>
+                    <div className="flex gap-1.5 sm:gap-3 justify-center">
                       {otpCode.map((digit, idx) => (
                         <input
                           key={idx}
@@ -1202,14 +1240,21 @@ export default function LoginPage() {
                           type="text" inputMode="numeric"
                           maxLength={1} value={digit}
                           onKeyDown={e => handleOtpKey(e, idx)}
+                          onPaste={handleOtpPaste}
                           onChange={() => {}}
-                          className={`w-12 h-14 text-center text-2xl font-bold rounded-xl border transition-all outline-none
-                            ${digit ? "border-[#1F6FEB] bg-[#1F6FEB]/10 text-cyan-300" : "border-slate-700/50 bg-[#131b2c] text-white"}
+                          aria-label={`Số OTP thứ ${idx + 1}`}
+                          className={`w-10 h-12 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold rounded-xl border transition-all outline-none
+                            ${digit ? "border-[#1F6FEB] bg-[#1F6FEB]/10 text-[#1F6FEB]" : "border-[#CFE2FF] bg-[#f4f8fd] text-[#0d1b2e]"}
                             focus:border-[#1F6FEB] focus:ring-2 focus:ring-[#1F6FEB]/30`}
                           autoFocus={idx === 0}
                         />
                       ))}
                     </div>
+                    <button type="button" onClick={pasteOtpFromClipboard}
+                      className="mx-auto mt-3 flex items-center justify-center gap-1 text-xs font-semibold text-[#1F6FEB] hover:text-[#0d1b2e] transition-colors">
+                      <span className="material-symbols-outlined text-[15px]">content_paste</span>
+                      Dán mã OTP hoặc bấm Ctrl+V
+                    </button>
                   </div>
 
                   {/* Countdown */}
@@ -1222,7 +1267,7 @@ export default function LoginPage() {
                         </span>
                       </p>
                     ) : (
-                      <p className="text-sm text-red-400 font-medium">Mã đã hết hạn</p>
+                      <p className="text-sm text-red-500 font-medium">Mã đã hết hạn</p>
                     )}
                   </div>
 
@@ -1239,7 +1284,7 @@ export default function LoginPage() {
                   <div className="text-center">
                     <button
                       onClick={() => { setOtpStep(1); setOtpCode(["","","","","",""]); }}
-                      className="text-sm text-slate-500 hover:text-[#1F6FEB] transition-colors">
+                      className="text-sm text-[#4A6F90] hover:text-[#1F6FEB] transition-colors">
                       Không nhận được mã? <span className="underline font-medium">Gửi lại</span>
                     </button>
                   </div>
@@ -1255,15 +1300,15 @@ export default function LoginPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
-                      Mật khẩu mới <span className="ml-1 text-[10px] font-normal text-slate-500 normal-case">(8–20 ký tự · hoa + thường + số + ký tự đặc biệt)</span>
+                      Mật khẩu mới <span className="ml-1 text-[10px] font-normal text-slate-500 normal-case">(12–20 ký tự · hoa + thường + số + ký tự đặc biệt)</span>
                     </label>
                     <div className="relative">
                       <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">lock</span>
                       <input type={showPassword ? "text" : "password"} value={newPassword}
                         onChange={e => setNewPassword(e.target.value.slice(0, 20))}
-                        minLength={8} maxLength={20}
-                        className="w-full bg-[#131b2c] border border-slate-700/50 text-white rounded-xl py-3.5 pl-12 pr-12 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-600"
-                        placeholder="VD: Abc@1234" autoFocus />
+                        minLength={12} maxLength={20}
+                        className="w-full bg-[#f4f8fd] border border-[#CFE2FF] text-[#0d1b2e] rounded-xl py-3.5 pl-12 pr-12 focus:outline-none focus:border-[#1F6FEB]/50 focus:ring-1 focus:ring-[#1F6FEB]/50 transition-all placeholder:text-slate-400"
+                        placeholder="VD: Abc@12345678" autoFocus />
                       <button type="button" onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
                         <span className="material-symbols-outlined text-xl">{showPassword ? "visibility_off" : "visibility"}</span>
@@ -1275,9 +1320,10 @@ export default function LoginPage() {
                     <div className="relative">
                       <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#1F6FEB] text-xl">lock_reset</span>
                       <input type={showPassword ? "text" : "password"} value={confirmPassword}
-                        onChange={e => setConfirmPassword(e.target.value)}
-                        className={`w-full bg-[#131b2c] border rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-600 text-white
-                          ${confirmPassword && confirmPassword !== newPassword ? "border-red-500/60 focus:ring-red-500/30" : "border-slate-700/50 focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"}`}
+                        onChange={e => setConfirmPassword(e.target.value.slice(0, 20))}
+                        maxLength={20}
+                        className={`w-full bg-[#f4f8fd] border rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-1 transition-all placeholder:text-slate-400 text-[#0d1b2e]
+                          ${confirmPassword && confirmPassword !== newPassword ? "border-red-500/60 focus:ring-red-500/30" : "border-[#CFE2FF] focus:border-[#1F6FEB]/50 focus:ring-[#1F6FEB]/50"}`}
                         placeholder="Nhập lại mật khẩu" />
                       {confirmPassword && confirmPassword !== newPassword && (
                         <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
