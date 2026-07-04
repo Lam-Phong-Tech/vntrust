@@ -313,8 +313,8 @@ export default function DistributionPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 sm:mb-8 gap-4">
         <div className="min-w-0 w-full md:w-auto">
-          <Link href="/dashboard" className="text-xs text-slate-400 hover:text-white flex items-center gap-1 mb-2">
-            <span className="material-symbols-outlined text-[14px]">arrow_back</span> {t("cmn_dashboard")}
+          <Link href="/dashboard/manage" className="text-xs text-slate-400 hover:text-white flex items-center gap-1 mb-2">
+            <span className="material-symbols-outlined text-[14px]">arrow_back</span> {tr("Quản lý DN", "Enterprise management")}
           </Link>
           <div className="flex items-start sm:items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#C8A557]/20 border border-[#C8A557]/30 flex items-center justify-center shrink-0">

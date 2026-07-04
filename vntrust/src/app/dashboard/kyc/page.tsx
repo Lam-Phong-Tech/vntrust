@@ -843,7 +843,7 @@ export default function KYCPage() {
       <div className="relative w-full bg-gradient-to-r from-[#0a1628] via-[#0d2040] to-[#0a1628] border-b border-white/5 px-4 sm:px-6 lg:px-12 py-5 sm:py-8 overflow-hidden">
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-start lg:items-center gap-4 sm:gap-6">
           <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0 w-full lg:w-auto">
-            <Link href="/dashboard" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition shrink-0">
+            <Link href="/dashboard/manage" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition shrink-0" title="Quay lại quản lý doanh nghiệp">
               <span className="material-symbols-outlined text-white text-[18px]">arrow_back</span>
             </Link>
             <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center shrink-0">

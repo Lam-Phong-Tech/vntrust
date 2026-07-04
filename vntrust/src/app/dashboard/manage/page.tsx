@@ -183,20 +183,34 @@ function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { 
   return href ? <Link href={href} className="block hover:bg-[#f3f8ff]">{row}</Link> : row;
 }
 
-function ModuleCard({ item }: { item: ModuleItem }) {
+function OperationNav({ items }: { items: ModuleItem[] }) {
   return (
-    <Link href={item.href} className="group block rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-[#1F6FEB] hover:shadow-md">
-      <div className="flex items-start justify-between gap-3">
-        <span className="material-symbols-outlined rounded-xl bg-[#eaf3ff] p-2.5 text-[25px] text-[#1F6FEB]">{item.icon}</span>
-        <StatusPill tone={item.locked ? "slate" : "green"}>{item.locked ? "Giới hạn quyền" : item.status}</StatusPill>
+    <aside className="lg:sticky lg:top-4 lg:self-start">
+      <div className="overflow-hidden rounded-2xl border border-[#dbeafe] bg-white shadow-sm">
+        <div className="border-b border-[#e6f0fb] bg-[#1F6FEB] px-4 py-3 text-white">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/75">Menu nghiệp vụ</p>
+          <h2 className="mt-1 text-base font-black">Quản lý nhanh</h2>
+        </div>
+        <nav className="flex gap-2 overflow-x-auto p-2 lg:flex-col lg:overflow-visible">
+          {items.map(item => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="group flex min-w-[220px] items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left transition hover:border-[#1F6FEB]/30 hover:bg-[#eef5fb] lg:min-w-0"
+            >
+              <span className="material-symbols-outlined flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#eaf3ff] text-[22px] text-[#1F6FEB]">
+                {item.icon}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-black text-slate-950">{item.title}</span>
+                <span className="mt-0.5 block truncate text-[11px] font-semibold text-[#477399]">{item.action}</span>
+              </span>
+              <span className="material-symbols-outlined text-[18px] text-[#1F6FEB] transition group-hover:translate-x-0.5">chevron_right</span>
+            </Link>
+          ))}
+        </nav>
       </div>
-      <h3 className="mt-4 text-base font-black text-slate-950">{item.title}</h3>
-      <p className="mt-1 min-h-12 text-sm leading-6 text-[#477399]">{item.desc}</p>
-      <div className="mt-4 flex items-center justify-between border-t border-[#e6f0fb] pt-3 text-sm font-black text-[#1F6FEB]">
-        <span>{item.action}</span>
-        <span className="material-symbols-outlined transition group-hover:translate-x-1">arrow_forward</span>
-      </div>
-    </Link>
+    </aside>
   );
 }
 
@@ -355,14 +369,18 @@ export default function EnterpriseManagePage() {
           </div>
         </header>
 
-        <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-          <StatCard icon="inventory_2" label="Sản phẩm" value={data.stats.products} tag="SKU" href="/dashboard/inventory" />
-          <StatCard icon="qr_code_2" label="Lô hàng" value={data.stats.batches} tag="LÔ" href="/dashboard/inventory" />
-          <StatCard icon="qr_code_scanner" label="Mã định danh" value={data.stats.totalUid} tag="UID" href="/dashboard/inventory" tone="green" />
-          <StatCard icon="workspace_premium" label="Chứng nhận" value={data.stats.certificates} tag="CERT" href="/dashboard/certificates" tone="amber" />
-          <StatCard icon="groups" label="Nhân sự" value={data.stats.members} tag="TEAM" href="/dashboard/team" />
-          <StatCard icon="warning" label="Cảnh báo mở" value={data.stats.openAlerts} tag="ALERT" href="/dashboard/alerts" tone={data.stats.openAlerts ? "red" : "green"} />
-        </div>
+        <div className="grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <OperationNav items={modules} />
+
+          <div className="min-w-0">
+            <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+              <StatCard icon="inventory_2" label="Sản phẩm" value={data.stats.products} tag="SKU" href="/dashboard/inventory" />
+              <StatCard icon="qr_code_2" label="Lô hàng" value={data.stats.batches} tag="LÔ" href="/dashboard/inventory" />
+              <StatCard icon="qr_code_scanner" label="Mã định danh" value={data.stats.totalUid} tag="UID" href="/dashboard/inventory" tone="green" />
+              <StatCard icon="workspace_premium" label="Chứng nhận" value={data.stats.certificates} tag="CERT" href="/dashboard/certificates" tone="amber" />
+              <StatCard icon="groups" label="Nhân sự" value={data.stats.members} tag="TEAM" href="/dashboard/team" />
+              <StatCard icon="warning" label="Cảnh báo mở" value={data.stats.openAlerts} tag="ALERT" href="/dashboard/alerts" tone={data.stats.openAlerts ? "red" : "green"} />
+            </div>
 
         {data.recommendations.length > 0 && (
           <section className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
@@ -381,11 +399,7 @@ export default function EnterpriseManagePage() {
           </section>
         )}
 
-        <section className="mb-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {modules.map(item => <ModuleCard key={item.title} item={item} />)}
-        </section>
-
-        <div className="grid gap-5 xl:grid-cols-2">
+            <div className="grid gap-5 xl:grid-cols-2">
           <AdminPanel
             title="Sản phẩm gần đây"
             icon="inventory_2"
@@ -503,7 +517,7 @@ export default function EnterpriseManagePage() {
           </AdminPanel>
         </div>
 
-        <AdminPanel title="Ma trận quyền nội bộ" icon="admin_panel_settings">
+            <AdminPanel title="Ma trận quyền nội bộ" icon="admin_panel_settings">
           <div className="grid gap-3 md:grid-cols-4">
             {Object.entries(roleMeta).map(([key, meta]) => (
               <div key={key} className="rounded-2xl border border-[#dbeafe] bg-[#f8fbff] p-4">
@@ -515,7 +529,9 @@ export default function EnterpriseManagePage() {
               </div>
             ))}
           </div>
-        </AdminPanel>
+            </AdminPanel>
+          </div>
+        </div>
       </div>
     </main>
   );

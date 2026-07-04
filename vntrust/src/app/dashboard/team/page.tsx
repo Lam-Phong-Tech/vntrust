@@ -201,7 +201,7 @@ export default function TeamPage() {
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
-          <Link href="/dashboard" className="min-w-0 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center justify-center gap-1.5 text-xs">
+          <Link href="/dashboard/manage" className="min-w-0 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center justify-center gap-1.5 text-xs">
             <span className="material-symbols-outlined text-[16px]">arrow_back</span>
             {tr("Quay lại", "Back")}
           </Link>
