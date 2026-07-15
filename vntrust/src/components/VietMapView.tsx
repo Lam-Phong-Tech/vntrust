@@ -152,7 +152,6 @@ export default function VietMapView({
   const [locations, setLocations] = useState<ScanLocation[]>([]);
   const [selectedLoc, setSelectedLoc] = useState<ScanLocation | null>(null);
   const [showMarkers, setShowMarkers] = useState(true);
-  const [mapBearing, setMapBearing] = useState(0);
 
   // Heatmap state
   const [activeLayers, setActiveLayers] = useState<Set<LayerKey>>(new Set(['fake']));
@@ -211,20 +210,10 @@ export default function VietMapView({
 
   // ── Device heading cho directional cone (Google Maps style) ─────
   const [heading, setHeading] = useState<number | null>(null);
-  const [compassStatus, setCompassStatus] = useState<'idle' | 'asking' | 'ready' | 'denied' | 'unsupported'>('idle');
 
   useEffect(() => {
     if (!userLocation) return;
     if (typeof window === 'undefined') return;
-
-    const ReqClass = (window as any).DeviceOrientationEvent;
-    const needsPermission = ReqClass && typeof ReqClass.requestPermission === 'function';
-
-    // iOS chưa cấp quyền → không gắn listener (chờ user bấm nút)
-    if (needsPermission && compassStatus !== 'ready') {
-      if (compassStatus === 'idle') setCompassStatus('idle');
-      return;
-    }
 
     const handler = (e: DeviceOrientationEvent) => {
       // iOS: webkitCompassHeading (0=N, clockwise) — chính xác nhất
@@ -240,7 +229,6 @@ export default function VietMapView({
       }
       if (h !== null && !isNaN(h)) {
         setHeading(h);
-        if (compassStatus !== 'ready') setCompassStatus('ready');
       }
     };
 
@@ -248,35 +236,11 @@ export default function VietMapView({
     window.addEventListener('deviceorientationabsolute', handler as any, true);
     window.addEventListener('deviceorientation', handler, true);
 
-    // Nếu sau 3s không nhận được sự kiện → unsupported
-    const timeout = setTimeout(() => {
-      if (heading === null) setCompassStatus('unsupported');
-    }, 3000);
-
     return () => {
       window.removeEventListener('deviceorientationabsolute', handler as any, true);
       window.removeEventListener('deviceorientation', handler, true);
-      clearTimeout(timeout);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userLocation, compassStatus]);
-
-  // Request iOS permission (manual via button)
-  const requestHeadingPermission = async () => {
-    if (typeof window === 'undefined') return;
-    const ReqClass = (window as any).DeviceOrientationEvent;
-    setCompassStatus('asking');
-    if (ReqClass && typeof ReqClass.requestPermission === 'function') {
-      try {
-        const perm = await ReqClass.requestPermission();
-        setCompassStatus(perm === 'granted' ? 'ready' : 'denied');
-      } catch {
-        setCompassStatus('denied');
-      }
-    } else {
-      setCompassStatus('ready');
-    }
-  };
+  }, [userLocation]);
 
   // ── Fetch markers từ /api/map-stats ─────────────────────────────
   useEffect(() => {
@@ -364,14 +328,6 @@ export default function VietMapView({
     });
   };
 
-  const resetMapBearing = () => {
-    const map = mapRef.current?.getMap();
-    if (map) {
-      map.easeTo({ bearing: 0, pitch: 0, duration: 350 });
-    }
-    setMapBearing(0);
-  };
-
   // ── Render ──────────────────────────────────────────────────────
   return (
     <div className="relative w-full rounded-2xl overflow-hidden border border-[#C8A557]/30 bg-[#0B1623]" style={{ height }}>
@@ -382,7 +338,6 @@ export default function VietMapView({
         maxBounds={[[100, 5], [115, 25]]}
         style={{ width: "100%", height: "100%" }}
         attributionControl={false}
-        onMove={(event) => setMapBearing(event.viewState.bearing || 0)}
       >
         <NavigationControl position="bottom-left" showCompass={false} />
         <AttributionControl
@@ -511,38 +466,6 @@ export default function VietMapView({
           );
         })}
       </Map>
-
-      {/* ─── Nút bật/status la bàn (hiện khi có userLocation) ─── */}
-      {userLocation && (
-        <button
-          onClick={requestHeadingPermission}
-          className={`absolute bottom-16 left-3 z-10 rounded-full px-3 py-2 shadow-lg flex items-center gap-1.5 text-[11px] font-bold transition ${
-            compassStatus === 'ready'
-              ? 'bg-[#22d3ee] text-[#0B1623]'
-              : compassStatus === 'denied'
-                ? 'bg-red-500/80 text-white'
-                : compassStatus === 'unsupported'
-                  ? 'bg-slate-700 text-slate-300'
-                  : 'bg-[#22d3ee]/90 hover:bg-[#22d3ee] text-[#0B1623] animate-pulse'
-          }`}
-          title={
-            compassStatus === 'ready' ? tr(`La bàn: ${Math.round(heading || 0)}°`, `Compass: ${Math.round(heading || 0)}°`)
-            : compassStatus === 'denied' ? tr('Bị từ chối — bấm để thử lại', 'Denied — tap to retry')
-            : compassStatus === 'unsupported' ? tr('Thiết bị không hỗ trợ la bàn', 'Device has no compass')
-            : tr('Bật la bàn để hiện hướng', 'Enable compass')
-          }
-        >
-          <span className="material-symbols-outlined text-[16px]">
-            {compassStatus === 'ready' ? 'navigation' : compassStatus === 'denied' || compassStatus === 'unsupported' ? 'explore_off' : 'explore'}
-          </span>
-          {compassStatus === 'ready' ? `${Math.round(heading || 0)}°`
-            : compassStatus === 'asking' ? tr('Đang xin…', 'Asking…')
-            : compassStatus === 'denied' ? tr('Thử lại', 'Retry')
-            : compassStatus === 'unsupported' ? tr('Không có la bàn', 'No compass')
-            : tr('Bật la bàn', 'Compass')}
-        </button>
-      )}
-
       {/* ─── Style toggle: bottom-left góc map, không đè header ─── */}
       <div className="absolute top-3 left-3 z-10 flex gap-1 bg-black/70 backdrop-blur-md rounded-xl border border-white/10 p-1 shadow-lg">
         {(["light", "dark", "satellite"] as StyleKey[]).map((k) => (
@@ -558,22 +481,6 @@ export default function VietMapView({
           </button>
         ))}
       </div>
-
-      <button
-        type="button"
-        onClick={resetMapBearing}
-        className="absolute top-14 left-3 z-10 h-11 w-11 rounded-full border border-[#C8A557]/45 bg-black/75 text-white shadow-xl backdrop-blur-md transition hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-[#C8A557]/70"
-        title={tr("Xoay bản đồ về hướng Bắc", "Reset map to north")}
-        aria-label={tr("La bàn bản đồ", "Map compass")}
-      >
-        <span className="absolute left-1/2 top-1 -translate-x-1/2 text-[10px] font-black tracking-wider text-[#C8A557]">N</span>
-        <span
-          className="material-symbols-outlined absolute inset-x-0 bottom-1 text-[27px] text-[#C8A557] transition-transform duration-200"
-          style={{ transform: `rotate(${-mapBearing}deg)` }}
-        >
-          navigation
-        </span>
-      </button>
 
       {/* ─── Heatmap control panel (top-right, collapsible) ─── */}
       <div className="map-layer-panel absolute top-3 right-3 z-10 w-[min(320px,calc(100%-1.5rem))] max-w-[320px]">
