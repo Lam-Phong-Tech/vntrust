@@ -3,7 +3,7 @@
 // Phase 1: foundation + markers
 // Phase 2: 4 heatmap layers (scan / fake / alert / dn) + period filter
 import { useEffect, useRef, useState, useMemo } from "react";
-import Map, { Source, Layer, Marker, NavigationControl, AttributionControl } from "react-map-gl/maplibre";
+import Map, { Source, Layer, Marker, AttributionControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -38,6 +38,9 @@ const STYLE_URLS: Record<string, any> = {
                           'Tiles © Esri'),
 };
 type StyleKey = keyof typeof STYLE_URLS;
+const MIN_MAP_ZOOM = 4;
+const MAX_MAP_ZOOM = 12;
+const INITIAL_MAP_ZOOM = 5;
 
 // ──────────────────────────────────────────────────────────────────────
 // Heatmap configs cho 4 layer
@@ -152,6 +155,7 @@ export default function VietMapView({
   const [locations, setLocations] = useState<ScanLocation[]>([]);
   const [selectedLoc, setSelectedLoc] = useState<ScanLocation | null>(null);
   const [showMarkers, setShowMarkers] = useState(true);
+  const [mapZoom, setMapZoom] = useState(INITIAL_MAP_ZOOM);
 
   // Heatmap state
   const [activeLayers, setActiveLayers] = useState<Set<LayerKey>>(new Set(['fake']));
@@ -328,18 +332,31 @@ export default function VietMapView({
     });
   };
 
+  const changeMapZoom = (delta: number) => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    const nextZoom = Math.min(MAX_MAP_ZOOM, Math.max(MIN_MAP_ZOOM, map.getZoom() + delta));
+    map.easeTo({ zoom: nextZoom, duration: 250 });
+    setMapZoom(nextZoom);
+  };
+
+  const isMinZoom = mapZoom <= MIN_MAP_ZOOM + 0.01;
+  const isMaxZoom = mapZoom >= MAX_MAP_ZOOM - 0.01;
+
   // ── Render ──────────────────────────────────────────────────────
   return (
     <div className="relative w-full rounded-2xl overflow-hidden border border-[#C8A557]/30 bg-[#0B1623]" style={{ height }}>
       <Map
         ref={mapRef}
         mapStyle={STYLE_URLS[styleKey]}
-        initialViewState={{ longitude: 107, latitude: 16, zoom: 5, pitch: 0 }}
+        initialViewState={{ longitude: 107, latitude: 16, zoom: INITIAL_MAP_ZOOM, pitch: 0 }}
+        minZoom={MIN_MAP_ZOOM}
+        maxZoom={MAX_MAP_ZOOM}
         maxBounds={[[100, 5], [115, 25]]}
         style={{ width: "100%", height: "100%" }}
         attributionControl={false}
+        onMove={(event) => setMapZoom(event.viewState.zoom)}
       >
-        <NavigationControl position="bottom-left" showCompass={false} />
         <AttributionControl
           position="bottom-right"
           compact
@@ -480,6 +497,33 @@ export default function VietMapView({
             {k === "light" ? tr("Sáng", "Light") : k === "dark" ? tr("Tối", "Dark") : tr("Vệ tinh", "Satellite")}
           </button>
         ))}
+      </div>
+
+      <div className="absolute bottom-3 left-3 z-10 overflow-hidden rounded-xl border border-white/15 bg-black/75 shadow-xl backdrop-blur-md">
+        <button
+          type="button"
+          onClick={() => changeMapZoom(1)}
+          disabled={isMaxZoom}
+          className={`flex h-9 w-9 items-center justify-center border-b border-white/10 text-white transition ${
+            isMaxZoom ? "cursor-not-allowed opacity-35" : "hover:bg-white/12"
+          }`}
+          title={tr("Phóng to bản đồ", "Zoom in")}
+          aria-label={tr("Phóng to bản đồ", "Zoom in")}
+        >
+          <span className="material-symbols-outlined text-[21px]">add</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => changeMapZoom(-1)}
+          disabled={isMinZoom}
+          className={`flex h-9 w-9 items-center justify-center text-white transition ${
+            isMinZoom ? "cursor-not-allowed opacity-35" : "hover:bg-white/12"
+          }`}
+          title={tr("Thu nhỏ bản đồ", "Zoom out")}
+          aria-label={tr("Thu nhỏ bản đồ", "Zoom out")}
+        >
+          <span className="material-symbols-outlined text-[21px]">remove</span>
+        </button>
       </div>
 
       {/* ─── Heatmap control panel (top-right, collapsible) ─── */}
