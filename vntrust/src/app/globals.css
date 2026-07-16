@@ -245,6 +245,10 @@ html.light-mode .dashboard-mini-icon {
 
 .map-layer-panel {
   min-width: 280px;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 }
 
 .map-timeline-range {

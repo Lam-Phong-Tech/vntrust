@@ -193,6 +193,8 @@ export default function VietMapView({
     });
   }, [period]);
 
+  const activeBucket = sliderStep !== null ? buckets[sliderStep] : null;
+
   // Reset slider khi period đổi
   useEffect(() => {
     setSliderStep(null);
@@ -290,8 +292,8 @@ export default function VietMapView({
 
     // Build query: nếu sliderStep != null + có bucket, dùng from/to
     let queryExtra = '';
-    if (sliderStep !== null && buckets[sliderStep]) {
-      const b = buckets[sliderStep];
+    if (activeBucket) {
+      const b = activeBucket;
       queryExtra = `&from=${encodeURIComponent(b.from.toISOString())}&to=${encodeURIComponent(b.to.toISOString())}`;
     }
 
@@ -321,7 +323,7 @@ export default function VietMapView({
       setLoadingLayers(new Set());
     });
     return () => controller.abort();
-  }, [activeLayers, period, sliderStep, buckets]);
+  }, [activeLayers, period, activeBucket]);
 
   // ── Toggle helpers ──────────────────────────────────────────────
   const toggleLayer = (k: LayerKey) => {
@@ -543,7 +545,7 @@ export default function VietMapView({
               <div className="text-[9px] text-white/40 uppercase tracking-wider font-bold mb-1.5">{tr("Khoảng thời gian", "Period")}</div>
               <div className="grid grid-cols-4 gap-1">
                 {(['24h', '7d', '30d', 'all'] as PeriodKey[]).map(p => (
-                  <button key={p} onClick={() => setPeriod(p)}
+                  <button key={p} onClick={() => { setPlaying(false); setSliderStep(null); setPeriod(p); }}
                     className={`py-1 rounded-md text-[10px] font-bold transition ${
                       period === p ? "bg-[#C8A557] text-[#0B1623]" : "bg-white/5 text-white/60 hover:bg-white/10"
                     }`}>
@@ -557,7 +559,7 @@ export default function VietMapView({
             {buckets.length > 0 && (
               <div className="px-3 py-2 border-b border-white/10">
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <div className="text-[9px] text-white/40 uppercase tracking-wider font-bold">🎬 {tr("Timeline", "Timeline")}</div>
+                  <div className="text-[9px] text-white/40 uppercase tracking-wider font-bold">{tr("Dòng thời gian", "Timeline")}</div>
                   <div className="flex items-center gap-1 shrink-0">
                     {/* Play/Pause button */}
                     <button onClick={() => {
@@ -571,7 +573,7 @@ export default function VietMapView({
                     {/* Reset/Now button */}
                     <button onClick={() => { setSliderStep(null); setPlaying(false); }}
                       className="rounded-md p-1 bg-white/5 text-white/70 hover:bg-white/10 transition"
-                      title={tr("Hiện toàn period", "Show all period")}>
+                      title={tr("Hiện toàn kỳ", "Show full period")}>
                       <span className="material-symbols-outlined text-[14px]">restart_alt</span>
                     </button>
                     {/* Speed selector */}
@@ -599,10 +601,16 @@ export default function VietMapView({
                   <span className={`truncate text-center max-w-[140px] ${sliderStep !== null ? "text-[#C8A557] font-bold" : ""}`}>
                     {sliderStep !== null
                       ? `${buckets[sliderStep]?.label} (${sliderStep + 1}/${buckets.length})`
-                      : tr('Toàn period', 'Full period')}
+                      : tr('Toàn kỳ', 'Full period')}
                   </span>
                   <span className="truncate text-right">{buckets[buckets.length - 1]?.label}</span>
                 </div>
+              </div>
+            )}
+
+            {period === 'all' && (
+              <div className="px-3 py-2 border-b border-white/10 text-[10px] text-white/55">
+                {tr("Đang hiển thị toàn bộ dữ liệu, không dùng dòng thời gian.", "Showing all data; timeline is disabled.")}
               </div>
             )}
 
@@ -625,7 +633,9 @@ export default function VietMapView({
                     </span>
                     {loading && <span className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin shrink-0" />}
                     {!loading && count !== undefined && active && (
-                      <span className="text-[9px] text-white/40 font-mono">{count}</span>
+                      <span className={`text-[9px] font-mono ${count > 0 ? "text-white/55" : "text-white/30"}`}>
+                        {count > 0 ? count : tr("Trống", "Empty")}
+                      </span>
                     )}
                   </button>
                 );
