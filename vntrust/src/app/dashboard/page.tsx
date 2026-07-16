@@ -984,7 +984,7 @@ export default function Dashboard() {
                 <Link href="/dashboard/kyc" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-cyan-300">verified_user</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-cyan-300">verified_user</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#1F6FEB]/20 text-blue-300 rounded-full border border-[#1F6FEB]/30">ADMIN</span>
                   </div>
                   <div>
@@ -999,7 +999,7 @@ export default function Dashboard() {
                 <Link href="/dashboard/ho-so" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-cyan-300">business_center</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-cyan-300">business_center</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#1F6FEB]/20 text-blue-300 rounded-full border border-[#1F6FEB]/30">KYC</span>
                   </div>
                   <div>
@@ -1014,7 +1014,7 @@ export default function Dashboard() {
                 <Link href="/dashboard/manage" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-emerald-300">dashboard_customize</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--green material-symbols-outlined text-3xl text-emerald-300">dashboard_customize</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">DN</span>
                   </div>
                   <div>
@@ -1029,7 +1029,7 @@ export default function Dashboard() {
                 <Link href="/dashboard/users" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-emerald-300">manage_accounts</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--green material-symbols-outlined text-3xl text-emerald-300">manage_accounts</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#1F6FEB]/20 text-blue-300 rounded-full border border-[#1F6FEB]/30">ADMIN</span>
                   </div>
                   <div>
@@ -1048,7 +1048,7 @@ export default function Dashboard() {
                 <Link href="/dashboard/phan-quyen" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-[#1F6FEB]">key</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-[#1F6FEB]">key</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#1F6FEB]/20 text-blue-300 rounded-full border border-[#1F6FEB]/30">ADMIN</span>
                   </div>
                   <div>
@@ -1066,7 +1066,7 @@ export default function Dashboard() {
               {(userRole === 'manufacturer') && (
                 <Link href="/dashboard/inventory" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex gap-2 mb-2"><span className="material-symbols-outlined text-3xl text-blue-300">inventory_2</span><span className="material-symbols-outlined text-3xl text-cyan-300">qr_code</span></div>
+                  <div className="flex gap-2 mb-2"><span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-blue-300">inventory_2</span><span className="dashboard-feature-icon dashboard-feature-icon--cyan material-symbols-outlined text-3xl text-cyan-300">qr_code</span></div>
                   <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{t("app_inv_sub")}</p><h3 className="text-sm font-bold text-white">{t("app_inv")}</h3></div>
                 </Link>
               )}
@@ -1076,7 +1076,7 @@ export default function Dashboard() {
                 <Link href="/dashboard/alerts" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-[#1F6FEB]">notifications_active</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--red material-symbols-outlined text-3xl text-[#1F6FEB]">notifications_active</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#1F6FEB]/20 text-blue-300 rounded-full border border-[#1F6FEB]/30 animate-pulse">REAL-TIME</span>
                   </div>
                   <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{t("app_alert_sub")}</p><h3 className="text-sm font-bold text-white">{t("app_alert")}</h3></div>
@@ -1088,7 +1088,7 @@ export default function Dashboard() {
                 <Link href="/dashboard/integration" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-[#1F6FEB]">hub</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-[#1F6FEB]">hub</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#1F6FEB]/20 text-cyan-300 rounded-full border border-[#1F6FEB]/30">BR-07</span>
                   </div>
                   <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{t("app_hub_sub")}</p><h3 className="text-sm font-bold text-white">{lang === 'en' ? 'Integration Hub' : 'Trung tâm Tích hợp'}</h3></div>
@@ -1102,10 +1102,10 @@ export default function Dashboard() {
                     <div className="bg-gradient-to-b from-[#60A5FA] to-[#1F6FEB] rounded p-1 shadow-lg shadow-blue-500/30"><span className="material-symbols-outlined text-white text-md">star</span></div>
                   </div>
                   <div className="flex gap-[6px]">
-                    <div title="QR" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center"><span className="material-symbols-outlined text-white text-[20px]">qr_code_scanner</span></div>
-                    <div title="Mã vạch" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center"><span className="material-symbols-outlined text-white text-[20px]">barcode_reader</span></div>
-                    <div title="Serial" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center"><span className="material-symbols-outlined text-white text-[20px]">pin</span></div>
-                    <div title="AI" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center"><span className="material-symbols-outlined text-white text-[20px]">document_scanner</span></div>
+                    <div title="QR" className="dashboard-mini-icon"><span className="material-symbols-outlined text-white text-[20px]">qr_code_scanner</span></div>
+                    <div title="Mã vạch" className="dashboard-mini-icon"><span className="material-symbols-outlined text-white text-[20px]">barcode_reader</span></div>
+                    <div title="Serial" className="dashboard-mini-icon"><span className="material-symbols-outlined text-white text-[20px]">pin</span></div>
+                    <div title="AI" className="dashboard-mini-icon"><span className="material-symbols-outlined text-white text-[20px]">document_scanner</span></div>
                   </div>
                   <h3 className="text-sm font-bold text-white mt-auto text-center">{t("app_verify")}</h3>
                 </Link>
@@ -1116,7 +1116,7 @@ export default function Dashboard() {
                 <Link href="/verify/wizard" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-red-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-red-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-red-400">report</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--red material-symbols-outlined text-3xl text-red-400">report</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-red-500/20 text-red-300 rounded-full border border-red-500/30">{lang === 'en' ? 'WIZARD' : 'TỪNG BƯỚC'}</span>
                   </div>
                   <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{tr("Báo cáo từng bước", "Step-by-step reporting", "分步报告")}</p><h3 className="text-sm font-bold text-white">{tr("Báo cáo hàng giả", "Report Fake Goods", "举报假货")}</h3></div>
@@ -1128,7 +1128,7 @@ export default function Dashboard() {
                 <Link href="/verify/history" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-cyan-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-cyan-400">history</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--cyan material-symbols-outlined text-3xl text-cyan-400">history</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 rounded-full border border-cyan-500/30">{tr("HOẠT ĐỘNG", "ACTIVITY", "活动")}</span>
                   </div>
                   <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{tr("Lịch sử quét và báo cáo", "Scan & report history", "扫码与报告历史")}</p><h3 className="text-sm font-bold text-white">{tr("Lịch sử cá nhân", "My History", "我的历史")}</h3></div>
@@ -1140,7 +1140,7 @@ export default function Dashboard() {
                 <Link href="/verify/rewards" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-emerald-400">redeem</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--green material-symbols-outlined text-3xl text-emerald-400">redeem</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">{tr("ĐỔI QUÀ", "VOUCHERS", "兑换")}</span>
                   </div>
                   <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{tr("Tích điểm và đổi quà", "Earn & spend points", "赚取并使用积分")}</p><h3 className="text-sm font-bold text-white">{tr("Điểm thưởng", "Rewards", "奖励积分")}</h3></div>
@@ -1151,7 +1151,7 @@ export default function Dashboard() {
               {(userRole === 'admin') && (
                 <Link href="/dashboard/haukiem" className="dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="material-symbols-outlined text-4xl text-[#1F6FEB]">biotech</span>
+                  <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-4xl text-[#1F6FEB]">biotech</span>
                   <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_hk")}</h3>
                 </Link>
               )}
@@ -1161,7 +1161,7 @@ export default function Dashboard() {
                 <Link href="/dashboard/standards" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
-                    <span className="material-symbols-outlined text-3xl text-[#1F6FEB]">menu_book</span>
+                    <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-[#1F6FEB]">menu_book</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#1F6FEB]/20 text-blue-300 rounded-full border border-[#1F6FEB]/30">QCVN/TCVN</span>
                   </div>
                   <div>
@@ -1175,14 +1175,14 @@ export default function Dashboard() {
               {(userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
                 <Link href="/dashboard/analytics" className="dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group relative overflow-hidden border border-[#1F6FEB]/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="material-symbols-outlined text-4xl text-[#1F6FEB]">analytics</span>
+                  <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-4xl text-[#1F6FEB]">analytics</span>
                   <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{lang === 'en' ? 'Reports & Analytics' : 'Báo cáo & Phân tích'}</h3>
                 </Link>
               )}
 
               {/* ── Nhật ký: Tất cả ── */}
               <Link href="/dashboard/history" className="dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group">
-                <span className="material-symbols-outlined text-4xl text-slate-300">history</span>
+                <span className="dashboard-feature-icon dashboard-feature-icon--slate material-symbols-outlined text-4xl text-slate-300">monitoring</span>
                 <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_hist")}</h3>
               </Link>
 
