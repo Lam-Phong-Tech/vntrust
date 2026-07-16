@@ -1402,14 +1402,6 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              <button onClick={() => setModal("ai")}
-                className="pointer-events-auto glass-panel px-6 py-3 rounded-full flex items-center gap-3 text-sm font-bold text-white hover:bg-white/20 transition hover:scale-105 active:scale-95 z-30">
-                <div className="w-6 h-6 rounded-full bg-[#C8A557] flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[14px]">smart_toy</span>
-                </div>
-                {t("ai_btn")}
-                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-              </button>
             </div>
           </div>
         </div>

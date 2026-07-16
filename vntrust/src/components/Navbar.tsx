@@ -95,7 +95,7 @@ export function getSharedAIReply(q: string, t: any): string {
 const MAX_CHAT_LEN = 500;
 
 // ─── AI Chat Modal — dùng ChatContext (real-time sync với Dashboard) ──────────
-function AiNavModal({ onClose }: { onClose: () => void }) {
+export function AiNavModal({ onClose }: { onClose: () => void }) {
   const { t, lang } = useLanguage();
   const { msgs, addMsg } = useChat();
   const [input, setInput] = useState("");
@@ -530,13 +530,6 @@ export default function Navbar() {
               </div>
             )}
 
-            <button onClick={() => setModal("ai")}
-              className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-xs font-bold text-slate-200 hover:text-white hover:bg-white/15 transition border border-white/10 active:scale-95">
-              <span className="material-symbols-outlined text-[15px] text-cyan-300">smart_toy</span>
-              ASK AI
-            </button>
-
-
             <button onClick={() => setModal("app")}
               className="flex items-center gap-2 bg-gradient-to-r from-[#e7d188] to-[#ceb059] text-[#2c2003] px-5 py-2 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(231,209,136,0.3)] hover:brightness-110 transition active:scale-95">
               APP DOWNLOAD
@@ -570,13 +563,6 @@ export default function Navbar() {
                 {t(key)}
               </a>
             ))}
-            <div className="flex gap-3 pt-2">
-              <button onClick={() => { setModal('ai'); setMobileOpen(false); }}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#C8A557]/20 px-4 py-2.5 rounded-full text-sm font-bold text-cyan-300 border border-[#C8A557]/30">
-                <span className="material-symbols-outlined text-[15px]">smart_toy</span>
-                AI Chat
-              </button>
-            </div>
           </div>
         </div>
       )}

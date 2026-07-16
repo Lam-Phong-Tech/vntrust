@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ChatProvider } from "@/contexts/ChatContext";
-import Navbar from "@/components/Navbar";
+import Navbar, { AiNavModal } from "@/components/Navbar";
 import MobileBottomNav, { MobileTopBar } from "@/components/MobileBottomNav";
 import { GeolocationPrompt } from "@/hooks/useGeolocation";
 
@@ -80,6 +80,7 @@ function useSessionGuard(isDashboard: boolean, pathname: string) {
 // ── ClientShell ───────────────────────────────────────────────────────────────
 export default function ClientShell({ children }: { children: React.ReactNode; initialRole?: string }) {
   const pathname = usePathname();
+  const [aiOpen, setAiOpen] = useState(false);
 
   const isVerifySubpath     = pathname.startsWith("/verify/") && pathname !== "/verify";
   const isVerifyToolPage    = /^\/verify\/(manual|wizard|history|rewards|profile|scan|camera|ai-doc)(?:\/|$)/.test(pathname);
@@ -90,6 +91,7 @@ export default function ClientShell({ children }: { children: React.ReactNode; i
   // (vì trang này có header riêng + thanh ngoài làm trùng lặp)
   const hideDesktopNav      = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifyResultPage || isAdminArea;
   const hideMobileBottomNav = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifyResultPage || isAdminArea;
+  const hideFloatingAi      = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifyResultPage || isAdminArea;
 
   // Layout mode: mobile-frame chỉ cho consumer + anonymous; role khác → responsive
   // SSR khởi tạo từ cookie (initialRole), CSR có thể re-check on role change
@@ -130,6 +132,26 @@ export default function ClientShell({ children }: { children: React.ReactNode; i
           <main className={`flex-1 ${mainTopPad} ${mainBottomPad}`}>
             {children}
           </main>
+
+          {!hideFloatingAi && (
+            <>
+              {aiOpen && <AiNavModal onClose={() => setAiOpen(false)} />}
+              {!aiOpen && (
+                <button
+                  type="button"
+                  onClick={() => setAiOpen(true)}
+                  className="fixed right-4 lg:right-6 bottom-[calc(92px+env(safe-area-inset-bottom,0px))] lg:bottom-6 z-[70] h-[52px] w-[52px] lg:h-14 lg:w-14 rounded-full bg-gradient-to-br from-[#2f7df4] to-[#C8A557] text-white shadow-[0_14px_40px_rgba(47,125,244,0.35)] border border-white/30 flex items-center justify-center transition hover:scale-105 active:scale-95"
+                  aria-label="Ask AI"
+                  title="Ask AI"
+                >
+                  <span className="material-symbols-outlined text-[25px] lg:text-[27px]" style={{ fontVariationSettings: "'FILL' 1, 'wght' 700" }}>
+                    smart_toy
+                  </span>
+                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-[#6FB585] border-2 border-white shadow" />
+                </button>
+              )}
+            </>
+          )}
 
           {/* Bottom nav — mobile-frame: luôn hiện; responsive: chỉ mobile viewport */}
           {!hideMobileBottomNav && (
