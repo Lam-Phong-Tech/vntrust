@@ -145,7 +145,7 @@ export default function CertificatesPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <Link href="/dashboard/manage" className="text-xs text-slate-400 hover:text-white flex items-center gap-1 mb-2">
+          <Link href="/enterprise/manage" className="text-xs text-slate-400 hover:text-white flex items-center gap-1 mb-2">
             <span className="material-symbols-outlined text-[14px]">arrow_back</span> {tr("Quản lý DN", "Enterprise management")}
           </Link>
           <div className="flex items-center gap-3">

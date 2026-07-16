@@ -954,7 +954,7 @@ export default function Dashboard() {
 
               {/* ── Trung tâm quản lý doanh nghiệp: Manufacturer + Importer ── */}
               {(userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/dashboard/manage" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
+                <Link href="/enterprise/manage" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--green material-symbols-outlined text-3xl text-emerald-300">dashboard_customize</span>

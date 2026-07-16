@@ -37,6 +37,31 @@ const SUBROLE_META: Record<string, { label: string; en: string; color: string; i
   viewer:        { label: "Chỉ xem",      en: "Viewer",        color: "text-slate-300 bg-slate-500/15 border-slate-500/30",   icon: "visibility" },
 };
 
+const PERMISSION_OPTIONS = [
+  { key: "profile", label: "Hồ sơ", en: "Profile", icon: "badge" },
+  { key: "input", label: "Nhập liệu", en: "Data", icon: "edit_note" },
+  { key: "warehouse", label: "Kho", en: "Warehouse", icon: "warehouse" },
+  { key: "team", label: "Nhân sự", en: "Team", icon: "groups" },
+  { key: "report", label: "Báo cáo", en: "Reports", icon: "bar_chart" },
+] as const;
+
+type PermissionKey = typeof PERMISSION_OPTIONS[number]["key"];
+
+const rolePermissions: Record<string, PermissionKey[]> = {
+  company_admin: ["profile", "input", "warehouse", "team", "report"],
+  staff_input: ["profile", "input", "report"],
+  warehouse: ["warehouse", "report"],
+  viewer: ["report"],
+};
+
+const permissionsToRole = (permissions: PermissionKey[]) => {
+  const set = new Set(permissions);
+  if (set.has("team")) return "company_admin";
+  if (set.has("input")) return "staff_input";
+  if (set.has("warehouse")) return "warehouse";
+  return "viewer";
+};
+
 export default function TeamPage() {
   const router = useRouter();
   const { lang } = useLanguage();
@@ -127,6 +152,45 @@ export default function TeamPage() {
     finally { setActing(null); }
   };
 
+  const togglePermission = async (m: Member, permission: PermissionKey) => {
+    const current = new Set(rolePermissions[m.vaiTroCty || "viewer"] || rolePermissions.viewer);
+    if (current.has(permission)) current.delete(permission);
+    else current.add(permission);
+
+    if (current.size === 0) current.add("report");
+    const nextRole = permissionsToRole(Array.from(current));
+    await changeSubRole(m, nextRole);
+  };
+
+  const PermissionChecks = ({ member, isMe }: { member: Member; isMe: boolean }) => {
+    const active = new Set(rolePermissions[member.vaiTroCty || "viewer"] || rolePermissions.viewer);
+    const disabled = !canInvite || isMe || acting === member.id;
+    return (
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+        {PERMISSION_OPTIONS.map(option => {
+          const checked = active.has(option.key);
+          return (
+            <button
+              key={option.key}
+              type="button"
+              onClick={() => togglePermission(member, option.key)}
+              disabled={disabled}
+              className={`flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-[11px] font-bold transition ${
+                checked
+                  ? "border-emerald-400/50 bg-emerald-500/15 text-emerald-200"
+                  : "border-white/10 bg-white/5 text-slate-400 hover:bg-white/10"
+              } ${disabled ? "cursor-not-allowed opacity-70" : ""}`}
+              title={lang === "en" ? option.en : option.label}
+            >
+              <span className="material-symbols-outlined text-[14px]">{checked ? "check_circle" : option.icon}</span>
+              <span className="truncate">{lang === "en" ? option.en : option.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
   const suspendMember = async (m: Member) => {
     if (!confirm(tr(`Khóa tài khoản ${m.email}?`, `Suspend ${m.email}?`))) return;
     setActing(m.id);
@@ -201,7 +265,7 @@ export default function TeamPage() {
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
-          <Link href="/dashboard/manage" className="min-w-0 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center justify-center gap-1.5 text-xs">
+          <Link href="/enterprise/manage" className="min-w-0 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center justify-center gap-1.5 text-xs">
             <span className="material-symbols-outlined text-[16px]">arrow_back</span>
             {tr("Quay lại", "Back")}
           </Link>
@@ -281,7 +345,7 @@ export default function TeamPage() {
           <thead className="bg-white/5 border-b border-white/10">
             <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400">
               <th className="w-[38%] px-4 py-3 font-bold">{tr("Thành viên", "Member")}</th>
-              <th className="w-[28%] px-4 py-3 font-bold">{tr("Vai trò nội bộ", "Sub-role")}</th>
+              <th className="w-[28%] px-4 py-3 font-bold">{tr("Chức năng được cấp", "Granted functions")}</th>
               <th className="w-[16%] px-4 py-3 font-bold">{tr("Trạng thái", "Status")}</th>
               <th className="w-[18%] px-4 py-3 font-bold text-right">{tr("Thao tác", "Actions")}</th>
             </tr>
@@ -312,23 +376,11 @@ export default function TeamPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    {canInvite && !isMe ? (
-                      <select
-                        value={m.vaiTroCty || "viewer"}
-                        onChange={(e) => changeSubRole(m, e.target.value)}
-                        disabled={isAct}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${meta.color} cursor-pointer focus:outline-none disabled:opacity-50`}
-                      >
-                        {Object.entries(SUBROLE_META).map(([k, v]) => (
-                          <option key={k} value={k} className="bg-[#0B1623] text-white">{lang === "en" ? v.en : v.label}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border ${meta.color}`}>
-                        <span className="material-symbols-outlined text-[13px]">{meta.icon}</span>
-                        {lang === "en" ? meta.en : meta.label}
-                      </span>
-                    )}
+                    <PermissionChecks member={m} isMe={isMe} />
+                    <p className={`mt-2 inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-bold ${meta.color}`}>
+                      <span className="material-symbols-outlined text-[12px]">{meta.icon}</span>
+                      {lang === "en" ? meta.en : meta.label}
+                    </p>
                   </td>
                   <td className="px-4 py-3">
                     <span className={`text-xs font-bold ${
@@ -393,24 +445,11 @@ export default function TeamPage() {
                   <div className="text-[11px] text-slate-400 break-all">{m.email}</div>
                 </div>
               </div>
-              {/* Vai trò nội bộ — dropdown (mobile) — admin có thể đổi role */}
-              {canInvite && !isMe ? (
-                <select
-                  value={m.vaiTroCty || "viewer"}
-                  onChange={(e) => changeSubRole(m, e.target.value)}
-                  disabled={acting === m.id}
-                  className={`w-full px-3 py-2 mb-3 rounded-xl text-xs font-bold border ${meta.color} bg-[#0B1623] focus:outline-none disabled:opacity-50`}
-                >
-                  {Object.entries(SUBROLE_META).map(([k, v]) => (
-                    <option key={k} value={k} className="bg-[#0B1623] text-white">{lang === "en" ? v.en : v.label}</option>
-                  ))}
-                </select>
-              ) : (
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold border ${meta.color} mb-3`}>
-                  <span className="material-symbols-outlined text-[12px]">{meta.icon}</span>
-                  {lang === "en" ? meta.en : meta.label}
-                </span>
-              )}
+              <PermissionChecks member={m} isMe={isMe} />
+              <span className={`mt-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold border ${meta.color} mb-3`}>
+                <span className="material-symbols-outlined text-[12px]">{meta.icon}</span>
+                {lang === "en" ? meta.en : meta.label}
+              </span>
               <div className="flex items-center justify-end gap-2">
                 {canInvite && !isMe && (
                   m.trangThai === "active" ? (

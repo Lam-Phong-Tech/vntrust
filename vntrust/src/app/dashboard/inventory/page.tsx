@@ -538,7 +538,7 @@ export default function InventoryPage() {
       <main className="mx-auto max-w-7xl w-full flex-1 px-3 py-4 sm:p-6 lg:p-12 overflow-x-hidden min-h-[calc(100vh-80px)] transparent">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 sm:mb-10 gap-4">
           <div className="min-w-0">
-            <Link href="/dashboard/manage" className="mb-3 inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300 transition hover:bg-white/10 hover:text-white">
+            <Link href="/enterprise/manage" className="mb-3 inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300 transition hover:bg-white/10 hover:text-white">
               <span className="material-symbols-outlined text-[16px]">arrow_back</span>
               {lang === "en" ? "Enterprise management" : "Quản lý DN"}
             </Link>

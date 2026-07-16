@@ -313,7 +313,7 @@ export default function DistributionPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 sm:mb-8 gap-4">
         <div className="min-w-0 w-full md:w-auto">
-          <Link href="/dashboard/manage" className="text-xs text-slate-400 hover:text-white flex items-center gap-1 mb-2">
+          <Link href="/enterprise/manage" className="text-xs text-slate-400 hover:text-white flex items-center gap-1 mb-2">
             <span className="material-symbols-outlined text-[14px]">arrow_back</span> {tr("Quản lý DN", "Enterprise management")}
           </Link>
           <div className="flex items-start sm:items-center gap-3">
@@ -383,9 +383,19 @@ export default function DistributionPage() {
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#C8A557]" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
-          <span className="material-symbols-outlined text-5xl mb-3 block">inventory_2</span>
-          {tr("Chưa có lô hàng nào trong danh sách phân phối. Hãy tạo lô hàng ở tab ", "No batches in distribution list. Create a batch in the ")}<Link href="/dashboard/inventory" className="text-[#C8A557] underline">{tr("Sản phẩm & Lô hàng", "Products & Batches")}</Link>{tr(".", " tab.")}
+        <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 px-5 py-10 text-center text-slate-300">
+          <span className="material-symbols-outlined mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-400/10 text-3xl text-cyan-200">inventory_2</span>
+          <h3 className="text-lg font-black text-white">{tr("Chưa có mục phân phối", "No distribution items yet")}</h3>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-400">
+            {tr("Tạo sản phẩm và mục hàng trước, sau đó quay lại đây để theo dõi trạng thái sẵn sàng, đã gửi, đã giao hoặc bị khóa.", "Create products and batch items first, then return here to track ready, shipped, delivered or locked statuses.")}
+          </p>
+          <Link
+            href="/dashboard/inventory"
+            className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#1F6FEB] px-4 py-2 text-sm font-black text-white shadow-lg shadow-blue-950/20 transition hover:-translate-y-0.5 hover:bg-[#2f7df4]"
+          >
+            <span className="material-symbols-outlined text-[18px]">add_box</span>
+            {tr("Tạo mục hàng", "Create item")}
+          </Link>
         </div>
       ) : (
         <div className="flex flex-col gap-4">

@@ -27,7 +27,7 @@ const ALL_PAGES: MenuItem[] = [
   { label: "Xác thực",        href: "/verify",                      icon: "qr_code_scanner",            roles: ["*"], group: "common" },
 
   // Sản phẩm — DN
-  { label: "Quản lý DN",       href: "/dashboard/manage",            icon: "business_center",            roles: ["manufacturer","importer","admin"], group: "product" },
+  { label: "Quản lý DN",       href: "/enterprise/manage",            icon: "business_center",            roles: ["manufacturer","importer","admin"], group: "product" },
   { label: "Sản phẩm",        href: "/dashboard/inventory",         icon: "inventory_2",                roles: ["manufacturer","importer","admin"], group: "product" },
   { label: "Phân phối",       href: "/dashboard/distribution",      icon: "local_shipping",             roles: ["manufacturer","importer","admin"], group: "product" },
   { label: "Chứng nhận",      href: "/dashboard/certificates",      icon: "workspace_premium",          roles: ["manufacturer","importer","admin"], group: "product" },
@@ -90,7 +90,7 @@ export default function MobileMenuDrawer({
   if (!open) return null;
 
   // Người tiêu dùng + Doanh nghiệp: chỉ phạm vi bảng điều khiển gọn.
-  const DASHBOARD_ONLY = new Set(["/dashboard", "/dashboard/manage", "/dashboard/profile"]);
+  const DASHBOARD_ONLY = new Set(["/dashboard", "/enterprise/manage", "/dashboard/profile"]);
   const simpleNav = userRole === "consumer" || userRole === "manufacturer" || userRole === "importer";
   const visible = ALL_PAGES.filter((it) => {
     const roleOk = it.roles.includes("*") || (!!userRole && it.roles.includes(userRole));
