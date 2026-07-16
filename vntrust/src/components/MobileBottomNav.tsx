@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import NotificationBell from "@/components/NotificationBell";
 import MobileMenuDrawer from "@/components/MobileMenuDrawer";
+import LanguageMenu from "@/components/LanguageMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface NavItem {
@@ -333,7 +334,6 @@ export function MobileHeader({
 
 /* ── Mobile Global Top Bar (logo + utility icons) ── */
 export function MobileTopBar() {
-  const { lang, setLang } = useLanguage();
   const [theme, setTheme] = useState("light");
   const [geoEnabled, setGeoEnabled] = useState(true);
   const [geoToast, setGeoToast] = useState<string | null>(null);
@@ -470,27 +470,7 @@ export function MobileTopBar() {
         {/* Right: utility icons */}
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
 
-          {/* Language toggle */}
-          <button
-            onClick={() => setLang(lang === "vi" ? "en" : "vi")}
-            style={{
-              ...iconBtn(),
-              width: "auto",
-              borderRadius: 20,
-              padding: "0 10px",
-              gap: 4,
-              display: "flex",
-              alignItems: "center",
-              fontSize: 11,
-              fontWeight: 800,
-              fontFamily: "'Outfit', sans-serif",
-              color: "rgba(246,241,232,0.8)",
-            }}
-            title={lang === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>translate</span>
-            {lang === "vi" ? "VI" : "EN"}
-          </button>
+          <LanguageMenu compact />
 
           {/* GPS toggle */}
           <button

@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useChat } from "@/contexts/ChatContext";
 import NotificationBell from "@/components/NotificationBell";
+import LanguageMenu from "@/components/LanguageMenu";
 
 type SiteTheme = "light" | "dark";
 
@@ -309,7 +310,7 @@ function AppDownloadModal({ onClose }: { onClose: () => void }) {
 // ─── Navbar ────────────────────────────────────────────────────────────────
 export default function Navbar() {
   const pathname = usePathname();
-  const { t, lang, setLang } = useLanguage();
+  const { t } = useLanguage();
   const [modal, setModal] = useState<"ai" | "app" | null>(null);
   const [theme, setTheme] = useState<SiteTheme>(getStoredTheme);
   const [scrollOpacity, setScrollOpacity] = useState(0);
@@ -460,16 +461,7 @@ export default function Navbar() {
 
           {/* Right: action buttons */}
           <div className="hidden lg:flex items-center gap-3">
-            {/* Language toggle */}
-            <button
-              id="lang-toggle-btn"
-              onClick={() => setLang(lang === "vi" ? "en" : "vi")}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full text-xs font-black text-slate-200 hover:text-white hover:bg-white/20 transition border border-white/10 active:scale-95"
-              title={lang === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}
-            >
-              <span className="material-symbols-outlined text-[14px]">translate</span>
-              {lang === "vi" ? "VI" : "EN"}
-            </button>
+            <LanguageMenu />
 
             {/* Location toggle */}
             {isLoggedIn && (
