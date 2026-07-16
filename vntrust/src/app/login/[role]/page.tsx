@@ -364,10 +364,17 @@ export default function LoginPage() {
 
     try {
       if (view === "login") {
+        const activeRole = localStorage.getItem("userRole");
+        const activeUser = localStorage.getItem("userName");
+        if (activeRole && activeRole !== pageRole) {
+          showToast(`Trình duyệt đang đăng nhập phân quyền ${activeRole}${activeUser ? ` (${activeUser})` : ""}. Vui lòng đăng xuất hoặc đổi tài khoản trước khi đăng nhập phân quyền khác.`, "error");
+          setLoading(false);
+          return;
+        }
         const res = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({ username, password, role: pageRole })
         });
         const data = await res.json();
         
@@ -421,7 +428,7 @@ export default function LoginPage() {
         if (res.ok) {
           showToast(
             isBusiness
-              ? (data.message || "Đã nhận hồ sơ doanh nghiệp. Vui lòng chờ admin xét duyệt trước khi đăng nhập.")
+              ? "Đã gửi hồ sơ doanh nghiệp. Tài khoản đang chờ Admin duyệt, vui lòng quay lại đăng nhập sau khi hồ sơ được xác thực."
               : (data.message || "Đăng ký thành công! Vui lòng đăng nhập."),
             "success"
           );

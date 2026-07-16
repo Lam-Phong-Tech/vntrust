@@ -31,9 +31,20 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { username, password } = body;
+    const requestedRole = typeof body.role === 'string' ? body.role : '';
+    const currentRole = req.cookies.get('userRole')?.value || '';
+    const currentUser = req.cookies.get('userName')?.value || '';
 
     if (!username || !password) {
       return NextResponse.json({ error: 'Vui lòng nhập đầy đủ thông tin đăng nhập' }, { status: 400 });
+    }
+
+    if (currentRole && requestedRole && currentRole !== requestedRole) {
+      return NextResponse.json({
+        error: `Trình duyệt đang đăng nhập phân quyền ${currentRole}${currentUser ? ` (${currentUser})` : ''}. Vui lòng đăng xuất hoặc đổi tài khoản trước khi đăng nhập phân quyền khác.`,
+        code: 'ROLE_SESSION_CONFLICT',
+        currentRole,
+      }, { status: 409 });
     }
 
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || req.headers.get('x-real-ip') || '127.0.0.1';

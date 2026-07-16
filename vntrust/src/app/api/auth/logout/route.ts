@@ -6,7 +6,10 @@ export async function POST() {
   // Xóa tất cả cookie session — đặt maxAge = 0 để trình duyệt xóa ngay
   response.cookies.set('userRole', '', { path: '/', maxAge: 0 });
   response.cookies.set('userName', '', { path: '/', maxAge: 0 });
+  response.cookies.set('userId', '', { path: '/', maxAge: 0 });
   response.cookies.set('doanhNghiepId', '', { path: '/', maxAge: 0 });
+  response.cookies.set('vaiTroCty', '', { path: '/', maxAge: 0 });
+  response.cookies.set('quyenMoiNV', '', { path: '/', maxAge: 0 });
   // B3: xoá cả JWT session token (httpOnly cookie)
   response.cookies.set(SESSION_TOKEN_NAME, '', { path: '/', maxAge: 0, httpOnly: true });
   return response;

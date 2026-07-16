@@ -46,16 +46,16 @@ const NAV: NavGroup[] = [
     title: "Hệ thống", en: "System",
     items: [
       { href: "/admin/security",      label: "Bảo mật",   en: "Security",  icon: "security" },
-      { href: "/admin/system-config", label: "Cấu hình",  en: "Config",    icon: "settings" },
+      { href: "/admin/system-config", label: "Cài đặt Admin",  en: "Admin Settings",    icon: "settings" },
       { href: "/admin/integration",   label: "Tích hợp",  en: "Integration", icon: "hub" },
     ],
   },
 ];
 
 function clearSession() {
-  ["userRole", "userName", "doanhNghiepId", "vntrust_chat_web"].forEach(k => { try { localStorage.removeItem(k); } catch {} });
+  ["userRole", "userName", "userId", "doanhNghiepId", "vaiTroCty", "quyenMoiNV", "vntrust_chat_web"].forEach(k => { try { localStorage.removeItem(k); } catch {} });
   try { Object.keys(localStorage).filter(k => k.startsWith("vntrust_chat_")).forEach(k => localStorage.removeItem(k)); } catch {}
-  ["userRole", "userName", "doanhNghiepId"].forEach(n => { document.cookie = `${n}=; Max-Age=0; path=/`; });
+  ["userRole", "userName", "userId", "doanhNghiepId", "vaiTroCty", "quyenMoiNV"].forEach(n => { document.cookie = `${n}=; Max-Age=0; path=/`; });
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -79,29 +79,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Đóng drawer khi đổi route (mobile)
   useEffect(() => { setOpen(false); }, [pathname]);
 
-  const logout = () => { clearSession(); window.location.href = "/login"; };
+  const logout = async () => {
+    try { await fetch("/api/auth/logout", { method: "POST" }); } catch {}
+    clearSession();
+    window.location.href = "/login";
+  };
 
   if (!ready) return null;
 
   const initials = (userName || "A").trim().split(/\s+/).map(s => s[0]).slice(0, 2).join("").toUpperCase();
 
   const SidebarInner = (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col overflow-y-auto hide-scrollbar">
       {/* Logo */}
       <Link href="/admin" className="flex items-center gap-2.5 px-5 h-[68px] shrink-0" style={{ background: '#1F6FEB' }}>
         <span style={{ background: '#ffffff', borderRadius: 9, padding: 5, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.16)' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo-icon.png" alt="AI VeriGoods" width={30} height={30} style={{ objectFit: 'contain', display: 'block' }} />
         </span>
         <div className="leading-tight">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/verigoods-wordmark.png" alt="VeriGoods" style={{ height: 14, width: 'auto', display: 'block' }} />
           <div className="text-[9px] text-white/85 uppercase tracking-widest mt-0.5">{tr("Bảng quản trị", "Admin Console")}</div>
         </div>
       </Link>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 hide-scrollbar">
+      <nav className="px-3 py-4 hide-scrollbar">
         {NAV.map(group => (
           <div key={group.title} className="mb-5">
             <p className="px-3 mb-2 text-[10px] font-bold text-white/75 uppercase tracking-widest">{tr(group.title, group.en)}</p>
@@ -133,7 +135,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </nav>
 
       {/* User card */}
-      <div className="shrink-0 p-3 border-t border-white/5">
+      <div className="p-3 border-t border-white/10">
         <div className="flex items-center gap-3 px-2 py-2 rounded-2xl bg-white/95 border border-white/40 mb-2">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#1F6FEB] text-white flex items-center justify-center font-black shrink-0">
             {initials}

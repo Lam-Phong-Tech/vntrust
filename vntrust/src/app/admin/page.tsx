@@ -9,12 +9,6 @@ interface UsersResp { total: number; stats: { byRole: Record<string, number>; by
 interface LogItem { id: string; action: string; user: string; role: string; time: string; status: string; }
 
 const fmt = (n: number | undefined) => (n ?? 0).toLocaleString("vi-VN");
-const ROLE_LABELS: Record<string, { vi: string; en: string }> = {
-  admin: { vi: "Quản trị", en: "Admin" },
-  consumer: { vi: "Người tiêu dùng", en: "Consumer" },
-  manufacturer: { vi: "Doanh nghiệp", en: "Enterprise" },
-  authority: { vi: "Cơ quan chức năng", en: "Authority" },
-};
 
 const isNoisySystemLog = (action: string) =>
   /^\[Integration Health Check\]/i.test(action) ||
@@ -85,12 +79,13 @@ export default function AdminOverview() {
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-2">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3 rounded-[28px] border border-[#bfdbfe] bg-white/85 p-5 shadow-sm">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white font-display">{tr("Tổng quan quản trị", "Admin overview")}</h1>
-          <p className="text-sm text-slate-400 mt-1">{tr("Tình hình hệ thống AI VeriGoods", "AI VeriGoods system status")}</p>
+          <p className="mb-1 text-[11px] font-black uppercase tracking-[0.22em] text-[#1f6feb]">{tr("Quản trị hệ thống", "System Admin")}</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#0b1623] font-display drop-shadow-sm">{tr("Tổng quan quản trị", "Admin overview")}</h1>
+          <p className="text-sm text-[#477399] mt-1">{tr("Tình hình hệ thống AI VeriGoods", "AI VeriGoods system status")}</p>
         </div>
-        <p className="text-xs text-slate-500">
+        <p className="rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-3 py-1 text-xs font-bold text-[#1f6feb]">
           {ov && ov.expiringSoon > 0
             ? tr(`${ov.expiringSoon} lô sắp hết hạn (30 ngày)`, `${ov.expiringSoon} batches expiring soon`)
             : tr("Không có lô tới hạn", "No expiring batches")}
@@ -114,15 +109,31 @@ export default function AdminOverview() {
       {/* Two panels */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
         {/* Tài khoản chờ duyệt */}
-        <div className="rounded-2xl bg-white/[0.04] border border-white/10 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-black text-white">{tr("Tài khoản chờ duyệt", "Pending accounts")}</h2>
-            <Link href="/admin/users" className="text-xs font-bold text-[#1F6FEB] hover:underline">{tr("Xử lý →", "Manage →")}</Link>
+        <div className="rounded-2xl bg-white/80 border border-[#bfdbfe] p-5 shadow-sm">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1f6feb]">{tr("Cần xử lý", "Action needed")}</p>
+              <h2 className="text-xl font-black text-[#0b1623]">{tr("Tài khoản chờ duyệt", "Pending accounts")}</h2>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-2.5 py-1 text-xs font-black text-[#1f6feb]">{pending.length}</span>
+              <Link href="/admin/users" className="text-xs font-bold text-[#1F6FEB] hover:underline">{tr("Xử lý →", "Manage →")}</Link>
+            </div>
           </div>
           {loading ? (
-            <p className="text-center text-slate-500 py-10 text-sm">{tr("Đang tải…", "Loading…")}</p>
+            <div className="rounded-2xl border border-dashed border-[#bfdbfe] bg-[#f8fbff] px-4 py-8 text-center">
+              <span className="material-symbols-outlined mb-2 animate-pulse text-[28px] text-[#1f6feb]">hourglass_top</span>
+              <p className="text-sm font-bold text-[#345b7c]">{tr("Đang kiểm tra tài khoản chờ duyệt...", "Checking pending accounts...")}</p>
+              <p className="mt-1 text-xs text-[#6b8aa8]">{tr("Dữ liệu sẽ hiện ở đây khi có hồ sơ mới cần admin xử lý.", "New approval requests will appear here.")}</p>
+            </div>
           ) : pending.length === 0 ? (
-            <p className="text-center text-slate-500 py-10 text-sm">{tr("Không có yêu cầu nào", "No pending requests")}</p>
+            <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/70 px-4 py-8 text-center">
+              <span className="material-symbols-outlined mb-2 text-[30px] text-emerald-600">verified</span>
+              <p className="text-sm font-black text-emerald-800">{tr("Không có tài khoản nào đang chờ duyệt", "No accounts are pending")}</p>
+              <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-emerald-700/80">
+                {tr("Khi doanh nghiệp hoặc người dùng gửi hồ sơ mới, yêu cầu sẽ xuất hiện tại đây để admin xử lý.", "When users or enterprises submit a new profile, the request will appear here for review.")}
+              </p>
+            </div>
           ) : (
             <div className="space-y-2">
               {pending.slice(0, 6).map(u => (
@@ -131,7 +142,7 @@ export default function AdminOverview() {
                     {(u.ten || u.email || "?").charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-white text-sm font-bold truncate">{u.ten || u.email.split("@")[0]}</div>
+                    <div className="text-[#0b1623] text-sm font-bold truncate">{u.ten || u.email.split("@")[0]}</div>
                     <div className="text-[11px] text-slate-400 truncate">{u.email}</div>
                   </div>
                   <span className="text-[10px] font-bold text-[#1F6FEB] bg-[#1F6FEB]/10 border border-[#1F6FEB]/30 px-2 py-0.5 rounded-full shrink-0">{tr("Chờ duyệt", "Pending")}</span>
@@ -178,21 +189,6 @@ export default function AdminOverview() {
           )}
         </div>
       </div>
-
-      {/* Quick links theo vai trò */}
-      {users?.stats?.byRole && (
-        <div className="mt-6 rounded-2xl bg-white/[0.04] border border-white/10 p-5">
-          <h2 className="text-lg font-black text-white mb-4">{tr("Người dùng theo vai trò", "Users by role")}</h2>
-          <div className="flex flex-wrap gap-3">
-            {Object.entries(users.stats.byRole).map(([role, count]) => (
-              <div key={role} className="px-4 py-2 rounded-xl bg-white/5 border border-white/10">
-                <span className="text-white font-black text-lg mr-2">{count}</span>
-                <span className="text-xs text-slate-400">{tr(ROLE_LABELS[role]?.vi || role, ROLE_LABELS[role]?.en || role)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
