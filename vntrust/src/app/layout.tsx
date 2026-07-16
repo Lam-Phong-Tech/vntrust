@@ -1,11 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
 import ClientShell from "@/components/ClientShell";
-
-const fontManrope = Manrope({ variable: "--font-headline", subsets: ["latin", "vietnamese"] });
-const fontInter = Inter({ variable: "--font-body", subsets: ["latin", "vietnamese"] });
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -31,7 +27,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const cookieStore = await cookies();
   const userRole = cookieStore.get('userRole')?.value || '';
   return (
-    <html lang="vi" className={`light-mode ${fontManrope.variable} ${fontInter.variable} h-full antialiased`}>
+    <html lang="vi" className="light-mode h-full antialiased">
       <head>
         <script
           dangerouslySetInnerHTML={{
