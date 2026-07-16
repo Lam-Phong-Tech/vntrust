@@ -530,8 +530,6 @@ export default function Dashboard() {
   const [userName, setUserName] = useState<string>("");
   const [modal, setModal] = useState<ModalType>(null);
   const [globeMarker, setGlobeMarker] = useState<MapMarker | null>(null);
-  const [searchVal, setSearchVal] = useState("");
-  const [searchActive, setSearchActive] = useState(false);
   const [ipInfo, setIpInfo] = useState<{ ip: string; city: string; country: string; lat?: number; lon?: number; source?: string } | null>(null);
   const [gpsStatus, setGpsStatus] = useState<'idle'|'loading'|'ok'|'denied'|'unavailable'>('idle');
   // Khung "Vị trí xác thực lần cuối" — default mở (card luôn hiện, đã đặt dưới map nên không đè)
@@ -727,11 +725,6 @@ export default function Dashboard() {
     return () => window.removeEventListener("vntrust_geo_toggle", onToggle);
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchVal.trim()) router.push(`/verify/${searchVal.trim()}`);
-  };
-
   if (!mounted || !userRole) return null;
 
   const roleLabel = userRole === "admin" ? t("role_admin") : (userRole === "manufacturer" || userRole === "importer") ? t("role_mfr") : userRole === "authority" ? "Cơ quan chức năng" : t("role_consumer");
@@ -926,30 +919,6 @@ export default function Dashboard() {
             )}
 
             <div className="flex flex-col gap-6 mt-6 xl:mt-0">
-              {/* Search */}
-              <form onSubmit={handleSearch}
-              className={`glass-panel rounded-full p-2 pl-6 flex items-center justify-between border shadow-lg bg-white/5 transition-all ${searchActive ? "border-[#C8A557]/60" : "border-white/20"}`}>
-              <div className="flex items-center gap-4 flex-1">
-                <div className="w-10 h-10 rounded-full bg-[#C8A557]/20 flex items-center justify-center pulse-ai shrink-0">
-                  <span className="material-symbols-outlined text-[#C8A557]">robot_2</span>
-                </div>
-                {searchActive || searchVal ? (
-                  <input autoFocus value={searchVal} onChange={e => setSearchVal(e.target.value)}
-                    onBlur={() => { if (!searchVal) setSearchActive(false); }}
-                    placeholder={t("search_ph")}
-                    className="bg-transparent outline-none text-white text-sm w-full placeholder:text-slate-400" />
-                ) : (
-                  <div onClick={() => setSearchActive(true)} className="cursor-text flex-1">
-                    <div className="text-white font-bold text-sm tracking-wide">{t("search_title")}</div>
-                    <div className="text-xs text-slate-400">{t("search_sub")}</div>
-                  </div>
-                )}
-              </div>
-              <button type="submit" className="w-12 h-12 rounded-full bg-[#C8A557] hover:bg-[#C8A557] flex items-center justify-center transition shrink-0">
-                <span className="material-symbols-outlined text-white">search</span>
-              </button>
-            </form>
-
             {/* App Grid — phân quyền theo nghiệp vụ */}
             <div className="dashboard-action-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
 
