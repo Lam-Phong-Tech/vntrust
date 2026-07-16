@@ -1228,17 +1228,6 @@ export default function Dashboard() {
                 <span className="text-[9px] font-semibold text-slate-500">({tr("Tóm tắt AI", "AI Summary", "AI摘要")})</span>
               </button>
 
-              <button onClick={async () => {
-                  // Xóa localStorage
-                  localStorage.removeItem("userRole");
-                  localStorage.removeItem("userName");
-                  // Xóa cookie phía server (middleware dùng cookie để protect route)
-                  await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
-                  window.location.href = "/login";
-                }}
-                className="glass-panel min-h-[52px] px-3 py-2 rounded-xl text-[10px] font-bold text-rose-400 hover:bg-rose-500/20 border-rose-500/20 transition flex items-center justify-center gap-1 cursor-pointer active:scale-95">
-                <span className="material-symbols-outlined text-[14px]">logout</span> {tr("Đăng xuất", "Logout", "登出")}
-              </button>
             </div>
 
             {/* Vietnam Map — fixed height, hiện luôn GPS marker user */}
