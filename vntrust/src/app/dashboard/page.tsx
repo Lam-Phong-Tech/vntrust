@@ -1186,19 +1186,6 @@ export default function Dashboard() {
                 <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_hist")}</h3>
               </Link>
 
-                <div className="dashboard-action-card emergency-card glass-card rounded-3xl p-3 sm:p-4 flex flex-col justify-center border border-[#1F6FEB]/20 bg-white/85 min-w-0 overflow-hidden shadow-sm dark:bg-red-900/20 dark:border-red-500/30">
-                  <div className="flex gap-1.5 sm:gap-2 min-w-0">
-                    <a href="tel:113" className="emergency-card__call emergency-card__call--alert flex-1 min-w-0 rounded-xl p-1.5 text-center transition">
-                      <p className="emergency-card__label text-[8px] sm:text-[9px] font-black truncate leading-tight">{lang === 'en' ? 'ALERTS' : 'CẢNH BÁO'}</p>
-                      <p className="emergency-card__number text-sm sm:text-base font-black truncate leading-tight">113</p>
-                    </a>
-                    <a href="tel:1900" className="emergency-card__call emergency-card__call--support flex-1 min-w-0 rounded-xl p-1.5 text-center transition">
-                      <p className="emergency-card__label text-[8px] sm:text-[9px] font-black truncate leading-tight">{lang === 'en' ? 'SUPPORT' : 'HỖ TRỢ'}</p>
-                      <p className="emergency-card__number text-sm sm:text-base font-black truncate leading-tight">1900</p>
-                    </a>
-                  </div>
-                  <h3 className="emergency-card__title text-[11px] sm:text-sm font-black uppercase text-center pt-1.5 sm:pt-2 leading-tight truncate">{t("app_emg")}</h3>
-                </div>
             </div>
 
 

@@ -22,7 +22,6 @@ const dict: Record<string, Record<string, string>> = {
   app_verify_sub: { vi: "Xác thực Nhanh", en: "Quick Verify", zh: "快速验证", ja: "クイック認証", ko: "빠른 인증", fr: "Vérification rapide" },
   app_hk: { vi: "Hậu kiểm & Thu hồi", en: "Post-Audit & Recall", zh: "事后审计和召回", ja: "事後監査と回収", ko: "사후 감사 및 회수", fr: "Audit & Rappel" },
   app_hist: { vi: "Nhật ký Hệ thống", en: "System History", zh: "系统历史", ja: "システム履歴", ko: "시스템 기록", fr: "Historique système" },
-  app_emg: { vi: "Trung tâm Sự cố", en: "Incident Center", zh: "事故中心", ja: "インシデントセンター", ko: "사고 센터", fr: "Centre d'incidents" },
   // ── Dashboard Cards (Admin/Role specific) ──
   app_kyc: { vi: "Phê duyệt hồ sơ", en: "Profile Approval", zh: "档案审批", ja: "プロフィール承認", ko: "프로필 승인", fr: "Approbation de dossier" },
   app_kyc_sub: { vi: "Kiểm duyệt đăng ký", en: "Review registrations", zh: "审核注册", ja: "登録審査", ko: "등록 검토", fr: "Vérifier les inscriptions" },
