@@ -1,5 +1,5 @@
 "use client";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ChatProvider } from "@/contexts/ChatContext";
@@ -10,7 +10,7 @@ import { GeolocationPrompt } from "@/hooks/useGeolocation";
 // Quy tắc layout (revision sau feedback):
 // TẤT CẢ role + anonymous → full responsive (Navbar desktop ≥lg, MobileTop+Bottom <lg)
 // Trang web tự fit cả desktop và mobile. KHÔNG có mobile-frame 430px nữa.
-function isMobileFrameRole(_role: string | null | undefined): boolean {
+function isMobileFrameRole(): boolean {
   return false; // disable mobile-frame globally — đáp ứng yêu cầu consumer cũng fit laptop
 }
 
@@ -78,27 +78,26 @@ function useSessionGuard(isDashboard: boolean, pathname: string) {
 }
 
 // ── ClientShell ───────────────────────────────────────────────────────────────
-export default function ClientShell({ children, initialRole = "" }: { children: React.ReactNode; initialRole?: string }) {
+export default function ClientShell({ children }: { children: React.ReactNode; initialRole?: string }) {
   const pathname = usePathname();
 
   const isVerifySubpath     = pathname.startsWith("/verify/") && pathname !== "/verify";
+  const isVerifyToolPage    = /^\/verify\/(manual|wizard|history|rewards|profile|scan|camera|ai-doc)(?:\/|$)/.test(pathname);
+  const isVerifyResultPage  = isVerifySubpath && !isVerifyToolPage;
   // Khu /admin có shell riêng (sidebar + topbar) → ẩn nav toàn cục để tránh trùng
   const isAdminArea         = pathname === "/admin" || pathname.startsWith("/admin/");
   // Hide top bar trên login/forgot VÀ trên trang kết quả xác thực /verify/[uid]
   // (vì trang này có header riêng + thanh ngoài làm trùng lặp)
-  const hideDesktopNav      = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifySubpath || isAdminArea;
-  const hideMobileBottomNav = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifySubpath || isAdminArea;
+  const hideDesktopNav      = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifyResultPage || isAdminArea;
+  const hideMobileBottomNav = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifyResultPage || isAdminArea;
 
   // Layout mode: mobile-frame chỉ cho consumer + anonymous; role khác → responsive
   // SSR khởi tạo từ cookie (initialRole), CSR có thể re-check on role change
-  const [mobileFrameMode, setMobileFrameMode] = useState(() => isMobileFrameRole(initialRole));
+  const [mobileFrameMode, setMobileFrameMode] = useState(() => isMobileFrameRole());
 
   useEffect(() => {
     // Re-check role on path change (user vừa login/logout)
-    const cookieRole = document.cookie.match(/(?:^|;\s*)userRole=([^;]+)/)?.[1] || "";
-    const lsRole = (typeof window !== "undefined" ? localStorage.getItem("userRole") : "") || "";
-    const role = cookieRole || lsRole;
-    setMobileFrameMode(isMobileFrameRole(role));
+    setMobileFrameMode(isMobileFrameRole());
   }, [pathname]);
 
   // Only activate session guard on protected routes
