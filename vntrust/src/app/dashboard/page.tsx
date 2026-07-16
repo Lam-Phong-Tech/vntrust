@@ -349,7 +349,7 @@ function AiChatModal({ msgs, addMsg, onClose }: {
 // ─── Other Modals ─────────────────────────────────────────────────────────────
 function ExportReportModal({ onClose }: { onClose: () => void }) {
   type ReportPeriod = "week" | "month" | "quarter";
-  type ExportState = "idle" | "loading" | "done";
+  type ExportState = "idle" | "loading" | "done" | "error";
 
   const [period, setPeriod] = useState<ReportPeriod>("month");
   const [stateByPeriod, setStateByPeriod] = useState<Record<ReportPeriod, ExportState>>({
@@ -366,59 +366,27 @@ function ExportReportModal({ onClose }: { onClose: () => void }) {
     const currentPeriod = period;
     setPeriodState("loading", currentPeriod);
     try {
-      const [ovRes, scanRes] = await Promise.all([
-        fetch(`/api/analytics?type=overview&period=${currentPeriod}`),
-        fetch(`/api/analytics?type=scan_stats&period=${currentPeriod}`),
-      ]);
-      const [ov, sc] = await Promise.all([ovRes.json(), scanRes.json()]);
-      const now = new Date().toLocaleDateString("vi-VN");
-      const periodLabel = currentPeriod === "week" ? "7 ngày" : currentPeriod === "month" ? "30 ngày" : "3 tháng";
-      const genuine = ov.totalScans - ov.totalFake;
-      const integrity = ov.totalScans > 0 ? (100 - parseFloat(ov.fakeRate)).toFixed(1) : "100.0";
-
-      const rows = [
-        `BÁO CÁO AI VERIGOODS - AI SUMMARY`,
-        `Ngày xuất: ${now} · Kỳ báo cáo: ${periodLabel}`,
-        ``,
-        `Chỉ số,Giá trị`,
-        `Tổng lượt quét,${ov.totalScans.toLocaleString()}`,
-        `Chính hãng,${genuine.toLocaleString()}`,
-        `Nghi ngờ/Giả,${ov.totalFake.toLocaleString()}`,
-        `Tỷ lệ hàng giả,${ov.fakeRate}%`,
-        `Cảnh báo mở,${ov.openAlerts}`,
-        `Toàn vẹn chuỗi,${integrity}%`,
-        `Tổng sản phẩm,${ov.totalProducts}`,
-        `Tổng lô hàng,${ov.totalBatches}`,
-        `Tổng tem QR,${ov.totalQR.toLocaleString()}`,
-        `Lô sắp hết hạn (30 ngày),${ov.expiringSoon}`,
-        ``,
-        `Top sản phẩm được quét nhiều nhất,Lượt quét`,
-        ...(sc.topProducts || []).slice(0, 10).map((p: any) =>
-          `"${p.loHang?.sanPham?.ten ?? "N/A"} (${p.loHang?.sanPham?.maSKU ?? "-"})",${p.soLanQuet}`
-        ),
-        ``,
-        `Xu hướng quét 7 ngày,Số lượt`,
-        ...(sc.scanTrend || []).map((d: any) => `${d.date},${d.count}`),
-      ];
-
-      const csv = rows.join("\n");
-      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+      const res = await fetch(`/api/export-report?period=${currentPeriod}`, { cache: "no-store" });
+      if (!res.ok) throw new Error("export_failed");
+      const blob = await res.blob();
+      const disposition = res.headers.get("content-disposition") || "";
+      const filenameMatch = disposition.match(/filename="?([^"]+)"?/i);
       const a = Object.assign(document.createElement("a"), {
         href: URL.createObjectURL(blob),
-        download: `AIVeriGoods_BaoCao_${periodLabel.replace(/ /g, "_")}_${now.replace(/\//g, "-")}.csv`,
+        download: filenameMatch?.[1] || `AIVeriGoods_Report_${currentPeriod}.csv`,
       });
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(a.href);
       setPeriodState("done", currentPeriod);
     } catch {
-      setPeriodState("idle", currentPeriod);
+      setPeriodState("error", currentPeriod);
     }
   };
 
   return (
     <ModalWrapper onClose={onClose} title="Xuất Báo cáo AI" icon="summarize" iconColor="bg-[#C8A557]" panelClass="dashboard-report-modal">
       <div className="dashboard-report-content space-y-2.5 sm:space-y-3 mb-4 min-w-0 overflow-y-auto pr-1">
-        {["Tóm tắt hoạt động theo kỳ", "Thống kê lượt quét thực tế", "Top sản phẩm được quét", "Xu hướng 7 ngày"].map(i => (
+        {["Tóm tắt hoạt động theo kỳ", "Nhật ký hệ thống trong kỳ", "Cảnh báo / báo cáo thực tế", "Top mã được quét"].map(i => (
           <div key={i} className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 bg-white/5 rounded-xl border border-white/10 min-w-0">
             <span className="material-symbols-outlined text-[#6FB585] text-[18px]">check_circle</span>
             <span className="text-xs sm:text-sm text-slate-200 min-w-0 leading-snug">{i}</span>
@@ -440,6 +408,12 @@ function ExportReportModal({ onClose }: { onClose: () => void }) {
           <span className="material-symbols-outlined text-3xl sm:text-4xl text-[#6FB585]">task_alt</span>
           <p className="text-[#6FB585] font-bold mt-1">File CSV đã được tải về máy!</p>
           <button onClick={doExport} className="mt-2 text-xs text-[#C8A557] underline">Tải lại</button>
+        </div>
+      ) : state === "error" ? (
+        <div className="text-center p-3 sm:p-4 bg-red-500/15 border border-red-500/30 rounded-2xl">
+          <span className="material-symbols-outlined text-3xl sm:text-4xl text-red-300">error</span>
+          <p className="text-red-200 font-bold mt-1">Không thể tạo báo cáo. Vui lòng thử lại.</p>
+          <button onClick={doExport} className="mt-2 text-xs text-[#C8A557] underline">Thử lại</button>
         </div>
       ) : (
         <button onClick={doExport} disabled={state === "loading"}
