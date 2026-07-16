@@ -1039,10 +1039,11 @@ export default function Dashboard() {
               )}
 
               {(userRole === 'admin' || userRole === 'consumer' || userRole === 'importer' || userRole === 'manufacturer') && (
-                <Link href="/verify" className="glass-card rounded-3xl p-5 flex flex-col h-40 group border border-[#1F6FEB]/30 bg-[#1F6FEB]/10">
+                <Link href="/verify" className="dashboard-function-card dashboard-function-card--verify glass-card rounded-3xl p-5 flex flex-col h-40 group border border-[#1F6FEB]/30 bg-[#1F6FEB]/10 relative overflow-hidden">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">qr_code_scanner</span></span>
                   <div className="flex justify-between items-start mb-2">
                     <span className="text-[11px] font-bold text-[#1F6FEB]">{t("app_verify_sub")}</span>
-                    <div className="bg-gradient-to-b from-[#60A5FA] to-[#1F6FEB] rounded p-1 shadow-lg shadow-blue-500/30"><span className="material-symbols-outlined text-white text-md">star</span></div>
+                    <span className="material-symbols-outlined text-[#1F6FEB] text-2xl">star</span>
                   </div>
                   <div className="flex gap-[6px]">
                     <div title="QR" className="dashboard-mini-icon"><span className="material-symbols-outlined text-white text-[20px]">qr_code_scanner</span></div>
@@ -1056,7 +1057,8 @@ export default function Dashboard() {
 
               {/* ── Báo cáo hàng giả bằng Wizard: Consumer + Admin ── */}
               {(userRole === 'admin' || userRole === 'consumer') && (
-                <Link href="/verify/wizard" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-red-500/20">
+                <Link href="/verify/wizard" className="dashboard-function-card dashboard-function-card--report glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-red-500/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">report</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-red-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--red material-symbols-outlined text-3xl text-red-400">report</span>
@@ -1068,7 +1070,8 @@ export default function Dashboard() {
 
               {/* ── Lịch sử cá nhân: Consumer + Admin ── */}
               {(userRole === 'admin' || userRole === 'consumer') && (
-                <Link href="/verify/history" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-cyan-500/20">
+                <Link href="/verify/history" className="dashboard-function-card dashboard-function-card--history glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-cyan-500/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">history</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--cyan material-symbols-outlined text-3xl text-cyan-400">history</span>
@@ -1080,7 +1083,8 @@ export default function Dashboard() {
 
               {/* ── Điểm thưởng AI VeriGoods: Consumer + Admin ── */}
               {(userRole === 'admin' || userRole === 'consumer') && (
-                <Link href="/verify/rewards" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
+                <Link href="/verify/rewards" className="dashboard-function-card dashboard-function-card--rewards glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">redeem</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--green material-symbols-outlined text-3xl text-emerald-400">redeem</span>
@@ -1124,7 +1128,8 @@ export default function Dashboard() {
               )}
 
               {/* ── Nhật ký: Tất cả ── */}
-              <Link href="/dashboard/history" className="dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group">
+              <Link href="/dashboard/history" className="dashboard-function-card dashboard-function-card--system dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group relative overflow-hidden">
+                <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">monitoring</span></span>
                 <span className="dashboard-feature-icon dashboard-feature-icon--slate material-symbols-outlined text-4xl text-slate-300">monitoring</span>
                 <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_hist")}</h3>
               </Link>
