@@ -62,7 +62,7 @@ export default function AdminUsersPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [acting, setActing] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: "ok" | "err" } | null>(null);
-  const [actionTarget, setActionTarget] = useState<User | null>(null);
+  const [actionTarget, setActionTarget] = useState<string | null>(null);
   const [confirmDel, setConfirmDel] = useState<User | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -368,16 +368,48 @@ export default function AdminUsersPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2 justify-end">
+                    <div className="relative flex items-center gap-2 justify-end">
                       <button
-                        onClick={() => setActionTarget(u)}
+                        type="button"
+                        onClick={() => setActionTarget((current) => current === u.id ? null : u.id)}
                         disabled={isAct}
-                        className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-[#1F6FEB]/30 bg-[#1F6FEB]/10 px-3 py-2 text-xs font-black text-blue-200 transition hover:bg-[#1F6FEB]/20 disabled:opacity-50"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#1F6FEB]/30 bg-[#1F6FEB]/10 text-[0px] text-blue-200 transition hover:bg-[#1F6FEB]/20 disabled:opacity-50"
                         title={tr("Mở menu thao tác", "Open actions")}
                       >
-                        <span className="material-symbols-outlined text-[16px]">more_horiz</span>
+                        <span className="material-symbols-outlined text-[20px]">more_horiz</span>
                         {tr("Thao tác", "Actions")}
                       </button>
+                      {actionTarget === u.id && (
+                        <>
+                          <button
+                            type="button"
+                            className="fixed inset-0 z-40 cursor-default"
+                            aria-label={tr("Dong menu thao tac", "Close actions")}
+                            onClick={() => setActionTarget(null)}
+                          />
+                          <div className="absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-xl border border-[#bfdbfe] bg-white text-[#0b1623] shadow-2xl">
+                            <button
+                              type="button"
+                              onClick={() => toggleSuspend(u)}
+                              disabled={isAct}
+                              className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-black text-[#0b1623] hover:bg-[#eff6ff] disabled:cursor-not-allowed disabled:text-slate-400"
+                            >
+                              <span className="material-symbols-outlined text-[17px]">{u.trangThai === "active" ? "lock" : "lock_open"}</span>
+                              {u.trangThai === "active" ? tr("Khoa tai khoan", "Lock account") : tr("Mo khoa tai khoan", "Unlock account")}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => { setActionTarget(null); setConfirmDel(u); }}
+                              disabled={isAct || isLastAdmin}
+                              className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2.5 text-left text-xs font-black text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:text-slate-400"
+                              title={isLastAdmin ? tr("Khong the xoa quan tri cuoi cung", "Cannot delete the last admin") : undefined}
+                            >
+                              <span className="material-symbols-outlined text-[17px]">delete</span>
+                              {tr("Xoa tai khoan", "Delete account")}
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -394,6 +426,7 @@ export default function AdminUsersPage() {
           const role = ROLE_META[u.vaiTro] || ROLE_META.consumer;
           const status = STATUS_META[u.trangThai] || STATUS_META.active;
           const isAct = acting === u.id;
+          const isLastAdmin = isLastAdminUser(u);
           return (
             <div key={u.id} className="rounded-2xl bg-white/5 border border-white/10 p-4">
               <div className="flex items-start gap-3 mb-3">
@@ -421,14 +454,47 @@ export default function AdminUsersPage() {
                   </span>
                 )}
               </div>
-              <div className="flex gap-2">
+              <div className="relative flex justify-end">
                 <button
-                  onClick={() => setActionTarget(u)}
+                  type="button"
+                  onClick={() => setActionTarget((current) => current === u.id ? null : u.id)}
                   disabled={isAct}
-                  className="flex-1 rounded-xl border border-[#1F6FEB]/30 bg-[#1F6FEB]/10 py-2 text-xs font-black text-blue-200 disabled:opacity-50"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#1F6FEB]/30 bg-[#1F6FEB]/10 text-[0px] text-blue-200 disabled:opacity-50"
                 >
                   {tr("Thao tác", "Actions")}
+                  <span className="material-symbols-outlined text-[20px]">more_horiz</span>
                 </button>
+                {actionTarget === u.id && (
+                  <>
+                    <button
+                      type="button"
+                      className="fixed inset-0 z-40 cursor-default"
+                      aria-label={tr("Dong menu thao tac", "Close actions")}
+                      onClick={() => setActionTarget(null)}
+                    />
+                    <div className="absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-xl border border-[#bfdbfe] bg-white text-[#0b1623] shadow-2xl">
+                      <button
+                        type="button"
+                        onClick={() => toggleSuspend(u)}
+                        disabled={isAct}
+                        className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-black text-[#0b1623] hover:bg-[#eff6ff] disabled:cursor-not-allowed disabled:text-slate-400"
+                      >
+                        <span className="material-symbols-outlined text-[17px]">{u.trangThai === "active" ? "lock" : "lock_open"}</span>
+                        {u.trangThai === "active" ? tr("Khoa tai khoan", "Lock account") : tr("Mo khoa tai khoan", "Unlock account")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setActionTarget(null); setConfirmDel(u); }}
+                        disabled={isAct || isLastAdmin}
+                        className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2.5 text-left text-xs font-black text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:text-slate-400"
+                        title={isLastAdmin ? tr("Khong the xoa quan tri cuoi cung", "Cannot delete the last admin") : undefined}
+                      >
+                        <span className="material-symbols-outlined text-[17px]">delete</span>
+                        {tr("Xoa tai khoan", "Delete account")}
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           );
@@ -578,8 +644,8 @@ export default function AdminUsersPage() {
       )}
 
       {/* Account actions modal */}
-      {actionTarget && (() => {
-        const target = actionTarget;
+      {false && actionTarget && (() => {
+        const target = actionTarget as unknown as User;
         const isActing = acting === target.id;
         const isLastAdmin = isLastAdminUser(target);
         const nextLockText = target.trangThai === "active" ? tr("Khóa tài khoản", "Lock account") : tr("Mở khóa tài khoản", "Unlock account");
