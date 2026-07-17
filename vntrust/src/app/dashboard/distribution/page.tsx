@@ -131,7 +131,7 @@ export default function DistributionPage() {
     try {
       const res = await fetch(`/api/inventory/${deleteBatch.id}`, { method: "DELETE" });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Lỗi xóa lô hàng");
+      if (!res.ok) throw new Error(json.error || "Lỗi xóa mục hàng");
       showToast(`✓ ${json.message}`, true);
       setDeleteBatch(null);
       fetchData();
@@ -194,7 +194,7 @@ export default function DistributionPage() {
     const data = await res.json();
     if (!res.ok) { showToast("✗ " + data.error, false); }
     else {
-      showToast(`✓ Đã cập nhật lô ${actionBatch.maLo}`, true);
+      showToast(`✓ Đã cập nhật mục ${actionBatch.maLo}`, true);
       setActionBatch(null);
       fetchData();
     }
@@ -221,7 +221,7 @@ export default function DistributionPage() {
       return;
     }
     if (!imageUrl) {
-      showToast("✗ Vui lòng tải ảnh lô hàng", false);
+      showToast("✗ Vui lòng tải ảnh mục hàng", false);
       return;
     }
 
@@ -267,7 +267,7 @@ export default function DistributionPage() {
         reject: "✗ Đã từ chối đơn hàng",
         reject_distributor: "✗ Đã từ chối tiếp nhận — Admin & NSX đã được thông báo",
         confirm_shipment: "✓ Đã nhận đơn — chuẩn bị vận chuyển",
-        confirm_receipt: "✓ Đã tiếp nhận lô hàng",
+        confirm_receipt: "✓ Đã tiếp nhận mục hàng",
         delivered: "✓ Đã xác nhận giao hàng thành công",
       };
       showToast(labels[action] || "✓ Thành công", action !== "reject" && action !== "reject_distributor");
@@ -363,7 +363,7 @@ export default function DistributionPage() {
           type="text"
           value={searchDist}
           onChange={e => setSearchDist(e.target.value)}
-          placeholder={tr("Tìm đơn chuyển hàng...", "Search shipping orders...")}
+          placeholder={tr("Tìm đơn chuyển hàng, mã mục, tên sản phẩm...", "Search shipping orders, item code, product...")}
           className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-12 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C8A557] transition"
         />
         {searchDist && (
@@ -493,7 +493,7 @@ export default function DistributionPage() {
         <div className="mt-10">
           <h2 className="text-lg font-black text-white mb-4 flex items-center gap-2">
             <span className="material-symbols-outlined text-[#C8A557]">swap_horiz</span>
-            {userRole === "manufacturer" ? "Đơn chuyển hàng (gửi & nhận)" : userRole === "importer" ? "Lô hàng được chuyển đến" : "Tất cả đơn chuyển hàng"}
+            {userRole === "manufacturer" ? "Đơn chuyển hàng (gửi & nhận)" : userRole === "importer" ? "Mục hàng được chuyển đến" : "Tất cả đơn chuyển hàng"}
           </h2>
           <div className="flex flex-col gap-4">
             {orders.length === 0 ? (
@@ -568,10 +568,10 @@ export default function DistributionPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setActionBatch(null)}>
           <div className="bg-[#0B1623] border border-white/10 rounded-3xl p-7 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-white mb-1">
-              {newStatus === "distributed" ? "Xuất kho lô hàng" : newStatus === "active" ? "Kích hoạt lại" : "Khóa lô hàng"}
+              {newStatus === "distributed" ? "Xuất kho mục hàng" : newStatus === "active" ? "Kích hoạt lại" : "Khóa mục hàng"}
             </h3>
             <p className="text-sm text-slate-400 mb-5">
-              Lô: <span className="font-mono font-bold text-cyan-300">{actionBatch.maLo}</span> — {actionBatch.sanPham.ten}
+              Mục: <span className="font-mono font-bold text-cyan-300">{actionBatch.maLo}</span> — {actionBatch.sanPham.ten}
             </p>
             {newStatus === "distributed" && (
               <div className="mb-5">
@@ -611,7 +611,7 @@ export default function DistributionPage() {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white">Chuyển đơn & Xuất kho</h3>
-                <p className="text-xs text-slate-400">Lô: <span className="font-mono text-cyan-300">{transferBatch.maLo}</span> — {transferBatch.sanPham.ten} ({transferBatch._count.uids.toLocaleString()} tem)</p>
+                <p className="text-xs text-slate-400">Mục: <span className="font-mono text-cyan-300">{transferBatch.maLo}</span> — {transferBatch.sanPham.ten} ({transferBatch._count.uids.toLocaleString()} tem)</p>
               </div>
             </div>
             <div className="glass-panel border border-[#C8A557]/20 rounded-xl p-3 flex gap-2 mb-4">
@@ -661,7 +661,7 @@ export default function DistributionPage() {
               </div>
               {/* Image upload */}
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Ảnh lô hàng <span className="text-red-400">*</span></label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Ảnh mục hàng <span className="text-red-400">*</span></label>
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
                   onChange={e => { const f = e.target.files?.[0]; if (f) handleImageUpload(f); }}
                 />
@@ -675,7 +675,7 @@ export default function DistributionPage() {
                   <button onClick={() => fileInputRef.current?.click()} disabled={uploadingImg}
                     className="w-full border-2 border-dashed border-white/20 rounded-xl py-6 flex flex-col items-center gap-2 text-slate-400 hover:border-[#C8A557]/40 hover:text-cyan-300 transition disabled:opacity-50">
                     {uploadingImg ? <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-[#C8A557]" /> : <span className="material-symbols-outlined text-3xl">upload</span>}
-                    <span className="text-xs">{uploadingImg ? "Đang tải..." : "Nhấn để chọn ảnh lô hàng"}</span>
+                    <span className="text-xs">{uploadingImg ? "Đang tải..." : "Nhấn để chọn ảnh mục hàng"}</span>
                   </button>
                 )}
               </div>
@@ -692,7 +692,7 @@ export default function DistributionPage() {
         </div>
       )}
 
-      {/* ── Modal: Xác nhận xóa lô hàng ── */}
+      {/* ── Modal: Xác nhận xóa mục hàng ── */}
       {deleteBatch && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setDeleteBatch(null)}>
           <div className="bg-[#142235] border border-red-500/30 rounded-3xl shadow-2xl w-full max-w-sm p-8" onClick={e => e.stopPropagation()}>
@@ -700,9 +700,9 @@ export default function DistributionPage() {
               <div className="w-16 h-16 rounded-full bg-red-500/15 flex items-center justify-center mb-4">
                 <span className="material-symbols-outlined text-red-400 text-3xl">warning</span>
               </div>
-              <h2 className="text-xl font-bold text-white">{tr("Xác nhận xóa lô hàng", "Confirm batch deletion")}</h2>
+              <h2 className="text-xl font-bold text-white">{tr("Xác nhận xóa mục hàng", "Confirm item deletion")}</h2>
               <p className="text-slate-400 text-sm mt-2">
-                Lô <span className="font-mono font-bold text-white">{deleteBatch.maLo}</span> và
+                Mục <span className="font-mono font-bold text-white">{deleteBatch.maLo}</span> và
                 toàn bộ <span className="text-red-400 font-bold">{deleteBatch._count.uids.toLocaleString()} tem QR</span> sẽ bị xóa vĩnh viễn.
               </p>
               <p className="text-xs text-red-400 mt-2 font-bold">Hành động này không thể hoàn tác!</p>
@@ -794,7 +794,7 @@ export default function DistributionPage() {
               )}
             </div>
 
-            {/* Ảnh lô hàng */}
+            {/* Ảnh mục hàng */}
             {viewOrder.hinhAnhUrls && (() => { try { const u = JSON.parse(viewOrder.hinhAnhUrls!); return u[0] ? <img src={u[0]} alt="lot" className="w-full h-40 object-cover rounded-xl mb-4 border border-white/10" /> : null; } catch { return null; } })()}
 
             {/* Hướng dẫn luồng xử lý */}
@@ -918,7 +918,7 @@ export default function DistributionPage() {
                 </h3>
                 <p className="text-xs text-slate-400">
                   {rejectTarget.action === 'reject'
-                    ? 'Lô hàng sẽ được trả về trạng thái Active, NSX được thông báo.'
+                    ? 'Mục hàng sẽ được trả về trạng thái Active, NSX được thông báo.'
                     : 'Admin và NSX sẽ được thông báo để chọn NPP khác.'}
                 </p>
               </div>
@@ -932,7 +932,7 @@ export default function DistributionPage() {
                 onChange={e => setRejectReason(e.target.value)}
                 rows={4}
                 placeholder={rejectTarget.action === 'reject'
-                  ? 'VD: Lô hàng không đủ chứng từ, sai thông tin...'
+                  ? 'VD: Mục hàng không đủ chứng từ, sai thông tin...'
                   : 'VD: Hiện tại xe không đủ, khu vực quá xa, đang có việc phát sinh...'}
                 className="w-full bg-white/5 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-red-400 resize-none"
               />
