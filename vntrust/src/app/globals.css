@@ -588,6 +588,10 @@ html.light-mode .feature-card-visual__icon {
   opacity: 0.17;
 }
 
+body.enterprise-manage-route .floating-ai-button {
+  bottom: 7rem;
+}
+
 .map-layer-panel {
   min-width: 280px;
   max-height: calc(100% - 24px);

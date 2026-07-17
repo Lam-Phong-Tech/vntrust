@@ -150,7 +150,7 @@ export default function ClientShell({ children, initialRole = "" }: { children: 
                 <button
                   type="button"
                   onClick={() => setAiOpen(true)}
-                  className="fixed right-4 lg:right-6 bottom-[calc(92px+env(safe-area-inset-bottom,0px))] lg:bottom-6 z-[70] h-[52px] w-[52px] lg:h-14 lg:w-14 rounded-full bg-gradient-to-br from-[#2f7df4] to-[#C8A557] text-white shadow-[0_14px_40px_rgba(47,125,244,0.35)] border border-white/30 flex items-center justify-center transition hover:scale-105 active:scale-95"
+                  className="floating-ai-button fixed right-4 lg:right-6 bottom-[calc(92px+env(safe-area-inset-bottom,0px))] lg:bottom-6 z-[70] h-[52px] w-[52px] lg:h-14 lg:w-14 rounded-full bg-gradient-to-br from-[#2f7df4] to-[#C8A557] text-white shadow-[0_14px_40px_rgba(47,125,244,0.35)] border border-white/30 flex items-center justify-center transition hover:scale-105 active:scale-95"
                   aria-label="Ask AI"
                   title="Ask AI"
                 >

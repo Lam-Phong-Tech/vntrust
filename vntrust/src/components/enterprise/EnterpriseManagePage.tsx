@@ -66,6 +66,13 @@ type ModuleItem = {
 
 const fmt = new Intl.NumberFormat("vi-VN");
 
+const twoLineClamp = {
+  display: "-webkit-box",
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: "vertical" as const,
+  overflow: "hidden",
+};
+
 const profileFieldLabels: Array<{ key: keyof ManageData["company"]; label: string }> = [
   { key: "ten", label: "Tên công ty / doanh nghiệp" },
   { key: "maSoThue", label: "Mã số thuế" },
@@ -175,7 +182,7 @@ function StatCard({ icon, label, value, tag, tone = "blue", href }: { icon: stri
 
 function AdminPanel({ title, icon, action, children }: { title: string; icon: string; action?: ReactNode; children: ReactNode }) {
   return (
-    <section className="rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
+    <section className="h-fit rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="flex min-w-0 items-center gap-2 text-base font-black text-slate-950">
           <span className="material-symbols-outlined text-[21px] text-[#1F6FEB]">{icon}</span>
@@ -190,13 +197,13 @@ function AdminPanel({ title, icon, action, children }: { title: string; icon: st
 
 function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { title: string; meta?: string; right?: ReactNode; href?: string; icon?: string }) {
   const row = (
-    <div className="flex items-center gap-3 border-b border-[#e6f0fb] px-1 py-3 last:border-b-0">
+    <div className="flex items-start gap-3 border-b border-[#e6f0fb] px-1 py-3 last:border-b-0">
       <span className="material-symbols-outlined shrink-0 text-[19px] text-[#1F6FEB]">{icon}</span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-black text-slate-950">{title}</p>
-        {meta && <p className="mt-0.5 truncate text-xs font-medium text-[#477399]">{meta}</p>}
+        <p className="text-sm font-black leading-snug text-slate-950" style={twoLineClamp}>{title}</p>
+        {meta && <p className="mt-0.5 text-xs font-medium leading-5 text-[#477399]" style={twoLineClamp}>{meta}</p>}
       </div>
-      {right && <div className="shrink-0">{right}</div>}
+      {right && <div className="ml-2 shrink-0 pt-1">{right}</div>}
     </div>
   );
   return href ? <Link href={href} className="block hover:bg-[#f3f8ff]">{row}</Link> : row;
@@ -204,7 +211,7 @@ function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { 
 
 function OperationNav({ items }: { items: ModuleItem[] }) {
   return (
-    <aside className="lg:sticky lg:top-0 lg:h-screen lg:self-start">
+    <aside className="lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:self-start">
       <div className="flex h-full overflow-hidden border border-[#b9d7ff] bg-[#1F6FEB] shadow-md lg:w-[300px] lg:flex-col lg:rounded-none lg:border-y-0 lg:border-l-0">
         <div className="min-w-[300px] border-r border-white/15 px-4 py-4 text-white lg:min-w-0 lg:border-b lg:border-r-0">
           <Link href="/enterprise/manage" className="mb-5 flex items-center gap-3">
@@ -222,22 +229,22 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
             <p className="mt-2 text-[11px] font-semibold leading-5 text-white/75">Điều hướng nghiệp vụ doanh nghiệp, tách riêng khỏi dashboard.</p>
           </div>
         </div>
-        <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:flex-col lg:overflow-y-auto">
+        <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:flex-col lg:overflow-y-auto lg:pb-5">
           {items.map(item => (
             <Link
               key={item.href}
               href={item.href}
-              className="feature-visual-card feature-visual-card--cyan group flex min-w-[225px] items-center gap-3 rounded-2xl border border-white/10 px-3 py-3 text-left text-white transition hover:border-white/40 hover:bg-white/10 lg:min-w-0"
+              className="feature-visual-card feature-visual-card--cyan group flex min-h-[72px] min-w-[235px] items-center gap-3 rounded-2xl border border-white/10 px-3 py-3 text-left text-white transition hover:border-white/40 hover:bg-white/10 lg:min-w-0"
             >
               <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">{item.icon}</span></span>
               <span className="material-symbols-outlined flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/25 bg-white text-[22px] text-[#1F6FEB] shadow-sm">
                 {item.icon}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-black">{item.title}</span>
-                <span className="mt-0.5 block truncate text-[11px] font-semibold text-white/75">{item.action}</span>
+                <span className="block text-sm font-black leading-snug" style={twoLineClamp}>{item.title}</span>
+                <span className="mt-1 block text-[11px] font-semibold leading-snug text-white/75" style={twoLineClamp}>{item.action}</span>
               </span>
-              <span className="material-symbols-outlined text-[18px] text-white/85 transition group-hover:translate-x-0.5">chevron_right</span>
+              <span className="material-symbols-outlined shrink-0 text-[18px] text-white/85 transition group-hover:translate-x-0.5">chevron_right</span>
             </Link>
           ))}
         </nav>
@@ -253,6 +260,11 @@ export default function EnterpriseManagePage() {
   const [data, setData] = useState<ManageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    document.body.classList.add("enterprise-manage-route");
+    return () => document.body.classList.remove("enterprise-manage-route");
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -375,15 +387,15 @@ export default function EnterpriseManagePage() {
   const distributedBatches = data.statusBreakdown.batches.distributed || 0;
 
   return (
-    <main className="min-h-screen bg-[#eef5fb] text-slate-950">
-      <div className="lg:grid lg:min-h-screen lg:grid-cols-[300px_minmax(0,1fr)]">
+    <main className="min-h-screen bg-[#eef5fb] pb-24 text-slate-950 lg:pb-28">
+      <div className="lg:grid lg:min-h-[calc(100vh-5rem)] lg:grid-cols-[300px_minmax(0,1fr)]">
         <OperationNav items={modules} />
 
-        <div className="min-w-0 p-4 sm:p-6 lg:p-8">
-        <header className="mb-6 flex flex-col gap-4 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:flex-row lg:items-end lg:justify-between">
-          <div className="min-w-0">
+        <div className="min-w-0 p-4 sm:p-6 lg:p-6 xl:p-8">
+        <header className="mb-6 grid gap-4 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:grid-cols-[minmax(0,1fr)_420px] lg:items-stretch">
+          <div className="flex min-w-0 flex-col justify-center">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-[#1F6FEB]">Enterprise Console</p>
-            <h1 className="mt-1 text-2xl font-black text-slate-950 sm:text-4xl">{data.company.ten}</h1>
+            <h1 className="mt-1 max-w-4xl text-2xl font-black leading-tight text-slate-950 sm:text-4xl" style={twoLineClamp}>{data.company.ten}</h1>
             <p className="mt-1 text-sm font-medium text-[#477399]">
               {data.company.thuongHieu || tr("Hồ sơ doanh nghiệp", "Enterprise profile")}
             </p>
@@ -395,9 +407,23 @@ export default function EnterpriseManagePage() {
                 {role.label}
               </StatusPill>
             </div>
+            <div className="mt-4 grid gap-2 text-xs font-semibold text-[#477399] sm:grid-cols-3">
+              <div className="rounded-xl border border-[#dbeafe] bg-[#f8fbff] px-3 py-2">
+                <span className="block text-[10px] font-black uppercase text-[#1F6FEB]">Email</span>
+                <span className="block break-words">{data.company.email || "Chưa có"}</span>
+              </div>
+              <div className="rounded-xl border border-[#dbeafe] bg-[#f8fbff] px-3 py-2">
+                <span className="block text-[10px] font-black uppercase text-[#1F6FEB]">Hotline</span>
+                <span className="block break-words">{data.company.hotline || "Chưa có"}</span>
+              </div>
+              <div className="rounded-xl border border-[#dbeafe] bg-[#f8fbff] px-3 py-2">
+                <span className="block text-[10px] font-black uppercase text-[#1F6FEB]">Website</span>
+                <span className="block break-words">{data.company.website || "Chưa có"}</span>
+              </div>
+            </div>
           </div>
 
-          <div className="w-full rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm lg:w-[360px]">
+          <div className="w-full self-start rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="text-xs font-black uppercase text-[#477399]">Hoàn thiện hồ sơ</span>
               <span className="text-xl font-black text-[#1F6FEB]">{data.profileCompletion.percent}%</span>
@@ -446,7 +472,7 @@ export default function EnterpriseManagePage() {
           </section>
         )}
 
-            <div className="grid gap-5 xl:grid-cols-2">
+            <div className="grid items-start gap-5 xl:grid-cols-2">
           <AdminPanel
             title="Sản phẩm gần đây"
             icon="inventory_2"
