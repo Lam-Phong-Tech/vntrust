@@ -68,17 +68,17 @@ type KycDocumentField = "giayphep_url" | "cmnd_url";
 
 const fmt = new Intl.NumberFormat("vi-VN");
 
-const twoLineClamp = {
+const wrapText = {
+  overflowWrap: "anywhere" as const,
+  wordBreak: "break-word" as const,
+};
+
+const softClamp = {
   display: "-webkit-box",
   WebkitLineClamp: 2,
   WebkitBoxOrient: "vertical" as const,
   overflow: "hidden",
-};
-
-const rowTextClamp = {
-  ...twoLineClamp,
-  overflowWrap: "anywhere" as const,
-  wordBreak: "break-word" as const,
+  ...wrapText,
 };
 
 const profileFieldLabels: Array<{ key: keyof ManageData["company"]; label: string }> = [
@@ -158,8 +158,15 @@ const daysLeft = (value?: string | null) => {
   return Math.ceil((date.getTime() - Date.now()) / 86400000);
 };
 
-const hasProfileValue = (value: unknown) =>
-  typeof value === "string" ? value.trim().length > 0 : Boolean(value);
+const isCompanyNamePlaceholder = (value?: string | null) => {
+  const normalized = value?.trim().toLowerCase();
+  return !normalized || normalized === "ten cong ty / doanh nghiep" || normalized === "tên công ty / doanh nghiệp";
+};
+
+const isProfileFieldComplete = (key: keyof ManageData["company"], value: unknown) => {
+  if (key === "ten") return typeof value === "string" && !isCompanyNamePlaceholder(value);
+  return typeof value === "string" ? value.trim().length > 0 : Boolean(value);
+};
 
 function StatusPill({ children, tone = "blue" }: { children: ReactNode; tone?: "blue" | "green" | "amber" | "red" | "slate" }) {
   const cls = {
@@ -203,7 +210,7 @@ function StatCard({ icon, label, value, tag, tone = "blue", href }: { icon: stri
 
 function AdminPanel({ title, icon, action, children }: { title: string; icon: string; action?: ReactNode; children: ReactNode }) {
   return (
-    <section className="h-fit min-h-[260px] rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
+    <section className="h-fit rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="flex min-w-0 items-center gap-2 text-base font-bold text-slate-950">
           <span className="material-symbols-outlined text-[21px] text-[#1F6FEB]">{icon}</span>
@@ -221,8 +228,8 @@ function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { 
     <div className="flex items-start gap-3 border-b border-[#e6f0fb] px-1 py-3 last:border-b-0">
       <span className="material-symbols-outlined shrink-0 text-[19px] text-[#1F6FEB]">{icon}</span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-bold leading-5 text-slate-950" style={rowTextClamp} title={title}>{title}</p>
-        {meta && <p className="mt-0.5 text-xs font-medium leading-5 text-[#477399]" style={rowTextClamp} title={meta}>{meta}</p>}
+        <p className="text-sm font-bold leading-5 text-slate-950" style={wrapText} title={title}>{title}</p>
+        {meta && <p className="mt-0.5 text-xs font-medium leading-5 text-[#477399]" style={softClamp} title={meta}>{meta}</p>}
       </div>
       {right && <div className="ml-2 shrink-0 pt-1">{right}</div>}
     </div>
@@ -235,7 +242,7 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
 
   return (
     <aside className="lg:h-full lg:min-h-0 lg:self-stretch">
-      <div className="flex h-full overflow-hidden border border-[#b9d7ff] bg-[#1F6FEB] shadow-md lg:w-[320px] lg:flex-col lg:rounded-none lg:border-y-0 lg:border-l-0">
+      <div className="flex h-full overflow-hidden border border-[#b9d7ff] bg-[#1F6FEB] shadow-md lg:w-[344px] lg:flex-col lg:rounded-none lg:border-y-0 lg:border-l-0">
         <div className="min-w-[300px] border-r border-white/15 px-4 py-4 text-white lg:min-w-0 lg:border-b lg:border-r-0">
           <Link href="/enterprise/manage" className="mb-5 flex items-center gap-3">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm">
@@ -259,7 +266,7 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`feature-visual-card feature-visual-card--cyan group flex min-h-[86px] min-w-[245px] items-center gap-3 rounded-2xl border px-3 py-3 text-left text-white transition lg:min-w-0 ${
+                className={`feature-visual-card feature-visual-card--cyan group flex min-h-[94px] min-w-[270px] items-center gap-3 rounded-2xl border px-3.5 py-3 text-left text-white transition lg:min-w-0 ${
                   active
                     ? "border-white/55 bg-white/18 shadow-[inset_3px_0_0_rgba(255,255,255,0.85)]"
                     : "border-white/10 hover:border-white/40 hover:bg-white/10"
@@ -271,9 +278,9 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
                   {item.locked ? "lock" : item.icon}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold leading-5" style={rowTextClamp}>{item.title}</span>
-                  <span className="mt-1 block text-[11px] font-semibold leading-snug text-white/75" style={rowTextClamp}>{item.action}</span>
-                  <span className="mt-2 inline-flex max-w-full rounded-full border border-white/18 bg-white/12 px-2 py-0.5 text-[10px] font-semibold text-white/85" style={rowTextClamp}>
+                  <span className="block text-sm font-bold leading-5" style={wrapText}>{item.title}</span>
+                  <span className="mt-1 block text-[11px] font-semibold leading-snug text-white/75" style={wrapText}>{item.action}</span>
+                  <span className="mt-2 inline-flex max-w-full rounded-full border border-white/18 bg-white/12 px-2 py-0.5 text-[10px] font-semibold leading-4 text-white/85" style={wrapText}>
                     {item.status}
                   </span>
                 </span>
@@ -360,7 +367,7 @@ export default function EnterpriseManagePage() {
       setData(prev => {
         if (!prev) return prev;
         const company = { ...prev.company, ...(updateJson.company || {}), [field]: uploadJson.url };
-        const completed = profileFieldLabels.filter(item => hasProfileValue(company[item.key])).length;
+        const completed = profileFieldLabels.filter(item => isProfileFieldComplete(item.key, company[item.key])).length;
         const total = profileFieldLabels.length;
         return {
           ...prev,
@@ -462,21 +469,24 @@ export default function EnterpriseManagePage() {
   const companyStatus = statusText[data.company.trangThai] || data.company.trangThai;
   const role = roleMeta[data.me.vaiTroCty] || roleMeta.viewer;
   const companyName =
-    data.company.ten?.trim() ||
+    (!isCompanyNamePlaceholder(data.company.ten) ? data.company.ten?.trim() : "") ||
     data.company.thuongHieu?.trim() ||
     (data.company.maSoThue ? `Doanh nghiệp MST ${data.company.maSoThue}` : "Doanh nghiệp chưa đặt tên");
-  const missingProfileFields = profileFieldLabels.filter(field => !hasProfileValue(data.company[field.key]));
+  const displayedCompleted = profileFieldLabels.filter(item => isProfileFieldComplete(item.key, data.company[item.key])).length;
+  const displayedTotal = profileFieldLabels.length;
+  const displayedPercent = Math.round((displayedCompleted / displayedTotal) * 100);
+  const missingProfileFields = profileFieldLabels.filter(field => !isProfileFieldComplete(field.key, data.company[field.key]));
   const pendingBatches = data.statusBreakdown.batches.pending_review || 0;
   const readyBatches = data.statusBreakdown.batches.ready || data.statusBreakdown.batches.active || 0;
   const distributedBatches = data.statusBreakdown.batches.distributed || 0;
 
   return (
     <main className="min-h-screen bg-[#eef5fb] pb-24 text-slate-950 lg:h-[calc(100vh-5rem)] lg:min-h-0 lg:overflow-hidden lg:pb-0">
-      <div className="lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[320px_minmax(0,1fr)]">
+      <div className="lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[344px_minmax(0,1fr)]">
         <OperationNav items={modules} />
 
-        <div className="min-w-0 p-4 sm:p-6 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:p-6 lg:pb-28 xl:p-7 xl:pb-28">
-        <header className="mb-6 grid gap-4 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start xl:grid-cols-[minmax(0,1fr)_400px]">
+        <div className="min-w-0 p-4 sm:p-6 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:p-6 lg:pb-36 xl:p-7 xl:pb-36">
+        <header className="mb-6 grid gap-5 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(360px,430px)] lg:items-stretch">
           <div className="flex min-w-0 flex-col justify-center">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#1F6FEB]">Enterprise Console</p>
             <h1 className="enterprise-manage-title mt-1 max-w-3xl text-[28px] font-bold leading-[1.22] tracking-normal text-slate-950 sm:text-[36px]">
@@ -493,7 +503,7 @@ export default function EnterpriseManagePage() {
                 {role.label}
               </StatusPill>
             </div>
-            <div className="mt-4 grid gap-2 text-xs font-semibold text-[#477399] sm:grid-cols-3">
+            <div className="mt-4 grid gap-2 text-xs font-semibold text-[#477399] sm:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-xl border border-[#dbeafe] bg-[#f8fbff] px-3 py-2">
                 <span className="block text-[10px] font-bold uppercase text-[#1F6FEB]">Email</span>
                 <span className="block break-words">{data.company.email || "Chưa có"}</span>
@@ -506,18 +516,26 @@ export default function EnterpriseManagePage() {
                 <span className="block text-[10px] font-bold uppercase text-[#1F6FEB]">Website</span>
                 <span className="block break-words">{data.company.website || "Chưa có"}</span>
               </div>
+              <div className="rounded-xl border border-[#dbeafe] bg-[#f8fbff] px-3 py-2">
+                <span className="block text-[10px] font-bold uppercase text-[#1F6FEB]">VSIC</span>
+                <span className="block break-words">{data.company.nganh_VSIC || "Chưa có"}</span>
+              </div>
+            </div>
+            <div className="mt-2 rounded-xl border border-[#dbeafe] bg-[#f8fbff] px-3 py-2 text-xs font-semibold text-[#477399]">
+              <span className="block text-[10px] font-bold uppercase text-[#1F6FEB]">Địa chỉ</span>
+              <span className="block" style={softClamp}>{data.company.diaChi || "Chưa có"}</span>
             </div>
           </div>
 
           <div className="w-full self-start rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase text-[#477399]">Hoàn thiện hồ sơ</span>
-              <span className="text-xl font-extrabold text-[#1F6FEB]">{data.profileCompletion.percent}%</span>
+              <span className="text-xl font-extrabold text-[#1F6FEB]">{displayedPercent}%</span>
             </div>
             <div className="mt-3 h-3 overflow-hidden rounded-full bg-[#e6f0fb]">
-              <div className="h-full rounded-full bg-[#1F6FEB]" style={{ width: `${data.profileCompletion.percent}%` }} />
+              <div className="h-full rounded-full bg-[#1F6FEB]" style={{ width: `${displayedPercent}%` }} />
             </div>
-            <p className="mt-2 text-xs font-semibold text-[#477399]">{data.profileCompletion.completed}/{data.profileCompletion.total} trường quan trọng đã có dữ liệu.</p>
+            <p className="mt-2 text-xs font-semibold text-[#477399]">{displayedCompleted}/{displayedTotal} trường quan trọng đã có dữ liệu.</p>
             {missingProfileFields.length > 0 && (
               <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
                 <p className="text-[11px] font-bold uppercase text-amber-700">Còn thiếu</p>

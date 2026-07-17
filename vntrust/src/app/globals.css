@@ -589,7 +589,10 @@ html.light-mode .feature-card-visual__icon {
 }
 
 body.enterprise-manage-route .floating-ai-button {
-  bottom: 7rem;
+  right: 1rem !important;
+  bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;
+  width: 46px !important;
+  height: 46px !important;
 }
 
 body.enterprise-manage-route footer {
@@ -604,14 +607,14 @@ body.enterprise-manage-route footer {
 
 @media (min-width: 1024px) {
   body.enterprise-manage-route .floating-ai-button {
-    right: 1.5rem !important;
-    bottom: 1.5rem !important;
-    width: 3rem !important;
-    height: 3rem !important;
+    right: 1.25rem !important;
+    bottom: 1.25rem !important;
+    width: 44px !important;
+    height: 44px !important;
   }
 
   body.enterprise-manage-route .floating-ai-button .material-symbols-outlined {
-    font-size: 24px !important;
+    font-size: 22px !important;
   }
 }
 
