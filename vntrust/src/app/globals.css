@@ -592,6 +592,12 @@ body.enterprise-manage-route .floating-ai-button {
   bottom: 7rem;
 }
 
+.enterprise-manage-title {
+  font-family: "Segoe UI", Arial, "Helvetica Neue", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
 .map-layer-panel {
   min-width: 280px;
   max-height: calc(100% - 24px);

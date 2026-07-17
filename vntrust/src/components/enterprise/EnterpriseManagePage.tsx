@@ -453,7 +453,9 @@ export default function EnterpriseManagePage() {
         <header className="mb-6 grid gap-4 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:grid-cols-[minmax(0,1fr)_420px] lg:items-stretch">
           <div className="flex min-w-0 flex-col justify-center">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#1F6FEB]">Enterprise Console</p>
-            <h1 className="mt-1 max-w-4xl text-2xl font-extrabold leading-tight text-slate-950 sm:text-4xl" style={twoLineClamp}>{data.company.ten}</h1>
+            <h1 className="enterprise-manage-title mt-1 max-w-4xl text-[28px] font-bold leading-[1.22] tracking-normal text-slate-950 sm:text-[40px]">
+              {data.company.ten}
+            </h1>
             <p className="mt-1 text-sm font-medium text-[#477399]">
               {data.company.thuongHieu || tr("Hồ sơ doanh nghiệp", "Enterprise profile")}
             </p>
