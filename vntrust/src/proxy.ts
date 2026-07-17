@@ -26,7 +26,7 @@ function maybeCleanup() {
   }
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
   maybeCleanup();
@@ -64,7 +64,7 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // ── Admin-only routes (B-04 fix: thực sự block tại middleware) ──────────────
+  // ── Admin-only routes (B-04 fix: thực sự block tại proxy) ──────────────
   // Lưu ý: /dashboard/kyc KHÔNG admin-only — trang tự phân quyền (admin: duyệt hồ sơ; DN: tự xác minh + giấy phép lưu hành)
   const adminOnlyPaths = ['/admin', '/dashboard/security', '/dashboard/logs', '/dashboard/risks', '/dashboard/roadmap', '/dashboard/readiness', '/dashboard/users', '/dashboard/geocoding', '/dashboard/system-config'];
   if (adminOnlyPaths.some(p => pathname.startsWith(p))) {
