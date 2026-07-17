@@ -53,6 +53,7 @@ export default function AdminUsersPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [acting, setActing] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: "ok" | "err" } | null>(null);
+  const [actionTarget, setActionTarget] = useState<User | null>(null);
   const [confirmDel, setConfirmDel] = useState<User | null>(null);
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 12;
@@ -108,6 +109,7 @@ export default function AdminUsersPage() {
       showToast(next === "suspended"
         ? tr(`Đã khóa ${u.email}`, `Suspended ${u.email}`)
         : tr(`Đã mở khóa ${u.email}`, `Reactivated ${u.email}`), "ok");
+      setActionTarget(null);
       await fetchUsers();
     } catch (e: any) {
       showToast(e.message, "err");
@@ -305,28 +307,13 @@ export default function AdminUsersPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 justify-end">
                       <button
-                        onClick={() => toggleSuspend(u)}
+                        onClick={() => setActionTarget(u)}
                         disabled={isAct}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition disabled:opacity-50 ${
-                          u.trangThai === "active"
-                            ? "border-red-500/30 text-red-300 hover:bg-red-500/15"
-                            : "border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/15"
-                        }`}
-                        title={u.trangThai === "active" ? tr("Khóa tài khoản", "Suspend") : tr("Mở khóa", "Reactivate")}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-[#1F6FEB]/30 bg-[#1F6FEB]/10 px-3 py-2 text-xs font-black text-blue-200 transition hover:bg-[#1F6FEB]/20 disabled:opacity-50"
+                        title={tr("Mở menu thao tác", "Open actions")}
                       >
-                        <span className="material-symbols-outlined text-[14px] align-middle mr-1">
-                          {u.trangThai === "active" ? "lock" : "lock_open"}
-                        </span>
-                        {u.trangThai === "active" ? tr("Khóa", "Lock") : tr("Mở", "Unlock")}
-                      </button>
-                      <button
-                        onClick={() => setConfirmDel(u)}
-                        disabled={isAct || isLastAdmin}
-                        className="px-3 py-1.5 rounded-lg text-xs font-bold border border-red-500/30 text-red-400 hover:bg-red-500/15 transition disabled:cursor-not-allowed disabled:opacity-50"
-                        title={tr("Xóa tài khoản", "Delete")}
-                      >
-                        <span className="material-symbols-outlined text-[14px] align-middle mr-1">delete</span>
-                        {tr("Xóa", "Delete")}
+                        <span className="material-symbols-outlined text-[16px]">more_horiz</span>
+                        {tr("Thao tác", "Actions")}
                       </button>
                     </div>
                   </td>
@@ -344,7 +331,6 @@ export default function AdminUsersPage() {
           const role = ROLE_META[u.vaiTro] || ROLE_META.consumer;
           const status = STATUS_META[u.trangThai] || STATUS_META.active;
           const isAct = acting === u.id;
-          const isLastAdmin = isLastAdminUser(u);
           return (
             <div key={u.id} className="rounded-2xl bg-white/5 border border-white/10 p-4">
               <div className="flex items-start gap-3 mb-3">
@@ -374,22 +360,11 @@ export default function AdminUsersPage() {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => toggleSuspend(u)}
+                  onClick={() => setActionTarget(u)}
                   disabled={isAct}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold border transition disabled:opacity-50 ${
-                    u.trangThai === "active"
-                      ? "border-red-500/30 text-red-300 bg-red-500/5"
-                      : "border-emerald-500/30 text-emerald-300 bg-emerald-500/5"
-                  }`}
+                  className="flex-1 rounded-xl border border-[#1F6FEB]/30 bg-[#1F6FEB]/10 py-2 text-xs font-black text-blue-200 disabled:opacity-50"
                 >
-                  {u.trangThai === "active" ? tr("Khóa", "Lock") : tr("Mở khóa", "Unlock")}
-                </button>
-                <button
-                  onClick={() => setConfirmDel(u)}
-                  disabled={isAct || isLastAdmin}
-                  className="flex-1 py-2 rounded-lg text-xs font-bold border border-red-500/30 text-red-400 bg-red-500/5 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {tr("Xóa", "Delete")}
+                  {tr("Thao tác", "Actions")}
                 </button>
               </div>
             </div>
@@ -422,6 +397,73 @@ export default function AdminUsersPage() {
           </button>
         </div>
       )}
+
+      {/* Account actions modal */}
+      {actionTarget && (() => {
+        const target = actionTarget;
+        const isActing = acting === target.id;
+        const isLastAdmin = isLastAdminUser(target);
+        const nextLockText = target.trangThai === "active" ? tr("Khóa tài khoản", "Lock account") : tr("Mở khóa tài khoản", "Unlock account");
+        return (
+          <div className="fixed inset-0 z-[2147483645] flex items-center justify-center bg-black/60 p-3 backdrop-blur-sm sm:p-4" onClick={() => setActionTarget(null)}>
+            <div
+              className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0B1623] p-4 shadow-2xl sm:p-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mb-4 flex items-start gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#C8A557]/30 bg-[#C8A557]/15 text-[#C8A557] font-black">
+                  {(target.ten || target.email || "?").charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate text-base font-black text-white">{target.ten || target.email.split("@")[0]}</h3>
+                  <p className="truncate text-xs font-medium text-slate-400">{target.email}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActionTarget(null)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-slate-300 hover:bg-white/10"
+                  aria-label={tr("Đóng", "Close")}
+                >
+                  <span className="material-symbols-outlined text-[18px]">close</span>
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => toggleSuspend(target)}
+                  disabled={isActing}
+                  className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-sm font-black transition disabled:opacity-50 ${
+                    target.trangThai === "active"
+                      ? "border-red-500/30 bg-red-500/10 text-red-200 hover:bg-red-500/15"
+                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/15"
+                  }`}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px]">{target.trangThai === "active" ? "lock" : "lock_open"}</span>
+                    {nextLockText}
+                  </span>
+                  <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setActionTarget(null); setConfirmDel(target); }}
+                  disabled={isActing || isLastAdmin}
+                  className="flex w-full items-center justify-between rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-left text-sm font-black text-red-200 transition hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-50"
+                  title={isLastAdmin ? tr("Không thể xóa quản trị cuối cùng", "Cannot delete the last admin") : undefined}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px]">delete</span>
+                    {tr("Xóa tài khoản", "Delete account")}
+                  </span>
+                  <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Delete confirm modal */}
       {confirmDel && (
