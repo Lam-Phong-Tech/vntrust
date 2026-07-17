@@ -75,6 +75,12 @@ const twoLineClamp = {
   overflow: "hidden",
 };
 
+const rowTextClamp = {
+  ...twoLineClamp,
+  overflowWrap: "anywhere" as const,
+  wordBreak: "break-word" as const,
+};
+
 const profileFieldLabels: Array<{ key: keyof ManageData["company"]; label: string }> = [
   { key: "ten", label: "Tên công ty / doanh nghiệp" },
   { key: "maSoThue", label: "Mã số thuế" },
@@ -194,7 +200,7 @@ function StatCard({ icon, label, value, tag, tone = "blue", href }: { icon: stri
 
 function AdminPanel({ title, icon, action, children }: { title: string; icon: string; action?: ReactNode; children: ReactNode }) {
   return (
-    <section className="h-fit rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
+    <section className="h-fit min-h-[260px] rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="flex min-w-0 items-center gap-2 text-base font-bold text-slate-950">
           <span className="material-symbols-outlined text-[21px] text-[#1F6FEB]">{icon}</span>
@@ -212,8 +218,8 @@ function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { 
     <div className="flex items-start gap-3 border-b border-[#e6f0fb] px-1 py-3 last:border-b-0">
       <span className="material-symbols-outlined shrink-0 text-[19px] text-[#1F6FEB]">{icon}</span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-bold leading-5 text-slate-950" style={twoLineClamp}>{title}</p>
-        {meta && <p className="mt-0.5 text-xs font-medium leading-5 text-[#477399]" style={twoLineClamp}>{meta}</p>}
+        <p className="text-sm font-bold leading-5 text-slate-950" style={rowTextClamp} title={title}>{title}</p>
+        {meta && <p className="mt-0.5 text-xs font-medium leading-5 text-[#477399]" style={rowTextClamp} title={meta}>{meta}</p>}
       </div>
       {right && <div className="ml-2 shrink-0 pt-1">{right}</div>}
     </div>
@@ -223,8 +229,8 @@ function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { 
 
 function OperationNav({ items }: { items: ModuleItem[] }) {
   return (
-    <aside className="lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:self-start">
-      <div className="flex h-full overflow-hidden border border-[#b9d7ff] bg-[#1F6FEB] shadow-md lg:w-[300px] lg:flex-col lg:rounded-none lg:border-y-0 lg:border-l-0">
+    <aside className="lg:h-full lg:min-h-0 lg:self-stretch">
+      <div className="flex h-full overflow-hidden border border-[#b9d7ff] bg-[#1F6FEB] shadow-md lg:w-[320px] lg:flex-col lg:rounded-none lg:border-y-0 lg:border-l-0">
         <div className="min-w-[300px] border-r border-white/15 px-4 py-4 text-white lg:min-w-0 lg:border-b lg:border-r-0">
           <Link href="/enterprise/manage" className="mb-5 flex items-center gap-3">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm">
@@ -241,20 +247,21 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
             <p className="mt-2 text-[11px] font-semibold leading-5 text-white/75">Điều hướng nghiệp vụ doanh nghiệp, tách riêng khỏi dashboard.</p>
           </div>
         </div>
-        <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:flex-col lg:overflow-y-auto lg:pb-5">
+        <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:pb-5">
           {items.map(item => (
             <Link
               key={item.href}
               href={item.href}
-              className="feature-visual-card feature-visual-card--cyan group flex min-h-[72px] min-w-[235px] items-center gap-3 rounded-2xl border border-white/10 px-3 py-3 text-left text-white transition hover:border-white/40 hover:bg-white/10 lg:min-w-0"
+              className="feature-visual-card feature-visual-card--cyan group flex min-h-[78px] min-w-[235px] items-center gap-3 rounded-2xl border border-white/10 px-3 py-3 text-left text-white transition hover:border-white/40 hover:bg-white/10 lg:min-w-0"
+              title={`${item.title} - ${item.action}`}
             >
               <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">{item.icon}</span></span>
               <span className="material-symbols-outlined flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/25 bg-white text-[22px] text-[#1F6FEB] shadow-sm">
                 {item.icon}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-sm font-bold leading-5" style={twoLineClamp}>{item.title}</span>
-                <span className="mt-1 block text-[11px] font-semibold leading-snug text-white/75" style={twoLineClamp}>{item.action}</span>
+                <span className="block text-sm font-bold leading-5" style={rowTextClamp}>{item.title}</span>
+                <span className="mt-1 block text-[11px] font-semibold leading-snug text-white/75" style={rowTextClamp}>{item.action}</span>
               </span>
               <span className="material-symbols-outlined shrink-0 text-[18px] text-white/85 transition group-hover:translate-x-0.5">chevron_right</span>
             </Link>
@@ -445,15 +452,15 @@ export default function EnterpriseManagePage() {
   const distributedBatches = data.statusBreakdown.batches.distributed || 0;
 
   return (
-    <main className="min-h-screen bg-[#eef5fb] pb-24 text-slate-950 lg:pb-28">
-      <div className="lg:grid lg:min-h-[calc(100vh-5rem)] lg:grid-cols-[300px_minmax(0,1fr)]">
+    <main className="min-h-screen bg-[#eef5fb] pb-24 text-slate-950 lg:h-[calc(100vh-5rem)] lg:min-h-0 lg:overflow-hidden lg:pb-0">
+      <div className="lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[320px_minmax(0,1fr)]">
         <OperationNav items={modules} />
 
-        <div className="min-w-0 p-4 sm:p-6 lg:p-6 xl:p-8">
-        <header className="mb-6 grid gap-4 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:grid-cols-[minmax(0,1fr)_420px] lg:items-stretch">
+        <div className="min-w-0 p-4 sm:p-6 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:p-6 lg:pb-28 xl:p-7 xl:pb-28">
+        <header className="mb-6 grid gap-4 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start xl:grid-cols-[minmax(0,1fr)_400px]">
           <div className="flex min-w-0 flex-col justify-center">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#1F6FEB]">Enterprise Console</p>
-            <h1 className="enterprise-manage-title mt-1 max-w-4xl text-[28px] font-bold leading-[1.22] tracking-normal text-slate-950 sm:text-[40px]">
+            <h1 className="enterprise-manage-title mt-1 max-w-3xl text-[28px] font-bold leading-[1.22] tracking-normal text-slate-950 sm:text-[36px]">
               {data.company.ten}
             </h1>
             <p className="mt-1 text-sm font-medium text-[#477399]">

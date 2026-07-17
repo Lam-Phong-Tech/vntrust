@@ -592,10 +592,27 @@ body.enterprise-manage-route .floating-ai-button {
   bottom: 7rem;
 }
 
+body.enterprise-manage-route footer {
+  display: none;
+}
+
 .enterprise-manage-title {
   font-family: "Segoe UI", Arial, "Helvetica Neue", sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+}
+
+@media (min-width: 1024px) {
+  body.enterprise-manage-route .floating-ai-button {
+    right: 1.5rem !important;
+    bottom: 1.5rem !important;
+    width: 3rem !important;
+    height: 3rem !important;
+  }
+
+  body.enterprise-manage-route .floating-ai-button .material-symbols-outlined {
+    font-size: 24px !important;
+  }
 }
 
 .map-layer-panel {
