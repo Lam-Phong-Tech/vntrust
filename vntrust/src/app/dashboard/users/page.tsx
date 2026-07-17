@@ -584,23 +584,24 @@ export default function AdminUsersPage() {
         const isLastAdmin = isLastAdminUser(target);
         const nextLockText = target.trangThai === "active" ? tr("Khóa tài khoản", "Lock account") : tr("Mở khóa tài khoản", "Unlock account");
         return (
-          <div className="fixed inset-0 z-[2147483645] flex items-center justify-center bg-black/60 p-3 backdrop-blur-sm sm:p-4" onClick={() => setActionTarget(null)}>
+          <div className="fixed inset-0 z-[2147483645] flex items-center justify-center bg-black/55 p-3 backdrop-blur-sm sm:p-4" onClick={() => setActionTarget(null)}>
             <div
-              className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0B1623] p-4 shadow-2xl sm:p-5"
+              className="w-full rounded-2xl border border-[#bfdbfe] bg-white p-4 text-[#0b1623] shadow-2xl sm:p-5"
+              style={{ maxWidth: 420 }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-4 flex items-start gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#C8A557]/30 bg-[#C8A557]/15 text-[#C8A557] font-black">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#d9bf75] bg-[#fff8df] text-[#9a7419] font-black">
                   {(target.ten || target.email || "?").charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate text-base font-black text-white">{target.ten || target.email.split("@")[0]}</h3>
-                  <p className="truncate text-xs font-medium text-slate-400">{target.email}</p>
+                  <h3 className="truncate text-base font-black text-[#0b1623]">{target.ten || target.email.split("@")[0]}</h3>
+                  <p className="truncate text-xs font-bold text-[#477399]">{target.email}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setActionTarget(null)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-slate-300 hover:bg-white/10"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#eff6ff] text-[#0b1623] hover:bg-[#dbeafe]"
                   aria-label={tr("Đóng", "Close")}
                 >
                   <span className="material-symbols-outlined text-[18px]">close</span>
@@ -612,10 +613,10 @@ export default function AdminUsersPage() {
                   type="button"
                   onClick={() => toggleSuspend(target)}
                   disabled={isActing}
-                  className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-sm font-black transition disabled:opacity-50 ${
+                  className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-sm font-black transition disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500 ${
                     target.trangThai === "active"
-                      ? "border-red-500/30 bg-red-500/10 text-red-200 hover:bg-red-500/15"
-                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/15"
+                      ? "border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
+                      : "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                   }`}
                 >
                   <span className="inline-flex items-center gap-2">
@@ -629,7 +630,7 @@ export default function AdminUsersPage() {
                   type="button"
                   onClick={() => { setActionTarget(null); setConfirmDel(target); }}
                   disabled={isActing || isLastAdmin}
-                  className="flex w-full items-center justify-between rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-left text-sm font-black text-red-200 transition hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex w-full items-center justify-between rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-left text-sm font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
                   title={isLastAdmin ? tr("Không thể xóa quản trị cuối cùng", "Cannot delete the last admin") : undefined}
                 >
                   <span className="inline-flex items-center gap-2">
