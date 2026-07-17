@@ -259,7 +259,7 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
             <p className="mt-2 text-[11px] font-semibold leading-5 text-white/75">Điều hướng nghiệp vụ doanh nghiệp, tách riêng khỏi dashboard.</p>
           </div>
         </div>
-        <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:pb-5">
+        <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:pb-10">
           {items.map(item => {
             const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
@@ -481,7 +481,7 @@ export default function EnterpriseManagePage() {
   const distributedBatches = data.statusBreakdown.batches.distributed || 0;
 
   return (
-    <main className="min-h-screen bg-[#eef5fb] pb-24 text-slate-950 lg:h-[calc(100vh-5rem)] lg:min-h-0 lg:overflow-hidden lg:pb-0">
+    <main className="min-h-screen bg-[#eef5fb] pb-24 text-slate-950 lg:h-screen lg:min-h-0 lg:overflow-hidden lg:pb-0">
       <div className="lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[344px_minmax(0,1fr)]">
         <OperationNav items={modules} />
 
