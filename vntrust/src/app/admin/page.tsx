@@ -10,6 +10,10 @@ interface LogItem { id: string; action: string; user: string; role: string; time
 type AdminUiConfig = Record<string, { value: string }>;
 
 const fmt = (n: number | undefined) => (n ?? 0).toLocaleString("vi-VN");
+const pct = (value: number, max: number) => {
+  if (!max) return 0;
+  return Math.max(4, Math.min(100, Math.round((value / max) * 100)));
+};
 
 const isNoisySystemLog = (action: string) =>
   /^\[Integration Health Check\]/i.test(action) ||
@@ -87,6 +91,22 @@ export default function AdminOverview() {
     { label: tr("Tỷ lệ nghi giả", "Fake rate"),      value: `${ov?.fakeRate ?? "0.0"}%`, tag: "RISK", icon: "gpp_maybe", color: "text-red-300", tagColor: "text-red-300 bg-red-500/10 border-red-500/30" },
   ];
 
+  const volumeBars = [
+    { label: tr("Người dùng", "Users"), value: users?.total || 0, color: "from-[#1F6FEB] to-[#7dd3fc]" },
+    { label: tr("Sản phẩm", "Products"), value: ov?.totalProducts || 0, color: "from-emerald-500 to-emerald-300" },
+    { label: tr("Lô/mục", "Batches"), value: ov?.totalBatches || 0, color: "from-cyan-500 to-blue-300" },
+    { label: tr("Tem QR", "QR"), value: ov?.totalQR || 0, color: "from-violet-500 to-blue-300" },
+    { label: tr("Lượt quét", "Scans"), value: ov?.totalScans || 0, color: "from-[#C8A557] to-amber-200" },
+  ];
+  const maxVolume = Math.max(...volumeBars.map(item => item.value), 1);
+  const safeScans = Math.max((ov?.totalScans || 0) - (ov?.totalFake || 0), 0);
+  const riskSegments = [
+    { label: tr("Hợp lệ", "Valid"), value: safeScans, color: "bg-emerald-500" },
+    { label: tr("Nghi giả", "Risk"), value: ov?.totalFake || 0, color: "bg-red-500" },
+    { label: tr("Cảnh báo", "Alerts"), value: ov?.openAlerts || 0, color: "bg-[#C8A557]" },
+  ];
+  const riskTotal = Math.max(riskSegments.reduce((sum, item) => sum + item.value, 0), 1);
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
@@ -115,6 +135,72 @@ export default function AdminOverview() {
             <p className="text-[11px] sm:text-xs text-slate-400 mt-1">{c.label}</p>
           </div>
         ))}
+      </div>
+
+      {/* Overview charts */}
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-5">
+        <div className="rounded-2xl border border-[#bfdbfe] bg-white/85 p-5 shadow-sm xl:col-span-3">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1f6feb]">{tr("Biểu đồ tổng quan", "Overview chart")}</p>
+              <h2 className="text-xl font-black text-[#0b1623]">{tr("Quy mô dữ liệu hệ thống", "System data volume")}</h2>
+            </div>
+            <span className="rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-3 py-1 text-xs font-bold text-[#1f6feb]">
+              {tr("Theo tháng", "Monthly")}
+            </span>
+          </div>
+          <div className="grid min-h-64 grid-cols-5 items-end gap-3 sm:gap-5">
+            {volumeBars.map(item => (
+              <div key={item.label} className="flex h-full min-w-0 flex-col items-center justify-end gap-3">
+                <div className="flex h-44 w-full items-end rounded-2xl bg-[#eff6ff] p-1.5">
+                  <div
+                    className={`w-full rounded-xl bg-gradient-to-t ${item.color} shadow-lg transition-all`}
+                    style={{ height: `${pct(item.value, maxVolume)}%` }}
+                    title={`${item.label}: ${fmt(item.value)}`}
+                  />
+                </div>
+                <div className="min-w-0 text-center">
+                  <p data-no-auto-translate className="text-sm font-black text-[#0b1623]">{fmt(item.value)}</p>
+                  <p className="truncate text-[10px] font-bold uppercase tracking-wide text-[#477399] sm:text-[11px]">{item.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-[#bfdbfe] bg-white/85 p-5 shadow-sm xl:col-span-2">
+          <div className="mb-5">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1f6feb]">{tr("Rủi ro & quét", "Risk & scans")}</p>
+            <h2 className="text-xl font-black text-[#0b1623]">{tr("Cơ cấu xác thực", "Verification mix")}</h2>
+          </div>
+          <div className="mb-5 overflow-hidden rounded-full border border-[#bfdbfe] bg-[#eff6ff] p-1">
+            <div className="flex h-5 overflow-hidden rounded-full">
+              {riskSegments.map(item => (
+                <div
+                  key={item.label}
+                  className={`${item.color} transition-all`}
+                  style={{ width: `${Math.max(6, Math.round((item.value / riskTotal) * 100))}%` }}
+                  title={`${item.label}: ${fmt(item.value)}`}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="space-y-3">
+            {riskSegments.map(item => (
+              <div key={item.label} className="flex items-center justify-between gap-3 rounded-xl border border-[#dbeafe] bg-[#f8fbff] px-3 py-2.5">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className={`h-3 w-3 shrink-0 rounded-full ${item.color}`} />
+                  <span className="truncate text-sm font-bold text-[#345b7c]">{item.label}</span>
+                </div>
+                <span data-no-auto-translate className="text-sm font-black text-[#0b1623]">{fmt(item.value)}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-red-500">{tr("Tỷ lệ nghi giả", "Fake rate")}</p>
+            <p data-no-auto-translate className="mt-1 text-3xl font-black text-red-600">{ov?.fakeRate ?? "0.0"}%</p>
+          </div>
+        </div>
       </div>
 
       {/* Two panels */}
