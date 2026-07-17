@@ -100,17 +100,17 @@ const statusText: Record<string, string> = {
 const roleMeta: Record<string, { label: string; desc: string; icon: string }> = {
   company_admin: {
     label: "Quản trị DN",
-    desc: "Toàn quyền hồ sơ, sản phẩm, lô hàng, nhân sự và phân quyền nội bộ.",
+    desc: "Toàn quyền hồ sơ, sản phẩm, mục hàng, nhân sự và phân quyền nội bộ.",
     icon: "shield_person",
   },
   staff_input: {
     label: "Nhập liệu",
-    desc: "Nhập và cập nhật sản phẩm, lô hàng, chứng nhận, giấy phép.",
+    desc: "Nhập và cập nhật sản phẩm, mục hàng, chứng nhận, giấy phép.",
     icon: "edit_note",
   },
   warehouse: {
     label: "Kho",
-    desc: "Theo dõi lô hàng, phân phối, khóa/mở trạng thái vận hành kho.",
+    desc: "Theo dõi mục hàng, phân phối, khóa/mở trạng thái vận hành kho.",
     icon: "warehouse",
   },
   viewer: {
@@ -291,7 +291,7 @@ export default function EnterpriseManagePage() {
         locked: false,
       },
       {
-        title: "Sản phẩm & lô hàng",
+        title: "Sản phẩm & mục hàng",
         desc: "Tạo sản phẩm, khai báo mục hàng, sinh hoặc import mã QR/barcode.",
         icon: "inventory_2",
         href: "/dashboard/inventory",
@@ -453,7 +453,7 @@ export default function EnterpriseManagePage() {
           </AdminPanel>
 
           <AdminPanel
-            title="Lô hàng & phân phối"
+            title="Mục hàng & phân phối"
             icon="qr_code_2"
             action={<Link href="/dashboard/distribution" className="text-xs font-black text-[#1F6FEB]">Theo dõi phân phối</Link>}
           >
@@ -475,7 +475,7 @@ export default function EnterpriseManagePage() {
                 />
               );
             })}
-            {!data.batches.length && <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có lô hàng.</p>}
+            {!data.batches.length && <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có mục hàng.</p>}
           </AdminPanel>
 
           <AdminPanel
