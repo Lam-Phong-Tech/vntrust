@@ -255,23 +255,25 @@ export default function EnterpriseManagePage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const role = localStorage.getItem("userRole");
-    if (!role) {
-      router.replace("/login");
-      return;
-    }
-    if (!["manufacturer", "importer", "admin"].includes(role)) {
-      router.replace("/dashboard?error=forbidden");
-      return;
-    }
-
     let alive = true;
     (async () => {
       try {
         const res = await fetch("/api/enterprise/manage", { cache: "no-store" });
-        const json = await res.json();
+        const json = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          router.replace("/login");
+          return;
+        }
+        if (res.status === 403) {
+          if (alive) setError(json.error || "Tài khoản hiện tại không có quyền mở trang quản lý doanh nghiệp");
+          return;
+        }
         if (!res.ok) throw new Error(json.error || "Không tải được dữ liệu quản lý");
-        if (alive) setData(json);
+        if (alive) {
+          setData(json);
+          if (json.me?.userRole) localStorage.setItem("userRole", json.me.userRole);
+          if (json.me?.vaiTroCty) localStorage.setItem("vaiTroCty", json.me.vaiTroCty);
+        }
       } catch (e) {
         if (alive) setError(e instanceof Error ? e.message : "Có lỗi xảy ra");
       } finally {
@@ -381,8 +383,10 @@ export default function EnterpriseManagePage() {
         <header className="mb-6 flex flex-col gap-4 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:flex-row lg:items-end lg:justify-between">
           <div className="min-w-0">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-[#1F6FEB]">Enterprise Console</p>
-            <h1 className="mt-1 text-2xl font-black text-slate-950 sm:text-4xl">{tr("Tên công ty / doanh nghiệp", "Company / enterprise name")}</h1>
-            <p className="mt-1 text-sm font-medium text-[#477399]">{data.company.ten}</p>
+            <h1 className="mt-1 text-2xl font-black text-slate-950 sm:text-4xl">{data.company.ten}</h1>
+            <p className="mt-1 text-sm font-medium text-[#477399]">
+              {data.company.thuongHieu || tr("Hồ sơ doanh nghiệp", "Enterprise profile")}
+            </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <StatusPill>MST: {data.company.maSoThue}</StatusPill>
               <StatusPill tone={data.company.trangThai === "verified" ? "green" : "amber"}>{companyStatus}</StatusPill>
