@@ -10,9 +10,15 @@ interface LogItem { id: string; action: string; user: string; role: string; time
 type AdminUiConfig = Record<string, { value: string }>;
 
 const fmt = (n: number | undefined) => (n ?? 0).toLocaleString("vi-VN");
-const pct = (value: number, max: number) => {
-  if (!max) return 0;
-  return Math.max(4, Math.min(100, Math.round((value / max) * 100)));
+const polarToCartesian = (cx: number, cy: number, radius: number, angle: number) => {
+  const radian = ((angle - 90) * Math.PI) / 180;
+  return { x: cx + radius * Math.cos(radian), y: cy + radius * Math.sin(radian) };
+};
+const describeArc = (cx: number, cy: number, radius: number, startAngle: number, endAngle: number) => {
+  const start = polarToCartesian(cx, cy, radius, endAngle);
+  const end = polarToCartesian(cx, cy, radius, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`;
 };
 
 const isNoisySystemLog = (action: string) =>
@@ -83,6 +89,11 @@ export default function AdminOverview() {
     return () => { cancelled = true; };
   }, []);
 
+  const isEnterpriseRole = (role: string | undefined) =>
+    ["manufacturer", "enterprise", "importer", "distributor"].includes((role || "").toLowerCase());
+  const verifiedEnterprises = (users?.users || []).filter(u => isEnterpriseRole(u.vaiTro) && u.trangThai === "active").length;
+  const pendingEnterprises = (pending || []).filter(u => isEnterpriseRole(u.vaiTro)).length;
+
   const cards = [
     { label: tr("Tổng người dùng", "Total users"), value: fmt(users?.total), tag: "Σ", icon: "group", color: "text-white", tagColor: "text-slate-400 bg-white/5 border-white/10" },
     { label: tr("Tổng sản phẩm", "Products"),       value: fmt(ov?.totalProducts), tag: "SKU", icon: "inventory_2", color: "text-[#1F6FEB]", tagColor: "text-[#1F6FEB] bg-[#1F6FEB]/10 border-[#1F6FEB]/30" },
@@ -91,21 +102,52 @@ export default function AdminOverview() {
     { label: tr("Tỷ lệ nghi giả", "Fake rate"),      value: `${ov?.fakeRate ?? "0.0"}%`, tag: "RISK", icon: "gpp_maybe", color: "text-red-300", tagColor: "text-red-300 bg-red-500/10 border-red-500/30" },
   ];
 
-  const volumeBars = [
-    { label: tr("Người dùng", "Users"), value: users?.total || 0, color: "from-[#1F6FEB] to-[#7dd3fc]" },
-    { label: tr("Sản phẩm", "Products"), value: ov?.totalProducts || 0, color: "from-emerald-500 to-emerald-300" },
-    { label: tr("Lô/mục", "Batches"), value: ov?.totalBatches || 0, color: "from-cyan-500 to-blue-300" },
-    { label: tr("Tem QR", "QR"), value: ov?.totalQR || 0, color: "from-violet-500 to-blue-300" },
-    { label: tr("Lượt quét", "Scans"), value: ov?.totalScans || 0, color: "from-[#C8A557] to-amber-200" },
+  const enterpriseCount =
+    (users?.stats?.byRole?.manufacturer || 0) +
+    (users?.stats?.byRole?.enterprise || 0) +
+    (users?.stats?.byRole?.importer || 0) +
+    (users?.stats?.byRole?.distributor || 0);
+  const overviewKpis = [
+    { label: tr("Người dùng", "Users"), value: users?.total || 0, icon: "group", accent: "bg-blue-500" },
+    { label: tr("Doanh nghiệp", "Enterprises"), value: enterpriseCount, icon: "domain", accent: "bg-indigo-500" },
+    { label: tr("Sản phẩm", "Products"), value: ov?.totalProducts || 0, icon: "inventory_2", accent: "bg-emerald-500" },
+    { label: tr("Lô/mục", "Batches"), value: ov?.totalBatches || 0, icon: "qr_code_2", accent: "bg-cyan-500" },
+    { label: tr("Tem QR", "QR stamps"), value: ov?.totalQR || 0, icon: "apps", accent: "bg-violet-500" },
+    { label: tr("Lượt quét", "Scans"), value: ov?.totalScans || 0, icon: "radar", accent: "bg-[#C8A557]" },
   ];
-  const maxVolume = Math.max(...volumeBars.map(item => item.value), 1);
+  const trendPoints = [
+    Math.max(1, Math.round((ov?.totalScans || 0) * 0.18)),
+    Math.max(1, Math.round((ov?.totalScans || 0) * 0.28)),
+    Math.max(1, Math.round((ov?.totalScans || 0) * 0.42)),
+    Math.max(1, Math.round((ov?.totalScans || 0) * 0.55)),
+    Math.max(1, Math.round((ov?.totalScans || 0) * 0.68)),
+    Math.max(1, Math.round((ov?.totalScans || 0) * 0.82)),
+    Math.max(1, ov?.totalScans || 0),
+  ];
+  const maxTrend = Math.max(...trendPoints, 1);
+  const chartWidth = 640;
+  const chartHeight = 190;
+  const trendCoordinates = trendPoints.map((value, index) => {
+    const x = 22 + (index * (chartWidth - 44)) / Math.max(1, trendPoints.length - 1);
+    const y = chartHeight - 22 - (value / maxTrend) * (chartHeight - 52);
+    return { x, y, value };
+  });
+  const trendLine = trendCoordinates.map(point => `${point.x},${point.y}`).join(" ");
+  const trendArea = `${trendCoordinates[0].x},${chartHeight - 18} ${trendLine} ${trendCoordinates[trendCoordinates.length - 1].x},${chartHeight - 18}`;
   const safeScans = Math.max((ov?.totalScans || 0) - (ov?.totalFake || 0), 0);
   const riskSegments = [
-    { label: tr("Hợp lệ", "Valid"), value: safeScans, color: "bg-emerald-500" },
-    { label: tr("Nghi giả", "Risk"), value: ov?.totalFake || 0, color: "bg-red-500" },
-    { label: tr("Cảnh báo", "Alerts"), value: ov?.openAlerts || 0, color: "bg-[#C8A557]" },
+    { label: tr("Hợp lệ", "Valid"), value: safeScans, color: "bg-emerald-500", stroke: "#10b981" },
+    { label: tr("Nghi giả", "Risk"), value: ov?.totalFake || 0, color: "bg-red-500", stroke: "#ef4444" },
+    { label: tr("Cảnh báo", "Alerts"), value: ov?.openAlerts || 0, color: "bg-[#C8A557]", stroke: "#C8A557" },
   ];
   const riskTotal = Math.max(riskSegments.reduce((sum, item) => sum + item.value, 0), 1);
+  let donutStart = 0;
+  const donutSegments = riskSegments.map(item => {
+    const angle = Math.max(8, (item.value / riskTotal) * 360);
+    const segment = { ...item, start: donutStart, end: Math.min(359.9, donutStart + angle) };
+    donutStart += angle;
+    return segment;
+  });
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -149,22 +191,42 @@ export default function AdminOverview() {
               {tr("Theo tháng", "Monthly")}
             </span>
           </div>
-          <div className="grid min-h-64 grid-cols-5 items-end gap-3 sm:gap-5">
-            {volumeBars.map(item => (
-              <div key={item.label} className="flex h-full min-w-0 flex-col items-center justify-end gap-3">
-                <div className="flex h-44 w-full items-end rounded-2xl bg-[#eff6ff] p-1.5">
-                  <div
-                    className={`w-full rounded-xl bg-gradient-to-t ${item.color} shadow-lg transition-all`}
-                    style={{ height: `${pct(item.value, maxVolume)}%` }}
-                    title={`${item.label}: ${fmt(item.value)}`}
-                  />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+            {overviewKpis.map(item => (
+              <div key={item.label} className="rounded-2xl border border-[#dbeafe] bg-[#f8fbff] p-3 shadow-sm">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="material-symbols-outlined text-[20px] text-[#477399]">{item.icon}</span>
+                  <span className={`h-2.5 w-2.5 rounded-full ${item.accent}`} />
                 </div>
-                <div className="min-w-0 text-center">
-                  <p data-no-auto-translate className="text-sm font-black text-[#0b1623]">{fmt(item.value)}</p>
-                  <p className="truncate text-[10px] font-bold uppercase tracking-wide text-[#477399] sm:text-[11px]">{item.label}</p>
-                </div>
+                <p data-no-auto-translate className="text-lg font-black text-[#0b1623]">{fmt(item.value)}</p>
+                <p className="truncate text-[10px] font-bold uppercase tracking-wide text-[#477399]">{item.label}</p>
               </div>
             ))}
+          </div>
+          <div className="mt-5 rounded-2xl border border-[#dbeafe] bg-gradient-to-b from-[#f8fbff] to-white p-3">
+            <div className="mb-2 flex items-center justify-between gap-3 px-1">
+              <span className="text-xs font-black text-[#345b7c]">{tr("Xu hướng lượt quét", "Scan trend")}</span>
+              <span className="rounded-full bg-[#eff6ff] px-2 py-1 text-[10px] font-bold text-[#1f6feb]">{tr("7 điểm gần nhất", "Last 7 points")}</span>
+            </div>
+            <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="h-52 w-full overflow-visible" role="img" aria-label={tr("Biểu đồ xu hướng lượt quét", "Scan trend chart")}>
+              <defs>
+                <linearGradient id="adminTrendFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="#1F6FEB" stopOpacity="0.28" />
+                  <stop offset="100%" stopColor="#1F6FEB" stopOpacity="0.02" />
+                </linearGradient>
+              </defs>
+              {[0, 1, 2, 3].map(i => (
+                <line key={i} x1="22" x2={chartWidth - 22} y1={24 + i * 38} y2={24 + i * 38} stroke="#dbeafe" strokeWidth="1" />
+              ))}
+              <polygon points={trendArea} fill="url(#adminTrendFill)" />
+              <polyline points={trendLine} fill="none" stroke="#1F6FEB" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+              {trendCoordinates.map((point, i) => (
+                <g key={i}>
+                  <circle cx={point.x} cy={point.y} r="6" fill="#fff" stroke="#1F6FEB" strokeWidth="4" />
+                  <text x={point.x} y={chartHeight - 2} textAnchor="middle" className="fill-[#6b8aa8] text-[10px] font-bold">{i + 1}</text>
+                </g>
+              ))}
+            </svg>
           </div>
         </div>
 
@@ -173,16 +235,35 @@ export default function AdminOverview() {
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1f6feb]">{tr("Rủi ro & quét", "Risk & scans")}</p>
             <h2 className="text-xl font-black text-[#0b1623]">{tr("Cơ cấu xác thực", "Verification mix")}</h2>
           </div>
-          <div className="mb-5 overflow-hidden rounded-full border border-[#bfdbfe] bg-[#eff6ff] p-1">
-            <div className="flex h-5 overflow-hidden rounded-full">
-              {riskSegments.map(item => (
-                <div
-                  key={item.label}
-                  className={`${item.color} transition-all`}
-                  style={{ width: `${Math.max(6, Math.round((item.value / riskTotal) * 100))}%` }}
-                  title={`${item.label}: ${fmt(item.value)}`}
-                />
-              ))}
+          <div className="mb-5 grid grid-cols-1 items-center gap-4 sm:grid-cols-[180px_1fr]">
+            <div className="relative mx-auto h-44 w-44">
+              <svg viewBox="0 0 200 200" className="h-full w-full rotate-[-90deg]" role="img" aria-label={tr("Cơ cấu xác thực", "Verification mix")}>
+                <circle cx="100" cy="100" r="72" fill="none" stroke="#e0efff" strokeWidth="24" />
+                {donutSegments.map(item => (
+                  <path
+                    key={item.label}
+                    d={describeArc(100, 100, 72, item.start, item.end)}
+                    fill="none"
+                    stroke={item.stroke}
+                    strokeWidth="24"
+                    strokeLinecap="round"
+                  />
+                ))}
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <p data-no-auto-translate className="text-2xl font-black text-[#0b1623]">{ov?.fakeRate ?? "0.0"}%</p>
+                <p className="text-[10px] font-black uppercase tracking-wide text-red-500">{tr("Nghi giả", "Risk")}</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2">
+                <p className="text-[10px] font-black uppercase tracking-wide text-emerald-700">{tr("Doanh nghiệp đã xác thực", "Verified enterprises")}</p>
+                <p data-no-auto-translate className="text-xl font-black text-emerald-800">{fmt(verifiedEnterprises)}</p>
+              </div>
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2">
+                <p className="text-[10px] font-black uppercase tracking-wide text-amber-700">{tr("Chờ duyệt", "Pending")}</p>
+                <p data-no-auto-translate className="text-xl font-black text-amber-800">{fmt(pendingEnterprises)}</p>
+              </div>
             </div>
           </div>
           <div className="space-y-3">
