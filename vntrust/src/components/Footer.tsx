@@ -4,39 +4,83 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const tr = (vi: string, en: string) => (lang === "en" ? en : vi);
+
+  const linkGroups = [
+    {
+      title: tr("Xác thực", "Verify"),
+      links: [
+        { label: tr("Quét mã", "Scan code"), href: "/verify/scan" },
+        { label: tr("Tra cứu thủ công", "Manual lookup"), href: "/verify/manual" },
+        { label: tr("Xác thực AI", "AI verification"), href: "/verify/ai-doc" },
+        { label: tr("Lịch sử", "History"), href: "/verify/history" },
+      ],
+    },
+    {
+      title: tr("Dịch vụ", "Services"),
+      links: [
+        { label: tr("Bảng điều khiển", "Dashboard"), href: "/dashboard" },
+        { label: tr("Quản lý sản phẩm", "Inventory"), href: "/dashboard/inventory" },
+        { label: tr("Chuỗi cung ứng", "Supply chain"), href: "/supply-chain" },
+        { label: tr("Báo cáo phản ánh", "Report issue"), href: "/dashboard/report" },
+      ],
+    },
+    {
+      title: tr("Pháp lý", "Legal"),
+      links: [
+        { label: t("footer_link1"), href: "/dashboard/security" },
+        { label: t("footer_link3"), href: "/verify" },
+        { label: t("footer_link4"), href: "/portal" },
+      ],
+    },
+  ];
 
   return (
-    <footer className="w-full border-t border-[#1F6FEB]/15 bg-gradient-to-br from-[#eef7ff] via-white to-[#eef7ff] text-[#0b1623] dark:border-white/10 dark:from-[#08111d] dark:via-[#0b1623] dark:to-[#102033] dark:text-white">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-5 py-8 sm:px-8 lg:px-10">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-xl">
-            <div className="mb-2 flex items-center gap-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[#1F6FEB] text-white shadow-lg shadow-[#1F6FEB]/20">
-                <span className="material-symbols-outlined text-[22px]">verified_user</span>
-              </span>
-              <span className="font-display text-xl font-black tracking-wide">AI VERIGOODS</span>
+    <footer className="w-full border-t border-[#1F6FEB]/12 bg-white text-[#0b1623] dark:border-white/10 dark:bg-[#08111d] dark:text-white">
+      <div className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 lg:px-10">
+        <div className="grid gap-10 md:grid-cols-[1.25fr_2fr] lg:gap-16">
+          <div className="max-w-md">
+            <div className="font-display text-3xl font-black tracking-wide text-[#0B1623] dark:text-white">
+              AI VeriGoods
             </div>
-            <p className="text-sm font-semibold leading-relaxed text-[#3b6386] dark:text-slate-300">
-              © 2026 AI VeriGoods. {t("footer_sub")}
+            <div className="mt-2 text-xs font-black uppercase tracking-[0.28em] text-[#1F6FEB] dark:text-[#8db7ff]">
+              Anti-Counterfeit Platform
+            </div>
+            <p className="mt-6 text-sm font-semibold leading-7 text-[#53677d] dark:text-slate-300">
+              {t("footer_tagline")}
+            </p>
+            <p className="mt-4 text-sm leading-7 text-[#7a8794] dark:text-slate-400">
+              {t("footer_sub")}
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
-            <Link className="rounded-full border border-[#1F6FEB]/15 bg-white/70 px-4 py-2 text-xs font-black text-[#24557e] transition hover:border-[#1F6FEB]/35 hover:text-[#1F6FEB] dark:bg-white/5 dark:text-slate-300" href="/dashboard/security">{t("footer_link1")}</Link>
-            <Link className="rounded-full border border-[#1F6FEB]/15 bg-white/70 px-4 py-2 text-xs font-black text-[#24557e] transition hover:border-[#1F6FEB]/35 hover:text-[#1F6FEB] dark:bg-white/5 dark:text-slate-300" href="/supply-chain">{t("footer_link2")}</Link>
-            <Link className="rounded-full border border-[#1F6FEB]/15 bg-white/70 px-4 py-2 text-xs font-black text-[#24557e] transition hover:border-[#1F6FEB]/35 hover:text-[#1F6FEB] dark:bg-white/5 dark:text-slate-300" href="/verify">{t("footer_link3")}</Link>
-            <Link className="rounded-full border border-[#1F6FEB]/15 bg-white/70 px-4 py-2 text-xs font-black text-[#24557e] transition hover:border-[#1F6FEB]/35 hover:text-[#1F6FEB] dark:bg-white/5 dark:text-slate-300" href="/portal">{t("footer_link4")}</Link>
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:gap-12">
+            {linkGroups.map((group) => (
+              <nav key={group.title} aria-label={group.title}>
+                <h2 className="text-xs font-black uppercase tracking-[0.24em] text-[#1F6FEB] dark:text-[#8db7ff]">
+                  {group.title}
+                </h2>
+                <ul className="mt-5 space-y-4">
+                  {group.links.map((item) => (
+                    <li key={item.href}>
+                      <Link
+                        className="text-sm font-semibold text-[#40566f] transition hover:text-[#1F6FEB] dark:text-slate-300 dark:hover:text-white"
+                        href={item.href}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-[#1F6FEB]/10 pt-5 text-xs font-bold text-[#5b7d9b] dark:border-white/10 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-[#1F6FEB]/10 px-3 py-1 text-[#1F6FEB] dark:bg-white/10 dark:text-blue-200">ISO 27001</span>
-            <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-emerald-700 dark:text-emerald-300">Zero-trust</span>
-            <span className="rounded-full bg-[#C8A557]/15 px-3 py-1 text-[#8a6a18] dark:text-[#e6ca77]">AI Traceability</span>
-          </div>
-          <span>{t("footer_tagline")}</span>
+        <div className="mt-10 flex flex-col gap-3 border-t border-[#1F6FEB]/12 pt-6 text-sm font-semibold text-[#7a8794] dark:border-white/10 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+          <span>© 2026 AI VeriGoods. {tr("Bảo lưu mọi quyền.", "All rights reserved.")}</span>
+          <span>{tr("Tem, mã QR và trạng thái sản phẩm được xác minh bởi hệ thống.", "Product codes and status are verified by the system.")}</span>
         </div>
       </div>
     </footer>
