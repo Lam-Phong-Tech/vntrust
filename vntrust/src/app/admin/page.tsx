@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 interface Overview { totalProducts: number; totalBatches: number; totalQR: number; totalScans: number; totalFake: number; openAlerts: number; expiringSoon: number; fakeRate: string; }
 interface UsersResp { total: number; stats: { byRole: Record<string, number>; byStatus: Record<string, number> }; users: Array<{ id: string; ten: string | null; email: string; vaiTro: string; trangThai: string }>; }
 interface LogItem { id: string; action: string; user: string; role: string; time: string; status: string; }
+type AdminUiConfig = Record<string, { value: string }>;
 
 const fmt = (n: number | undefined) => (n ?? 0).toLocaleString("vi-VN");
 
@@ -42,17 +43,23 @@ export default function AdminOverview() {
   const [users, setUsers] = useState<UsersResp | null>(null);
   const [pending, setPending] = useState<UsersResp["users"]>([]);
   const [logs, setLogs] = useState<LogItem[]>([]);
+  const [adminUi, setAdminUi] = useState<AdminUiConfig>({});
   const [loading, setLoading] = useState(true);
+  const uiText = (baseKey: string, viFallback: string, enFallback: string) => {
+    const key = `${baseKey}_${lang}`;
+    return adminUi[key]?.value || tr(viFallback, enFallback);
+  };
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const [ovR, usR, pendR, logR] = await Promise.allSettled([
+        const [ovR, usR, pendR, logR, configR] = await Promise.allSettled([
           fetch("/api/analytics?type=overview&period=month", { cache: "no-store" }),
           fetch("/api/admin/users", { cache: "no-store" }),
           fetch("/api/admin/users?status=pending", { cache: "no-store" }),
           fetch("/api/logs?role=admin", { cache: "no-store" }),
+          fetch("/api/system-config?namespace=admin_ui", { cache: "no-store" }),
         ]);
         if (cancelled) return;
         if (ovR.status === "fulfilled" && ovR.value.ok) setOv(await ovR.value.json());
@@ -61,6 +68,10 @@ export default function AdminOverview() {
         if (logR.status === "fulfilled" && logR.value.ok) {
           const logData = await logR.value.json();
           setLogs(((logData.logs || []) as LogItem[]).filter(l => !isNoisySystemLog(l.action)).slice(0, 6));
+        }
+        if (configR.status === "fulfilled" && configR.value.ok) {
+          const configData = await configR.value.json();
+          setAdminUi(configData.config?.admin_ui || {});
         }
       } catch { /* ignore */ }
       finally { if (!cancelled) setLoading(false); }
@@ -82,13 +93,13 @@ export default function AdminOverview() {
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3 rounded-[28px] border border-[#bfdbfe] bg-white/85 p-5 shadow-sm">
         <div>
           <p className="mb-1 text-[11px] font-black uppercase tracking-[0.22em] text-[#1f6feb]">{tr("Quản trị hệ thống", "System Admin")}</p>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#0b1623] font-display drop-shadow-sm">{tr("Tổng quan quản trị", "Admin overview")}</h1>
-          <p className="text-sm text-[#477399] mt-1">{tr("Tình hình hệ thống AI VeriGoods", "AI VeriGoods system status")}</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#0b1623] font-display drop-shadow-sm">{uiText("admin_overview_title", "Tổng quan quản trị", "Admin overview")}</h1>
+          <p className="text-sm text-[#477399] mt-1">{uiText("admin_overview_subtitle", "Tình hình hệ thống AI VeriGoods", "AI VeriGoods system status")}</p>
         </div>
         <p className="rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-3 py-1 text-xs font-bold text-[#1f6feb]">
           {ov && ov.expiringSoon > 0
             ? tr(`${ov.expiringSoon} lô sắp hết hạn (30 ngày)`, `${ov.expiringSoon} batches expiring soon`)
-            : tr("Không có lô tới hạn", "No expiring batches")}
+            : uiText("no_expiring_batches", "Không có lô tới hạn", "No expiring batches")}
         </p>
       </div>
 
@@ -113,7 +124,7 @@ export default function AdminOverview() {
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1f6feb]">{tr("Cần xử lý", "Action needed")}</p>
-              <h2 className="text-xl font-black text-[#0b1623]">{tr("Tài khoản chờ duyệt", "Pending accounts")}</h2>
+              <h2 className="text-xl font-black text-[#0b1623]">{uiText("pending_accounts_title", "Tài khoản chờ duyệt", "Pending accounts")}</h2>
             </div>
             <div className="flex items-center gap-2">
               <span className="rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-2.5 py-1 text-xs font-black text-[#1f6feb]">{pending.length}</span>
@@ -129,7 +140,7 @@ export default function AdminOverview() {
           ) : pending.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/70 px-4 py-8 text-center">
               <span className="material-symbols-outlined mb-2 text-[30px] text-emerald-600">verified</span>
-              <p className="text-sm font-black text-emerald-800">{tr("Không có tài khoản nào đang chờ duyệt", "No accounts are pending")}</p>
+              <p className="text-sm font-black text-emerald-800">{uiText("pending_accounts_empty", "Không có tài khoản nào đang chờ duyệt", "No accounts are pending")}</p>
               <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-emerald-700/80">
                 {tr("Khi doanh nghiệp hoặc người dùng gửi hồ sơ mới, yêu cầu sẽ xuất hiện tại đây để admin xử lý.", "When users or enterprises submit a new profile, the request will appear here for review.")}
               </p>

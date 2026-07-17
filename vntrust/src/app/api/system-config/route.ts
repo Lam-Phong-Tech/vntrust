@@ -24,6 +24,18 @@ const DEFAULTS = {
     scan_log_days:     { value: '730', moTa: 'Số ngày giữ LuotQuet' },
     closed_alert_days: { value: '180', moTa: 'Số ngày giữ cảnh báo đã đóng' },
   },
+  admin_ui: {
+    admin_overview_title_vi: { value: 'Tổng quan quản trị', moTa: 'Tiêu đề chính trang tổng quan Admin (VI)' },
+    admin_overview_title_en: { value: 'Admin overview', moTa: 'Tiêu đề chính trang tổng quan Admin (EN)' },
+    admin_overview_subtitle_vi: { value: 'Tình hình hệ thống AI VeriGoods', moTa: 'Mô tả ngắn trang tổng quan Admin (VI)' },
+    admin_overview_subtitle_en: { value: 'AI VeriGoods system status', moTa: 'Mô tả ngắn trang tổng quan Admin (EN)' },
+    pending_accounts_title_vi: { value: 'Tài khoản chờ duyệt', moTa: 'Tiêu đề khối tài khoản chờ duyệt (VI)' },
+    pending_accounts_title_en: { value: 'Pending accounts', moTa: 'Tiêu đề khối tài khoản chờ duyệt (EN)' },
+    pending_accounts_empty_vi: { value: 'Không có tài khoản nào đang chờ duyệt', moTa: 'Thông báo khi không có tài khoản chờ duyệt (VI)' },
+    pending_accounts_empty_en: { value: 'No accounts are pending', moTa: 'Thông báo khi không có tài khoản chờ duyệt (EN)' },
+    no_expiring_batches_vi: { value: 'Không có lô tới hạn', moTa: 'Nhãn khi không có lô sắp hết hạn (VI)' },
+    no_expiring_batches_en: { value: 'No expiring batches', moTa: 'Nhãn khi không có lô sắp hết hạn (EN)' },
+  },
 };
 
 export async function GET(req: NextRequest) {
