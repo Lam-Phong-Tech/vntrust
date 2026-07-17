@@ -1218,10 +1218,10 @@ export default function Dashboard() {
             </div>
 
             {/* Divider rõ ràng tách map ↔ section dưới */}
-            <div className="w-full h-px bg-gradient-to-r from-transparent via-[#C8A557]/30 to-transparent mt-6 mb-2" />
+            <div className="hidden w-full h-px bg-gradient-to-r from-transparent via-[#C8A557]/30 to-transparent mt-6 mb-2" />
 
             {/* Bottom section — flow xuống dưới map, KHÔNG overlay (đã fix) */}
-            <div className="static flex flex-col lg:flex-row lg:flex-wrap gap-4 w-full pb-4 pt-4">
+            <div className="hidden flex-col lg:flex-row lg:flex-wrap gap-4 w-full pb-4 pt-4">
               <div className="block w-full lg:flex-1 space-y-4">
                 <h3 className="text-white font-bold tracking-widest text-sm mb-2">{t("sec_title")}</h3>
 

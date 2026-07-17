@@ -343,6 +343,7 @@ const dict: Record<string, Record<string, string>> = {
   footer_link2: { vi: "Minh bạch Blockchain", en: "Blockchain Transparency", zh: "区块链透明度", ja: "ブロックチェーン透明性", ko: "블록체인 투명성", fr: "Transparence Blockchain" },
   footer_link3: { vi: "Giao thức Quyền riêng tư", en: "Privacy Protocol", zh: "隐私协议", ja: "プライバシープロトコル", ko: "개인정보 프로토콜", fr: "Protocole de confidentialité" },
   footer_link4: { vi: "Điều khoản dịch vụ", en: "Terms of Service", zh: "服务条款", ja: "利用規約", ko: "서비스 약관", fr: "Conditions d'utilisation" },
+  footer_tagline: { vi: "Nền tảng chống hàng giả cho thương mại xác thực.", en: "Anti-counterfeit platform for verified commerce.", zh: "面向可信商业的防伪平台。", ja: "検証済み商取引のための偽造防止プラットフォーム。", ko: "검증된 상거래를 위한 위조 방지 플랫폼.", fr: "Plateforme anti-contrefaçon pour le commerce vérifié." },
 
   // ── Navbar Modals ──
   nav_chat_title: { vi: "AI VeriGoods AI Assistant", en: "AI VeriGoods AI Assistant", zh: "AI VeriGoods AI 助手", ja: "AI VeriGoods AI アシスタント", ko: "AI VeriGoods AI 어시스턴트", fr: "Assistant IA AI VeriGoods" },

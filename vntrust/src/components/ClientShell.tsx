@@ -6,6 +6,7 @@ import { ChatProvider } from "@/contexts/ChatContext";
 import Navbar, { AiNavModal } from "@/components/Navbar";
 import MobileBottomNav, { MobileTopBar } from "@/components/MobileBottomNav";
 import { GeolocationPrompt } from "@/hooks/useGeolocation";
+import Footer from "@/components/Footer";
 
 // Quy tắc layout (revision sau feedback):
 // TẤT CẢ role + anonymous → full responsive (Navbar desktop ≥lg, MobileTop+Bottom <lg)
@@ -78,9 +79,10 @@ function useSessionGuard(isDashboard: boolean, pathname: string) {
 }
 
 // ── ClientShell ───────────────────────────────────────────────────────────────
-export default function ClientShell({ children }: { children: React.ReactNode; initialRole?: string }) {
+export default function ClientShell({ children, initialRole = "" }: { children: React.ReactNode; initialRole?: string }) {
   const pathname = usePathname();
   const [aiOpen, setAiOpen] = useState(false);
+  const [currentRole, setCurrentRole] = useState(initialRole);
 
   const isVerifySubpath     = pathname.startsWith("/verify/") && pathname !== "/verify";
   const isVerifyToolPage    = /^\/verify\/(manual|wizard|history|rewards|profile|scan|camera|ai-doc)(?:\/|$)/.test(pathname);
@@ -92,6 +94,7 @@ export default function ClientShell({ children }: { children: React.ReactNode; i
   const hideDesktopNav      = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifyResultPage || isAdminArea;
   const hideMobileBottomNav = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifyResultPage || isAdminArea;
   const hideFloatingAi      = HIDE_NAV_ROUTES.some(r => pathname.startsWith(r)) || isVerifyResultPage || isAdminArea;
+  const hideFooter          = isAdminArea || currentRole === "admin";
 
   // Layout mode: mobile-frame chỉ cho consumer + anonymous; role khác → responsive
   // SSR khởi tạo từ cookie (initialRole), CSR có thể re-check on role change
@@ -100,7 +103,12 @@ export default function ClientShell({ children }: { children: React.ReactNode; i
   useEffect(() => {
     // Re-check role on path change (user vừa login/logout)
     setMobileFrameMode(isMobileFrameRole());
-  }, [pathname]);
+    try {
+      setCurrentRole(localStorage.getItem("userRole") || initialRole || "");
+    } catch {
+      setCurrentRole(initialRole || "");
+    }
+  }, [pathname, initialRole]);
 
   // Only activate session guard on protected routes
   const isDashboard = pathname.startsWith("/dashboard");
@@ -132,6 +140,8 @@ export default function ClientShell({ children }: { children: React.ReactNode; i
           <main className={`flex-1 ${mainTopPad} ${mainBottomPad}`}>
             {children}
           </main>
+
+          {!hideFooter && <Footer />}
 
           {!hideFloatingAi && (
             <>
