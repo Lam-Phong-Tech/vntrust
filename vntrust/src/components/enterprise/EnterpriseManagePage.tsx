@@ -197,35 +197,39 @@ function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { 
 
 function OperationNav({ items }: { items: ModuleItem[] }) {
   return (
-    <aside className="lg:sticky lg:top-4 lg:self-start">
-      <div className="overflow-hidden rounded-2xl border border-[#b9d7ff] bg-white shadow-md">
-        <div className="border-b border-white/20 bg-[#1F6FEB] px-4 py-4 text-white">
-          <div className="mb-3 flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#1F6FEB] shadow-sm">
-              <span className="material-symbols-outlined text-[22px]">business_center</span>
+    <aside className="lg:sticky lg:top-0 lg:h-screen lg:self-start">
+      <div className="flex h-full overflow-hidden border border-[#b9d7ff] bg-[#1F6FEB] shadow-md lg:w-[300px] lg:flex-col lg:rounded-none lg:border-y-0 lg:border-l-0">
+        <div className="min-w-[300px] border-r border-white/15 px-4 py-4 text-white lg:min-w-0 lg:border-b lg:border-r-0">
+          <Link href="/enterprise/manage" className="mb-5 flex items-center gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm">
+              <img src="/logo-icon.png" alt="AI VeriGoods" className="h-7 w-7 object-contain" />
             </span>
-            <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/75">Menu nghiệp vụ</p>
-              <h2 className="truncate text-base font-black">Quản lý nhanh</h2>
-            </div>
+            <span className="min-w-0">
+              <img src="/verigoods-wordmark.png" alt="VeriGoods" className="h-5 w-auto max-w-[150px] object-contain brightness-110 contrast-125" />
+              <span className="mt-1 block text-[9px] font-black uppercase tracking-[0.14em] text-white/75">Enterprise Console</span>
+            </span>
+          </Link>
+          <div className="rounded-2xl border border-white/20 bg-white/10 p-3">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/75">Menu nghiệp vụ</p>
+            <h2 className="mt-1 truncate text-xl font-black">Quản lý nhanh</h2>
+            <p className="mt-2 text-[11px] font-semibold leading-5 text-white/75">Điều hướng nghiệp vụ doanh nghiệp, tách riêng khỏi dashboard.</p>
           </div>
-          <p className="text-[11px] font-semibold leading-5 text-white/75">Điều hướng nghiệp vụ doanh nghiệp, tách riêng khỏi dashboard.</p>
         </div>
-        <nav className="flex gap-2 overflow-x-auto p-2 lg:flex-col lg:overflow-visible">
+        <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:flex-col lg:overflow-y-auto">
           {items.map(item => (
             <Link
               key={item.href}
               href={item.href}
-              className="group flex min-w-[220px] items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left transition hover:border-[#1F6FEB]/30 hover:bg-[#eef5fb] lg:min-w-0"
+              className="group flex min-w-[225px] items-center gap-3 rounded-2xl border border-white/10 px-3 py-3 text-left text-white transition hover:border-white/40 hover:bg-white/10 lg:min-w-0"
             >
-              <span className="material-symbols-outlined flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#bfdbfe] bg-[#eaf3ff] text-[22px] text-[#1F6FEB] shadow-sm">
+              <span className="material-symbols-outlined flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/25 bg-white text-[22px] text-[#1F6FEB] shadow-sm">
                 {item.icon}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-black text-slate-950">{item.title}</span>
-                <span className="mt-0.5 block truncate text-[11px] font-semibold text-[#477399]">{item.action}</span>
+                <span className="block truncate text-sm font-black">{item.title}</span>
+                <span className="mt-0.5 block truncate text-[11px] font-semibold text-white/75">{item.action}</span>
               </span>
-              <span className="material-symbols-outlined text-[18px] text-[#1F6FEB] transition group-hover:translate-x-0.5">chevron_right</span>
+              <span className="material-symbols-outlined text-[18px] text-white/85 transition group-hover:translate-x-0.5">chevron_right</span>
             </Link>
           ))}
         </nav>
@@ -362,8 +366,11 @@ export default function EnterpriseManagePage() {
 
   return (
     <main className="min-h-screen bg-[#eef5fb] text-slate-950">
-      <div className="mx-auto max-w-[1500px] p-4 sm:p-6 lg:p-8">
-        <header className="mb-6 flex flex-col gap-4 border-b border-[#cfe1f4] pb-5 lg:flex-row lg:items-end lg:justify-between">
+      <div className="lg:grid lg:min-h-screen lg:grid-cols-[300px_minmax(0,1fr)]">
+        <OperationNav items={modules} />
+
+        <div className="min-w-0 p-4 sm:p-6 lg:p-8">
+        <header className="mb-6 flex flex-col gap-4 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:flex-row lg:items-end lg:justify-between">
           <div className="min-w-0">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-[#1F6FEB]">Enterprise Console</p>
             <h1 className="mt-1 text-2xl font-black text-slate-950 sm:text-4xl">{tr("Tên công ty / doanh nghiệp", "Company / enterprise name")}</h1>
@@ -399,9 +406,6 @@ export default function EnterpriseManagePage() {
             )}
           </div>
         </header>
-
-        <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)]">
-          <OperationNav items={modules} />
 
           <div className="min-w-0">
             <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
@@ -557,7 +561,7 @@ export default function EnterpriseManagePage() {
             {!data.recentScans.length && !data.recentAlerts.length && <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có hoạt động gần đây.</p>}
           </AdminPanel>
         </div>
-          </div>
+        </div>
         </div>
       </div>
     </main>
