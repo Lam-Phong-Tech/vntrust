@@ -58,6 +58,12 @@ function clearSession() {
   ["userRole", "userName", "userId", "doanhNghiepId", "vaiTroCty", "quyenMoiNV"].forEach(n => { document.cookie = `${n}=; Max-Age=0; path=/`; });
 }
 
+function readCookie(name: string) {
+  if (typeof document === "undefined") return "";
+  const raw = document.cookie.split("; ").find(row => row.startsWith(`${name}=`))?.split("=")[1];
+  return raw ? decodeURIComponent(raw) : "";
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -69,10 +75,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [open, setOpen] = useState(false); // mobile sidebar
 
   useEffect(() => {
-    const role = localStorage.getItem("userRole");
+    const cookieRole = readCookie("userRole");
+    const role = cookieRole || localStorage.getItem("userRole");
     if (!role) { router.replace("/login"); return; }
     if (role !== "admin") { router.replace("/dashboard?error=forbidden"); return; }
-    setUserName(localStorage.getItem("userName") || "Admin");
+    const cookieName = readCookie("userName");
+    if (cookieRole) {
+      localStorage.setItem("userRole", cookieRole);
+      if (cookieName) localStorage.setItem("userName", cookieName);
+    }
+    setUserName(cookieName || localStorage.getItem("userName") || "Admin");
     setReady(true);
   }, [router]);
 

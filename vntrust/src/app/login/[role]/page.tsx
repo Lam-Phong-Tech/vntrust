@@ -35,6 +35,12 @@ function useToast() {
   return { toast, show, dismiss: () => setToast(null) };
 }
 
+function readCookie(name: string) {
+  if (typeof document === "undefined") return "";
+  const raw = document.cookie.split("; ").find(row => row.startsWith(`${name}=`))?.split("=")[1];
+  return raw ? decodeURIComponent(raw) : "";
+}
+
 // ─── Validation helpers (chuẩn hoá theo yêu cầu) ──────────────────────────────
 // Họ tên: chỉ chữ + dấu space, tối đa 20 ký tự
 function validateHoTen(name: string): string | null {
@@ -364,8 +370,8 @@ export default function LoginPage() {
 
     try {
       if (view === "login") {
-        const activeRole = localStorage.getItem("userRole");
-        const activeUser = localStorage.getItem("userName");
+        const activeRole = readCookie("userRole") || localStorage.getItem("userRole");
+        const activeUser = readCookie("userName") || localStorage.getItem("userName");
         if (activeRole && activeRole !== pageRole) {
           showToast(`Trình duyệt đang đăng nhập phân quyền ${activeRole}${activeUser ? ` (${activeUser})` : ""}. Vui lòng đăng xuất hoặc đổi tài khoản trước khi đăng nhập phân quyền khác.`, "error");
           setLoading(false);
