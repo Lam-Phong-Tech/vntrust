@@ -64,6 +64,8 @@ type ModuleItem = {
   locked: boolean;
 };
 
+type KycDocumentField = "giayphep_url" | "cmnd_url";
+
 const fmt = new Intl.NumberFormat("vi-VN");
 
 const twoLineClamp = {
@@ -84,6 +86,16 @@ const profileFieldLabels: Array<{ key: keyof ManageData["company"]; label: strin
   { key: "giayphep_url", label: "Giấy phép kinh doanh" },
   { key: "cmnd_url", label: "CCCD/CMND người đại diện" },
 ];
+
+const profileFieldTargets: Partial<Record<keyof ManageData["company"], string>> = {
+  diaChi: "/dashboard/kyc#enterprise-info",
+  nguoiDaiDien: "/dashboard/kyc#enterprise-info",
+  hotline: "/dashboard/kyc#enterprise-info",
+  email: "/dashboard/kyc#enterprise-info",
+  nganh_VSIC: "/dashboard/kyc#enterprise-info",
+  giayphep_url: "/dashboard/kyc#giayphep_url",
+  cmnd_url: "/dashboard/kyc#cmnd_url",
+};
 
 const statusText: Record<string, string> = {
   verified: "Đã xác thực",
@@ -260,6 +272,8 @@ export default function EnterpriseManagePage() {
   const [data, setData] = useState<ManageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [uploadingMissing, setUploadingMissing] = useState<KycDocumentField | null>(null);
+  const [missingNotice, setMissingNotice] = useState("");
 
   useEffect(() => {
     document.body.classList.add("enterprise-manage-route");
@@ -299,6 +313,50 @@ export default function EnterpriseManagePage() {
   const canManagePeople = data?.me.vaiTroCty === "company_admin" || data?.me.userRole === "admin";
   const canInput = data?.me.userRole === "admin" || ["company_admin", "staff_input"].includes(data?.me.vaiTroCty || "");
   const canWarehouse = data?.me.userRole === "admin" || ["company_admin", "warehouse", "staff_input"].includes(data?.me.vaiTroCty || "");
+
+  const uploadMissingDocument = async (field: KycDocumentField, file: File) => {
+    const label = field === "giayphep_url" ? "Giấy phép kinh doanh" : "CCCD/CMND người đại diện";
+    setUploadingMissing(field);
+    setMissingNotice("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("type", "kyc");
+      fd.append("kycField", field);
+      const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
+      const uploadJson = await uploadRes.json().catch(() => ({}));
+      if (!uploadRes.ok) throw new Error(uploadJson.error || "Không upload được file");
+
+      const updateRes = await fetch("/api/kyc", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update_info", [field]: uploadJson.url }),
+      });
+      const updateJson = await updateRes.json().catch(() => ({}));
+      if (!updateRes.ok) throw new Error(updateJson.error || "Không lưu được giấy tờ");
+
+      setData(prev => {
+        if (!prev) return prev;
+        const company = { ...prev.company, ...(updateJson.company || {}), [field]: uploadJson.url };
+        const completed = profileFieldLabels.filter(item => company[item.key]).length;
+        const total = profileFieldLabels.length;
+        return {
+          ...prev,
+          company,
+          profileCompletion: {
+            completed,
+            total,
+            percent: Math.round((completed / total) * 100),
+          },
+        };
+      });
+      setMissingNotice(`Đã bổ sung ${label}.`);
+    } catch (e) {
+      setMissingNotice(e instanceof Error ? e.message : "Không bổ sung được giấy tờ");
+    } finally {
+      setUploadingMissing(null);
+    }
+  };
 
   const modules = useMemo<ModuleItem[]>(() => {
     if (!data) return [];
@@ -436,10 +494,52 @@ export default function EnterpriseManagePage() {
               <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
                 <p className="text-[11px] font-black uppercase text-amber-700">Còn thiếu</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {missingProfileFields.map(field => (
-                    <span key={field.key} className="rounded-full border border-amber-200 bg-white px-2 py-1 text-[10px] font-bold text-amber-800">{field.label}</span>
-                  ))}
+                  {missingProfileFields.map(field => {
+                    const href = profileFieldTargets[field.key] || "/dashboard/kyc";
+                    const docField: KycDocumentField | null =
+                      field.key === "giayphep_url" || field.key === "cmnd_url" ? field.key : null;
+                    if (docField) {
+                      const isUploading = uploadingMissing === docField;
+                      return (
+                        <label
+                          key={field.key}
+                          className={`inline-flex cursor-pointer items-center gap-1 rounded-full border px-2 py-1 text-[10px] font-bold transition ${
+                            isUploading
+                              ? "border-amber-300 bg-amber-100 text-amber-700"
+                              : "border-amber-200 bg-white text-amber-800 hover:border-amber-400 hover:bg-amber-100"
+                          }`}
+                          title={`Bổ sung trực tiếp ${field.label}`}
+                        >
+                          {isUploading ? "Đang tải..." : field.label}
+                          <span className="material-symbols-outlined text-[12px]">{isUploading ? "progress_activity" : "upload_file"}</span>
+                          <input
+                            type="file"
+                            accept=".pdf,image/jpeg,image/png,image/webp"
+                            className="hidden"
+                            disabled={!!uploadingMissing}
+                            onChange={e => {
+                              const file = e.target.files?.[0];
+                              if (file) uploadMissingDocument(docField, file);
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+                      );
+                    }
+                    return (
+                      <Link
+                        key={field.key}
+                        href={href}
+                        className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-white px-2 py-1 text-[10px] font-bold text-amber-800 transition hover:border-amber-400 hover:bg-amber-100"
+                        title={`Bổ sung ${field.label}`}
+                      >
+                        {field.label}
+                        <span className="material-symbols-outlined text-[12px]">edit</span>
+                      </Link>
+                    );
+                  })}
                 </div>
+                {missingNotice && <p className="mt-2 text-[11px] font-semibold text-amber-800">{missingNotice}</p>}
               </div>
             )}
           </div>

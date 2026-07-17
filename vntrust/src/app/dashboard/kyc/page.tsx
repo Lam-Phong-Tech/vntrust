@@ -119,7 +119,7 @@ function DocUploadZone({
   const isAccepted = hasDoc || !!verified;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div id={fieldName} className="flex scroll-mt-28 flex-col gap-3">
       <div className="flex items-center gap-2 mb-1">
         <span className="material-symbols-outlined text-amber-400 text-[20px]">{icon}</span>
         <span className="text-sm font-bold text-white">{label}</span>
@@ -1006,7 +1006,7 @@ export default function KYCPage() {
             </div>
 
             {/* Document Upload Section */}
-            <div className="glass-panel border border-white/10 rounded-2xl overflow-hidden">
+            <div id="legal-documents" className="glass-panel scroll-mt-28 border border-white/10 rounded-2xl overflow-hidden">
               <div className="px-4 sm:px-6 py-4 border-b border-white/5 flex flex-wrap items-center gap-2">
                 <span className="material-symbols-outlined text-amber-400 text-[18px]">folder_open</span>
                 <h2 className="text-sm font-bold text-white min-w-0 flex-1">Tài liệu pháp lý (BR-01)</h2>
@@ -1076,7 +1076,7 @@ export default function KYCPage() {
             </div>
 
             {/* Company Info — editable (khi chưa verified) hoặc read-only (đã verified) */}
-            <div className="glass-panel border border-white/10 rounded-2xl overflow-hidden">
+            <div id="enterprise-info" className="glass-panel scroll-mt-28 border border-white/10 rounded-2xl overflow-hidden">
               <div className="px-4 sm:px-6 py-4 border-b border-white/5 flex flex-wrap items-center gap-2">
                 <span className="material-symbols-outlined text-cyan-400 text-[18px]">business</span>
                 <h2 className="text-sm font-bold text-white min-w-0 flex-1">{tr("Thông tin doanh nghiệp", "Business information")}</h2>
@@ -1151,7 +1151,7 @@ export default function KYCPage() {
             </div>
 
             {/* ── Giấy phép lưu hành (gắn vào hồ sơ DN) ── */}
-            <div className="glass-panel border border-white/10 rounded-2xl overflow-hidden">
+            <div id="circulation-licenses" className="glass-panel scroll-mt-28 border border-white/10 rounded-2xl overflow-hidden">
               <div className="px-4 sm:px-6 py-4 border-b border-white/5 flex flex-wrap items-center gap-2">
                 <span className="material-symbols-outlined text-[#C8A557] text-[18px]">verified</span>
                 <h2 className="text-sm font-bold text-white min-w-0 flex-1">Giấy phép lưu hành</h2>
