@@ -588,6 +588,10 @@ html.light-mode .feature-card-visual__icon {
   opacity: 0.17;
 }
 
+.enterprise-operation-nav .feature-card-visual {
+  display: none;
+}
+
 body.enterprise-manage-route .floating-ai-button {
   right: 1rem !important;
   bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;

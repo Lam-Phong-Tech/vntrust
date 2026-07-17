@@ -249,7 +249,7 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
               <img src="/logo-icon.png" alt="AI VeriGoods" className="h-7 w-7 object-contain" />
             </span>
             <span className="min-w-0">
-              <img src="/verigoods-wordmark.png" alt="VeriGoods" className="h-5 w-auto max-w-[150px] object-contain brightness-110 contrast-125" />
+              <img src="/verigoods-wordmark.png" alt="VeriGoods" className="h-4 w-[172px] max-w-full object-contain" />
               <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/75">Enterprise Console</span>
             </span>
           </Link>
@@ -259,7 +259,7 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
             <p className="mt-2 text-[11px] font-semibold leading-5 text-white/75">Điều hướng nghiệp vụ doanh nghiệp, tách riêng khỏi dashboard.</p>
           </div>
         </div>
-        <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:pb-10">
+        <nav className="enterprise-operation-nav flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:pb-10">
           {items.map(item => {
             const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
