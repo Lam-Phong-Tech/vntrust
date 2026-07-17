@@ -1,7 +1,7 @@
 "use client";
 // Admin User Management — quản lý tài khoản NguoiDung
 // Khóa/Mở khóa (suspend/active) · Đổi vai trò · Xóa · Search/filter
-import { useEffect, useState, useCallback } from "react";
+import { FormEvent, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Toast } from "@/components/Toast";
@@ -24,6 +24,15 @@ interface ListResp {
     byRole:   Record<string, number>;
     byStatus: Record<string, number>;
   };
+}
+
+interface CreateUserForm {
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  status: string;
+  password: string;
 }
 
 // Hệ thống còn 4 vai trò: Admin · Doanh nghiệp (gộp NSX + NK) · Người tiêu dùng · Cơ quan chức năng
@@ -55,6 +64,16 @@ export default function AdminUsersPage() {
   const [toast, setToast] = useState<{ msg: string; type: "ok" | "err" } | null>(null);
   const [actionTarget, setActionTarget] = useState<User | null>(null);
   const [confirmDel, setConfirmDel] = useState<User | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createForm, setCreateForm] = useState<CreateUserForm>({
+    name: "",
+    email: "",
+    phone: "",
+    role: "consumer",
+    status: "active",
+    password: "",
+  });
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 12;
 
@@ -156,6 +175,42 @@ export default function AdminUsersPage() {
     }
   };
 
+  const resetCreateForm = () => {
+    setCreateForm({
+      name: "",
+      email: "",
+      phone: "",
+      role: "consumer",
+      status: "active",
+      password: "",
+    });
+  };
+
+  const createUser = async (e: FormEvent) => {
+    e.preventDefault();
+    setCreating(true);
+    try {
+      const r = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(createForm),
+      });
+      const json = await r.json();
+      if (!r.ok) {
+        const detail = Array.isArray(json.details) ? `: ${json.details.join(", ")}` : "";
+        throw new Error((json.error || "Create failed") + detail);
+      }
+      showToast(tr(`Đã tạo tài khoản ${createForm.email}`, `Created account ${createForm.email}`), "ok");
+      setShowCreate(false);
+      resetCreateForm();
+      await fetchUsers();
+    } catch (e: any) {
+      showToast(e.message, "err");
+    } finally {
+      setCreating(false);
+    }
+  };
+
   if (!userRole) return null;
 
   const stats = data?.stats || { byRole: {}, byStatus: {} };
@@ -182,6 +237,14 @@ export default function AdminUsersPage() {
                 "Lock / unlock / delete accounts of users, manufacturers, distributors")}
           </p>
         </div>
+        <button
+          type="button"
+          onClick={() => setShowCreate(true)}
+          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#1F6FEB] px-4 py-3 text-sm font-black text-white shadow-lg shadow-blue-500/20 transition hover:bg-[#1857c9]"
+        >
+          <span className="material-symbols-outlined text-[20px]">person_add</span>
+          {tr("Thêm người dùng", "Add user")}
+        </button>
       </div>
 
       {/* Stats summary */}
@@ -395,6 +458,122 @@ export default function AdminUsersPage() {
             {tr("Sau", "Next")}
             <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           </button>
+        </div>
+      )}
+
+      {/* Create user modal */}
+      {showCreate && (
+        <div className="fixed inset-0 z-[2147483645] flex items-center justify-center bg-black/60 p-3 backdrop-blur-sm sm:p-4" onClick={() => setShowCreate(false)}>
+          <form
+            className="w-full max-w-2xl rounded-2xl border border-white/10 bg-[#0B1623] p-4 shadow-2xl sm:p-6"
+            onClick={(e) => e.stopPropagation()}
+            onSubmit={createUser}
+          >
+            <div className="mb-5 flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#C8A557]">{tr("Quản trị hệ thống", "System admin")}</p>
+                <h3 className="text-xl font-black text-white">{tr("Thêm người dùng mới", "Add new user")}</h3>
+                <p className="mt-1 text-xs text-slate-400">
+                  {tr("Admin tạo tài khoản trực tiếp, mật khẩu phải đạt chính sách bảo mật.", "Create an account directly. Password must meet security policy.")}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCreate(false)}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-slate-300 hover:bg-white/10"
+                aria-label={tr("Đóng", "Close")}
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <label className="space-y-1.5">
+                <span className="text-[11px] font-black uppercase tracking-wide text-slate-400">{tr("Họ và tên", "Full name")} *</span>
+                <input
+                  value={createForm.name}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, name: e.target.value }))}
+                  required
+                  maxLength={60}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none placeholder:text-slate-500 focus:border-[#1F6FEB]/60"
+                  placeholder={tr("VD: Nguyễn Văn A", "Ex: Nguyen Van A")}
+                />
+              </label>
+              <label className="space-y-1.5">
+                <span className="text-[11px] font-black uppercase tracking-wide text-slate-400">Email *</span>
+                <input
+                  value={createForm.email}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value.trim().toLowerCase() }))}
+                  required
+                  type="email"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none placeholder:text-slate-500 focus:border-[#1F6FEB]/60"
+                  placeholder="email@example.com"
+                />
+              </label>
+              <label className="space-y-1.5">
+                <span className="text-[11px] font-black uppercase tracking-wide text-slate-400">{tr("Số điện thoại", "Phone")}</span>
+                <input
+                  value={createForm.phone}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, phone: e.target.value.replace(/[^\d+]/g, "").slice(0, 12) }))}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none placeholder:text-slate-500 focus:border-[#1F6FEB]/60"
+                  placeholder="0987654321"
+                />
+              </label>
+              <label className="space-y-1.5">
+                <span className="text-[11px] font-black uppercase tracking-wide text-slate-400">{tr("Mật khẩu", "Password")} *</span>
+                <input
+                  value={createForm.password}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, password: e.target.value }))}
+                  required
+                  type="password"
+                  minLength={12}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none placeholder:text-slate-500 focus:border-[#1F6FEB]/60"
+                  placeholder="Az@123456789"
+                />
+              </label>
+              <label className="space-y-1.5">
+                <span className="text-[11px] font-black uppercase tracking-wide text-slate-400">{tr("Vai trò", "Role")}</span>
+                <select
+                  value={createForm.role}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value }))}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none focus:border-[#1F6FEB]/60"
+                >
+                  {Object.entries(ROLE_META).map(([k, m]) => (
+                    <option key={k} value={k} className="bg-[#0B1623] text-white">{lang === "en" ? m.en : m.label}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="space-y-1.5">
+                <span className="text-[11px] font-black uppercase tracking-wide text-slate-400">{tr("Trạng thái", "Status")}</span>
+                <select
+                  value={createForm.status}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, status: e.target.value }))}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none focus:border-[#1F6FEB]/60"
+                >
+                  {Object.entries(STATUS_META).map(([k, m]) => (
+                    <option key={k} value={k} className="bg-[#0B1623] text-white">{lang === "en" ? m.en : m.label}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => setShowCreate(false)}
+                className="flex-1 rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-bold text-white hover:bg-white/10"
+              >
+                {tr("Hủy", "Cancel")}
+              </button>
+              <button
+                type="submit"
+                disabled={creating}
+                className="flex-1 rounded-xl bg-[#1F6FEB] py-3 text-sm font-black text-white hover:bg-[#1857c9] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {creating ? tr("Đang tạo...", "Creating...") : tr("Tạo tài khoản", "Create account")}
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
