@@ -384,7 +384,7 @@ export default function AdminUsersPage() {
                           <button
                             type="button"
                             className="fixed inset-0 z-40 cursor-default"
-                            aria-label={tr("Dong menu thao tac", "Close actions")}
+                            aria-label={tr("Đóng menu thao tác", "Close actions")}
                             onClick={() => setActionTarget(null)}
                           />
                           <div className="absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-xl border border-[#bfdbfe] bg-white text-[#0b1623] shadow-2xl">
@@ -395,17 +395,17 @@ export default function AdminUsersPage() {
                               className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-black text-[#0b1623] hover:bg-[#eff6ff] disabled:cursor-not-allowed disabled:text-slate-400"
                             >
                               <span className="material-symbols-outlined text-[17px]">{u.trangThai === "active" ? "lock" : "lock_open"}</span>
-                              {u.trangThai === "active" ? tr("Khoa tai khoan", "Lock account") : tr("Mo khoa tai khoan", "Unlock account")}
+                              {u.trangThai === "active" ? tr("Khóa tài khoản", "Lock account") : tr("Mở khóa tài khoản", "Unlock account")}
                             </button>
                             <button
                               type="button"
                               onClick={() => { setActionTarget(null); setConfirmDel(u); }}
                               disabled={isAct || isLastAdmin}
                               className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2.5 text-left text-xs font-black text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:text-slate-400"
-                              title={isLastAdmin ? tr("Khong the xoa quan tri cuoi cung", "Cannot delete the last admin") : undefined}
+                              title={isLastAdmin ? tr("Không thể xóa quản trị cuối cùng", "Cannot delete the last admin") : undefined}
                             >
                               <span className="material-symbols-outlined text-[17px]">delete</span>
-                              {tr("Xoa tai khoan", "Delete account")}
+                              {tr("Xóa tài khoản", "Delete account")}
                             </button>
                           </div>
                         </>
@@ -469,7 +469,7 @@ export default function AdminUsersPage() {
                     <button
                       type="button"
                       className="fixed inset-0 z-40 cursor-default"
-                      aria-label={tr("Dong menu thao tac", "Close actions")}
+                      aria-label={tr("Đóng menu thao tác", "Close actions")}
                       onClick={() => setActionTarget(null)}
                     />
                     <div className="absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-xl border border-[#bfdbfe] bg-white text-[#0b1623] shadow-2xl">
@@ -480,17 +480,17 @@ export default function AdminUsersPage() {
                         className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-black text-[#0b1623] hover:bg-[#eff6ff] disabled:cursor-not-allowed disabled:text-slate-400"
                       >
                         <span className="material-symbols-outlined text-[17px]">{u.trangThai === "active" ? "lock" : "lock_open"}</span>
-                        {u.trangThai === "active" ? tr("Khoa tai khoan", "Lock account") : tr("Mo khoa tai khoan", "Unlock account")}
+                        {u.trangThai === "active" ? tr("Khóa tài khoản", "Lock account") : tr("Mở khóa tài khoản", "Unlock account")}
                       </button>
                       <button
                         type="button"
                         onClick={() => { setActionTarget(null); setConfirmDel(u); }}
                         disabled={isAct || isLastAdmin}
                         className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2.5 text-left text-xs font-black text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:text-slate-400"
-                        title={isLastAdmin ? tr("Khong the xoa quan tri cuoi cung", "Cannot delete the last admin") : undefined}
+                        title={isLastAdmin ? tr("Không thể xóa quản trị cuối cùng", "Cannot delete the last admin") : undefined}
                       >
                         <span className="material-symbols-outlined text-[17px]">delete</span>
-                        {tr("Xoa tai khoan", "Delete account")}
+                        {tr("Xóa tài khoản", "Delete account")}
                       </button>
                     </div>
                   </>
