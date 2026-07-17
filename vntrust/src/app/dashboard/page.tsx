@@ -924,7 +924,8 @@ export default function Dashboard() {
 
               {/* ── Phê duyệt hồ sơ: Admin only ── */}
               {(userRole === 'admin') && (
-                <Link href="/dashboard/kyc" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/kyc" className="dashboard-function-card dashboard-function-card--profile glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">fact_check</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-cyan-300">verified_user</span>
@@ -939,7 +940,8 @@ export default function Dashboard() {
 
               {/* ── Hồ sơ doanh nghiệp: Manufacturer + Importer (xem hồ sơ của chính DN) ── */}
               {(userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/dashboard/ho-so" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/ho-so" className="dashboard-function-card dashboard-function-card--profile glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">article</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-cyan-300">business_center</span>
@@ -954,7 +956,8 @@ export default function Dashboard() {
 
               {/* ── Trung tâm quản lý doanh nghiệp: Manufacturer + Importer ── */}
               {(userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/enterprise/manage" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
+                <Link href="/enterprise/manage" className="dashboard-function-card dashboard-function-card--enterprise glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-emerald-500/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">account_tree</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--green material-symbols-outlined text-3xl text-emerald-300">dashboard_customize</span>
@@ -969,7 +972,8 @@ export default function Dashboard() {
 
               {/* ── Quản lý người dùng: Admin only ── */}
               {(userRole === 'admin') && (
-                <Link href="/dashboard/users" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/users" className="dashboard-function-card dashboard-function-card--users glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">groups</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--green material-symbols-outlined text-3xl text-emerald-300">manage_accounts</span>
@@ -988,7 +992,8 @@ export default function Dashboard() {
 
               {/* ── Phân quyền hệ thống: Admin only ── */}
               {(userRole === 'admin') && (
-                <Link href="/dashboard/phan-quyen" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/phan-quyen" className="dashboard-function-card dashboard-function-card--permissions glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">admin_panel_settings</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-[#1F6FEB]">key</span>
@@ -1007,7 +1012,8 @@ export default function Dashboard() {
 
               {/* ── Kho hàng: Manufacturer + Admin ── */}
               {(userRole === 'manufacturer') && (
-                <Link href="/dashboard/inventory" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden">
+                <Link href="/dashboard/inventory" className="dashboard-function-card dashboard-function-card--inventory glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">deployed_code</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex gap-2 mb-2"><span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-blue-300">inventory_2</span><span className="dashboard-feature-icon dashboard-feature-icon--cyan material-symbols-outlined text-3xl text-cyan-300">qr_code</span></div>
                   <div><p className="text-[10px] text-slate-300 border-b border-white/10 pb-1 mb-1">{t("app_inv_sub")}</p><h3 className="text-sm font-bold text-white">{t("app_inv")}</h3></div>
@@ -1016,7 +1022,8 @@ export default function Dashboard() {
 
               {/* ── Cảnh báo Real-time: CHỈ Admin ── */}
               {userRole === 'admin' && (
-                <Link href="/dashboard/alerts" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/alerts" className="dashboard-function-card dashboard-function-card--alerts glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">crisis_alert</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--red material-symbols-outlined text-3xl text-[#1F6FEB]">notifications_active</span>
@@ -1028,7 +1035,8 @@ export default function Dashboard() {
 
               {/* ── Integration Hub: BR-07 — NSX + NNK + Admin ── */}
               {SHOW_INTEGRATION_AND_STANDARDS_CARDS && (userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/dashboard/integration" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/integration" className="dashboard-function-card dashboard-function-card--integration glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">lan</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-[#1F6FEB]">hub</span>
@@ -1096,7 +1104,8 @@ export default function Dashboard() {
 
               {/* ── Hậu kiểm: Admin only ── */}
               {(userRole === 'admin') && (
-                <Link href="/dashboard/haukiem" className="dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/haukiem" className="dashboard-function-card dashboard-function-card--lab dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group relative overflow-hidden border border-[#1F6FEB]/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">science</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-4xl text-[#1F6FEB]">biotech</span>
                   <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{t("app_hk")}</h3>
@@ -1105,7 +1114,8 @@ export default function Dashboard() {
 
               {/* ── Thư viện Tiêu chuẩn: Manufacturer + Importer + Admin ── */}
               {SHOW_INTEGRATION_AND_STANDARDS_CARDS && (userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/dashboard/standards" className="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/standards" className="dashboard-function-card dashboard-function-card--standards glass-card rounded-3xl p-5 flex flex-col justify-between h-40 group relative overflow-hidden border border-[#1F6FEB]/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">library_books</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start justify-between mb-2">
                     <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-3xl text-[#1F6FEB]">menu_book</span>
@@ -1120,7 +1130,8 @@ export default function Dashboard() {
 
               {/* ── Báo cáo & Phân tích: Manufacturer + Importer + Admin (FR-RPT-06) ── */}
               {(userRole === 'admin' || userRole === 'manufacturer' || userRole === 'importer') && (
-                <Link href="/dashboard/analytics" className="dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group relative overflow-hidden border border-[#1F6FEB]/20">
+                <Link href="/dashboard/analytics" className="dashboard-function-card dashboard-function-card--analytics dashboard-action-card glass-card rounded-3xl p-5 flex flex-col justify-between group relative overflow-hidden border border-[#1F6FEB]/20">
+                  <span className="dashboard-card-visual"><span className="dashboard-card-visual__icon material-symbols-outlined">query_stats</span></span>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#1F6FEB]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span className="dashboard-feature-icon dashboard-feature-icon--blue material-symbols-outlined text-4xl text-[#1F6FEB]">analytics</span>
                   <h3 className="text-sm font-bold text-white uppercase text-center border-t border-white/10 pt-2">{lang === 'en' ? 'Reports & Analytics' : 'Báo cáo & Phân tích'}</h3>
