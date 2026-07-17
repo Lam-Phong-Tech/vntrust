@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 type ManageData = {
@@ -158,6 +158,9 @@ const daysLeft = (value?: string | null) => {
   return Math.ceil((date.getTime() - Date.now()) / 86400000);
 };
 
+const hasProfileValue = (value: unknown) =>
+  typeof value === "string" ? value.trim().length > 0 : Boolean(value);
+
 function StatusPill({ children, tone = "blue" }: { children: ReactNode; tone?: "blue" | "green" | "amber" | "red" | "slate" }) {
   const cls = {
     blue: "bg-[#1F6FEB]/10 text-[#1F6FEB] border-[#1F6FEB]/30",
@@ -228,6 +231,8 @@ function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { 
 }
 
 function OperationNav({ items }: { items: ModuleItem[] }) {
+  const pathname = usePathname();
+
   return (
     <aside className="lg:h-full lg:min-h-0 lg:self-stretch">
       <div className="flex h-full overflow-hidden border border-[#b9d7ff] bg-[#1F6FEB] shadow-md lg:w-[320px] lg:flex-col lg:rounded-none lg:border-y-0 lg:border-l-0">
@@ -248,24 +253,34 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
           </div>
         </div>
         <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:pb-5">
-          {items.map(item => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="feature-visual-card feature-visual-card--cyan group flex min-h-[78px] min-w-[235px] items-center gap-3 rounded-2xl border border-white/10 px-3 py-3 text-left text-white transition hover:border-white/40 hover:bg-white/10 lg:min-w-0"
-              title={`${item.title} - ${item.action}`}
-            >
-              <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">{item.icon}</span></span>
-              <span className="material-symbols-outlined flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/25 bg-white text-[22px] text-[#1F6FEB] shadow-sm">
-                {item.icon}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-bold leading-5" style={rowTextClamp}>{item.title}</span>
-                <span className="mt-1 block text-[11px] font-semibold leading-snug text-white/75" style={rowTextClamp}>{item.action}</span>
-              </span>
-              <span className="material-symbols-outlined shrink-0 text-[18px] text-white/85 transition group-hover:translate-x-0.5">chevron_right</span>
-            </Link>
-          ))}
+          {items.map(item => {
+            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`feature-visual-card feature-visual-card--cyan group flex min-h-[86px] min-w-[245px] items-center gap-3 rounded-2xl border px-3 py-3 text-left text-white transition lg:min-w-0 ${
+                  active
+                    ? "border-white/55 bg-white/18 shadow-[inset_3px_0_0_rgba(255,255,255,0.85)]"
+                    : "border-white/10 hover:border-white/40 hover:bg-white/10"
+                } ${item.locked ? "opacity-75" : ""}`}
+                title={`${item.title} - ${item.action} - ${item.status}`}
+              >
+                <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">{item.icon}</span></span>
+                <span className="material-symbols-outlined flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/25 bg-white text-[22px] text-[#1F6FEB] shadow-sm">
+                  {item.locked ? "lock" : item.icon}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold leading-5" style={rowTextClamp}>{item.title}</span>
+                  <span className="mt-1 block text-[11px] font-semibold leading-snug text-white/75" style={rowTextClamp}>{item.action}</span>
+                  <span className="mt-2 inline-flex max-w-full rounded-full border border-white/18 bg-white/12 px-2 py-0.5 text-[10px] font-semibold text-white/85" style={rowTextClamp}>
+                    {item.status}
+                  </span>
+                </span>
+                <span className="material-symbols-outlined shrink-0 text-[18px] text-white/85 transition group-hover:translate-x-0.5">chevron_right</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </aside>
@@ -345,7 +360,7 @@ export default function EnterpriseManagePage() {
       setData(prev => {
         if (!prev) return prev;
         const company = { ...prev.company, ...(updateJson.company || {}), [field]: uploadJson.url };
-        const completed = profileFieldLabels.filter(item => company[item.key]).length;
+        const completed = profileFieldLabels.filter(item => hasProfileValue(company[item.key])).length;
         const total = profileFieldLabels.length;
         return {
           ...prev,
@@ -446,7 +461,11 @@ export default function EnterpriseManagePage() {
 
   const companyStatus = statusText[data.company.trangThai] || data.company.trangThai;
   const role = roleMeta[data.me.vaiTroCty] || roleMeta.viewer;
-  const missingProfileFields = profileFieldLabels.filter(field => !data.company[field.key]);
+  const companyName =
+    data.company.ten?.trim() ||
+    data.company.thuongHieu?.trim() ||
+    (data.company.maSoThue ? `Doanh nghiệp MST ${data.company.maSoThue}` : "Doanh nghiệp chưa đặt tên");
+  const missingProfileFields = profileFieldLabels.filter(field => !hasProfileValue(data.company[field.key]));
   const pendingBatches = data.statusBreakdown.batches.pending_review || 0;
   const readyBatches = data.statusBreakdown.batches.ready || data.statusBreakdown.batches.active || 0;
   const distributedBatches = data.statusBreakdown.batches.distributed || 0;
@@ -461,7 +480,7 @@ export default function EnterpriseManagePage() {
           <div className="flex min-w-0 flex-col justify-center">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#1F6FEB]">Enterprise Console</p>
             <h1 className="enterprise-manage-title mt-1 max-w-3xl text-[28px] font-bold leading-[1.22] tracking-normal text-slate-950 sm:text-[36px]">
-              {data.company.ten}
+              {companyName}
             </h1>
             <p className="mt-1 text-sm font-medium text-[#477399]">
               {data.company.thuongHieu || tr("Hồ sơ doanh nghiệp", "Enterprise profile")}
