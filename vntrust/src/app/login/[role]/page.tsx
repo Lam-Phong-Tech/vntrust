@@ -16,7 +16,7 @@ function Toast({ msg, type, onClose }: { msg: string; type: TType; onClose: () =
   }[type];
   const icon = { error: "error", success: "check_circle", info: "info" }[type];
   return (
-    <div className={`fixed top-4 left-3 right-3 sm:left-auto sm:top-6 sm:right-6 z-[9999] flex items-center gap-3 px-4 sm:px-5 py-3.5 rounded-2xl border backdrop-blur-md shadow-2xl text-sm font-semibold animate-in slide-in-from-top-4 duration-300 ${cls}`}>
+    <div className={`fixed top-4 left-3 right-3 sm:left-auto sm:top-6 sm:right-6 sm:w-[560px] sm:max-w-[calc(100vw-3rem)] z-[9999] flex items-start gap-3 px-4 sm:px-5 py-3.5 rounded-2xl border backdrop-blur-md shadow-2xl text-sm font-semibold animate-in slide-in-from-top-4 duration-300 ${cls}`}>
       <span className="material-symbols-outlined text-[18px]">{icon}</span>
       <span className="flex-1 min-w-0 break-words">{msg}</span>
       <button onClick={onClose} className="opacity-60 hover:opacity-100 transition">
