@@ -31,12 +31,13 @@ export default function EnterprisePage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
-              { icon: "account_tree", color: "cyan", key: "ent_f1" },
-              { icon: "qr_code_scanner", color: "emerald", key: "ent_f2" },
-              { icon: "insights", color: "amber", key: "ent_f3" },
-              { icon: "api", color: "violet", key: "ent_f4" },
-            ].map(({ icon, color, key }) => (
-              <div key={key} className="glass-card p-8 rounded-3xl group">
+              { icon: "account_tree", color: "cyan", key: "ent_f1", visualTone: "feature-visual-card--cyan" },
+              { icon: "qr_code_scanner", color: "emerald", key: "ent_f2", visualTone: "feature-visual-card--green" },
+              { icon: "insights", color: "amber", key: "ent_f3", visualTone: "feature-visual-card--amber" },
+              { icon: "api", color: "violet", key: "ent_f4", visualTone: "feature-visual-card--violet" },
+            ].map(({ icon, color, key, visualTone }) => (
+              <div key={key} className={`feature-visual-card ${visualTone} glass-card p-8 rounded-3xl group`}>
+                <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">{icon}</span></span>
                 <div className={`w-14 h-14 rounded-2xl bg-${color}-500/20 flex items-center justify-center text-${color}-400 mb-6 group-hover:scale-110 group-hover:bg-${color}-500 group-hover:text-white transition-all`}>
                   <span className="material-symbols-outlined text-3xl">{icon}</span>
                 </div>

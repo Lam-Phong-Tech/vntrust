@@ -23,7 +23,8 @@ export default function VerifyPage() {
           <p className="text-on-surface-variant max-w-2xl mx-auto font-medium">{t("verify_sub")}</p>
         </header>
         <div className="md:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Link href="/verify/scan" className="group flex flex-col h-full bg-surface-container-lowest/50 backdrop-blur-xl border border-outline-variant/20 hover:border-primary/50 hover:bg-surface-container-lowest transition-all hover:-translate-y-2 rounded-3xl p-8 overflow-hidden relative shadow-lg">
+          <Link href="/verify/scan" className="feature-visual-card feature-visual-card--blue group flex flex-col h-full bg-surface-container-lowest/50 backdrop-blur-xl border border-outline-variant/20 hover:border-primary/50 hover:bg-surface-container-lowest transition-all hover:-translate-y-2 rounded-3xl p-8 shadow-lg">
+            <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">qr_code_scanner</span></span>
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110">
               <span className="material-symbols-outlined text-3xl">qr_code_scanner</span>
@@ -35,7 +36,8 @@ export default function VerifyPage() {
               <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </div>
           </Link>
-          <Link href="/verify/manual" className="group flex flex-col h-full bg-surface-container-lowest/50 backdrop-blur-xl border border-outline-variant/20 hover:border-tertiary/50 hover:bg-surface-container-lowest transition-all hover:-translate-y-2 rounded-3xl p-8 overflow-hidden relative shadow-lg">
+          <Link href="/verify/manual" className="feature-visual-card feature-visual-card--cyan group flex flex-col h-full bg-surface-container-lowest/50 backdrop-blur-xl border border-outline-variant/20 hover:border-tertiary/50 hover:bg-surface-container-lowest transition-all hover:-translate-y-2 rounded-3xl p-8 shadow-lg">
+            <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">pin</span></span>
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-tertiary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div className="w-16 h-16 rounded-2xl bg-tertiary/10 flex items-center justify-center text-tertiary mb-6 transition-transform group-hover:scale-110">
               <span className="material-symbols-outlined text-3xl">pin</span>
@@ -47,7 +49,8 @@ export default function VerifyPage() {
               <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </div>
           </Link>
-          <Link href="/verify/ai-doc" className="group flex flex-col h-full bg-surface-container-lowest/50 backdrop-blur-xl border border-outline-variant/20 hover:border-[#C8A557]/50 hover:bg-surface-container-lowest transition-all hover:-translate-y-2 rounded-3xl p-8 overflow-hidden relative shadow-lg">
+          <Link href="/verify/ai-doc" className="feature-visual-card feature-visual-card--amber group flex flex-col h-full bg-surface-container-lowest/50 backdrop-blur-xl border border-outline-variant/20 hover:border-[#C8A557]/50 hover:bg-surface-container-lowest transition-all hover:-translate-y-2 rounded-3xl p-8 shadow-lg">
+            <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">document_scanner</span></span>
             <div className="absolute top-0 right-0 p-4">
               <span className="bg-[#C8A557]/20 text-[#C8A557] px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
                 <span className="material-symbols-outlined text-[10px]">auto_awesome</span>{t("verify_new")}

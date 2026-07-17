@@ -57,6 +57,7 @@ export default function PortalLandingPage() {
       color: "from-blue-500/30 to-blue-700/10",
       borderColor: "border-blue-500/40",
       iconColor: "text-blue-300",
+      visualTone: "feature-visual-card--blue",
       action: () => {
         if (userRole === 'manufacturer' || userRole === 'importer' || userRole === 'admin') {
           router.push("/dashboard/inventory");
@@ -74,6 +75,7 @@ export default function PortalLandingPage() {
       color: "from-emerald-500/30 to-emerald-700/10",
       borderColor: "border-emerald-500/40",
       iconColor: "text-emerald-300",
+      visualTone: "feature-visual-card--green",
       action: () => router.push("/verify"),
       requiresLogin: false,
     },
@@ -85,6 +87,7 @@ export default function PortalLandingPage() {
       color: "from-[#C8A557]/30 to-[#C8A557]/10",
       borderColor: "border-[#C8A557]/40",
       iconColor: "text-[#C8A557]",
+      visualTone: "feature-visual-card--amber",
       action: () => {
         if (userRole === 'admin') router.push("/dashboard/alerts");
         else router.push("/verify/scan");
@@ -99,6 +102,7 @@ export default function PortalLandingPage() {
       color: "from-purple-500/30 to-purple-700/10",
       borderColor: "border-purple-500/40",
       iconColor: "text-purple-300",
+      visualTone: "feature-visual-card--violet",
       action: () => {
         if (userRole) router.push("/dashboard");
         else router.push("/login/consumer");
@@ -191,8 +195,10 @@ export default function PortalLandingPage() {
             <button
               key={mod.id}
               onClick={mod.action}
-              className={`group relative rounded-3xl border-2 ${mod.borderColor} bg-gradient-to-br ${mod.color} p-5 sm:p-8 text-left transition-all hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] overflow-hidden`}
+              className={`feature-visual-card ${mod.visualTone} group rounded-3xl border-2 ${mod.borderColor} bg-gradient-to-br ${mod.color} p-5 sm:p-8 text-left transition-all hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98]`}
             >
+              <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">{mod.icon}</span></span>
+
               {/* Big number badge */}
               <div className="absolute top-4 right-4 text-5xl sm:text-7xl font-black opacity-10 group-hover:opacity-20 transition">
                 {mod.id}

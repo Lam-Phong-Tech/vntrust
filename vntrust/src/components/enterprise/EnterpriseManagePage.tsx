@@ -151,8 +151,15 @@ function StatCard({ icon, label, value, tag, tone = "blue", href }: { icon: stri
     amber: "text-amber-700 bg-amber-50 border-amber-200",
     red: "text-red-700 bg-red-50 border-red-200",
   }[tone];
+  const visualToneCls = {
+    blue: "feature-visual-card--blue",
+    green: "feature-visual-card--green",
+    amber: "feature-visual-card--amber",
+    red: "feature-visual-card--red",
+  }[tone];
   const card = (
-    <div className="rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm transition hover:border-[#1F6FEB]/50 hover:shadow-md">
+    <div className={`feature-visual-card ${visualToneCls} rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm transition hover:border-[#1F6FEB]/50 hover:shadow-md`}>
+      <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">{icon}</span></span>
       <div className="mb-4 flex items-start justify-between">
         <span className="material-symbols-outlined text-[24px] text-slate-900">{icon}</span>
         {tag && <span className={`rounded-full border px-2 py-0.5 text-[9px] font-black ${toneCls}`}>{tag}</span>}
@@ -220,8 +227,9 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
             <Link
               key={item.href}
               href={item.href}
-              className="group flex min-w-[225px] items-center gap-3 rounded-2xl border border-white/10 px-3 py-3 text-left text-white transition hover:border-white/40 hover:bg-white/10 lg:min-w-0"
+              className="feature-visual-card feature-visual-card--cyan group flex min-w-[225px] items-center gap-3 rounded-2xl border border-white/10 px-3 py-3 text-left text-white transition hover:border-white/40 hover:bg-white/10 lg:min-w-0"
             >
+              <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">{item.icon}</span></span>
               <span className="material-symbols-outlined flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/25 bg-white text-[22px] text-[#1F6FEB] shadow-sm">
                 {item.icon}
               </span>
