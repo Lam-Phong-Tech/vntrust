@@ -57,7 +57,7 @@ export default function Footer() {
 
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:gap-12">
             {linkGroups.map((group) => (
-              <nav key={group.title} aria-label={group.title}>
+              <div key={group.title} role="navigation" aria-label={group.title}>
                 <h2 className="text-xs font-black uppercase tracking-[0.24em] text-[#1F6FEB] dark:text-[#8db7ff]">
                   {group.title}
                 </h2>
@@ -73,7 +73,7 @@ export default function Footer() {
                     </li>
                   ))}
                 </ul>
-              </nav>
+              </div>
             ))}
           </div>
         </div>
