@@ -160,7 +160,7 @@ function StatusPill({ children, tone = "blue" }: { children: ReactNode; tone?: "
     red: "bg-red-50 text-red-700 border-red-200",
     slate: "bg-slate-100 text-slate-600 border-slate-200",
   }[tone];
-  return <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-black ${cls}`}>{children}</span>;
+  return <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold ${cls}`}>{children}</span>;
 }
 
 function StatCard({ icon, label, value, tag, tone = "blue", href }: { icon: string; label: string; value: number | string; tag?: string; tone?: "blue" | "green" | "amber" | "red"; href?: string }) {
@@ -181,9 +181,9 @@ function StatCard({ icon, label, value, tag, tone = "blue", href }: { icon: stri
       <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">{icon}</span></span>
       <div className="mb-4 flex items-start justify-between">
         <span className="material-symbols-outlined text-[24px] text-slate-900">{icon}</span>
-        {tag && <span className={`rounded-full border px-2 py-0.5 text-[9px] font-black ${toneCls}`}>{tag}</span>}
+        {tag && <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${toneCls}`}>{tag}</span>}
       </div>
-      <p data-no-auto-translate className={`text-3xl font-black tabular-nums ${tone === "red" ? "text-red-500" : "text-slate-950"}`}>
+      <p data-no-auto-translate className={`text-3xl font-extrabold tabular-nums ${tone === "red" ? "text-red-500" : "text-slate-950"}`}>
         {typeof value === "number" ? fmt.format(value) : value}
       </p>
       <p className="mt-1 text-xs font-semibold text-[#477399]">{label}</p>
@@ -196,7 +196,7 @@ function AdminPanel({ title, icon, action, children }: { title: string; icon: st
   return (
     <section className="h-fit rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="flex min-w-0 items-center gap-2 text-base font-black text-slate-950">
+        <h2 className="flex min-w-0 items-center gap-2 text-base font-bold text-slate-950">
           <span className="material-symbols-outlined text-[21px] text-[#1F6FEB]">{icon}</span>
           <span className="truncate">{title}</span>
         </h2>
@@ -212,7 +212,7 @@ function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { 
     <div className="flex items-start gap-3 border-b border-[#e6f0fb] px-1 py-3 last:border-b-0">
       <span className="material-symbols-outlined shrink-0 text-[19px] text-[#1F6FEB]">{icon}</span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-black leading-snug text-slate-950" style={twoLineClamp}>{title}</p>
+        <p className="text-sm font-bold leading-5 text-slate-950" style={twoLineClamp}>{title}</p>
         {meta && <p className="mt-0.5 text-xs font-medium leading-5 text-[#477399]" style={twoLineClamp}>{meta}</p>}
       </div>
       {right && <div className="ml-2 shrink-0 pt-1">{right}</div>}
@@ -232,12 +232,12 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
             </span>
             <span className="min-w-0">
               <img src="/verigoods-wordmark.png" alt="VeriGoods" className="h-5 w-auto max-w-[150px] object-contain brightness-110 contrast-125" />
-              <span className="mt-1 block text-[9px] font-black uppercase tracking-[0.14em] text-white/75">Enterprise Console</span>
+              <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/75">Enterprise Console</span>
             </span>
           </Link>
           <div className="rounded-2xl border border-white/20 bg-white/10 p-3">
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/75">Menu nghiệp vụ</p>
-            <h2 className="mt-1 truncate text-xl font-black">Quản lý nhanh</h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">Menu nghiệp vụ</p>
+            <h2 className="mt-1 text-xl font-bold leading-snug">Quản lý nhanh</h2>
             <p className="mt-2 text-[11px] font-semibold leading-5 text-white/75">Điều hướng nghiệp vụ doanh nghiệp, tách riêng khỏi dashboard.</p>
           </div>
         </div>
@@ -253,7 +253,7 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
                 {item.icon}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-sm font-black leading-snug" style={twoLineClamp}>{item.title}</span>
+                <span className="block text-sm font-bold leading-5" style={twoLineClamp}>{item.title}</span>
                 <span className="mt-1 block text-[11px] font-semibold leading-snug text-white/75" style={twoLineClamp}>{item.action}</span>
               </span>
               <span className="material-symbols-outlined shrink-0 text-[18px] text-white/85 transition group-hover:translate-x-0.5">chevron_right</span>
@@ -430,7 +430,7 @@ export default function EnterpriseManagePage() {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center bg-[#eef5fb] px-4 text-center">
         <span className="material-symbols-outlined mb-3 text-5xl text-red-500">error</span>
-        <h1 className="text-xl font-black text-slate-950">{tr("Không mở được trang quản lý", "Cannot open management page")}</h1>
+        <h1 className="text-xl font-bold text-slate-950">{tr("Không mở được trang quản lý", "Cannot open management page")}</h1>
         <p className="mt-2 text-sm text-slate-600">{error || "Không có dữ liệu"}</p>
         <Link href="/dashboard" className="mt-4 rounded-xl bg-[#1F6FEB] px-4 py-2 text-sm font-bold text-white">Về bảng điều khiển</Link>
       </div>
@@ -452,8 +452,8 @@ export default function EnterpriseManagePage() {
         <div className="min-w-0 p-4 sm:p-6 lg:p-6 xl:p-8">
         <header className="mb-6 grid gap-4 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:grid-cols-[minmax(0,1fr)_420px] lg:items-stretch">
           <div className="flex min-w-0 flex-col justify-center">
-            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#1F6FEB]">Enterprise Console</p>
-            <h1 className="mt-1 max-w-4xl text-2xl font-black leading-tight text-slate-950 sm:text-4xl" style={twoLineClamp}>{data.company.ten}</h1>
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#1F6FEB]">Enterprise Console</p>
+            <h1 className="mt-1 max-w-4xl text-2xl font-extrabold leading-tight text-slate-950 sm:text-4xl" style={twoLineClamp}>{data.company.ten}</h1>
             <p className="mt-1 text-sm font-medium text-[#477399]">
               {data.company.thuongHieu || tr("Hồ sơ doanh nghiệp", "Enterprise profile")}
             </p>
@@ -467,15 +467,15 @@ export default function EnterpriseManagePage() {
             </div>
             <div className="mt-4 grid gap-2 text-xs font-semibold text-[#477399] sm:grid-cols-3">
               <div className="rounded-xl border border-[#dbeafe] bg-[#f8fbff] px-3 py-2">
-                <span className="block text-[10px] font-black uppercase text-[#1F6FEB]">Email</span>
+                <span className="block text-[10px] font-bold uppercase text-[#1F6FEB]">Email</span>
                 <span className="block break-words">{data.company.email || "Chưa có"}</span>
               </div>
               <div className="rounded-xl border border-[#dbeafe] bg-[#f8fbff] px-3 py-2">
-                <span className="block text-[10px] font-black uppercase text-[#1F6FEB]">Hotline</span>
+                <span className="block text-[10px] font-bold uppercase text-[#1F6FEB]">Hotline</span>
                 <span className="block break-words">{data.company.hotline || "Chưa có"}</span>
               </div>
               <div className="rounded-xl border border-[#dbeafe] bg-[#f8fbff] px-3 py-2">
-                <span className="block text-[10px] font-black uppercase text-[#1F6FEB]">Website</span>
+                <span className="block text-[10px] font-bold uppercase text-[#1F6FEB]">Website</span>
                 <span className="block break-words">{data.company.website || "Chưa có"}</span>
               </div>
             </div>
@@ -483,8 +483,8 @@ export default function EnterpriseManagePage() {
 
           <div className="w-full self-start rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black uppercase text-[#477399]">Hoàn thiện hồ sơ</span>
-              <span className="text-xl font-black text-[#1F6FEB]">{data.profileCompletion.percent}%</span>
+              <span className="text-xs font-bold uppercase text-[#477399]">Hoàn thiện hồ sơ</span>
+              <span className="text-xl font-extrabold text-[#1F6FEB]">{data.profileCompletion.percent}%</span>
             </div>
             <div className="mt-3 h-3 overflow-hidden rounded-full bg-[#e6f0fb]">
               <div className="h-full rounded-full bg-[#1F6FEB]" style={{ width: `${data.profileCompletion.percent}%` }} />
@@ -492,7 +492,7 @@ export default function EnterpriseManagePage() {
             <p className="mt-2 text-xs font-semibold text-[#477399]">{data.profileCompletion.completed}/{data.profileCompletion.total} trường quan trọng đã có dữ liệu.</p>
             {missingProfileFields.length > 0 && (
               <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                <p className="text-[11px] font-black uppercase text-amber-700">Còn thiếu</p>
+                <p className="text-[11px] font-bold uppercase text-amber-700">Còn thiếu</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {missingProfileFields.map(field => {
                     const href = profileFieldTargets[field.key] || "/dashboard/kyc";
@@ -557,7 +557,7 @@ export default function EnterpriseManagePage() {
 
         {data.recommendations.length > 0 && (
           <section className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
-            <h2 className="mb-3 flex items-center gap-2 text-sm font-black text-amber-800">
+            <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-amber-800">
               <span className="material-symbols-outlined text-[20px]">tips_and_updates</span>
               Việc nên xử lý tiếp theo
             </h2>
@@ -576,7 +576,7 @@ export default function EnterpriseManagePage() {
           <AdminPanel
             title="Sản phẩm gần đây"
             icon="inventory_2"
-            action={<Link href="/dashboard/inventory" className="text-xs font-black text-[#1F6FEB]">Quản lý tất cả</Link>}
+            action={<Link href="/dashboard/inventory" className="text-xs font-bold text-[#1F6FEB]">Quản lý tất cả</Link>}
           >
             {data.products.length ? data.products.map(item => (
               <DataRow
@@ -593,7 +593,7 @@ export default function EnterpriseManagePage() {
           <AdminPanel
             title="Mục hàng & phân phối"
             icon="qr_code_2"
-            action={<Link href="/dashboard/distribution" className="text-xs font-black text-[#1F6FEB]">Theo dõi phân phối</Link>}
+            action={<Link href="/dashboard/distribution" className="text-xs font-bold text-[#1F6FEB]">Theo dõi phân phối</Link>}
           >
             <div className="mb-3 grid grid-cols-3 gap-2 text-center text-xs font-bold">
               <div className="rounded-xl bg-amber-50 p-2 text-amber-700">{pendingBatches} chờ duyệt</div>
@@ -619,7 +619,7 @@ export default function EnterpriseManagePage() {
           <AdminPanel
             title="Chứng nhận & giấy phép"
             icon="workspace_premium"
-            action={<Link href="/dashboard/certificates" className="text-xs font-black text-[#1F6FEB]">Mở chứng nhận</Link>}
+            action={<Link href="/dashboard/certificates" className="text-xs font-bold text-[#1F6FEB]">Mở chứng nhận</Link>}
           >
             {[...data.certificates.slice(0, 5).map(item => ({
               id: `cert-${item.id}`,
@@ -640,7 +640,7 @@ export default function EnterpriseManagePage() {
           <AdminPanel
             title="Nhân sự nội bộ"
             icon="groups"
-            action={<Link href="/dashboard/team" className="text-xs font-black text-[#1F6FEB]">Mời nhân viên</Link>}
+            action={<Link href="/dashboard/team" className="text-xs font-bold text-[#1F6FEB]">Mời nhân viên</Link>}
           >
             {data.members.slice(0, 7).map(item => (
               <DataRow
@@ -666,7 +666,7 @@ export default function EnterpriseManagePage() {
                 ["6", "Đối tác xác nhận", (data.statusBreakdown.distribution.ready || data.statusBreakdown.distribution.distributed) ? "done" : "pending"],
               ].map(([num, label, state]) => (
                 <div key={num} className={`rounded-xl border p-3 ${state === "done" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : state === "current" ? "border-amber-200 bg-amber-50 text-amber-800" : "border-[#dbeafe] bg-[#f8fbff] text-[#477399]"}`}>
-                  <p className="text-[10px] font-black uppercase">Bước {num}</p>
+                  <p className="text-[10px] font-bold uppercase">Bước {num}</p>
                   <p className="mt-1 text-sm font-bold">{label}</p>
                 </div>
               ))}
@@ -693,7 +693,7 @@ export default function EnterpriseManagePage() {
                 icon="warning"
                 title={item.moTa}
                 meta={`${item.mucDo} - ${d(item.thoiGian)}`}
-                right={<span className="rounded-full border border-red-300 bg-red-100 px-2.5 py-1 text-[10px] font-black text-red-700 shadow-sm">Cảnh báo</span>}
+                right={<span className="rounded-full border border-red-300 bg-red-100 px-2.5 py-1 text-[10px] font-bold text-red-700 shadow-sm">Cảnh báo</span>}
               />
             ))}
             {!data.recentScans.length && !data.recentAlerts.length && <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có hoạt động gần đây.</p>}
