@@ -215,8 +215,8 @@ function StatCard({ icon, label, value, tag, tone = "blue", href }: { icon: stri
 
 function AdminPanel({ title, icon, action, children }: { title: string; icon: string; action?: ReactNode; children: ReactNode }) {
   return (
-    <section className="h-fit rounded-2xl border border-[#dbeafe] bg-white p-4 shadow-sm">
-      <div className="mb-4 flex items-center justify-between gap-3">
+    <section className="h-fit rounded-2xl border border-[#dbeafe] bg-white p-3.5 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-3">
         <h2 className="flex min-w-0 items-center gap-2 text-base font-bold text-slate-950">
           <span className="material-symbols-outlined text-[21px] text-[#1F6FEB]">{icon}</span>
           <span className="truncate">{title}</span>
@@ -230,7 +230,7 @@ function AdminPanel({ title, icon, action, children }: { title: string; icon: st
 
 function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { title: string; meta?: string; right?: ReactNode; href?: string; icon?: string }) {
   const row = (
-    <div className="flex items-start gap-3 border-b border-[#e6f0fb] px-1 py-3 last:border-b-0">
+    <div className="flex items-start gap-3 border-b border-[#e6f0fb] px-1 py-2.5 last:border-b-0">
       <span className="material-symbols-outlined shrink-0 text-[19px] text-[#1F6FEB]">{icon}</span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-bold leading-5 text-slate-950" style={wrapText} title={title}>{title}</p>
@@ -735,7 +735,7 @@ export default function EnterpriseManagePage() {
 
           {activeModule !== "overview" && renderModuleContent()}
           <div className={`min-w-0 ${activeModule === "overview" ? "" : "hidden"}`}>
-            <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+            <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
               <StatCard icon="inventory_2" label="Sản phẩm" value={data.stats.products} tag="SKU" href="/dashboard/inventory" />
               <StatCard icon="qr_code_2" label="Mục hàng" value={data.stats.batches} tag="MỤC" href="/dashboard/inventory" />
               <StatCard icon="qr_code_scanner" label="Mã định danh" value={data.stats.totalUid} tag="UID" href="/dashboard/inventory" tone="green" />
@@ -745,7 +745,7 @@ export default function EnterpriseManagePage() {
             </div>
 
         {data.recommendations.length > 0 && (
-          <section className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
+          <section className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
             <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-amber-800">
               <span className="material-symbols-outlined text-[20px]">tips_and_updates</span>
               Việc nên xử lý tiếp theo
@@ -761,7 +761,7 @@ export default function EnterpriseManagePage() {
           </section>
         )}
 
-            <div className="grid items-start gap-5 xl:grid-cols-2">
+            <div className="columns-1 gap-4 xl:columns-2 [&>section]:mb-4 [&>section]:break-inside-avoid">
           <AdminPanel
             title="Sản phẩm gần đây"
             icon="inventory_2"
