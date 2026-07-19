@@ -202,16 +202,22 @@ export default function VerificationResult() {
     );
   }
 
-  const isFake     = result?.status === "fake" || result?.status === "suspect" || result?.status === "expired" || result?.status === "wrong_enterprise";
   const isGenuine  = result?.status === "genuine";
-  const isCounterfeit = isFake || !isGenuine;
   const batchApprovalStatus = result?.approval?.batchStatus;
   const productApprovalStatus = result?.approval?.productStatus;
   const isProductApprovalIssue =
     result?.status === "suspect" && productApprovalStatus && productApprovalStatus !== "approved";
   const isBatchApprovalIssue =
     result?.status === "suspect" && !isProductApprovalIssue && batchApprovalStatus && batchApprovalStatus !== "approved";
+  const isApprovalHold = isProductApprovalIssue || isBatchApprovalIssue;
   const isEnterpriseMismatch = result?.status === "wrong_enterprise";
+  const isFake =
+    result?.status === "fake" ||
+    result?.status === "expired" ||
+    result?.status === "wrong_enterprise" ||
+    (result?.status === "suspect" && !isApprovalHold);
+  const isCounterfeit = isFake || (!isGenuine && !isApprovalHold);
+  const shouldShowIssueResult = isCounterfeit || isApprovalHold;
 
   const pData   = result?.data || {};
   const loHang  = pData.loHang  || {};
@@ -566,7 +572,7 @@ export default function VerificationResult() {
   // ══════════════════════════════════════════════
   // COUNTERFEIT / FAKE
   // ══════════════════════════════════════════════
-  if (isCounterfeit) {
+  if (shouldShowIssueResult) {
     return (
       <div className={outerCls}>
         <div className="s-result-wrapper desktop-responsive">
@@ -612,13 +618,15 @@ export default function VerificationResult() {
               </div>
               <div className="s-fake-status-label">
                 <span className="s-fake-status-label-dot" />
-                {isEnterpriseMismatch
+                {isApprovalHold
+                  ? (lang === 'en' ? 'Approval pending' : 'Chờ phê duyệt')
+                  : isEnterpriseMismatch
                   ? (lang === 'en' ? 'Enterprise mismatch' : 'Sai doanh nghiệp')
                   : (lang === 'en' ? 'Counterfeit suspected' : 'Có dấu hiệu giả mạo')}
               </div>
               <div className="s-fake-hero-title">
-                {lang === 'en' ? 'Product not' : 'Sản phẩm không'}<br />
-                {lang === 'en' ? 'authenticated' : 'được xác thực'}
+                {isApprovalHold ? (lang === 'en' ? 'Waiting for' : 'Chờ') : (lang === 'en' ? 'Product not' : 'Sản phẩm không')}<br />
+                {isApprovalHold ? (lang === 'en' ? 'approval' : 'phê duyệt') : (lang === 'en' ? 'authenticated' : 'được xác thực')}
               </div>
               <div className="s-fake-hero-sub">
                 {isEnterpriseMismatch
@@ -672,7 +680,7 @@ export default function VerificationResult() {
                     <line x1="12" y1="8"  x2="12"   y2="12" />
                     <line x1="12" y1="16" x2="12.01" y2="16" />
                   </svg>
-                  {lang === 'en' ? '4 issues detected' : 'Phát hiện 4 dấu hiệu'}
+                  {isApprovalHold ? (lang === 'en' ? 'Approval status' : 'Trạng thái phê duyệt') : (lang === 'en' ? '4 issues detected' : 'Phát hiện 4 dấu hiệu')}
                 </div>
                 
                 {/* Issue 1 */}
@@ -686,6 +694,8 @@ export default function VerificationResult() {
                     <div className="s-fake-issue-label">
                       {isEnterpriseMismatch
                         ? (lang === 'en' ? 'Enterprise mismatch' : 'Sai doanh nghiệp đã chọn')
+                        : isProductApprovalIssue
+                        ? (lang === 'en' ? 'Product approval pending' : 'Sản phẩm chưa được duyệt')
                         : isBatchApprovalIssue
                         ? (lang === 'en' ? 'Batch approval pending' : 'Lô hàng chưa được duyệt')
                         : (lang === 'en' ? 'UID not found in database' : 'UID không tồn tại trong CSDL')}
@@ -693,8 +703,10 @@ export default function VerificationResult() {
                     <div className="s-fake-issue-desc">
                       {isEnterpriseMismatch
                         ? (lang === 'en'
-                          ? `Selected: ${result.enterpriseCheck?.selectedName || 'Unknown'} · Actual: ${result.enterpriseCheck?.actualName || 'Unknown'}`
-                          : `Đã chọn: ${result.enterpriseCheck?.selectedName || 'Không rõ'} · Thực tế: ${result.enterpriseCheck?.actualName || 'Không rõ'}`)
+                          ? `Selected: ${result.enterpriseCheck?.selectedName || 'Unknown'} - Actual: ${result.enterpriseCheck?.actualName || 'Unknown'}`
+                          : `Đã chọn: ${result.enterpriseCheck?.selectedName || 'Không rõ'} - Thực tế: ${result.enterpriseCheck?.actualName || 'Không rõ'}`)
+                        : isProductApprovalIssue
+                        ? (lang === 'en' ? 'Admin must approve this product before it is marked genuine' : 'Admin cần duyệt sản phẩm trước khi xác thực chính hãng')
                         : isBatchApprovalIssue
                         ? (lang === 'en' ? 'Admin must approve this batch before it is marked genuine' : 'Admin cần duyệt lô trước khi xác thực chính hãng')
                         : (lang === 'en' ? 'Identifier was never issued' : 'Mã định danh chưa từng được phát hành')}
@@ -703,7 +715,7 @@ export default function VerificationResult() {
                 </div>
 
                 {/* Issue 2 */}
-                <div className="s-fake-issue">
+                <div className={`s-fake-issue ${isApprovalHold ? "hidden" : ""}`}> 
                   <div className="s-fake-issue-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <path d="M18 6L6 18M6 6l12 12" />
@@ -720,7 +732,7 @@ export default function VerificationResult() {
                 </div>
 
                 {/* Issue 3 */}
-                <div className="s-fake-issue">
+                <div className={`s-fake-issue ${isApprovalHold ? "hidden" : ""}`}> 
                   <div className="s-fake-issue-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <path d="M18 6L6 18M6 6l12 12" />
@@ -737,7 +749,7 @@ export default function VerificationResult() {
                 </div>
 
                 {/* Issue 4 */}
-                <div className="s-fake-issue">
+                <div className={`s-fake-issue ${isApprovalHold ? "hidden" : ""}`}> 
                   <div className="s-fake-issue-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <path d="M18 6L6 18M6 6l12 12" />
@@ -764,7 +776,9 @@ export default function VerificationResult() {
                 </div>
                 <div className="s-fake-tip-text">
                   <strong>{lang === 'en' ? 'Recommendation' : 'Khuyến cáo'}</strong>
-                  {lang === 'en'
+                  {isApprovalHold
+                    ? (lang === 'en' ? 'This code exists in the system. Wait for admin approval before treating it as genuine or counterfeit.' : 'Mã có tồn tại trong hệ thống. Hãy chờ admin phê duyệt trước khi kết luận chính hãng hoặc hàng giả.')
+                    : lang === 'en'
                     ? 'Do not use the product. Keep packaging as evidence and report immediately.'
                     : 'Không sử dụng sản phẩm. Lưu lại bao bì làm bằng chứng và báo cáo ngay'}
                 </div>
@@ -773,14 +787,14 @@ export default function VerificationResult() {
 
             {/* CTA — static, no absolute */}
             <div className="s-fake-cta">
-              <button className="s-fake-cta-btn" onClick={() => setShowReportFlow(true)}>
+              {!isApprovalHold && <button className="s-fake-cta-btn" onClick={() => setShowReportFlow(true)}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
                   <line x1="12" y1="9"  x2="12"   y2="13" />
                   <line x1="12" y1="17" x2="12.01" y2="17" />
                 </svg>
                 {lang === 'en' ? 'Report violation now' : 'Báo cáo vi phạm ngay'}
-              </button>
+              </button>}
               <button className="s-fake-cta-link" onClick={() => router.push('/verify/scan')}>
                 {lang === 'en' ? 'Scan another product' : 'Quét sản phẩm khác'}
               </button>

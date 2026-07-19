@@ -19,6 +19,16 @@ function normalizeScannedCode(raw: string) {
   return value.split(/[?#/]/)[0].trim();
 }
 
+const APPROVED_BATCH_STATUSES = new Set(["active", "approved", "ready", "distributed"]);
+const REJECTED_BATCH_STATUSES = new Set(["rejected", "suspended", "recalled"]);
+
+function statusFromBatchState(status?: string | null) {
+  if (!status) return "pending";
+  if (APPROVED_BATCH_STATUSES.has(status)) return "approved";
+  if (REJECTED_BATCH_STATUSES.has(status)) return "rejected";
+  return "pending";
+}
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ uid: string }> }) {
   const resolvedParams = await params;
   const uid = normalizeScannedCode(resolvedParams.uid);
@@ -186,9 +196,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ uid:
     const productApproval = maDinhDanh.loHang.sanPham.chungNhans?.find(
       (item) => item.loai === SYSTEM_APPROVAL_CERT_TYPES.product
     );
-    const productApprovalStatus = productApproval?.trangThaiDuyet || "pending";
+    const hasAnyApprovedProductEvidence = maDinhDanh.loHang.sanPham.chungNhans?.some(
+      (item) => item.trangThaiDuyet === "approved"
+    );
+    const productApprovalStatus = productApproval?.trangThaiDuyet || (hasAnyApprovedProductEvidence ? "approved" : "pending");
     const batchApproval = maDinhDanh.loHang.chungNhans?.[0];
-    const batchApprovalStatus = batchApproval?.trangThaiDuyet || "pending";
+    const batchApprovalStatus = batchApproval?.trangThaiDuyet || statusFromBatchState(maDinhDanh.loHang.trangThai);
 
     let currentStatus: string;
     if (enterpriseMismatch) {
