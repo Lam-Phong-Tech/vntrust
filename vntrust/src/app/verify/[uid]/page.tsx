@@ -187,7 +187,7 @@ export default function VerificationResult() {
   // ── Outer container: dark BG only as tablet "device frame" border;
   //    on mobile (<768px), use ink to match section top bar; on desktop, dark wrapper ──
   const outerCls =
-    "min-h-screen w-full bg-[#0B1623] flex items-start justify-center md:pt-10 md:pb-10 lg:items-stretch lg:pt-0 lg:pb-0 lg:h-[calc(100vh-80px)] lg:min-h-[calc(100vh-80px)] lg:max-h-[calc(100vh-80px)] lg:overflow-hidden";
+    "min-h-screen w-full bg-[#071525] flex items-start justify-center md:pt-10 md:pb-10 lg:items-stretch lg:pt-0 lg:pb-0 lg:h-[calc(100vh-80px)] lg:min-h-[calc(100vh-80px)] lg:max-h-[calc(100vh-80px)] lg:overflow-hidden";
 
   if (loading) {
     return (
@@ -195,7 +195,7 @@ export default function VerificationResult() {
         <div className="s-result-wrapper desktop-responsive flex items-center justify-center">
           <div
             className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
-            style={{ borderColor: '#C8A557', borderRightColor: 'transparent' }}
+            style={{ borderColor: '#4EA1FF', borderRightColor: 'transparent' }}
           />
         </div>
       </div>
@@ -891,13 +891,13 @@ export default function VerificationResult() {
                 <div className="s-auth-conf-ring">
                   <svg width="44" height="44" viewBox="0 0 44 44">
                     <circle cx="22" cy="22" r="18"
-                      stroke="rgba(200,165,87,0.15)" strokeWidth="3" fill="none" />
+                      stroke="rgba(96,165,250,0.18)" strokeWidth="3" fill="none" />
                     <circle cx="22" cy="22" r="18"
-                      stroke="#C8A557" strokeWidth="3" fill="none"
+                      stroke="#4EA1FF" strokeWidth="3" fill="none"
                       strokeDasharray="111 113" strokeLinecap="round"
                       transform="rotate(-90 22 22)" />
                     <text x="22" y="26" textAnchor="middle"
-                      fontFamily="Fraunces" fontSize="11" fontWeight="600" fill="#C8A557">
+                      fontFamily="Fraunces" fontSize="11" fontWeight="600" fill="#4EA1FF">
                       98
                     </text>
                   </svg>
@@ -935,10 +935,10 @@ export default function VerificationResult() {
 
             {/* ── #16: Cảnh báo "Mã đã được quét trước đó" + lần quét đầu + số lần quét ── */}
             {result?.isRepeat && (
-              <div style={{ margin: '0 0 14px', padding: '12px 14px', borderRadius: 12, background: 'rgba(200,137,58,0.12)', border: '1px solid rgba(200,137,58,0.4)', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <span className="material-symbols-outlined" style={{ color: '#C8893A', fontSize: 22, flexShrink: 0 }}>history</span>
-                <div style={{ fontSize: 13, lineHeight: 1.5, color: '#F6F1E8' }}>
-                  <div style={{ fontWeight: 800, color: '#E0A75A', marginBottom: 2 }}>
+              <div style={{ margin: '0 0 14px', padding: '12px 14px', borderRadius: 12, background: 'rgba(31,111,235,0.14)', border: '1px solid rgba(96,165,250,0.34)', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span className="material-symbols-outlined" style={{ color: '#60A5FA', fontSize: 22, flexShrink: 0 }}>history</span>
+                <div style={{ fontSize: 13, lineHeight: 1.5, color: '#F8FBFF' }}>
+                  <div style={{ fontWeight: 800, color: '#93C5FD', marginBottom: 2 }}>
                     {lang === 'en' ? 'This code was scanned before' : 'Mã này đã được quét trước đó'}
                   </div>
                   <div style={{ opacity: 0.92 }}>
@@ -1165,7 +1165,7 @@ export default function VerificationResult() {
                 </div>
                 <div className="s-auth-certs">
                   {doanhNghiep.chungNhans.map((c: any, idx: number) => (
-                    <span key={idx} className="s-auth-cert" style={{ background: 'rgba(200,165,87,0.15)', borderColor: '#C8A557', color: '#C8A557' }}>
+                    <span key={idx} className="s-auth-cert s-auth-cert-enterprise">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                         <polyline points="20 6 9 17 4 12" />
                       </svg>

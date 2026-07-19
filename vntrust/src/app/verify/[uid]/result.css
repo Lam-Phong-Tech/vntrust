@@ -3,18 +3,18 @@
 /* ==================== VARIABLES ==================== */
 /* =================================================== */
 :root {
-  --ink: #0B1623;
-  --ink-2: #142235;
-  --ink-3: #1E3148;
-  --cream: #F6F1E8;
-  --cream-2: #EDE6D6;
-  --paper: #FDFBF6;
-  --gold: #C8A557;
-  --gold-dark: #A6873E;
-  --gold-light: #E4D2A1;
-  --verified: #4A7C5C;
-  --verified-light: #DCE9DF;
-  --verified-bright: #6FB585;
+  --ink: #071525;
+  --ink-2: #0B1D31;
+  --ink-3: #123A63;
+  --cream: #F8FBFF;
+  --cream-2: #DCEBFF;
+  --paper: #F8FBFF;
+  --gold: #4EA1FF;
+  --gold-dark: #1F6FEB;
+  --gold-light: #BFDFFF;
+  --verified: #10A37F;
+  --verified-light: rgba(16, 163, 127, 0.12);
+  --verified-bright: #34D399;
   --amber: #C8893A;
   --amber-light: #F4E4CB;
   --crimson: #9F2D3E;
@@ -24,6 +24,13 @@
   --line-strong: rgba(11, 22, 35, 0.18);
   --muted: rgba(11, 22, 35, 0.55);
   --muted-2: rgba(11, 22, 35, 0.75);
+  --auth-surface: rgba(248, 251, 255, 0.065);
+  --auth-surface-strong: rgba(248, 251, 255, 0.10);
+  --auth-border: rgba(96, 165, 250, 0.22);
+  --auth-border-strong: rgba(96, 165, 250, 0.42);
+  --auth-muted: rgba(226, 240, 255, 0.68);
+  --auth-muted-soft: rgba(226, 240, 255, 0.50);
+  --auth-glow: rgba(31, 111, 235, 0.28);
 }
 
 .display {
@@ -103,8 +110,9 @@
 .s-auth {
   display: flex;
   flex-direction: column;
-  /* Dark theme — solid ink, không gradient để footer không lộ vùng khác màu */
-  background: var(--ink);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(31, 111, 235, 0.22) 0%, rgba(31, 111, 235, 0) 34%),
+    linear-gradient(180deg, #081728 0%, #071525 46%, #06111E 100%);
   color: var(--cream);
   min-height: 100vh;        /* full-screen on mobile */
   min-height: 100dvh;       /* dynamic viewport height (iOS Safari fix) */
@@ -120,7 +128,8 @@
 
 /* --- top bar --- */
 .s-auth-top {
-  background: var(--ink);
+  background: rgba(7, 21, 37, 0.96);
+  border-bottom: 1px solid rgba(96, 165, 250, 0.14);
   padding: 12px 16px 14px;
   display: flex;
   justify-content: space-between;
@@ -132,8 +141,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(246, 241, 232, 0.1);
-  border: 1px solid rgba(246, 241, 232, 0.12);
+  background: rgba(248, 251, 255, 0.10);
+  border: 1px solid rgba(147, 197, 253, 0.20);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,7 +168,9 @@
 
 /* --- hero --- */
 .s-auth-hero {
-  background: linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%);
+  background:
+    radial-gradient(circle at 88% 4%, rgba(56, 189, 248, 0.16) 0%, rgba(56, 189, 248, 0) 36%),
+    linear-gradient(180deg, #0B1D31 0%, #081728 100%);
   color: var(--cream);
   padding: 20px 22px 28px;
   position: relative;
@@ -171,7 +182,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(74, 124, 92, 0.18) 0%, transparent 60%);
+  background: radial-gradient(ellipse 85% 62% at 100% 0%, rgba(31, 111, 235, 0.22) 0%, transparent 62%);
   pointer-events: none;
 }
 
@@ -181,7 +192,7 @@
   right: 18px;
   width: 60px;
   height: 60px;
-  border: 1px solid rgba(200, 165, 87, 0.4);
+  border: 1px solid rgba(96, 165, 250, 0.42);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -196,7 +207,7 @@
   content: '';
   position: absolute;
   inset: -4px;
-  border: 1px dashed rgba(200, 165, 87, 0.2);
+  border: 1px dashed rgba(96, 165, 250, 0.24);
   border-radius: 50%;
 }
 
@@ -253,7 +264,7 @@
 
 .s-auth-product-brand {
   font-size: 13px;
-  color: rgba(246, 241, 232, 0.55);
+  color: var(--auth-muted);
   margin-bottom: 18px;
   padding-right: 72px;
 }
@@ -264,8 +275,8 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  background: rgba(246, 241, 232, 0.04);
-  border: 1px solid rgba(200, 165, 87, 0.18);
+  background: var(--auth-surface);
+  border: 1px solid var(--auth-border);
   border-radius: 12px;
   margin-bottom: 10px;
 }
@@ -284,7 +295,7 @@
 
 .s-auth-conf-label {
   font-size: 11px;
-  color: rgba(246, 241, 232, 0.45);
+  color: var(--auth-muted-soft);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   margin-bottom: 2px;
@@ -299,7 +310,7 @@
 
 .s-auth-conf-desc {
   font-size: 12px;
-  color: rgba(246, 241, 232, 0.55);
+  color: var(--auth-muted);
   margin-top: 2px;
 }
 
@@ -309,14 +320,15 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 14px;
-  background: rgba(11, 22, 35, 0.4);
+  background: rgba(3, 10, 20, 0.34);
+  border: 1px solid rgba(96, 165, 250, 0.12);
   border-radius: 10px;
   gap: 8px;
 }
 
 .s-auth-uid-label {
   font-size: 11px;
-  color: rgba(246, 241, 232, 0.45);
+  color: var(--auth-muted-soft);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   margin-bottom: 2px;
@@ -334,8 +346,8 @@
   width: 26px;
   height: 26px;
   border-radius: 6px;
-  background: rgba(200, 165, 87, 0.12);
-  border: 1px solid rgba(200, 165, 87, 0.2);
+  background: rgba(31, 111, 235, 0.16);
+  border: 1px solid rgba(96, 165, 250, 0.28);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -408,7 +420,7 @@
   padding: 8px;
   box-shadow:
     0 20px 40px -10px rgba(0, 0, 0, 0.55),
-    0 8px 16px -6px rgba(200, 165, 87, 0.35),
+    0 8px 16px -6px var(--auth-glow),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transform: rotate3d(0, 1, 0, -8deg);
   transition: transform 0.4s ease;
@@ -450,8 +462,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(200, 165, 87, 0.18), rgba(200, 165, 87, 0.05));
-  border: 1px solid rgba(200, 165, 87, 0.3);
+  background: linear-gradient(135deg, rgba(31, 111, 235, 0.22), rgba(56, 189, 248, 0.07));
+  border: 1px solid rgba(96, 165, 250, 0.34);
   box-shadow:
     0 20px 40px -10px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -463,10 +475,10 @@
 }
 
 .s-auth-section {
-  background: rgba(246, 241, 232, 0.04);
+  background: var(--auth-surface);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(200, 165, 87, 0.18);
+  border: 1px solid var(--auth-border);
   border-radius: 14px;
   padding: 14px 16px;
   margin-bottom: 10px;
@@ -479,14 +491,14 @@
   gap: 8px;
   margin-bottom: 12px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(200, 165, 87, 0.15);
+  border-bottom: 1px solid rgba(96, 165, 250, 0.18);
 }
 
 .s-auth-section-icon {
   width: 24px;
   height: 24px;
   border-radius: 7px;
-  background: rgba(200, 165, 87, 0.15);
+  background: rgba(31, 111, 235, 0.18);
   color: var(--gold);
   display: flex;
   align-items: center;
@@ -517,7 +529,7 @@
 
 .s-auth-row-label {
   font-size: 13px;
-  color: rgba(246, 241, 232, 0.55);
+  color: var(--auth-muted);
   flex-shrink: 0;
 }
 
@@ -541,7 +553,7 @@
   gap: 4px;
   padding: 4px 8px;
   background: var(--verified-light);
-  border: 1px solid rgba(74, 124, 92, 0.25);
+  border: 1px solid rgba(52, 211, 153, 0.32);
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
@@ -554,11 +566,18 @@
   flex-shrink: 0;
 }
 
+.s-auth-cert-enterprise {
+  background: rgba(31, 111, 235, 0.14);
+  border-color: rgba(96, 165, 250, 0.36);
+  color: #93C5FD;
+}
+
 /* --- CTA — solid ink bg để không lộ vùng khác màu dưới (Sprint 13) --- */
 .s-auth-cta {
   padding: 14px 16px;
   padding-bottom: max(14px, env(safe-area-inset-bottom));
-  background: var(--ink);
+  background: rgba(7, 21, 37, 0.96);
+  border-top: 1px solid rgba(96, 165, 250, 0.14);
   display: flex;
   gap: 8px;
   flex-shrink: 0;
@@ -592,15 +611,15 @@
 }
 
 .s-auth-cta-btn.primary {
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  color: var(--ink);
-  box-shadow: 0 4px 20px rgba(200, 165, 87, 0.25);
+  background: linear-gradient(135deg, #60A5FA, #1F6FEB);
+  color: #FFFFFF;
+  box-shadow: 0 8px 24px rgba(31, 111, 235, 0.35);
 }
 
 .s-auth-cta-btn.secondary {
-  background: rgba(246, 241, 232, 0.06);
+  background: rgba(248, 251, 255, 0.07);
   color: var(--cream);
-  border: 1px solid rgba(246, 241, 232, 0.15);
+  border: 1px solid rgba(147, 197, 253, 0.22);
 }
 
 /* --- AI Photo Scan CTA card — Sprint 13 --- */
@@ -612,20 +631,20 @@
   margin: 18px 0 6px;
   padding: 16px 18px;
   border-radius: 18px;
-  border: 1px solid rgba(200, 165, 87, 0.35);
+  border: 1px solid var(--auth-border-strong);
   background:
-    linear-gradient(135deg, rgba(200, 165, 87, 0.18) 0%, rgba(200, 165, 87, 0.04) 60%, rgba(246, 241, 232, 0.02) 100%);
+    linear-gradient(135deg, rgba(31, 111, 235, 0.22) 0%, rgba(56, 189, 248, 0.08) 62%, rgba(248, 251, 255, 0.03) 100%);
   color: var(--cream);
   font-family: inherit;
   text-align: left;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  box-shadow: 0 6px 22px rgba(200, 165, 87, 0.08);
+  box-shadow: 0 10px 28px rgba(31, 111, 235, 0.16);
 }
 
 .s-ai-scan-cta:hover {
-  border-color: rgba(200, 165, 87, 0.6);
-  box-shadow: 0 8px 28px rgba(200, 165, 87, 0.18);
+  border-color: rgba(147, 197, 253, 0.62);
+  box-shadow: 0 12px 32px rgba(31, 111, 235, 0.24);
 }
 
 .s-ai-scan-cta:active {
@@ -637,12 +656,12 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--gold-light, #E4D2A1), var(--gold, #C8A557));
-  color: var(--ink);
+  background: linear-gradient(135deg, #DBEAFE, #60A5FA);
+  color: #08213C;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(200, 165, 87, 0.35);
+  box-shadow: 0 8px 18px rgba(31, 111, 235, 0.34);
 }
 
 .s-ai-scan-icon svg {
@@ -668,7 +687,7 @@
 .s-ai-scan-desc {
   font-size: 11.5px;
   line-height: 1.4;
-  color: rgba(246, 241, 232, 0.62);
+  color: var(--auth-muted);
 }
 
 .s-ai-scan-arrow {
@@ -676,8 +695,8 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(200, 165, 87, 0.18);
-  color: var(--gold, #C8A557);
+  background: rgba(31, 111, 235, 0.20);
+  color: var(--gold, #4EA1FF);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -946,7 +965,7 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: rgba(200, 165, 87, 0.15);
+  background: rgba(31, 111, 235, 0.16);
   color: var(--gold);
   display: flex;
   align-items: center;
@@ -1638,7 +1657,9 @@
     padding: 60px 48px 24px !important;
     overflow-y: auto !important;
     max-height: 100% !important;
-    background: var(--ink-2) !important;
+    background:
+      radial-gradient(circle at 92% 4%, rgba(31, 111, 235, 0.16) 0%, rgba(31, 111, 235, 0) 32%),
+      var(--ink-2) !important;
   }
 
   .s-auth-section {
@@ -1675,20 +1696,20 @@
   .s-auth-row-label {
     font-size: 15px !important;
     font-weight: 500 !important;
-    color: #000000 !important;
+    color: var(--auth-muted) !important;
   }
 
   .s-auth-row-val {
     font-size: 15px !important;
     font-weight: 600 !important;
-    color: #000000 !important;
+    color: var(--cream) !important;
   }
 
   .s-auth-cta {
     grid-area: cta !important;
     padding: 32px 48px 48px !important;
     background: var(--ink-2) !important;
-    border-top: 1px solid rgba(200, 165, 87, 0.18) !important;
+    border-top: 1px solid rgba(96, 165, 250, 0.18) !important;
     display: flex !important;
     justify-content: flex-end !important;
     gap: 16px !important;
