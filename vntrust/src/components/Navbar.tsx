@@ -179,7 +179,7 @@ export function AiNavModal({ onClose }: { onClose: () => void }) {
   const isOverLimit = charCount > MAX_CHAT_LEN;
 
   return (
-    <div className="fixed bottom-[calc(88px+env(safe-area-inset-bottom,0px))] right-3 z-[9999] w-[calc(100vw-24px)] max-w-[380px] sm:bottom-5 sm:right-5 lg:bottom-5 lg:right-6">
+    <div className="ai-chat-popover-anchor">
       <div className="ai-chat-popover-panel glass-panel border border-white/20 rounded-3xl p-3.5 shadow-2xl flex flex-col overflow-hidden">
 
         {/* Header — giống Dashboard */}

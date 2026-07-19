@@ -159,6 +159,16 @@ body {
   flex-wrap: nowrap !important;
 }
 
+.ai-chat-popover-anchor {
+  position: fixed;
+  right: 12px !important;
+  left: auto !important;
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 9999;
+  width: min(380px, calc(100vw - 24px));
+  max-width: 380px;
+}
+
 .ai-chat-popover-panel {
   width: min(380px, calc(100vw - 24px));
   max-height: min(560px, calc(100dvh - 110px));
@@ -166,6 +176,20 @@ body {
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   animation: ai-chat-popover-in 160ms ease-out;
+}
+
+@media (min-width: 640px) {
+  .ai-chat-popover-anchor {
+    right: 20px !important;
+    bottom: 20px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ai-chat-popover-anchor {
+    right: 24px !important;
+    bottom: 24px !important;
+  }
 }
 
 .ai-chat-popover-body {
