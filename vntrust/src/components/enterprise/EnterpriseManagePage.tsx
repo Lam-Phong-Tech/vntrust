@@ -247,7 +247,7 @@ function OperationNav({ items, activeKey, onSelect }: { items: ModuleItem[]; act
     <aside className="lg:h-full lg:min-h-0 lg:self-stretch">
       <div className="flex h-full overflow-hidden border border-[#b9d7ff] bg-[#1F6FEB] shadow-md lg:w-[344px] lg:flex-col lg:rounded-none lg:border-y-0 lg:border-l-0">
         <div className="min-w-[300px] border-r border-white/15 px-4 py-4 text-white lg:min-w-0 lg:border-b lg:border-r-0">
-          <Link href="/enterprise/manage" className="mb-5 flex items-center gap-3">
+          <Link href="/enterprise/manage" className="flex items-center gap-3">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm">
               <img src="/logo-icon.png" alt="AI VeriGoods" className="h-7 w-7 object-contain" />
             </span>
@@ -256,11 +256,6 @@ function OperationNav({ items, activeKey, onSelect }: { items: ModuleItem[]; act
               <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/75">Enterprise Console</span>
             </span>
           </Link>
-          <div className="rounded-2xl border border-white/20 bg-white/10 p-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">Menu nghiệp vụ</p>
-            <h2 className="mt-1 text-xl font-bold leading-snug">Quản lý nhanh</h2>
-            <p className="mt-2 text-[11px] font-semibold leading-5 text-white/75">Điều hướng nghiệp vụ doanh nghiệp, tách riêng khỏi dashboard.</p>
-          </div>
         </div>
         <nav className="enterprise-operation-nav flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:pb-10">
           {items.map(item => {
