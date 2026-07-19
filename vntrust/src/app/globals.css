@@ -592,6 +592,15 @@ html.light-mode .feature-card-visual__icon {
   display: none;
 }
 
+.enterprise-operation-icon .material-symbols-outlined {
+  display: block;
+  width: 1em;
+  height: 1em;
+  text-align: center;
+  line-height: 1;
+  overflow: hidden;
+}
+
 body.enterprise-manage-route .floating-ai-button {
   right: 1rem !important;
   bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;

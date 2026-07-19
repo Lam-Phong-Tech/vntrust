@@ -274,8 +274,10 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
                 title={`${item.title} - ${item.action} - ${item.status}`}
               >
                 <span className="feature-card-visual"><span className="feature-card-visual__icon material-symbols-outlined">{item.icon}</span></span>
-                <span className="material-symbols-outlined flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/25 bg-white text-[22px] text-[#1F6FEB] shadow-sm">
-                  {item.locked ? "lock" : item.icon}
+                <span className="enterprise-operation-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/25 bg-white text-[#1F6FEB] shadow-sm">
+                  <span className="material-symbols-outlined text-[22px] leading-none">
+                    {item.locked ? "lock" : item.icon}
+                  </span>
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-bold leading-5" style={wrapText}>{item.title}</span>
