@@ -4,6 +4,46 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { upsertSystemApproval } from "@/lib/systemApproval";
 
+const normalizeImportedCode = (value: unknown) =>
+  String(value ?? "")
+    .replace(/^\uFEFF/, "")
+    .replace(/\u00A0/g, " ")
+    .trim();
+
+const isValidImportedCode = (value: string) =>
+  /^[A-Za-z0-9._-]{4,64}$/.test(value);
+
+function validateImportedCodes(codes: unknown[]) {
+  const seen = new Map<string, number>();
+  const clean: string[] = [];
+
+  for (let i = 0; i < codes.length; i += 1) {
+    const code = normalizeImportedCode(codes[i]);
+    const row = i + 1;
+    if (!code) continue;
+    if (!isValidImportedCode(code)) {
+      return {
+        clean: [],
+        error: `Mã dòng ${row} không hợp lệ. Chỉ dùng A-Z, 0-9, dấu chấm, gạch ngang hoặc gạch dưới; dài 4-64 ký tự.`,
+      };
+    }
+
+    const key = code.toUpperCase();
+    const firstRow = seen.get(key);
+    if (firstRow) {
+      return {
+        clean: [],
+        error: `File có mã trùng ở dòng ${row} với dòng ${firstRow}: ${code}`,
+      };
+    }
+
+    seen.set(key, row);
+    clean.push(code);
+  }
+
+  return { clean, error: null as string | null };
+}
+
 export async function GET() {
   try {
     const cookieStore = await cookies();
@@ -175,12 +215,12 @@ export async function POST(req: NextRequest) {
         if (!Array.isArray(codes) || codes.length === 0) {
           return NextResponse.json({ error: "Vui lòng cung cấp danh sách mã (file Excel/CSV)" }, { status: 400 });
         }
-        // Chuẩn hoá + loại trùng + bỏ rỗng
-        const clean = [...new Set(codes.map((c: any) => String(c ?? "").trim()).filter(Boolean))];
+        const { clean, error } = validateImportedCodes(codes);
+        if (error) return NextResponse.json({ error }, { status: 400 });
         if (clean.length === 0) return NextResponse.json({ error: "File không chứa mã hợp lệ" }, { status: 400 });
         if (clean.length > 10000) return NextResponse.json({ error: "Tối đa 10.000 mã mỗi lô" }, { status: 400 });
         // Chống trùng với mã đã có trong hệ thống
-        const dup = await prisma.maDinhDanh.findMany({ where: { serialNumber: { in: clean } }, select: { serialNumber: true }, take: 5 });
+        const dup = await prisma.maDinhDanh.findMany({ where: { serialNumber: { in: clean } }, select: { serialNumber: true }, take: 10 });
         if (dup.length > 0) {
           return NextResponse.json({ error: `Có mã đã tồn tại trong hệ thống (vd: ${dup.map(d => d.serialNumber).join(', ')})` }, { status: 409 });
         }

@@ -236,6 +236,8 @@ export default function QRPrintPage() {
   const uidsWithIndex = batch ? batch.uids.map((item, index) => ({ ...item, originalIdx: index })) : [];
   const statusOrder: Record<string, number> = { fake: 0, flagged: 1, expired: 2, active: 3 };
   const maOf = (x: { serialNumber?: string | null; uid: string }) => (x.serialNumber || x.uid || '');
+  const verifyCodeOf = (x: { serialNumber?: string | null; uid: string }) => x.serialNumber || x.uid;
+  const verifyHrefOf = (x: { serialNumber?: string | null; uid: string }) => `${baseUrl}/verify/${encodeURIComponent(verifyCodeOf(x))}`;
   const sortedUids = [...uidsWithIndex].sort((a, b) => {
     if (sortBy === 'scans-desc') return (b.soLanQuet || 0) - (a.soLanQuet || 0);
     if (sortBy === 'scans-asc')  return (a.soLanQuet || 0) - (b.soLanQuet || 0);
@@ -454,7 +456,7 @@ export default function QRPrintPage() {
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 print:grid-cols-5 print:gap-3">
           {sortedUids.slice(0, printCount).map((item) => {
             const isBarcode = item.loai === "Barcode";
-            const codeValue = item.serialNumber || item.uid;
+            const codeValue = verifyCodeOf(item);
             return (
             <div key={item.uid}
               data-qr-tile="1"
@@ -490,7 +492,7 @@ export default function QRPrintPage() {
                     <BarcodeSVG value={codeValue} />
                   ) : (
                     <QRCodeSVG
-                      value={`${baseUrl}/verify/${item.uid}`}
+                      value={verifyHrefOf(item)}
                       size={140}
                       bgColor="#ffffff"
                       fgColor="#000000"
@@ -503,8 +505,8 @@ export default function QRPrintPage() {
               {/* Thông tin */}
               <div className="text-center w-full">
                 <p className="text-[9px] font-bold text-primary uppercase tracking-wider">AI VERIGOODS</p>
-                <a href={`/verify/${item.uid}`} target="_blank" rel="noopener noreferrer" className="hover:underline text-[8px] text-slate-500 w-full text-center font-mono overflow-hidden block" title={item.uid}>
-                  {item.uid.substring(0, 8)}…
+                <a href={`/verify/${encodeURIComponent(codeValue)}`} target="_blank" rel="noopener noreferrer" className="hover:underline text-[8px] text-slate-500 w-full text-center font-mono overflow-hidden block" title={codeValue}>
+                  {codeValue.substring(0, 14)}{codeValue.length > 14 ? "…" : ""}
                 </a>
                 <p className="text-[9px] text-slate-400">{(batch.sanPham?.ten || "Sản phẩm không rõ").substring(0, 18)}</p>
                 <p className="text-[9px] font-bold text-slate-600">HSD: {hanDung}</p>
@@ -637,13 +639,13 @@ export default function QRPrintPage() {
         >
           <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center" onClick={e => e.stopPropagation()}>
             <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">AI VERIGOODS · Quét bằng camera</p>
-            <p className="text-[10px] text-slate-400 font-mono mb-4 break-all">{zoomedUid.substring(0, 24)}…</p>
+            <p className="text-[10px] text-slate-400 font-mono mb-4 break-all">{zoomedItem ? verifyCodeOf(zoomedItem).substring(0, 24) : zoomedUid.substring(0, 24)}…</p>
             <div className="flex justify-center bg-white p-4 rounded-2xl border-2 border-slate-200">
               {zoomedItem?.loai === "Barcode" ? (
                 <BarcodeSVG value={zoomedItem.serialNumber || zoomedItem.uid} height={180} />
               ) : (
                 <QRCodeSVG
-                  value={`${baseUrl}/verify/${zoomedUid}`}
+                  value={zoomedItem ? verifyHrefOf(zoomedItem) : `${baseUrl}/verify/${encodeURIComponent(zoomedUid)}`}
                   size={320}
                   bgColor="#ffffff"
                   fgColor="#000000"

@@ -32,6 +32,49 @@ interface InvData {
   sanPhams: SanPham[];
 }
 
+type ImportIssue = { row: number; code: string; reason: string };
+
+const IMPORT_CODE_HEADERS = new Set([
+  "serial",
+  "serial_number",
+  "seri",
+  "ma",
+  "ma_tem",
+  "ma tem",
+  "matem",
+  "ma_in_tem",
+  "ma in tem",
+  "ma_vach",
+  "ma vach",
+  "ma_qr",
+  "ma qr",
+  "barcode",
+  "bar_code",
+  "qr",
+  "qr_code",
+  "uid",
+  "code",
+]);
+
+const normalizeImportHeader = (value: unknown) =>
+  String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+const normalizeImportCode = (value: unknown) =>
+  String(value ?? "")
+    .replace(/^\uFEFF/, "")
+    .replace(/\u00A0/g, " ")
+    .trim();
+
+const isValidImportCode = (value: string) =>
+  /^[A-Za-z0-9._-]{4,64}$/.test(value);
+
 export default function InventoryPage() {
   const { t, lang } = useLanguage();
   const [data, setData] = useState<InvData | null>(null);
@@ -63,29 +106,111 @@ export default function InventoryPage() {
   const [importedCodes, setImportedCodes] = useState<string[]>([]);
   const [importFileName, setImportFileName] = useState("");
   const [parsingFile, setParsingFile] = useState(false);
+  const [importIssues, setImportIssues] = useState<ImportIssue[]>([]);
+  const [importTotalRows, setImportTotalRows] = useState(0);
+  const [importColumnName, setImportColumnName] = useState("");
 
-  // Đọc file Excel/CSV → lấy cột mã (cột đầu tiên, bỏ header nếu có)
+  const resetImportState = () => {
+    setImportedCodes([]);
+    setImportFileName("");
+    setImportIssues([]);
+    setImportTotalRows(0);
+    setImportColumnName("");
+  };
+
+  const downloadCodeTemplate = () => {
+    const rows = [
+      ["serial"],
+      ["SP001000001"],
+      ["SP001000002"],
+      ["SP001000003"],
+    ];
+    const csv = "\uFEFF" + rows.map(row => row.join(",")).join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = codeType === "Barcode" ? "barcode-import-template.csv" : "qr-import-template.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Đọc file Excel/CSV → tìm đúng cột serial/ma_tem/barcode/qr_code
   const handleCodeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setParsingFile(true);
     setImportFileName(file.name);
+    setImportedCodes([]);
+    setImportIssues([]);
+    setImportTotalRows(0);
+    setImportColumnName("");
     try {
       const XLSX = await import("xlsx");
       const buf = await file.arrayBuffer();
       const wb = XLSX.read(buf, { type: "array" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1, blankrows: false });
-      let cells = rows.map(r => String(r?.[0] ?? "").trim()).filter(Boolean);
-      // Bỏ dòng tiêu đề nếu ô đầu giống nhãn cột
-      if (cells.length && /^(m[ãa]|code|qr|barcode|serial|uid|mã)\b/i.test(cells[0])) cells = cells.slice(1);
-      const uniq = [...new Set(cells)];
-      setImportedCodes(uniq);
-      if (uniq.length === 0) showToast("File không có mã hợp lệ ở cột đầu tiên", false);
-      else showToast(`Đã đọc ${uniq.length} mã từ file`, true);
+      const headerRowIndex = rows.findIndex(row => Array.isArray(row) && row.some(cell => String(cell ?? "").trim()));
+      if (headerRowIndex < 0) {
+        showToast("File trống, vui lòng dùng template có cột serial", false);
+        return;
+      }
+
+      const headerRow = rows[headerRowIndex] || [];
+      const codeColumnIndex = headerRow.findIndex(cell => IMPORT_CODE_HEADERS.has(normalizeImportHeader(cell)));
+      if (codeColumnIndex < 0) {
+        showToast("Không tìm thấy cột serial / ma_tem / barcode / qr_code trong file", false);
+        setImportIssues([{ row: headerRowIndex + 1, code: "", reason: "Thiếu header cột mã. Hãy đặt tên cột là serial." }]);
+        return;
+      }
+
+      const columnName = String(headerRow[codeColumnIndex] ?? "serial").trim();
+      const rawItems = rows.slice(headerRowIndex + 1).map((row, idx) => ({
+        row: headerRowIndex + idx + 2,
+        code: normalizeImportCode(row?.[codeColumnIndex]),
+      }));
+      const nonEmptyItems = rawItems.filter(item => item.code);
+      setImportTotalRows(nonEmptyItems.length);
+      setImportColumnName(columnName);
+
+      const seen = new Map<string, number>();
+      const validCodes: string[] = [];
+      const issues: ImportIssue[] = [];
+
+      for (const item of nonEmptyItems) {
+        if (!isValidImportCode(item.code)) {
+          issues.push({
+            row: item.row,
+            code: item.code,
+            reason: "Mã chỉ được dùng A-Z, 0-9, dấu chấm, gạch ngang hoặc gạch dưới; dài 4-64 ký tự.",
+          });
+          continue;
+        }
+
+        const key = item.code.toUpperCase();
+        const firstRow = seen.get(key);
+        if (firstRow) {
+          issues.push({ row: item.row, code: item.code, reason: `Trùng với dòng ${firstRow}.` });
+          continue;
+        }
+
+        seen.set(key, item.row);
+        validCodes.push(item.code);
+      }
+
+      setImportedCodes(validCodes);
+      setImportIssues(issues);
+      if (nonEmptyItems.length === 0) {
+        showToast("Cột mã chưa có dữ liệu", false);
+      } else if (issues.length > 0) {
+        showToast(`Đã đọc ${validCodes.length} mã hợp lệ, còn ${issues.length} dòng cần sửa`, false);
+      } else {
+        showToast(`Đã đọc ${validCodes.length} mã hợp lệ từ cột ${columnName}`, true);
+      }
     } catch {
       showToast("Không đọc được file. Chấp nhận .xlsx, .xls, .csv", false);
-      setImportedCodes([]); setImportFileName("");
+      resetImportState();
     } finally {
       setParsingFile(false);
       e.target.value = "";
@@ -208,8 +333,7 @@ export default function InventoryPage() {
     setSelectedBatch(null);
     setCodeMode("generate");
     setCodeType("QR");
-    setImportedCodes([]);
-    setImportFileName("");
+    resetImportState();
   };
 
   // ── Sửa sản phẩm: mở modal "product" với dữ liệu có sẵn ──
@@ -308,6 +432,10 @@ export default function InventoryPage() {
       }
       if (codeMode === "import" && importedCodes.length === 0) {
         showToast("✗ Vui lòng tải lên file chứa danh sách mã", false);
+        return;
+      }
+      if (codeMode === "import" && importIssues.length > 0) {
+        showToast(`✗ File còn ${importIssues.length} dòng lỗi, vui lòng sửa trước khi tạo lô`, false);
         return;
       }
       const sxDate = new Date(ngaySanXuat);
@@ -1203,6 +1331,23 @@ export default function InventoryPage() {
                     ) : (
                       <div>
                         <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">File mã (Excel / CSV)</label>
+                        <div className="mb-3 rounded-xl border border-primary/25 bg-primary/10 p-3 text-xs text-blue-100">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                            <div>
+                              <p className="font-bold text-white">Bố cục file bắt buộc</p>
+                              <p className="mt-1 text-slate-300">Sheet đầu tiên phải có cột <b>serial</b>. Mỗi dòng là một mã in trên tem, không trùng nhau.</p>
+                            </div>
+                            <button type="button" onClick={downloadCodeTemplate}
+                              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-primary/40 bg-primary/15 px-3 py-2 font-bold text-white hover:bg-primary/25 transition">
+                              <span className="material-symbols-outlined text-[16px]">download</span>
+                              Tải file mẫu
+                            </button>
+                          </div>
+                          <div className="mt-2 grid grid-cols-[110px_1fr] overflow-hidden rounded-lg border border-white/10 text-[11px]">
+                            <div className="bg-white/10 px-2 py-1.5 font-bold text-white">serial</div>
+                            <div className="px-2 py-1.5 text-slate-300">SP001000001</div>
+                          </div>
+                        </div>
                         <label className={`flex items-center gap-3 w-full border rounded-xl py-3 px-4 cursor-pointer transition ${importedCodes.length ? "border-[#4A7C5C]/40 bg-[#4A7C5C]/5" : "border-white/15 bg-white/5 hover:border-[#C8A557]/40"}`}>
                           <span className={`material-symbols-outlined text-xl ${importedCodes.length ? "text-[#6FB585]" : "text-amber-400"}`}>{parsingFile ? "hourglass_top" : "table_view"}</span>
                           <span className="text-sm flex-1 truncate text-slate-300">
@@ -1210,7 +1355,42 @@ export default function InventoryPage() {
                           </span>
                           <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={handleCodeFile} />
                         </label>
-                        <p className="text-xs text-slate-400 mt-1">Mã nằm ở <b>cột đầu tiên</b>. Hệ thống tự bỏ trùng & dòng tiêu đề.</p>
+                        <p className="text-xs text-slate-400 mt-1">Header được chấp nhận: <b>serial</b>, <b>ma_tem</b>, <b>barcode</b>, <b>qr_code</b>, <b>uid</b>, <b>code</b>.</p>
+                        {(importFileName || importIssues.length > 0) && (
+                          <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-3">
+                            <div className="flex flex-wrap gap-2 text-[11px] font-bold">
+                              <span className="rounded-full bg-white/10 px-2.5 py-1 text-slate-200">File: {importFileName || "Chưa hợp lệ"}</span>
+                              {importColumnName && <span className="rounded-full bg-primary/20 px-2.5 py-1 text-blue-100">Cột đọc: {importColumnName}</span>}
+                              <span className="rounded-full bg-white/10 px-2.5 py-1 text-slate-200">Dòng có mã: {importTotalRows}</span>
+                              <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-emerald-300">Hợp lệ: {importedCodes.length}</span>
+                              {importIssues.length > 0 && <span className="rounded-full bg-red-500/15 px-2.5 py-1 text-red-300">Lỗi: {importIssues.length}</span>}
+                            </div>
+
+                            {importedCodes.length > 0 && (
+                              <div className="mt-3">
+                                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Preview mã hợp lệ</p>
+                                <div className="mt-1 flex flex-wrap gap-1.5">
+                                  {importedCodes.slice(0, 8).map(code => (
+                                    <span key={code} className="max-w-full truncate rounded-md bg-white/10 px-2 py-1 font-mono text-[11px] text-white" title={code}>{code}</span>
+                                  ))}
+                                  {importedCodes.length > 8 && <span className="rounded-md bg-white/10 px-2 py-1 text-[11px] text-slate-300">+{importedCodes.length - 8} mã</span>}
+                                </div>
+                              </div>
+                            )}
+
+                            {importIssues.length > 0 && (
+                              <div className="mt-3 max-h-28 overflow-y-auto rounded-lg border border-red-500/20 bg-red-500/10">
+                                {importIssues.slice(0, 20).map(issue => (
+                                  <div key={`${issue.row}-${issue.code}-${issue.reason}`} className="grid grid-cols-[64px_1fr] gap-2 border-b border-red-500/10 px-2 py-1.5 text-[11px] last:border-b-0">
+                                    <span className="font-bold text-red-200">Dòng {issue.row}</span>
+                                    <span className="min-w-0 text-red-100"><b className="font-mono">{issue.code || "trống"}</b> - {issue.reason}</span>
+                                  </div>
+                                ))}
+                                {importIssues.length > 20 && <div className="px-2 py-1.5 text-[11px] text-red-100">Còn {importIssues.length - 20} lỗi khác. Sửa file rồi tải lại.</div>}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
