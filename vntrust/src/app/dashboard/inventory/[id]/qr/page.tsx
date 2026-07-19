@@ -8,8 +8,27 @@ import { QRCodeSVG } from "qrcode.react";
 
 const MAX_QR_AMOUNT = 10000;
 
+const gtinCheckDigit = (digitsWithoutCheck: string) => {
+  const digits = digitsWithoutCheck.split("").map(Number).reverse();
+  const sum = digits.reduce((acc, digit, index) => acc + digit * (index % 2 === 0 ? 3 : 1), 0);
+  return String((10 - (sum % 10)) % 10);
+};
+
+const isValidGtin = (value: string, length: 8 | 12 | 13) => {
+  const digits = value.replace(/\D/g, "");
+  return digits.length === length && gtinCheckDigit(digits.slice(0, -1)) === digits.at(-1);
+};
+
+const barcodeFormatFor = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+  if (isValidGtin(digits, 13)) return "EAN13";
+  if (isValidGtin(digits, 12)) return "UPC";
+  if (isValidGtin(digits, 8)) return "EAN8";
+  return "CODE128";
+};
+
 // Render barcode (CODE128) bằng jsbarcode
-function BarcodeSVG({ value, height = 90 }: { value: string; height?: number }) {
+function BarcodeSVG({ value, height = 112 }: { value: string; height?: number }) {
   const ref = useRef<SVGSVGElement>(null);
   useEffect(() => {
     let cancelled = false;
@@ -17,13 +36,29 @@ function BarcodeSVG({ value, height = 90 }: { value: string; height?: number }) 
       try {
         const JsBarcode = (await import("jsbarcode")).default;
         if (!cancelled && ref.current) {
-          JsBarcode(ref.current, value, { format: "CODE128", displayValue: true, height, width: 1.8, margin: 6, fontSize: 13 });
+          const cleanValue = value.trim();
+          const format = barcodeFormatFor(cleanValue);
+          JsBarcode(ref.current, cleanValue, {
+            format,
+            displayValue: true,
+            height,
+            width: format === "CODE128" ? 2.1 : 2.35,
+            margin: 14,
+            marginTop: 8,
+            marginBottom: 8,
+            fontSize: 14,
+            textMargin: 5,
+            background: "#ffffff",
+            lineColor: "#000000",
+          });
+          ref.current.setAttribute("preserveAspectRatio", "xMidYMid meet");
+          ref.current.setAttribute("shape-rendering", "crispEdges");
         }
       } catch {}
     })();
     return () => { cancelled = true; };
   }, [value, height]);
-  return <svg ref={ref} style={{ maxWidth: "100%" }} />;
+  return <svg ref={ref} className="barcode-svg" aria-label={`Barcode ${value}`} />;
 }
 
 interface BatchData {
@@ -259,6 +294,14 @@ export default function QRPrintPage() {
         .qr-page-scope [data-qr-tile="1"] .text-slate-600 { color: #1e293b !important; }
         .qr-page-scope [data-qr-tile="1"] .text-slate-500,
         .qr-page-scope [data-qr-tile="1"] .text-slate-400 { color: #475569 !important; }
+        .qr-page-scope [data-code-kind="Barcode"] { min-width: 0; }
+        .qr-page-scope [data-code-kind="Barcode"] .barcode-svg {
+          display: block;
+          width: 100%;
+          min-height: 96px;
+          background: #FFFFFF;
+          overflow: visible;
+        }
 
         /* ── @media print: revert hoàn toàn về trắng đen để in ─────── */
         @media print {
@@ -266,6 +309,7 @@ export default function QRPrintPage() {
           .qr-page-scope * { color: #000000 !important; background-color: #FFFFFF !important; border-color: #CCCCCC !important; box-shadow: none !important; }
           .qr-page-scope [data-qr-tile="1"] { background: #FFFFFF !important; border: 1px solid #000 !important; }
           .qr-page-scope [data-qr-tile="1"] * { color: #000 !important; }
+          .qr-page-scope [data-code-kind="Barcode"] .barcode-svg { min-height: 108px; }
         }
       `}</style>
       <div className="qr-page-scope bg-slate-100 min-h-screen">
@@ -408,12 +452,15 @@ export default function QRPrintPage() {
       {/* Grid QR codes */}
       <div className="p-8 max-w-7xl mx-auto print:p-0 print:max-w-none pb-24">
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 print:grid-cols-5 print:gap-3">
-          {sortedUids.slice(0, printCount).map((item, idx) => (
+          {sortedUids.slice(0, printCount).map((item) => {
+            const isBarcode = item.loai === "Barcode";
+            const codeValue = item.serialNumber || item.uid;
+            return (
             <div key={item.uid}
               data-qr-tile="1"
-              data-code-value={item.loai === "Barcode" ? (item.serialNumber || item.uid) : item.uid}
-              data-code-kind={item.loai === "Barcode" ? "Barcode" : "QR"}
-              className={`bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center gap-2 relative print:rounded-md print:border print:break-inside-avoid ${printSingleId && printSingleId !== item.uid ? 'print:hidden' : ''} ${selectedUids.has(item.uid) ? 'ring-2 ring-primary border-primary' : ''}`}>
+              data-code-value={isBarcode ? codeValue : item.uid}
+              data-code-kind={isBarcode ? "Barcode" : "QR"}
+              className={`bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center gap-2 relative print:rounded-md print:border print:break-inside-avoid ${isBarcode ? 'col-span-2 print:col-span-2' : ''} ${printSingleId && printSingleId !== item.uid ? 'print:hidden' : ''} ${selectedUids.has(item.uid) ? 'ring-2 ring-primary border-primary' : ''}`}>
               
               {/* Checkbox for bulk select */}
               {!printMode && (
@@ -433,14 +480,14 @@ export default function QRPrintPage() {
               )}
 
               {/* QR Code — click để phóng to khi quét bằng mobile */}
-              <div className="bg-white p-1.5 rounded-lg border border-slate-100 mt-2">
+              <div className={`bg-white rounded-lg border border-slate-100 mt-2 ${isBarcode ? "w-full px-2 py-2" : "p-1.5"}`}>
                 <button
                   onClick={() => setZoomedUid(item.uid)}
-                  className="block hover:opacity-80 transition cursor-pointer"
+                  className={`${isBarcode ? "block w-full" : "block"} hover:opacity-80 transition cursor-pointer`}
                   title="Bấm để phóng to QR (dễ quét bằng mobile)"
                 >
-                  {item.loai === "Barcode" ? (
-                    <BarcodeSVG value={item.serialNumber || item.uid} />
+                  {isBarcode ? (
+                    <BarcodeSVG value={codeValue} />
                   ) : (
                     <QRCodeSVG
                       value={`${baseUrl}/verify/${item.uid}`}
@@ -499,7 +546,8 @@ export default function QRPrintPage() {
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
