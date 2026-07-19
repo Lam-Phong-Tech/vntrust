@@ -159,6 +159,36 @@ body {
   flex-wrap: nowrap !important;
 }
 
+.ai-chat-popover-panel {
+  width: min(380px, calc(100vw - 24px));
+  max-height: min(560px, calc(100dvh - 110px));
+  background: rgba(13, 27, 46, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  animation: ai-chat-popover-in 160ms ease-out;
+}
+
+.ai-chat-popover-body {
+  height: min(450px, calc(100dvh - 190px));
+  min-height: 300px;
+}
+
+.ai-chat-popover-panel,
+.ai-chat-popover-panel * {
+  min-width: 0;
+}
+
+@keyframes ai-chat-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .dashboard-modal-panel {
   width: min(448px, calc(100vw - 32px)) !important;
   max-width: 448px !important;

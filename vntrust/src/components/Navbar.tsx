@@ -105,6 +105,13 @@ export function AiNavModal({ onClose }: { onClose: () => void }) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, typing]);
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [onClose]);
 
   const QUICK_BTNS = [t("chat_q_qr"), t("chat_q_fake"), t("chat_q_price"), t("chat_q_support"), t("chat_q_app")];
   const tr = (vi: string, en: string, zh?: string) => {
@@ -172,24 +179,23 @@ export function AiNavModal({ onClose }: { onClose: () => void }) {
   const isOverLimit = charCount > MAX_CHAT_LEN;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-2 sm:p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      <div className="ai-chat-modal-panel relative w-full max-w-md max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] glass-panel border border-white/20 rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
+    <div className="fixed bottom-[calc(88px+env(safe-area-inset-bottom,0px))] right-3 z-[9999] w-[calc(100vw-24px)] max-w-[380px] sm:bottom-5 sm:right-5 lg:bottom-5 lg:right-6">
+      <div className="ai-chat-popover-panel glass-panel border border-white/20 rounded-3xl p-3.5 shadow-2xl flex flex-col overflow-hidden">
 
         {/* Header — giống Dashboard */}
-        <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6 shrink-0">
+        <div className="flex items-center justify-between gap-3 mb-3 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#C8A557] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-[#C8A557] flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-white">smart_toy</span>
             </div>
-            <h2 className="text-base sm:text-lg font-black text-white font-display truncate">{t("nav_chat_title")}</h2>
+            <h2 className="text-sm font-black text-white font-display truncate">{t("nav_chat_title")}</h2>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition shrink-0">
             <span className="material-symbols-outlined text-white text-[18px]">close</span>
           </button>
         </div>
 
-        <div className="ai-chat-modal-body flex flex-col h-[calc(100dvh-9rem)] min-h-[320px] max-h-[480px] sm:h-[480px]">
+        <div className="ai-chat-popover-body flex flex-col">
           {/* Messages — giống hệt Dashboard */}
           <div className="flex-1 overflow-y-auto space-y-3 hide-scrollbar pr-1">
             {msgs.map((m, i) => (
@@ -253,9 +259,8 @@ export function AiNavModal({ onClose }: { onClose: () => void }) {
               <span className="material-symbols-outlined text-white text-[18px]">send</span>
             </button>
           </div>
-        </div>
-
       </div>
+    </div>
     </div>
   );
 }
