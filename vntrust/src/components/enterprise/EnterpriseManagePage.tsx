@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 type ManageData = {
@@ -54,7 +54,10 @@ type ManageData = {
   recommendations: string[];
 };
 
+type ModuleKey = "kyc" | "inventory" | "certificates" | "distribution" | "team" | "analytics";
+
 type ModuleItem = {
+  key: ModuleKey;
   title: string;
   desc: string;
   icon: string;
@@ -63,6 +66,8 @@ type ModuleItem = {
   status: string;
   locked: boolean;
 };
+
+type ActiveModule = ModuleKey | "overview";
 
 type KycDocumentField = "giayphep_url" | "cmnd_url";
 
@@ -237,9 +242,7 @@ function DataRow({ title, meta, right, href, icon = "radio_button_checked" }: { 
   return href ? <Link href={href} className="block hover:bg-[#f3f8ff]">{row}</Link> : row;
 }
 
-function OperationNav({ items }: { items: ModuleItem[] }) {
-  const pathname = usePathname();
-
+function OperationNav({ items, activeKey, onSelect }: { items: ModuleItem[]; activeKey: ActiveModule; onSelect: (key: ModuleKey) => void }) {
   return (
     <aside className="lg:h-full lg:min-h-0 lg:self-stretch">
       <div className="flex h-full overflow-hidden border border-[#b9d7ff] bg-[#1F6FEB] shadow-md lg:w-[344px] lg:flex-col lg:rounded-none lg:border-y-0 lg:border-l-0">
@@ -261,13 +264,13 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
         </div>
         <nav className="enterprise-operation-nav flex min-w-0 flex-1 gap-2 overflow-x-auto p-3 lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:pb-10">
           {items.map(item => {
-            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
-              <Link
-                key={item.href}
-                href={item.href}
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => onSelect(item.key)}
                 className={`feature-visual-card feature-visual-card--cyan group flex min-h-[94px] min-w-[270px] items-center gap-3 rounded-2xl border px-3.5 py-3 text-left text-white transition lg:min-w-0 ${
-                  active
+                  activeKey === item.key
                     ? "border-white/55 bg-white/18 shadow-[inset_3px_0_0_rgba(255,255,255,0.85)]"
                     : "border-white/10 hover:border-white/40 hover:bg-white/10"
                 } ${item.locked ? "opacity-75" : ""}`}
@@ -287,7 +290,7 @@ function OperationNav({ items }: { items: ModuleItem[] }) {
                   </span>
                 </span>
                 <span className="material-symbols-outlined shrink-0 text-[18px] text-white/85 transition group-hover:translate-x-0.5">chevron_right</span>
-              </Link>
+              </button>
             );
           })}
         </nav>
@@ -305,6 +308,7 @@ export default function EnterpriseManagePage() {
   const [error, setError] = useState("");
   const [uploadingMissing, setUploadingMissing] = useState<KycDocumentField | null>(null);
   const [missingNotice, setMissingNotice] = useState("");
+  const [activeModule, setActiveModule] = useState<ActiveModule>("overview");
 
   useEffect(() => {
     document.body.classList.add("enterprise-manage-route");
@@ -393,6 +397,7 @@ export default function EnterpriseManagePage() {
     if (!data) return [];
     return [
       {
+        key: "kyc",
         title: "Hồ sơ cơ sở & KYC",
         desc: data.company.trangThai === "verified" ? "Hồ sơ đã xác thực, dùng làm căn cứ cho sản phẩm, tem và phân phối." : "Bổ sung thông tin pháp lý để Admin xác minh.",
         icon: "business_center",
@@ -402,6 +407,7 @@ export default function EnterpriseManagePage() {
         locked: false,
       },
       {
+        key: "inventory",
         title: "Sản phẩm & mục hàng",
         desc: "Tạo sản phẩm, khai báo mục hàng, sinh hoặc import mã QR/barcode.",
         icon: "inventory_2",
@@ -411,6 +417,7 @@ export default function EnterpriseManagePage() {
         locked: !canInput && !canWarehouse,
       },
       {
+        key: "certificates",
         title: "Chứng nhận & giấy phép",
         desc: "Tải chứng nhận ISO/HACCP/GMP/VietGAP và giấy phép lưu hành.",
         icon: "workspace_premium",
@@ -420,6 +427,7 @@ export default function EnterpriseManagePage() {
         locked: false,
       },
       {
+        key: "distribution",
         title: "Phân phối",
         desc: "Theo dõi lô chờ duyệt, sẵn sàng, đã phân phối, khóa hoặc thu hồi.",
         icon: "local_shipping",
@@ -429,6 +437,7 @@ export default function EnterpriseManagePage() {
         locked: !canWarehouse,
       },
       {
+        key: "team",
         title: "Nhân sự nội bộ",
         desc: "Mời nhân viên, đổi vai trò, khóa/mở tài khoản, giữ lịch sử thao tác.",
         icon: "groups",
@@ -438,6 +447,7 @@ export default function EnterpriseManagePage() {
         locked: !canManagePeople,
       },
       {
+        key: "analytics",
         title: "Báo cáo & giám sát",
         desc: "Xem lượt quét, cảnh báo, báo cáo vận hành và dữ liệu nghi vấn.",
         icon: "analytics",
@@ -481,11 +491,146 @@ export default function EnterpriseManagePage() {
   const pendingBatches = data.statusBreakdown.batches.pending_review || 0;
   const readyBatches = data.statusBreakdown.batches.ready || data.statusBreakdown.batches.active || 0;
   const distributedBatches = data.statusBreakdown.batches.distributed || 0;
+  const currentModule = activeModule === "overview" ? null : modules.find(item => item.key === activeModule);
+  const renderModuleContent = () => {
+    if (!currentModule) return null;
+
+    return (
+      <div className="min-w-0">
+        <section className="mb-6 rounded-3xl border border-[#cfe1f4] bg-white p-5 shadow-sm">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#1F6FEB]">Enterprise Module</p>
+              <h2 className="mt-1 flex items-center gap-2 text-2xl font-bold text-slate-950">
+                <span className="material-symbols-outlined text-[#1F6FEB]">{currentModule.icon}</span>
+                {currentModule.title}
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-[#477399]">{currentModule.desc}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveModule("overview")}
+              className="rounded-xl border border-[#bfdbfe] bg-[#f8fbff] px-3 py-2 text-xs font-bold text-[#1F6FEB] transition hover:bg-[#e8f2ff]"
+            >
+              Tổng quan
+            </button>
+          </div>
+        </section>
+
+        {activeModule === "kyc" && (
+          <div className="grid items-start gap-5 xl:grid-cols-2">
+            <AdminPanel title="Thông tin pháp lý" icon="business_center" action={<Link href="/dashboard/kyc" className="text-xs font-bold text-[#1F6FEB]">Mở hồ sơ đầy đủ</Link>}>
+              {profileFieldLabels.slice(0, 7).map(field => (
+                <DataRow
+                  key={field.key}
+                  icon={isProfileFieldComplete(field.key, data.company[field.key]) ? "check_circle" : "radio_button_unchecked"}
+                  title={field.label}
+                  meta={String(data.company[field.key] || "Chưa có dữ liệu")}
+                  right={<StatusPill tone={isProfileFieldComplete(field.key, data.company[field.key]) ? "green" : "amber"}>{isProfileFieldComplete(field.key, data.company[field.key]) ? "Đã có" : "Thiếu"}</StatusPill>}
+                />
+              ))}
+            </AdminPanel>
+            <AdminPanel title="Giấy tờ cần bổ sung" icon="upload_file">
+              {missingProfileFields.length ? missingProfileFields.map(field => (
+                <DataRow key={field.key} href={profileFieldTargets[field.key] || "/dashboard/kyc"} icon="edit_document" title={field.label} meta="Bấm để bổ sung hoặc cập nhật hồ sơ" />
+              )) : <p className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-sm font-semibold text-emerald-700">Hồ sơ quan trọng đã đủ dữ liệu.</p>}
+            </AdminPanel>
+          </div>
+        )}
+
+        {activeModule === "inventory" && (
+          <>
+            <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-3">
+              <StatCard icon="inventory_2" label="Sản phẩm" value={data.stats.products} tag="SKU" />
+              <StatCard icon="qr_code_2" label="Mục hàng" value={data.stats.batches} tag="MỤC" />
+              <StatCard icon="qr_code_scanner" label="Mã định danh" value={data.stats.totalUid} tag="UID" tone="green" />
+            </div>
+            <div className="grid items-start gap-5 xl:grid-cols-2">
+              <AdminPanel title="Sản phẩm gần đây" icon="inventory_2" action={<Link href="/dashboard/inventory" className="text-xs font-bold text-[#1F6FEB]">Mở quản lý đầy đủ</Link>}>
+                {data.products.length ? data.products.map(item => (
+                  <DataRow key={item.id} icon="inventory" title={item.ten} meta={`${item.maSKU}${item.GTIN ? ` - GTIN ${item.GTIN}` : ""}${item.nhomSanPham ? ` - ${item.nhomSanPham}` : ""}`} right={<StatusPill>{item._count.loHangs} mục</StatusPill>} />
+                )) : <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có sản phẩm.</p>}
+              </AdminPanel>
+              <AdminPanel title="Mục hàng" icon="qr_code_2">
+                {data.batches.slice(0, 8).map(item => (
+                  <DataRow key={item.id} icon="deployed_code" title={`${item.maLo} - ${item.sanPham.ten}`} meta={`HSD ${d(item.hanDung)} - ${fmt.format(item.soLuong)} tem - ${statusText[item.trangThai] || item.trangThai}`} />
+                ))}
+                {!data.batches.length && <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có mục hàng.</p>}
+              </AdminPanel>
+            </div>
+          </>
+        )}
+
+        {activeModule === "certificates" && (
+          <div className="grid items-start gap-5 xl:grid-cols-2">
+            <AdminPanel title="Chứng nhận sản phẩm/lô" icon="workspace_premium" action={<Link href="/dashboard/certificates" className="text-xs font-bold text-[#1F6FEB]">Mở chứng nhận đầy đủ</Link>}>
+              {data.certificates.length ? data.certificates.map(item => (
+                <DataRow key={item.id} icon="verified" title={`${item.loai} - ${item.soChungNhan}`} meta={`${item.sanPham?.ten || item.loHang?.maLo || "Hồ sơ DN"} - HSD ${d(item.ngayHetHan)}`} right={<StatusPill tone={item.trangThaiDuyet === "approved" ? "green" : "amber"}>{statusText[item.trangThaiDuyet] || item.trangThaiDuyet}</StatusPill>} />
+              )) : <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có chứng nhận.</p>}
+            </AdminPanel>
+            <AdminPanel title="Giấy phép lưu hành" icon="approval">
+              {data.licenses.length ? data.licenses.map(item => (
+                <DataRow key={item.id} icon="description" title={item.tenGiayPhep} meta={`${item.soGiayPhep} - HSD ${d(item.ngayHetHan)}`} right={<StatusPill>{statusText[item.trangThai] || item.trangThai}</StatusPill>} />
+              )) : <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có giấy phép.</p>}
+            </AdminPanel>
+          </div>
+        )}
+
+        {activeModule === "distribution" && (
+          <div className="grid items-start gap-5 xl:grid-cols-2">
+            <AdminPanel title="Trạng thái mục hàng" icon="local_shipping" action={<Link href="/dashboard/distribution" className="text-xs font-bold text-[#1F6FEB]">Mở phân phối đầy đủ</Link>}>
+              <div className="mb-3 grid grid-cols-3 gap-2 text-center text-xs font-bold">
+                <div className="rounded-xl bg-amber-50 p-2 text-amber-700">{pendingBatches} chờ duyệt</div>
+                <div className="rounded-xl bg-emerald-50 p-2 text-emerald-700">{readyBatches} sẵn sàng</div>
+                <div className="rounded-xl bg-blue-50 p-2 text-blue-700">{distributedBatches} đã phân phối</div>
+              </div>
+              {data.batches.slice(0, 8).map(item => <DataRow key={item.id} icon="deployed_code" title={item.maLo} meta={`${item.sanPham.ten} - ${fmt.format(item.soLuong)} tem - ${statusText[item.trangThai] || item.trangThai}`} />)}
+            </AdminPanel>
+            <AdminPanel title="Đơn phân phối" icon="receipt_long">
+              {data.distributionOrders.length ? data.distributionOrders.map(item => (
+                <DataRow key={item.id} icon="local_shipping" title={`${item.loHang.maLo} - ${item.loHang.sanPham.ten}`} meta={`${statusText[item.trangThai] || item.trangThai} - ${d(item.capNhat)}`} />
+              )) : <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có đơn phân phối.</p>}
+            </AdminPanel>
+          </div>
+        )}
+
+        {activeModule === "team" && (
+          <div className="grid items-start gap-5 xl:grid-cols-2">
+            <AdminPanel title="Nhân sự nội bộ" icon="groups" action={<Link href="/dashboard/team" className="text-xs font-bold text-[#1F6FEB]">Mở nhân sự đầy đủ</Link>}>
+              {data.members.length ? data.members.map(item => (
+                <DataRow key={item.id} icon="person" title={item.ten || item.email} meta={`${item.email} - ${roleMeta[item.vaiTroCty || "viewer"]?.label || item.vaiTroCty || "Chưa gán"}`} right={<StatusPill tone={item.trangThai === "active" ? "green" : "red"}>{statusText[item.trangThai] || item.trangThai}</StatusPill>} />
+              )) : <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có nhân sự.</p>}
+            </AdminPanel>
+            <AdminPanel title="Lời mời đang chờ" icon="mark_email_unread">
+              {data.invites.length ? data.invites.map(item => (
+                <DataRow key={item.id} icon="mail" title={item.email} meta={`${statusText[item.vaiTroCty] || item.vaiTroCty} - hết hạn ${d(item.ngayHetHan)}`} />
+              )) : <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Không có lời mời đang chờ.</p>}
+            </AdminPanel>
+          </div>
+        )}
+
+        {activeModule === "analytics" && (
+          <div className="grid items-start gap-5 xl:grid-cols-2">
+            <AdminPanel title="Theo dõi lượt quét" icon="monitoring" action={<Link href="/dashboard/analytics" className="text-xs font-bold text-[#1F6FEB]">Mở báo cáo đầy đủ</Link>}>
+              {data.recentScans.length ? data.recentScans.map(item => (
+                <DataRow key={item.id} icon="qr_code_scanner" title={item.maDinhDanh?.loHang?.sanPham.ten || item.uid} meta={`${item.ketQua} - ${d(item.thoiGian)} - ${item.maDinhDanh?.loHang?.maLo || "N/A"}`} />
+              )) : <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Chưa có lượt quét gần đây.</p>}
+            </AdminPanel>
+            <AdminPanel title="Cảnh báo mở" icon="warning">
+              {data.recentAlerts.length ? data.recentAlerts.map(item => (
+                <DataRow key={item.id} icon="warning" title={item.moTa} meta={`${item.mucDo} - ${d(item.thoiGian)}`} right={<StatusPill tone="red">Cảnh báo</StatusPill>} />
+              )) : <p className="rounded-xl border border-dashed border-[#bfdbfe] p-5 text-center text-sm text-[#477399]">Không có cảnh báo gần đây.</p>}
+            </AdminPanel>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <main className="min-h-screen bg-[#eef5fb] pb-24 text-slate-950 lg:h-screen lg:min-h-0 lg:overflow-hidden lg:pb-0">
       <div className="lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[344px_minmax(0,1fr)]">
-        <OperationNav items={modules} />
+        <OperationNav items={modules} activeKey={activeModule} onSelect={setActiveModule} />
 
         <div className="min-w-0 p-4 sm:p-6 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:p-6 lg:pb-36 xl:p-7 xl:pb-36">
         <header className="mb-6 grid gap-5 rounded-3xl border border-[#cfe1f4] bg-white/80 p-5 shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(360px,430px)] lg:items-stretch">
@@ -593,7 +738,8 @@ export default function EnterpriseManagePage() {
           </div>
         </header>
 
-          <div className="min-w-0">
+          {activeModule !== "overview" && renderModuleContent()}
+          <div className={`min-w-0 ${activeModule === "overview" ? "" : "hidden"}`}>
             <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
               <StatCard icon="inventory_2" label="Sản phẩm" value={data.stats.products} tag="SKU" href="/dashboard/inventory" />
               <StatCard icon="qr_code_2" label="Mục hàng" value={data.stats.batches} tag="MỤC" href="/dashboard/inventory" />
