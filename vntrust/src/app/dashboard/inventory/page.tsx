@@ -1197,8 +1197,8 @@ export default function InventoryPage() {
 
       {/* ── Modal: Thêm Sản phẩm / Lô hàng — sticky footer + pb-[80px] tránh bị che ── */}
       {(modal === "product" || modal === "batch") && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end md:items-center justify-center overflow-y-auto overscroll-contain md:p-4 pb-[80px] md:pb-4" onClick={closeModal}>
-          <div className="bg-[#0B1623] glass-panel text-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-md max-h-[calc(100dvh-96px)] md:max-h-[88dvh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="inventory-entry-modal-overlay fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end md:items-center justify-center overflow-y-auto overscroll-contain md:p-4 pb-[80px] md:pb-4" onClick={closeModal}>
+          <div className="inventory-entry-modal-panel bg-[#0B1623] glass-panel text-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-md max-h-[calc(100dvh-96px)] md:max-h-[88dvh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
             {/* Header — fixed */}
             <div className="flex justify-between items-center p-4 sm:p-6 pb-3 border-b border-white/10 shrink-0">
               <h2 className="text-lg sm:text-xl font-bold font-display">
@@ -1210,7 +1210,7 @@ export default function InventoryPage() {
             </div>
 
             {/* Scrollable body */}
-            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-6 py-5 pb-6 space-y-4 custom-scrollbar">
+            <div className="inventory-entry-modal-body flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-6 py-5 pb-6 space-y-4 custom-scrollbar">
               {modal === "product" ? (
                 <>
                   <div>
@@ -1398,7 +1398,7 @@ export default function InventoryPage() {
               )}
             </div>
             {/* Sticky footer — luôn visible */}
-            <div className="flex gap-3 px-4 sm:px-6 py-4 border-t border-white/10 bg-[#0B1623] shrink-0" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+            <div className="inventory-entry-modal-footer flex gap-3 px-4 sm:px-6 py-4 border-t border-white/10 bg-[#0B1623] shrink-0" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
               <button onClick={closeModal}
                 className="flex-1 py-3 border border-white/20 rounded-xl text-sm font-bold text-slate-200 hover:bg-white/5 transition">
                 {t("common_cancel")}

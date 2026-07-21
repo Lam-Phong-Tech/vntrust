@@ -2363,3 +2363,51 @@ html.light-mode .dashboard-profile-page textarea:disabled {
     max-width: calc(100vw - 24px) !important;
   }
 }
+
+/* Inventory product/batch modal: keep the form scrollable even when broad
+   responsive/light-mode rules stretch modal widths. */
+.inventory-entry-modal-overlay {
+  align-items: center !important;
+  padding: 16px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.inventory-entry-modal-panel {
+  width: min(980px, calc(100vw - 32px)) !important;
+  max-width: min(980px, calc(100vw - 32px)) !important;
+  height: min(88dvh, calc(100dvh - 32px)) !important;
+  max-height: calc(100dvh - 32px) !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.inventory-entry-modal-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  scrollbar-gutter: stable !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.inventory-entry-modal-footer {
+  flex: 0 0 auto !important;
+}
+
+@media (max-width: 767px) {
+  .inventory-entry-modal-overlay {
+    align-items: flex-end !important;
+    padding: 10px 8px calc(84px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .inventory-entry-modal-panel {
+    width: calc(100vw - 16px) !important;
+    max-width: calc(100vw - 16px) !important;
+    height: min(82dvh, calc(100dvh - 104px)) !important;
+    max-height: calc(100dvh - 104px) !important;
+  }
+}
